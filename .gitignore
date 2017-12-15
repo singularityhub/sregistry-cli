@@ -1,0 +1,5 @@
+sregistry.egg-info/
+build/
+__pycache__
+*.simg
+*.img

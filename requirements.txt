@@ -1,0 +1,6 @@
+python-dateutil
+demjson
+requests
+requests-toolbelt
+retrying
+simplejson
