@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from singularity.utils import read_json
+from sregistry.utils import read_json
 
 import os
 import re
