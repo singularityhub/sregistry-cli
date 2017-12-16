@@ -19,7 +19,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.utils import run_command
+from sregistry.utils import (
+    run_command, 
+    check_install 
+)
 from sregistry.logger import bot
 
 from glob import glob
@@ -39,6 +42,14 @@ class Singularity:
        self.debug = debug
        self.quiet = quiet
 
+
+    def _check_install(self, message=''):
+        '''singularity must be installed for some commands to work. This
+           function will exit with an error if this isn't the case.
+        '''
+        if not check_install():
+            bot.error('singularity is required for this action %s' %message)
+            sys.exit(1)
 
     def run_command(self, cmd, sudo=False, quiet=False):
         '''run_command is a wrapper for the global run_command, checking first
@@ -67,10 +78,13 @@ class Singularity:
         sys.exit(1)
 
 
+
     def help(self,command=None,stdout=True):
         '''help prints the general function help, or help for a specific command
         :param command: the command to get help for, if none, prints general help
         '''
+        self._check_install('[help]')
+
         cmd = ['singularity','--help']
         if command != None:
             cmd.append(command)
@@ -96,6 +110,9 @@ class Singularity:
     def build(self, image_path, spec_path, isolated=False, sandbox=False):
         '''build a singularity image, optionally for an isolated build
            (requires sudo)'''
+
+        self._check_install('[build]')
+
         if self.debug is True:
             cmd = ['singularity','--debug','build']
         else:
@@ -118,6 +135,8 @@ class Singularity:
         :param full_path: if True, return relative to scif base folder
         :parm image_path: full path to the image
         '''
+        self._check_install('[apps]')
+
         cmd = ['singularity','apps',image_path]
         output = self.run_command(cmd)
         if output not in ['', None]:   
@@ -132,7 +151,9 @@ class Singularity:
         '''create will bootstrap an image using a spec
         :param image_path: full path to image
         :param spec_path: full path to the spec file (Singularity)
-        ''' 
+        '''
+        self._check_install('[bootstrap]')
+
         if self.debug is True:
             cmd = ['singularity','--debug','bootstrap',image_path,spec_path]
         else:
@@ -158,7 +179,9 @@ class Singularity:
         :param image_path: full path to image
         :param size: image sizein MiB, default is 1024MiB
         :param filesystem: supported file systems ext3/ext4 (ext[2/3]: default ext3
-        '''        
+        '''
+        self._check_install('[image.create]')
+
         if size == None:
             size=1024
 
@@ -197,6 +220,8 @@ class Singularity:
         :param contain: This option disables the automatic sharing of writable
                         filesystems on your host
         '''
+        self._check_install('[exec]')
+
         sudo = False    
         if self.debug == True:
             cmd = ["singularity",'--debug',"exec"]
@@ -224,6 +249,8 @@ class Singularity:
         will generate temporary directory.
         :param export_format: the export format (only tar currently supported)
         '''
+        self._check_install('[image.export]')
+
         if tmptar is None:
             tmptar = "/%s/tmptar.tar" %(tempfile.mkdtemp())
         cmd = ['singularity', 'image.export', '-f',tmptar, image_path]
@@ -237,6 +264,8 @@ class Singularity:
         :param input_source: input source or file
         :param import_type: if not specified, imports whatever function is given
         '''
+        self._check_install('[image.import]')
+
         cmd = ['singularity','image.import',image_path,input_source]
         output = self.run_command(cmd,sudo=False)
         self.println(output)        
@@ -250,6 +279,7 @@ class Singularity:
         :param json: print json instead of raw text (default True)
         :param app: if defined, return help in context of an app
         '''
+        self._check_install('[inspect]')
 
         cmd = ['singularity','--quiet','inspect']
 
@@ -278,6 +308,7 @@ class Singularity:
         :param image_path: full path to image / uris
         :param name_by: can be one of commit or hash, default is by image name
         ''' 
+        self._check_install('[pull]')
 
         if image_name is not None:
             name_by_hash=False
@@ -333,6 +364,8 @@ class Singularity:
         :param image_path: full path to singularity image
         :param args: args to include with the run
         '''
+        self._check_install('[run]')
+
         sudo = False
         cmd = ["singularity",'--quiet',"run"]
         cmd = self.add_flags(cmd,writable=writable,contain=contain)
@@ -359,14 +392,17 @@ class Singularity:
     def version(self):
         '''return the version of singularity
         '''
+        self._check_install('[singularity]')
+
         from sregistry.utils import get_singularity_version
         return get_singularity_version()
-
 
 
     def get_labels(self,image_path):
         '''get_labels will return all labels defined in the image
         '''
+        self._check_install('[labels]')
+
         cmd = ['singularity','exec',image_path,'cat','/.singularity.d/labels.json']
         try:
             labels = self.run_command(cmd)
@@ -381,6 +417,7 @@ class Singularity:
         '''get_args will return the subset of labels intended to be arguments
         (in format SINGULARITY_RUNSCRIPT_ARG_*
         '''
+
         args = dict()
         for label,values in labels.items():
             if re.search("^SINGULARITY_RUNSCRIPT_ARG",label):

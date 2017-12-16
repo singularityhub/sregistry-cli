@@ -24,6 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from .base import ApiConnection
+from sregisty.utils import check_install
 import os
 
 def get_client():
@@ -33,6 +34,9 @@ def get_client():
        to the singularity hub client. If a user has a conflict with
        multiple secrets active, we can add another kind of logic.
     '''
+    # Give the user a warning:
+    if not check_install():
+        bot.warning('Singularity is not installed, function might be limited.')
 
     # Switch based on client secrets set or found
     if os.environ.get('SREGISTRY_CLIENT_SECRETS') is None:
