@@ -37,9 +37,9 @@ class ApiConnection(object):
 
     def __init__(self):
  
-        self.reset_headers()
-        self.update_headers()
+        self.headers = None
         self.base = None
+        self.reset_headers()
 
 
 # Container Functions

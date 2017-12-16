@@ -34,11 +34,10 @@ base = 'https://www.singularity-hub.org/api'
 
 class Client(ApiConnection):
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs, base=None):
  
-        self.headers = None
-        self.base = base
         super(ApiConnection, self).__init__()
+        self.base = base
 
     def __str__(self):
         return "hub.client.%s" %(self.base)
