@@ -5,9 +5,7 @@ FROM continuumio/miniconda3
 ENV PATH /opt/conda/bin:$PATH
 LABEL maintainer vsochat@stanford.edu
 
-RUN apt-get update && apt-get install -y git && \
-    /opt/conda/bin/conda install -y numpy scikit-learn cython pandas
-
+RUN apt-get update && apt-get install -y git
 WORKDIR /opt
 RUN git clone https://www.github.com/singularityhub/sregistry-cli
 WORKDIR sregistry-cli

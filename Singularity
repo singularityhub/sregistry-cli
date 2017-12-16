@@ -15,8 +15,9 @@ From: continuumio/miniconda3
 %post
     apt-get update && apt-get install -y git
 
-    # Dependncies
-    /opt/conda/bin/conda install -y numpy scikit-learn cython pandas
+    # Install Singularity
+    cd /opt && git clone https://www.github.com/singularityware/singularity.git && cd singularity
+    ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 
     # Install SRegistry Global
     cd /opt && git clone https://www.github.com/singularityhub/sregistry-cli
