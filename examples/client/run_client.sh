@@ -34,9 +34,6 @@ sregistry pull vsoch/hello-world
 
 export SREGISTRY_CLIENT_SECRETS=$HOME/.sregistry
 
-# STILL UNDER DEVELOPMENT, working and coming soon!
-sregistry list
-
 ###################################################################
 # Push
 ###################################################################

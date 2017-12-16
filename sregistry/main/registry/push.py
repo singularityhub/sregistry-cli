@@ -21,13 +21,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from singularity.cli import Singularity
-from singularity.logger import bot
-from singularity.registry.utils import (
+from sregistry.client import Singularity
+from sregistry.logger import bot, ProgressBar
+from sregistry.utils import (
     parse_image_name,
     parse_header
 )
-from singularity.logger import ProgressBar
 from requests_toolbelt import (
     MultipartEncoder,
     MultipartEncoderMonitor
@@ -38,7 +37,7 @@ import json
 import sys
 import os
 
-from singularity.registry.auth import (
+from sregistry.auth import (
     generate_signature,
     generate_credential,
     generate_timestamp
