@@ -14,6 +14,7 @@ From: continuumio/miniconda3
 
 %post
     apt-get update && apt-get install -y git
+    /opt/conda/bin/pip install dateutils
 
     # Install Singularity
     cd /opt && git clone https://www.github.com/singularityware/singularity.git && cd singularity
