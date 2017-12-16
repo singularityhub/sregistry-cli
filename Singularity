@@ -13,7 +13,15 @@ From: continuumio/miniconda3
     maintainer vsochat@stanford.edu
 
 %post
-    apt-get update && apt-get install -y git
+    apt-get update && apt-get install -y git build-essential \
+                   libtool \
+                   squashfs-tools \
+                   autotools-dev \
+                   automake \
+                   autoconf \
+                   uuid-dev \
+                   libssl-dev
+
     /opt/conda/bin/pip install dateutils
 
     # Install Singularity
