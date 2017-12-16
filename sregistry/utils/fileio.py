@@ -19,20 +19,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-import collections
 import errno
 import os
 import re
 import requests
 
-import shutil
 import json
 from sregistry.logger import bot
-from subprocess import (
-    Popen,
-    PIPE,
-    STDOUT
-)
 import sys
 
 

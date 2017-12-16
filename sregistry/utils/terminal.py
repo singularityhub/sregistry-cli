@@ -19,7 +19,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+
 from sregistry.logger import bot
+from subprocess import (
+    Popen,
+    PIPE,
+    STDOUT
+)
 import os
 
 ######################################################################################
