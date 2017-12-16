@@ -27,7 +27,7 @@ import requests
 
 import shutil
 import json
-from singularity.logger import bot
+from sregistry.logger import bot
 from subprocess import (
     Popen,
     PIPE,

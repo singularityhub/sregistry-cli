@@ -21,9 +21,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from singularity.logger import bot
-from singularity.registry.utils import parse_image_name
-from singularity.hub import ApiConnection
+from sregistry.logger import bot
+from sregistry.utils import parse_image_name
 from dateutil import parser
 
 import json

@@ -359,7 +359,7 @@ class Singularity:
     def version(self):
         '''return the version of singularity
         '''
-        from singularity.build.utils import get_singularity_version
+        from sregistry.utils import get_singularity_version
         return get_singularity_version()
 
 

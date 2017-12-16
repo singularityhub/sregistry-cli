@@ -19,6 +19,41 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from sregistry.logger import bot
+import os
+
+######################################################################################
+# Software Versions
+######################################################################################
+
+
+def get_singularity_version(singularity_version=None):
+    '''get_singularity_version will determine the singularity version for a build
+    first, an environmental variable is looked at, followed by using the system
+    version.
+    '''
+
+    if singularity_version is None:        
+        singularity_version = os.environ.get("SINGULARITY_VERSION")
+        
+    if singularity_version is None:
+        try:
+            cmd = ['singularity','--version']
+            output = run_command(cmd)
+
+            if isinstance(output['message'],bytes):
+                output['message'] = output['message'].decode('utf-8')
+            singularity_version = output['message'].strip('\n')
+            bot.info("Singularity %s being used." % singularity_version)
+            
+        except:
+            singularity_version = None
+            bot.warning("Singularity version not found, so it's likely not installed.")
+
+    return singularity_version
+
+
+
 
 def check_install(software=None, quiet=True):
     '''check_install will attempt to run the singularity command, and
