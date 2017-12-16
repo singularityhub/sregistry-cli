@@ -28,9 +28,10 @@ import os
 
 def get_client():
     '''get the correct client depending on the driver of interest. If 
-       a secrets file is found in the environment, we load and 
-       check client secrets. If not, we default to the singularity hub
-       client.
+       a secrets file for a particular storage is found in the environment
+       we load and check client secrets. If not, we default 
+       to the singularity hub client. If a user has a conflict with
+       multiple secrets active, we can add another kind of logic.
     '''
 
     # Switch based on client secrets set or found

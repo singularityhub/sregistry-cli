@@ -38,3 +38,19 @@ INSTALL_REQUIRES = (
     ('pygments', {'min_version': '2.1.3'}),
     ('oauth2client', {'exact_version': '3.0'})
 )
+
+# Submodule Requirements
+
+INSTALL_REQUIRES_DROPBOX = (
+)
+
+INSTALL_REQUIRES_GOOGLE_STORAGE = (
+)
+
+INSTALL_REQUIRES_GOOGLE_DRIVE = (
+)
+
+INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
+                        INSTALL_REQUIRES_DROPBOX + 
+                        INSTALL_REQUIRES_GOOGLE_STORAGE +
+                        INSTALL_REQUIRES_GOOGLE_DRIVE)
