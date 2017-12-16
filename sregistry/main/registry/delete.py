@@ -21,13 +21,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from singularity.logger import bot
-from singularity.registry.utils import parse_image_name
+from sregistry.logger import bot
+from sregistry.utils import parse_image_name
 
 import sys
 import os
 
-from singularity.registry.auth import (
+from sregistry.auth import (
     generate_signature,
     generate_credential,
     generate_timestamp

@@ -21,9 +21,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from singularity.cli import Singularity
-from singularity.logger import bot
-from singularity.registry.utils import parse_image_name
+from sregistry.client import Singularity
+from sregistry.logger import bot
+from sregistry.utils import parse_image_name
 
 import requests
 import shutil
