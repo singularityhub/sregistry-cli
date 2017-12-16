@@ -1,6 +1,6 @@
 # Docker Image
 
-This docker image is intended to provide a containerized client for a Singularity Registry
+This docker image is intended to provide a containerized client for a sregistry
 
 ## Singularity Registry Client
 

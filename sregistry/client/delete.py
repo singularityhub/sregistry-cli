@@ -28,10 +28,7 @@ import os
 
 def main(args,parser,subparser):
 
-    #TODO: should import the right client based on the found secrets/credential
-    # if none, use registry
-    # otherwise, use whatever is set to.
-    cli = Client(secrets=args.secrets)
+    cli = Client()
 
     for image in args.image:
         response = cli.remove(image=image,

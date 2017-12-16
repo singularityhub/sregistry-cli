@@ -37,7 +37,7 @@ def main(args,parser,subparser):
 
     
     # Authenticate
-    cli = Client(secrets=args.secrets)
+    cli = Client()
     response = cli.push(path=image,
                         name=args.name,
                         tag=args.tag)

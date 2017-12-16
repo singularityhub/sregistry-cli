@@ -29,7 +29,7 @@ import os
 def main(args,parser,subparser):
 
     # Does the user have a valid image?
-    sreg = Client(secrets=args.secrets)
+    sreg = Client()
 
     return sreg.label_search(key=args.key,
                              value=args.value)

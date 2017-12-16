@@ -40,8 +40,25 @@ class Client(ApiConnection):
         self.base = base
         self.update_secrets()
         self.update_headers()
+        self.update_base()
  
         super(ApiConnection, self).__init__(**kwargs)
+
+    def update_base(self):
+        if self.base is not None:
+            if not self.base.endswith('api'):
+                self.base = '%s/api' %self.base.strip('/')
+
+
+    def read_response(self,response, field="detail"):
+        '''attempt to read the detail provided by the response. If none, 
+        default to using the reason'''
+
+        try:
+            message = json.loads(response._content.decode('utf-8'))[field]
+        except:
+            message = response.reason
+        return message
 
 
     def update_secrets(self):
@@ -54,7 +71,7 @@ class Client(ApiConnection):
         if self.secrets is not None:
             if "base" in self.secrets:
                 self.base = self.secrets['base']
-
+                self.update_base()
 
     def __str__(self):
         return "sregistry.client.%s" %(self.base)
