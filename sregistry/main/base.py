@@ -87,18 +87,18 @@ class ApiConnection(object):
     def update_headers(self,fields=None):
         '''update headers with a token & other fields
         '''
-        if self.headers is None:
-            headers = self.reset_headers()
+        if hasattr(self, 'headers'):
+            if self.headers is None:
+                self.reset_headers()
         else:
-            headers = self.headers
+            self.reset_headers()
 
         if fields is not None:
             for key,value in fields.items():
-                headers[key] = value
+                self.headers[key] = value
 
-        header_names = ",".join(list(headers.keys()))
+        header_names = ",".join(list(self.headers.keys()))
         bot.debug("Headers found: %s" %header_names)
-        self.headers = headers
 
 
 # Requests
