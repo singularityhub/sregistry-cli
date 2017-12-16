@@ -24,7 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from .base import ApiConnection
-from sregisty.utils import check_install
+from sregistry.utils import check_install
 import os
 
 def get_client():
