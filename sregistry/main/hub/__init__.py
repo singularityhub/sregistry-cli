@@ -37,6 +37,7 @@ class Client(ApiConnection):
     def __init__(self, **kwargs):
  
         super(ApiConnection, self).__init__()
+        self.base = base
         if "base" in kwargs:
             self.base = kwargs['base']
 
