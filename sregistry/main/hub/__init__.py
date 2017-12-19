@@ -34,12 +34,23 @@ base = 'https://www.singularity-hub.org/api'
 
 class Client(ApiConnection):
 
-    def __init__(self, **kwargs):
+
+    def __init__(self, secrets=None, base=None, **kwargs):
  
-        super(ApiConnection, self).__init__()
         self.base = base
-        if "base" in kwargs:
-            self.base = kwargs['base']
+        self.update_base() 
+        super(ApiConnection, self).__init__(**kwargs)
+
+    def update_base(self, new_base=None):
+
+        if new_base is None:
+            new_base = base
+        self.base = new_base
+
+        if self.base is not None:
+            if not self.base.endswith('api'):
+                self.base = '%s/api' %self.base.strip('/')
+
 
     def __str__(self):
         return "hub.client.%s" %(self.base)
