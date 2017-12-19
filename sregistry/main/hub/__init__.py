@@ -39,6 +39,7 @@ class Client(ApiConnection):
  
         self.base = base
         self.update_base() 
+        self.update_headers()
         super(ApiConnection, self).__init__(**kwargs)
 
     def update_base(self, new_base=None):
