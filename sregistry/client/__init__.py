@@ -51,14 +51,21 @@ def get_parser():
                                        description='actions for Singularity Registry tools',
                                        dest="command")
 
+    # List local containers and collections
+    ls = subparsers.add_parser("list",
+                               help="list local containers")
+
+    ls.add_argument("query", nargs='*',
+                     help="container list filter", 
+                     type=str, default="*")
 
     # List or search containers and collections
-    if hasattr(cli,'ls'):
+    if hasattr(cli,'search'):
 
-        ls = subparsers.add_parser("list",
-                                   help="list and search for containers")
+        search = subparsers.add_parser("search",
+                                   help="search remote containers")
 
-        ls.add_argument("query", nargs='*', 
+        search.add_argument("query", nargs='*', 
                          help="container search query, don't specify for all", 
                          type=str, default="*")
 
@@ -66,21 +73,21 @@ def get_parser():
     # A more specific search, implemented by sregistry
     if hasattr(cli,'container_search'):
 
-        ls.add_argument('--runscript','-r', dest="runscript", 
-                        help="show the runscript for each container", 
-                        default=False, action='store_true')
+        search.add_argument('--runscript','-r', dest="runscript", 
+                            help="show the runscript for each container", 
+                            default=False, action='store_true')
 
-        ls.add_argument('--def','-df', dest="deffile", 
-                        help="show the deffile for each container.", 
-                        default=False, action='store_true')
+        search.add_argument('--def','-df', dest="deffile", 
+                            help="show the deffile for each container.", 
+                            default=False, action='store_true')
 
-        ls.add_argument('--env','-e', dest="environ", 
-                        help="show the environment for each container.", 
-                        default=False, action='store_true')
+        search.add_argument('--env','-e', dest="environ", 
+                            help="show the environment for each container.", 
+                            default=False, action='store_true')
 
-        ls.add_argument('--test','-t', dest="test", 
-                        help="show the test for each container.", 
-                        default=False, action='store_true')
+        search.add_argument('--test','-t', dest="test", 
+                            help="show the test for each container.", 
+                            default=False, action='store_true')
 
     # Push an image
     if hasattr(cli,'push'):
@@ -187,6 +194,9 @@ def main():
 
     if args.command == "labels":
         from .labels import main
+
+    if args.command == "search":
+        from .search import main
 
     if args.command == "list":
         from .list import main

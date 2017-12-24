@@ -72,7 +72,8 @@ class Client(ApiConnection):
                 self.update_base()
 
     def __str__(self):
-        return "sregistry.client.%s" %(self.base)
+        return type(self)
+
     
 
 Client.authorize = authorize

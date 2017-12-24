@@ -42,7 +42,7 @@ RED = "\033[91m"
 DARKRED = "\033[31m"
 CYAN = "\033[36m"
 
-class SingularityMessage:
+class SRegistryMessage:
 
     def __init__(self, MESSAGELEVEL=None):
         self.level = get_logging_level()
@@ -240,7 +240,7 @@ class SingularityMessage:
     def log(self, message):
         self.emit(LOG, message, 'LOG')
 
-    def custom(self, prefix, message, color=PURPLE):
+    def custom(self, prefix, message="", color=PURPLE):
         self.emit(CUSTOM, message, prefix, color)
 
     def info(self, message):
@@ -345,5 +345,5 @@ def convert2boolean(arg):
     return arg
 
 
-SingularityMessage.spinner = Spinner()
-bot = SingularityMessage()
+SRegistryMessage.spinner = Spinner()
+bot = SRegistryMessage()

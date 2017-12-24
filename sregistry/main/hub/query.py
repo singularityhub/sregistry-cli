@@ -31,7 +31,7 @@ import sys
 import os
 
 
-def ls(self, query=None, args=None):
+def search(self, query=None, args=None):
     '''query a Singularity registry for a list of images. 
      If query is None, collections are listed. 
 
@@ -46,10 +46,10 @@ def ls(self, query=None, args=None):
     '''
 
     if query is not None:
-        return self.collection_search(query)
+        return self._search_collection(query)
 
     # Search collections across all fields
-    return self.search()
+    return self._search_all()
 
 
 
@@ -57,7 +57,7 @@ def ls(self, query=None, args=None):
 # Search Helpers
 ##################################################################
 
-def search(self):
+def search_all(self):
     '''a "show all" search that doesn't require a query'''
 
     bot.spinner.start()
@@ -79,9 +79,9 @@ def search(self):
                     rows.append([c['detail'],"%s:%s" %(c['name'],c['tag'])])
 
     bot.table(rows)
+    return rows
 
-
-def collection_search(self, query):
+def search_collection(self, query):
     '''collection search will list all containers for a specific
     collection. We assume query is the name of a collection'''
 
@@ -91,6 +91,7 @@ def collection_search(self, query):
 
     q = parse_image_name(query, defaults=False)
     url = '%s/collection/%s' % (self.base, q['uri'])
+    rows = []
 
     try:
         result = self.get(url)
@@ -100,16 +101,16 @@ def collection_search(self, query):
 
     if len(result['containers']) == 0:
         bot.info("No containers found.")
-        sys.exit(1)
+    else:
+        bot.info("Containers %s" %query)
 
-    bot.info("Containers %s" %query)
+        rows.append(["[name]","%s" %result['name']])
+        modify_date = print_date(result['modify_date'])
+        rows.append(["[date]","%s" %modify_date])
 
-    rows = []
-    rows.append(["[name]","%s" %result['name']])
-    modify_date = print_date(result['modify_date'])
-    rows.append(["[date]","%s" %modify_date])
+        for c in result['containers']: 
+            rows.append([ '%s:%s' %(c['name'], c['tag'])])
 
-    for c in result['containers']: 
-        rows.append([ '%s:%s' %(c['name'], c['tag'])])
-
-    bot.table(rows)
+        bot.table(rows)
+    
+    return rows

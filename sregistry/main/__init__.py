@@ -25,8 +25,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from .base import ApiConnection
 from sregistry.utils import check_install
+from sregistry.defaults import SREGISTRY_DATABASE
 from sregistry.logger import bot
 import os
+
 
 def get_client():
     '''get the correct client depending on the driver of interest. If 
@@ -39,14 +41,31 @@ def get_client():
     if not check_install():
         bot.warning('Singularity is not installed, function might be limited.')
 
-    # Switch based on client secrets set or found
-    if os.environ.get('SREGISTRY_CLIENT_SECRETS') is None:
-        from .hub import Client
-        cli = Client
-    else:
-        from .registry import Client
-        cli = Client
+    # If no obvious credential provided, we can use SREGISTRY_CLIENT
+    if os.environ.get('SREGISTRY_CLIENT') == 'globus':
+        from .globus import Client
 
-    return cli
+    elif os.environ.get('SREGISTRY_CLIENT') == 'hub':
+        from .hub import Client
+
+    elif os.environ.get('SREGISTRY_CLIENT') == 'registry':
+        from .registry import Client
+
+    # Fall back to singularity hub
+    else:
+        from .hub import Client
+
+    # Add the database, if wanted
+    if SREGISTRY_DATABASE is not None:
+        from sregistry.database import (
+            init_db, add, rm, ls             
+        )
+        bot.info('Database: %s' %SREGISTRY_DATABASE)
+        Client._init_db = init_db
+        Client.add = add
+        Client.rm = rm
+        Client.ls = ls
+
+    return Client
 
 Client = get_client()

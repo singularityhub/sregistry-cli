@@ -41,6 +41,11 @@ INSTALL_REQUIRES = (
 
 # Submodule Requirements
 
+INSTALL_REQUIRES_GLOBUS = (
+
+    ('globus-sdk[jwt]', {'exact_version': '1.3.0'}),
+)
+
 INSTALL_REQUIRES_DROPBOX = (
 )
 

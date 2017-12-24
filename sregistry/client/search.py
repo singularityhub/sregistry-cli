@@ -28,10 +28,14 @@ import os
 
 def main(args,parser,subparser):
 
+    # Does the user have a valid image?
     sreg = Client()
 
     for query in args.query:
         if query in ['','*']:
             query = None
 
-        sreg.ls(query=query,args=args)
+        try:
+            sreg.ls(query=query,args=args)
+        except NotImplementedError:
+            bot.info('Search is not available for this endpoint.')

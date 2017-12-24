@@ -59,9 +59,9 @@ LICENSE = lookup['LICENSE']
 with open('README.md') as filey:
     LONG_DESCRIPTION = filey.read()
 
-##########################################################################################
-# MAIN ###################################################################################
-##########################################################################################
+################################################################################
+# MAIN #########################################################################
+################################################################################
 
 
 if __name__ == "__main__":
@@ -69,6 +69,7 @@ if __name__ == "__main__":
     INSTALL_REQUIRES = get_requirements(lookup)
     INSTALL_REQUIRES_ALL = get_requirements(lookup,'INSTALL_REQUIRES_ALL')
     DROPBOX = get_requirements(lookup,'INSTALL_REQUIRES_DROPBOX')
+    GLOBUS = get_requirements(lookup,'INSTALL_REQUIRES_GLOBUS')
     GOOGLE_STORAGE = get_requirements(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
     GOOGLE_DRIVE = get_requirements(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
 
@@ -89,6 +90,7 @@ if __name__ == "__main__":
           install_requires = INSTALL_REQUIRES,
           extras_require={
               'dropbox': [DROPBOX],
+              'globus': [GLOBUS],
               'google-storage': [GOOGLE_STORAGE],
               'google-drive': [GOOGLE_DRIVE],
               'all': [INSTALL_REQUIRES_ALL]

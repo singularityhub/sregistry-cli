@@ -24,6 +24,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
+from sregistry.defaults import SREGISTRY_DATABASE
+import threading
 import shutil
 import requests
 import tempfile
@@ -41,6 +43,15 @@ class ApiConnection(object):
         self.base = None
         self.reset_headers()
 
+        # If client initialized with _init_db, do it
+        if hasattr(self,"_init_db"):
+            self._init_db(SREGISTRY_DATABASE)
+
+        # TO DO: need to implement higher level functions that work with images
+        # to do corresponding action in database.
+        # we need a sort of call back for push, pull, delete, etc.
+
+# TODO: each image should have it's type, and the operation used to get it, and there should be a function / way to share a little databsae and then redownload. Likely we would need to instantiate a separate client for each subset of types, and this might be done with some global script instead of individual clients?
 
 # Container Functions
 # Any or none can be implemented by a subclass
@@ -75,6 +86,7 @@ class ApiConnection(object):
 
 #    def label_search(self):
 #        return
+
 
 # Headers
 
@@ -113,7 +125,7 @@ class ApiConnection(object):
                          return_json=return_json)
 
 
-    def put(self,url,data=None,return_json=True):
+    def _put(self,url,data=None,return_json=True):
         '''put request
         '''
         bot.debug("PUT %s" %url)
@@ -177,14 +189,18 @@ class ApiConnection(object):
 
         fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
         os.close(fd)
-        response = self.stream(url,headers=headers,stream_to=tmp_file)
 
-        if isinstance(response, HTTPError):
-            bot.error("Error downloading %s, exiting." %url)
-            sys.exit(1)
-        shutil.move(tmp_file, file_name)
+        # Check here if exists
+        if requests.head(url).status_code == 200:
+            response = self.stream(url,headers=headers,stream_to=tmp_file)
+
+            if isinstance(response, HTTPError):
+                bot.error("Error downloading %s, exiting." %url)
+                sys.exit(1)
+            shutil.move(tmp_file, file_name)
+        else:
+            bot.error("Invalid URL %s" %url)
         return file_name
-
 
 
     def stream(self, url, headers=None, stream_to=None):

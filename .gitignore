@@ -1,5 +1,8 @@
 sregistry.egg-info/
 build/
+dist/
+pypi.sh
+OLD
 __pycache__
 *.simg
 *.img
