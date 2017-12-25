@@ -21,6 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from dateutil import parser
+import hashlib
 import os
 import re
 
@@ -51,6 +52,16 @@ def get_image_name(manifest, extension='simg', use_commit=False, use_hash=False)
     return image_name
 
 
+def get_image_hash(image_path):
+    '''return an md5 hash of the file based on a criteria level. This
+    is intended to give the file a reasonable version.
+    :param image_path: full path to the singularity image
+    '''
+    hasher = hashlib.md5()
+    with open(image_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
 
 
 def parse_image_name(image_name, tag=None, defaults=True, ext="img"):

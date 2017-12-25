@@ -19,12 +19,17 @@ from sregistry.defaults import *
 SREGISTRY_DATABASE
 # '/home/vanessa/.singularity/sregistry.db
 
+# And this means storage is in a subfolder, shub
+SREGISTRY_STORAGE
+# '/home/vanessa/.singularity/shub
+
 # And the client secrets for sregistry also have a default location
 SREGISTRY_CLIENT_SECRETS
 # '/home/vanessa/.sregistry'
 ```
 
-For the Singularity Registry secrets, the location will be set to default
+And you of course can export either of `SREGISTRY_DATABASE` or `SREGISTRY_STORAGE` to 
+change these defaults. For the Singularity Registry secrets, the location will be set to default
 even if they aren't found. The reason for this is that some clients might need
 the file to write client-specific variables and options.
 
@@ -49,7 +54,9 @@ interaction with the local database.
 
 
 ### Add
-By default, images 
+By default, images that you pull (or otherwise interact with) are brought to your local storage, the Singularity cache. This behavior can change if you've defined your cache to be elsewhere, or specified a different database location.
+
+
 
 THINK ABOUT:
  - images should be saved by default (to cache or where pulled?)

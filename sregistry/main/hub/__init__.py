@@ -26,6 +26,7 @@ import sys
 import os
 
 from .pull import pull
+from .add import add
 from .query import (
     search, 
     search_all, 
@@ -54,11 +55,10 @@ class Client(ApiConnection):
             if not self.base.endswith('api'):
                 self.base = '%s/api' %self.base.strip('/')
 
-    def __str__(self):
-        return type(self)
     
 
 Client.pull = pull
 Client.search = search
+Client.add = add
 Client._search_all = search_all
 Client._search_collection = search_collection

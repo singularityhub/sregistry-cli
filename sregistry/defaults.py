@@ -66,10 +66,12 @@ def getenv(variable_key, default=None, required=False, silent=True):
 USERHOME = pwd.getpwuid(os.getuid())[5]
 DISABLE_CACHE = convert2boolean(getenv("SINGULARITY_DISABLE_CACHE", False))
 DISABLE_DATABASE = convert2boolean(getenv("SREGISTRY_DISABLE", False))
+SREGISTRY_CLIENT = getenv("SREGISTRY_CLIENT", "hub")
 
 # If the user isn't caching images, don't save
 if DISABLE_CACHE is True or DISABLE_DATABASE is True:
     SREGISTRY_DATABASE = None
+    SREGISTRY_STORAGE = None
 
 # If the user is caching...
 else:
@@ -77,6 +79,10 @@ else:
     # and if it's not set, default to home folder
     _database = os.path.join(USERHOME, ".singularity")
     SREGISTRY_DATABASE = getenv("SREGISTRY_DATABASE", _database)
+
+    # Storage is a subfolder of the database, shub
+    _storage = os.path.join(_database, "shub")
+    SREGISTRY_STORAGE = getenv("SREGISTRY_STORAGE", _storage)
     SREGISTRY_DATABASE = "%s/sregistry.db" %SREGISTRY_DATABASE
 
 _secrets = os.path.join(USERHOME, ".sregistry")

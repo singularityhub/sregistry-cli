@@ -51,6 +51,15 @@ class ApiConnection(object):
         # to do corresponding action in database.
         # we need a sort of call back for push, pull, delete, etc.
 
+    def __repr__(self):
+        return "[client][%s]" %self.__module__
+
+    def __str__(self):
+        return "[client][%s]" %self.__module__
+
+    def client_name(self):
+        return self.__module__.split('.')[-1]
+
 # TODO: each image should have it's type, and the operation used to get it, and there should be a function / way to share a little databsae and then redownload. Likely we would need to instantiate a separate client for each subset of types, and this might be done with some global script instead of individual clients?
 
 # Container Functions

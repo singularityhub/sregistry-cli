@@ -41,6 +41,7 @@ with the path from sregistry. If you need to manage images at scale, you should
 consider hosting a [Singularity Registry](https://www.singularityhub.github.io/sregistry) 
 or building on [Singularity Hub](https://www.singularity-hub.org).
 
+
 ### Storage
 The database itself stores metadata and paths for images. You can imagine pulling an image, perhaps that looks like this:
 
@@ -70,6 +71,17 @@ folder, which is usually in our `$HOME`.
 SREGISTRY_DATABASE
 /home/vanessa/.singularity/sregistry.db
 ```
+
+For storage of images, we use the same folder that Singularity will by default look for the cache.
+
+```
+SREGISTRY_STORAGE
+/home/vanessa/.singularity/shub
+```
+
+And for either, if you want to change these locations you can export the variables. There is no
+reason that the database file needs to live next to the image folder, for example, and you might
+want to give it a unique name to a user, depending on your setup.
 
 If you have exported the variable `SINGULARITY_DISABLE_CACHE`, an option with
 the Singularity command line software to not cache anything, SRegistry will honor
@@ -106,4 +118,4 @@ Now that we've discussed these concepts, let's jump into using the client. We ha
  - [developers](developers.md): a getting started for developers that want to interact with the client from within Python.
  - [command-line](commands.md): a getting started for command line use of the client.
 
-Once you've mastered the basics, take a look at the [specific clients docs](../clients)
+Once you've mastered the basics, take a look at the [specific clients documentation](../clients)

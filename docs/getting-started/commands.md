@@ -1,11 +1,13 @@
 # Global Commands
+
 The following commands are provided for the client for all endpoints, as they
 pertain to interaction with the local sregistry database.
 
 
 ## Add
 
-For all clients, we can add an image or delete an image with 
+For all clients, we can add an image or delete an image with .
+
 # add or remove.
 
 # TODO: stopped here - need to have "add' and "remove" functions to base

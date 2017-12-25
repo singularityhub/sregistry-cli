@@ -32,9 +32,12 @@ from sqlalchemy import (
 )
 
 from sregistry.logger import bot
-from sregistry.defaults import SREGISTRY_DATABASE
+from sregistry.defaults import ( SREGISTRY_DATABASE, SREGISTRY_STORAGE )
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import ( backref,
+                             relationship,  
+                             scoped_session, 
+                             sessionmaker )
 from uuid import uuid4
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -109,6 +112,9 @@ class Container(Base):
                            ForeignKey('collection.id'),
                            nullable=False)
 
+    def __repr__(self):
+        return '<Container %r>' % (self.name)
+
     def uri(self):
         return self.name
 
@@ -118,13 +124,15 @@ def init_db(self, db_path):
 
        the format sqlite:////scif/data/expfactory.db
 
-    #TODO: when a user creates the client, initialize this db
+    The custom path can be set with the environment variable SREGISTRY_DATABASE
+    when a user creates the client, we must initialize this db
     the database should use the .singularity cache folder to cache
-    layers and images, and .singularity/sregistry.db as a database (with userid)
+    layers and images, and .singularity/sregistry.db as a database
     '''
 
     # Database Setup, use default if uri not provided
     self.database = 'sqlite:///%s' % db_path
+    self.storage = SREGISTRY_STORAGE
 
     bot.info("Database located at %s" % self.database)
     self.engine = create_engine(self.database, convert_unicode=True)
