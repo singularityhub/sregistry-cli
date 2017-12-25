@@ -106,17 +106,28 @@ class Container(Base):
     tag = Column(String(250), nullable=False)
     image = Column(String(250), nullable=True)
     url = Column(String(500), nullable=True)
-    client = Column(String(500), nullable=False)
+    uri = Column(String(500), nullable=True)
+    client = Column(String(50), nullable=False)
     version = Column(String(250), nullable=True)
     collection_id = Column(Integer, 
                            ForeignKey('collection.id'),
                            nullable=False)
 
     def __repr__(self):
-        return '<Container %r>' % (self.name)
+        if self.uri is None:
+            return '<Container %r>' % (self.name)
+        return '<Container %r>' % (self.uri)
 
-    def uri(self):
-        return self.name
+    def get_uri(self):
+        '''generate a uri on the fly from database parameters if one is not
+        saved with the initial model (it should be, but might not be possible)
+        '''
+        collection = Collection.query.filter(id=self.collection_id).first()
+        uri = "%s/%s:%s" %(collection.name, self.name, self.tag)
+        if self.version is not None:
+            uri = "%s@%s" %(uri, self.version)
+        return uri
+
 
 
 def init_db(self, db_path):
@@ -134,7 +145,7 @@ def init_db(self, db_path):
     self.database = 'sqlite:///%s' % db_path
     self.storage = SREGISTRY_STORAGE
 
-    bot.info("Database located at %s" % self.database)
+    bot.debug("Database located at %s" % self.database)
     self.engine = create_engine(self.database, convert_unicode=True)
     self.session = scoped_session(sessionmaker(autocommit=False,
                                                autoflush=False,

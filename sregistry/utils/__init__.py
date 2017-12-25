@@ -10,6 +10,7 @@ from .terminal import (
 from .cache import get_cache
 from .names import (
     get_image_name,
+    get_image_hash,
     format_container_name,
     parse_image_name,
     remove_uri,

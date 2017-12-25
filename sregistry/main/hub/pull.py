@@ -28,7 +28,23 @@ import sys
 import os
 
 
-def pull(self, images, file_name=None):
+def pull(self, images, file_name=None, save=True):
+    '''pull an image from an endpoint
+ 
+    Parameters
+    ==========
+    images: refers to the uri given by the user to pull in the format
+    <collection>/<namespace>. You should have an API that is able to 
+    retrieve a container based on parsing this uri.
+    file_name: the user's requested name for the file. It can 
+               optionally be None if the user wants a default.
+    save: if True, you should save the container to the database
+          using self.add()
+    
+    Returns
+    =======
+    finished: a single container path, or list of paths
+    '''
 
     if not isinstance(images,list):
         images = [images]
@@ -52,6 +68,16 @@ def pull(self, images, file_name=None):
         image_file = self.download(url=manifest['image'],
                                    file_name=file_name,
                                    show_progress=True)
+
+        # If the user is saving to local storage
+        if save is True:
+            image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
+            container = self.add(image_path = image_file,
+                                 image_name = image_uri,
+                                 metadata = manifest,
+                                 url = manifest['image'])
+            image_file = container.image
+
 
         if os.path.exists(image_file):
             bot.debug('Retrieved image file %s' %image_file)

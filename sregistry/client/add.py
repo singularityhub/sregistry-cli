@@ -26,15 +26,7 @@ import pwd
 import os
 
 
-def main(args,parser,subparser):
+def main(args, parser, subparser):
 
     cli = Client()
-
-    # Does the user want to save the image?
-    do_save = True
-    if args.nocache is True or not hasattr(cli,'storage'):
-        do_save = False
-    
-    response = cli.pull(images=args.image,
-                        file_name=args.name,
-                        save=do_save)
+    cli.add(args.image)

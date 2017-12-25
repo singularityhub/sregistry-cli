@@ -21,7 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from .singularity import Singularity
 import sregistry
 import argparse
 import sys
@@ -32,8 +31,7 @@ def get_parser():
     parser = argparse.ArgumentParser(description="Singularity Registry tools")
 
     # Customize parser depending on client
-    from sregistry.main import Client
-    cli = Client()
+    from sregistry.main import Client as cli
 
     # Global Variables
     parser.add_argument("--version", dest='version', 
@@ -46,9 +44,10 @@ def get_parser():
                         default=False, action='store_true')
 
 
-    subparsers = parser.add_subparsers(help='sreg actions',
+    description = 'actions for Singularity Registry Global Client'
+    subparsers = parser.add_subparsers(help='sregistry actions',
                                        title='actions',
-                                       description='actions for Singularity Registry tools',
+                                       description=description,
                                        dest="command")
 
     # List local containers and collections
@@ -58,6 +57,17 @@ def get_parser():
     ls.add_argument("query", nargs='*',
                      help="container list filter", 
                      type=str, default="*")
+
+
+    # Add local containers to storage, if client has it
+    if hasattr(cli,'storage'):
+        add = subparsers.add_parser("add",
+                                    help="add a container to local storage")
+
+        add.add_argument("image", nargs=1,
+                         help="full path to image file", 
+                         type=str)
+
 
     # List or search containers and collections
     if hasattr(cli,'search'):
@@ -122,6 +132,10 @@ def get_parser():
         pull.add_argument("--name", dest='name', 
                            help='custom name for image', 
                            type=str, default=None)
+
+        pull.add_argument('--no-cache', dest="nocache", 
+                           help="if storage active, don't add the image to it", 
+                           default=False, action='store_true')
 
 
     # List or search labels
@@ -189,8 +203,11 @@ def main():
         os.environ['MESSAGELEVEL'] = "INFO"
 
     if args.version is True:
-        print(singularity.__version__)
+        print(sregistry.__version__)
         sys.exit(0)
+
+    if args.command == "add":
+        from .add import main
 
     if args.command == "labels":
         from .labels import main
@@ -211,13 +228,17 @@ def main():
         from .delete import main
 
     # Pass on to the correct parser
+    return_code = 0
     try:
         main(args=args,
              parser=parser,
              subparser=subparsers[args.command])
+        sys.exit(return_code)
     except UnboundLocalError:
-        parser.print_help()
+        return_code = 1
 
+    parser.print_help()    
+    sys.exit(return_code)
 
 if __name__ == '__main__':
     main()

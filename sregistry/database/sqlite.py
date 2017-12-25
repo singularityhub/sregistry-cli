@@ -36,7 +36,30 @@ import json
 import sys
 
 
-# SQLITE3 FILE #################################################################
+# COLLECTIONS ##################################################################
+
+def get_or_create_collection(self, name):
+    '''get a collection if it exists. If it doesn't exist, create it first.
+
+    Parameters
+    ==========
+    name: the collection name, usually parsed from get_image_names()['name']
+
+    '''
+    from sregistry.database.models import Collection
+
+    collection = Collection.query.filter(Collection.name == name).first()
+
+    # If it doesn't exist, create it
+    if collection is None:
+        collection = Collection(name=name)
+        self.session.add(collection)
+        self.session.commit()
+
+    return collection
+
+
+# ACTIONS ######################################################################
 
 def ls(self, query):
     '''List local images
@@ -56,7 +79,7 @@ def rm(self, image_name):
     print("write me")
 
 
-def add(self, image_path=None, names=None, url=None, metadata=None, save=True):
+def add(self, image_path=None, image_name=None, names=None, url=None, metadata=None, save=True):
     '''get or create a container, including the collection to add it to.
     This function can be used from a file on the local system, or via a URL
     that has been downloaded. Either way, if one of url, version, or image_file
@@ -88,13 +111,14 @@ def add(self, image_path=None, names=None, url=None, metadata=None, save=True):
         Collection
     )
 
-    if names is None:
-        names = parse_image_name( remove_uri(image_name) )
-
+    if image_name is None:
+        bot.error('You must provide an image uri <collection>/<namespace>')
+        sys.exit(1)
+    names = parse_image_name( remove_uri(image_name) )
     bot.info('Adding %s to registry' % names['uri'])    
 
     # If Singularity is installed, inspect image for metadata
-    if check_install() is True and metadata is None:
+    if check_install() is True and metadata is None and image_path is not None:
         from singularity.cli import Singularity
         cli = Singularity()
         metadata = cli.inspect(image_path, quiet=True)
@@ -103,15 +127,10 @@ def add(self, image_path=None, names=None, url=None, metadata=None, save=True):
     if metadata is None:
         metadata = names
 
-    # Retrieve collection based on name
-    c = Collection.query.filter(Collection.name == names['collection']).first()
-
-    # If it doesn't exist, create it
-    if c is None:
-        c = Collection(name=names['collection'])
+    collection = self.get_or_create_collection(names['collection'])
 
     # If save, move to registry storage first
-    if save is True:
+    if save is True and image_path is not None:
         storage_folder = os.path.dirname(names['storage'])
         storage_folder = "%s/%s" %(self.storage, storage_folder)
         mkdir_p(storage_folder)
@@ -121,7 +140,7 @@ def add(self, image_path=None, names=None, url=None, metadata=None, save=True):
 
     # Get a hash of the file for the version, or use provided
     version = names.get('version')
-    if version is None:
+    if version is None and image_path is not None:
         version = get_image_hash(image_path)
 
     container = Container(metrics=metadata,
@@ -131,13 +150,12 @@ def add(self, image_path=None, names=None, url=None, metadata=None, save=True):
                           tag=names['tag'],
                           version=version,
                           url=url,
-                          collection_id=c.id)
+                          collection_id=collection.id)
 
 
     self.session.add(container)
-    c.containers.append(container)
+    collection.containers.append(container)
     self.session.commit()
 
-    bot.info("Collection: %s" %c)
-    bot.info("Container: %s" %container)
+    bot.info("[container] %s" % names['uri'])
     return container

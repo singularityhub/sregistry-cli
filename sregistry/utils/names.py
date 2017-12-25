@@ -64,7 +64,9 @@ def get_image_hash(image_path):
     return hasher.hexdigest()
 
 
-def parse_image_name(image_name, tag=None, defaults=True, ext="img"):
+def parse_image_name(image_name, tag=None, version=None, 
+                                 defaults=True, ext="simg"):
+
     '''return a collection and repo name and tag
     for an image file.
     
@@ -78,7 +80,7 @@ def parse_image_name(image_name, tag=None, defaults=True, ext="img"):
               for collection. 
     '''
     result = dict()
-    image_name = image_name.replace('.img', '').lower()
+    image_name = re.sub('[.](img|simg)','',image_name).lower()
     image_name = re.split('/', image_name, 1)
 
     # User only provided an image
@@ -93,6 +95,12 @@ def parse_image_name(image_name, tag=None, defaults=True, ext="img"):
         collection = image_name[0]
         image_name = image_name[1]
     
+    # Is there a version?
+    image_name = image_name.split('@')
+    if len(image_name) > 1: 
+        version = image_name[1]
+    image_name = image_name[0]
+
     # Is there a tag?
     image_name = image_name.split(':')
 
@@ -104,17 +112,19 @@ def parse_image_name(image_name, tag=None, defaults=True, ext="img"):
     # If still no tag, use default or blank
     if tag is None and defaults is True:
         tag = "latest"
-    
-    if tag is not None:
-        uri = "%s/%s:%s" % (collection, image_name, tag)
-        storage = "%s/%s-%s.%s" % (collection, image_name, tag, ext)
-    else:
-        uri = "%s/%s" % (collection, image_name)
-        storage = "%s/%s.%s" % (collection, image_name, ext)
 
+    # Piece together the filename
+    uri = "%s/%s" % (collection, image_name)    
+    if tag is not None:
+        uri = "%s:%s" % (uri, tag)
+    if version is not None:
+        uri = "%s@%s" % (uri, version)
+
+    storage = "%s.%s" %(uri, ext)
     result = {"collection": collection,
               "image": image_name,
               "tag": tag,
+              "version":version,
               "storage": storage,
               "uri": uri}
 

@@ -41,12 +41,12 @@ Otherwise, we get a client for Singularity Hub.
 
 ```
 from sregistry.main import Client
-# Database: /home/vanessa/.singularity/sregistry.db
+# [client|hub] [database|/home/vanessa/.singularity/sregistry.db]
 ```
 
-In the above, also note that it has initialized our default database.
-Now, any operations that we do via the sregistry tool will update our 
-database. 
+It tells us above the active client is Singularity Hub (hub) and the database path
+is in our singularity cache. Now, any operations that we do via the 
+sregistry tool will update our database. 
 
 ## Commands
 The following commands are provided with the client for all endpoints, as they pertain to
@@ -54,9 +54,95 @@ interaction with the local database.
 
 
 ### Add
+Add is primarily acted with from within client "pull" functions, because logically
+when a user pulls an image from some endpoint, it would be added to the database. Here we will
+show you how to use add, for example, for two use cases:
+
+ 1. A local image that you want to add to the sregistry
+ 2. A url or reference to an image (that doesn't correspond to a local file).
+
+The most common use case for the client "add" function is to assume being given 
+an image path and image uri (like `vsoch/hello-world`) with a complete tag/version, and to
+save the image file to storage. This operation will look something like this:
+
+```
+from sregistry.main import Client as cli
+
+image_path='expfactory-expfactory-master-test.simg'
+image_name='expfactory/expfactory-test:master'
+
+container = cli.add(image_path=image_path, image_name=image_name)
+Adding expfactory/expfactory-test:master to registry
+[container] expfactory/expfactory-test:master
+```
+
+The resulting container that is created (and returned) has all attributes that
+match to the database fields, for example:
+
+```
+container.image
+# '/home/vanessa/.singularity/shub/expfactory/expfactory-test:master.simg'
+container.id
+# 2
+container.tag
+# 'master'
+container.name
+# 'expfactory-test'
+```
+
+If you are implementing this in a "pull" function for a specific client, you would
+probably want to return the final `container.image` (the path for usage). You
+might, before the call to add, also have other calls to make, and metadata to add:
+
+```
+url = 'myservice.com/containers/1'
+
+# Use cli.download to download file from a url
+image_path = self.download(...)
+
+# Retrieve metadata and some custom image name from a manifest, or a user
+metadata = ...
+image_name = ...
+
+# Then create the container, providing all of the above
+container = cli.add(image_path=image_path, 
+                    image_name=image_name,
+                    metadata=metadata,
+                    url=url)
+```
+
+If you don't have or want to download the file at all (if you are implementing a client
+that simply keeps a record of an external or remote resource) then skip the steps to 
+download the image.
+
+```
+container = cli.add(image_name=image_name, url=url)
+# (you can still provide metadata if you like)
+```
+
+And if you take this approach, it would be recommended to implement the "get" function
+for your client, so when the user calls "get" it does an actual retrieval action of
+the particular image to return a path on the machine (Note that images in storage would
+just return the path to the image).
+
+For any of the above, regardless of providing an image path or not, you can set the 
+variable save to False and a record will be added to the database **without** moving
+the image into storage.
+
+```
+container = cli.add(image_name=image_name, url=url, save=False)
+```
+
+If you need examples for using add, see the `add.py` scripts in the `sregistry/main/hub` and `sregistry/main/registry` folders.
+
 By default, images that you pull (or otherwise interact with) are brought to your local storage, the Singularity cache. This behavior can change if you've defined your cache to be elsewhere, or specified a different database location.
 
 
+### Get
+STOPPED HERE - need to write these functions. GET should return the image from storage, and if not in storage, a uri to download.
+
+### List
+LIST needs to (somehow) be untangled from listing a remote endpoint.
 
 THINK ABOUT:
  - images should be saved by default (to cache or where pulled?)

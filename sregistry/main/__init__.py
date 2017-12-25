@@ -65,14 +65,25 @@ def get_client():
 
         # These are global functions used across modules
         from sregistry.database import (
-            init_db, add, rm, ls             
+            init_db, add, rm, rmi, ls, get_or_create_collection 
         )
-        bot.info('Database: %s' %SREGISTRY_DATABASE)
+        bot.info('[client|%s] [database|%s]' %(SREGISTRY_CLIENT,
+                                               SREGISTRY_DATABASE))
+
+        # Actions
         Client._init_db = init_db
         Client.add = add
         Client.rm = rm
+        Client.rmi = rmi
         Client.ls = ls
 
-    return Client
+        # Collections
+        Client.get_or_create_collection = get_or_create_collection
+
+    return Client()
 
 Client = get_client()
+
+# Initialize the database
+if hasattr(Client, '_init_db'):
+    Client._init_db(SREGISTRY_DATABASE)
