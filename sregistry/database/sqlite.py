@@ -104,7 +104,7 @@ def get(self, name):
     return container
 
 
-def ls(self, query):
+def images(self, query):
     '''List local images
     '''
     print("write me")

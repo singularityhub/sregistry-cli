@@ -1,6 +1,6 @@
 from .models import *
 from .sqlite import ( 
-    add, get, rm, rmi, ls, 
+    add, get, rm, rmi, images, 
     inspect,
     get_container,
     get_collection,

@@ -49,7 +49,7 @@ def search(self, query=None, args=None):
         return self._search_collection(query)
 
     # Search collections across all fields
-    return self._search_all()
+    return self.ls()
 
 
 
@@ -57,7 +57,7 @@ def search(self, query=None, args=None):
 # Search Helpers
 ##################################################################
 
-def search_all(self):
+def search_all(self, **kwargs):
     '''a "show all" search that doesn't require a query'''
 
     bot.spinner.start()
@@ -80,6 +80,7 @@ def search_all(self):
 
     bot.table(rows)
     return rows
+
 
 def search_collection(self, query):
     '''collection search will list all containers for a specific

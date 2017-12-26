@@ -21,6 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from sregistry.client.singularity import Singularity
 import sregistry
 import argparse
 import sys
@@ -49,9 +50,19 @@ def get_parser():
                                        title='actions',
                                        description=description,
                                        dest="command")
-
+ 
+    # Local shell with client loaded
     shell = subparsers.add_parser("shell",
                                   help="shell into a session a client.")
+
+    # List local containers and collections
+    images = subparsers.add_parser("images",
+                                   help="list local images, optionally with query")
+
+    images.add_argument("query", nargs='*', 
+                        help="container search query", 
+                        type=str, default="*")
+
 
     # List local containers and collections
     inspect = subparsers.add_parser("inspect",
@@ -209,10 +220,26 @@ def get_subparsers(parser):
 
 
 def main():
+    '''main is the entrypoint to the sregistry client. The flow works to first
+    to determine the subparser in use based on the command. The command then
+    imports the correct main (files imported in this folder) associated with
+    the action of choice. When the client is imported, it is actually importing
+    a return of the function get_client() under sregistry/main, which plays
+    the job of "sniffing" the environment to determine what flavor of client
+    the user wants to activate. Installed within a singularity image, this
+    start up style maps well to Standard Container Integration Format (SCIF)
+    apps, where each client is a different entrypoint activated based on the
+    environment variables.
+    '''
 
     from sregistry.main import Client as cli
     parser = get_parser()
     subparsers = get_subparsers(parser)
+
+    # If the user didn't provide any arguments, show the full help
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
 
     try:
         args = parser.parse_args()
@@ -223,6 +250,7 @@ def main():
     if args.debug is False:
         os.environ['MESSAGELEVEL'] = "INFO"
 
+    # The client will announce itself (backend/database) unless it's get
     if args.command not in ["get"]:
         cli.speak()
     
@@ -235,6 +263,7 @@ def main():
     if args.command == "get": from .get import main
     if args.command == "delete": from .delete import main
     if args.command == "inspect": from .inspect import main
+    if args.command == "images": from .images import main
     if args.command == "labels": from .labels import main
     if args.command == "list": from .list import main
     if args.command == "push": from .push import main
@@ -252,6 +281,7 @@ def main():
     except UnboundLocalError:
         return_code = 1
 
+    # If we get down here are the user didn't 
     parser.print_help()    
     sys.exit(return_code)
 

@@ -27,7 +27,7 @@ import os
 
 from .pull import pull
 from .query import (
-    search, 
+    search,
     search_all, 
     search_collection
 )
@@ -58,5 +58,5 @@ class Client(ApiConnection):
 
 Client.pull = pull
 Client.search = search
-Client._search_all = search_all
+Client.ls = search_all
 Client._search_collection = search_collection

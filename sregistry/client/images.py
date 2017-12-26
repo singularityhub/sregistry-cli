@@ -26,14 +26,21 @@ import os
 
 
 def main(args,parser,subparser):
-    '''the list command corresponds with listing images for an external
-       resource. This is different from listing images that are local to the
-       database, which should be done with "images"
+    '''the images entrypoint is intended to list images locally in the user
+       database, optionally taking one or more query string to subset the 
+       search
     '''
+    from sregistry.main import Client as cli  
+    images = args.query
+    if not isinstance(images, list):
+        images = [images]
+
+    for image in images:
+        cli.inspect(image)
+
     from sregistry.main import Client as cli
-    
     for query in args.query:
         if query in ['','*']:
             query = None
+        cli.images(query=query)
 
-        cli.ls(query=query)

@@ -25,15 +25,12 @@ import pwd
 import os
 
 
-def main(args,parser,subparser):
-    '''the list command corresponds with listing images for an external
-       resource. This is different from listing images that are local to the
-       database, which should be done with "images"
-    '''
-    from sregistry.main import Client as cli
-    
-    for query in args.query:
-        if query in ['','*']:
-            query = None
+def main(args, parser, subparser):
 
-        cli.ls(query=query)
+    from sregistry.main import Client as cli  
+    images = args.query
+    if not isinstance(images, list):
+        images = [images]
+
+    for image in images:
+        cli.get(image)

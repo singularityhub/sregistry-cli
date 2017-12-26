@@ -4,6 +4,7 @@ In the pages here we will first review some important concepts about the Singula
 Registry Global (SRG) client, and then walk through a brief tutorial for using
 the client, both on the command line and from within Python.
 
+ - [Commands](#commands): a general review of the sets of commands found for particular client endpoints.
  - [Database](#database): The SRG client maintains a record of the images you are managing via a local database.gub
  - [Client](#client): The client itself is a shell that intuitively responds to environment configuration hints to connect you to different storage endpoints.
  - [Endpoints](#endpoints): The endpoints are generally cloud hosted services and storage for images. We push and pull from our local registry to and from endpoints. This means that you can 
@@ -30,6 +31,36 @@ You can best think of the `sregistry` client as an extension to Singularity, one
  - the `sregistry` client itself is also internally modular, because each endpoint integration is a submodule. This is great because it means that the user can customize the installation based on needs and preferences. If you don't need a connection to Dropbox or Globus, you don't install them. If a third party wants to add a new integration, the dependencies and code can plug in nicely.
 
 It's entirely up to you how you want to (or don't want to) use `sregistry` clients. If you have a preference for a particular kind of storage, this will be very useful to you. If you want to integrate Singularity into your own software, this will also be useful. 
+
+## Commands
+When you start a client, whether it be in an interactive python environment or running
+natively on your host **or** via a Singularity container, a client for an endpoint of choice is started up, and this client will give you access, minimally, to a core set of commands:
+
+let you do any or a subset of the following:
+
+### Local
+The following commands are considered "local" in that they come with every client, and are specifically created to interact with your local registry (the database and storage).
+
+ - *add*: `[local]`: corresponds with adding an image file on your host directly to your registry. Not everything is downloaded from the cloud!
+ - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
+ - *images*: `[local]`: list images in your local database, optionally with filters to search.
+ - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
+ - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
+ - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
+ - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
+
+### Client (remote)
+This next set of commands, while they interact with local resources, are primarily implemented by the specific clients. For example, a pull from Singularity Hub is going to have particular commands using the Singularity Hub API.
+
+ - *pull*: `[remote->local]` is a common use case. It says "there is this image somewhere remote and I want to pull it from there to my local host."
+ - *push*: `[local->remote]` takes an image in your local resource and puts it in some remote one. 
+ - *list*: `[remote]` list images for a remote endpoint.
+ - *delete*: `[remote]`: delete an image from a remote endpoint. You likely will need some kind of credential.
+ - *search*: `[remote]`: the entrypoint for a search to a remote endpoint.
+
+Each of these commands will be detailed with examples in the various client walkthroughs, and if you 
+are implementing an endpoint, there are also details about how you should "fill in the space" to
+implement your custom client.
 
 
 ## Database
