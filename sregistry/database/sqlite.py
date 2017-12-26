@@ -109,14 +109,20 @@ def ls(self, query):
     '''
     print("write me")
 
+
 def inspect(self, name):
     '''Inspect a local image in the database, which typically includes the
        basic fields in the model.
     '''
     container = self.get(name)
     if container is not None:
-        print(container)
-        print(json.dumps(dict(container.__dict__), indent=4, sort_keys=True))
+        collection = container.collection.name
+        fields = container.__dict__.copy()
+        fields['collection'] = collection        
+        fields['metrics'] = json.loads(fields['metrics'])
+        del fields['_sa_instance_state']
+        fields['created_at'] = str(fields['created_at'])
+        print(json.dumps(fields, indent=4, sort_keys=True))
 
 
 def rmi(self, image_name):

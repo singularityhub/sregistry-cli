@@ -70,8 +70,6 @@ def get_client():
             get_collection, 
             get_or_create_collection 
         )
-        bot.info('[client|%s] [database|%s]' %(SREGISTRY_CLIENT,
-                                               SREGISTRY_DATABASE))
 
         # Actions
         Client._init_db = init_db

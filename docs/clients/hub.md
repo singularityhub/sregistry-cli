@@ -20,7 +20,55 @@ to all information about the version we could find. @vsoch might change this sto
 image path correspond to include the collection too - it's not decided if a folder for each collection is the best
 way to go. [What do you think](https://www.github.com/singularityhub/sregistry-cli/issues)?
 
-#
+## Inspect
+After you pull the image, you can easily inspect it. This includes metadata extracted from
+the Singularity Hub API, along with from the image (if Singularity was installed on the host
+that downloaded it).
+
+```
+sregistry inspect vsoch/hello-world
+[client|hub] [database|/home/vanessa/.singularity/sregistry.db]
+/home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg
+{
+    "client": "hub",
+    "collection": "vsoch",
+    "collection_id": 2,
+    "created_at": "2017-12-26 16:31:15",
+    "id": 2,
+    "image": "/home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg",
+    "metrics": {
+        "data": {
+            "attributes": {
+                "deffile": "Bootstrap: docker\nFrom: ubuntu:14.04\n\n%runscript\n\nexec echo \"Tacotacotaco\"\n",
+                "environment": "# Custom environment shell code should follow\n\n",
+                "help": null,
+                "labels": {
+                    "org.label-schema.build-date": "2017-10-18T13:54:37+00:00",
+                    "org.label-schema.build-size": "341MB",
+                    "org.label-schema.schema-version": "1.0",
+                    "org.label-schema.usage.singularity.deffile": "Singularity",
+                    "org.label-schema.usage.singularity.deffile.bootstrap": "docker",
+                    "org.label-schema.usage.singularity.deffile.from": "ubuntu:14.04",
+                    "org.label-schema.usage.singularity.version": "2.4-feature-squashbuild-secbuild.g217367c"
+                },
+                "runscript": "#!/bin/sh \n\n\nexec echo \"Tacotacotaco\"\n",
+                "test": null
+            },
+            "type": "container"
+        }
+    },
+    "name": "hello-world",
+    "tag": "latest",
+    "uri": null,
+    "url": null,
+    "version": "22aa66e0c80847c676f34f35e70ea066"
+}
+```
+
+Notice that the client is relevant to Singularity Hub. You could imagine at some point using
+different clients to retrieve images with possibly the same (without version) names, in which case
+this keeps them separate. It's less important for this use case, and more important so that in the future when you want to do some operation with this image, we know the backend to use to perform it.
+
 
 Don't forget that the Singularity Hub client also supports the [global client commands](../getting-started/commands.md)
 

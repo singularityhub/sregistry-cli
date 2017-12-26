@@ -61,6 +61,15 @@ def get_parser():
                           help="container search query to inspect", 
                           type=str, default="*")
 
+    # Get path to an image
+    get = subparsers.add_parser("get",
+                                    help="get a container path from your storage")
+
+    get.add_argument("query", nargs='*', 
+                     help="container search query to inspect", 
+                     type=str, default="*")
+
+
     # List local containers and collections
     ls = subparsers.add_parser("list",
                                help="list local containers")
@@ -201,6 +210,7 @@ def get_subparsers(parser):
 
 def main():
 
+    from sregistry.main import Client as cli
     parser = get_parser()
     subparsers = get_subparsers(parser)
 
@@ -213,20 +223,24 @@ def main():
     if args.debug is False:
         os.environ['MESSAGELEVEL'] = "INFO"
 
+    if args.command not in ["get"]:
+        cli.speak()
+    
     if args.version is True:
         print(sregistry.__version__)
         sys.exit(0)
 
     # Does the user want a shell?
-    if args.command == "shell": from .shell import main
     if args.command == "add": from .add import main
+    if args.command == "get": from .get import main
+    if args.command == "delete": from .delete import main
+    if args.command == "inspect": from .inspect import main
     if args.command == "labels": from .labels import main
-    if args.command == "search": from .search import main
     if args.command == "list": from .list import main
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
-    if args.command == "delete": from .delete import main
-    if args.command == "inspect": from .inspect import main
+    if args.command == "search": from .search import main
+    if args.command == "shell": from .shell import main
 
     # Pass on to the correct parser
     return_code = 0

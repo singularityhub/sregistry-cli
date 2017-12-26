@@ -51,6 +51,14 @@ class ApiConnection(object):
         # to do corresponding action in database.
         # we need a sort of call back for push, pull, delete, etc.
 
+    def speak(self):
+        '''a function for the client to announce him or herself, depending
+           on the level specified.
+        '''
+        bot.info('[client|%s] [database|%s]' %(self.client_name,
+                                               self.database))
+
+
     def __repr__(self):
         return "[client][%s]" %self.__module__
 
