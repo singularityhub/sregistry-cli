@@ -41,7 +41,7 @@ class ApiConnection(object):
  
         self.headers = None
         self.base = None
-        self.reset_headers()
+        self._reset_headers()
 
         # If client initialized with _init_db, do it
         if hasattr(self,"_init_db"):
@@ -116,20 +116,22 @@ class ApiConnection(object):
 
 # Headers
 
-    def get_headers(self):
+    def _get_headers(self):
         return self.headers
 
-    def reset_headers(self):
+    def _reset_headers(self):
         self.headers = {'Content-Type':"application/json"}
 
-    def update_headers(self,fields=None):
+    def _update_headers(self,fields=None):
         '''update headers with a token & other fields
         '''
+        reset_headers = True
         if hasattr(self, 'headers'):
-            if self.headers is None:
-                self.reset_headers()
-        else:
-            self.reset_headers()
+            if self.headers is not None:
+                reset_headers = False
+
+        if reset_headers is True:
+            self._reset_headers()
 
         if fields is not None:
             for key,value in fields.items():
@@ -146,46 +148,46 @@ class ApiConnection(object):
         '''delete request, use with caution
         '''
         bot.debug('DELETE %s' %url)
-        return self.call(url,
-                         func=requests.delete,
-                         return_json=return_json)
+        return self._call(url,
+                          func=requests.delete,
+                          return_json=return_json)
 
 
     def put(self,url,data=None,return_json=True):
         '''put request
         '''
         bot.debug("PUT %s" %url)
-        return self.call(url,
-                         func=requests.put,
-                         data=data,
-                         return_json=return_json)
+        return self._call(url,
+                          func=requests.put,
+                          data=data,
+                          return_json=return_json)
 
 
 
-    def post(self,url,data=None,return_json=True):
+    def _post(self,url,data=None,return_json=True):
         '''post will use requests to get a particular url
         '''
         bot.debug("POST %s" %url)
-        return self.call(url,
-                         func=requests.post,
-                         data=data,
-                         return_json=return_json)
+        return self._call(url,
+                          func=requests.post,
+                          data=data,
+                          return_json=return_json)
 
 
 
 
-    def get(self,url,headers=None,token=None,data=None,return_json=True):
+    def _get(self,url,headers=None,token=None,data=None,return_json=True):
         '''get will use requests to get a particular url
         '''
         bot.debug("GET %s" %url)
-        return self.call(url,
-                        func=requests.get,
-                        data=data,
-                        return_json=return_json)
+        return self._call(url,
+                          func=requests.get,
+                          data=data,
+                          return_json=return_json)
 
 
 
-    def paginate_get(self, url, headers=None, return_json=True, start_page=None):
+    def _paginate_get(self, url, headers=None, return_json=True, start_page=None):
         '''paginate_call is a wrapper for get to paginate results
         '''
         get = '%s&page=1' %(url)
@@ -194,7 +196,7 @@ class ApiConnection(object):
 
         results = []
         while get is not None:
-            result = self.get(url, headers=headers, return_json=return_json)
+            result = self._get(url, headers=headers, return_json=return_json)
             # If we have pagination:
             if isinstance(result, dict):
                 if 'results' in result:
@@ -218,7 +220,7 @@ class ApiConnection(object):
 
         # Check here if exists
         if requests.head(url).status_code == 200:
-            response = self.stream(url,headers=headers,stream_to=tmp_file)
+            response = self._stream(url,headers=headers,stream_to=tmp_file)
 
             if isinstance(response, HTTPError):
                 bot.error("Error downloading %s, exiting." %url)
@@ -229,14 +231,14 @@ class ApiConnection(object):
         return file_name
 
 
-    def stream(self, url, headers=None, stream_to=None):
+    def _stream(self, url, headers=None, stream_to=None):
         '''stream is a get that will stream to file_name
         '''
 
         bot.debug("GET %s" %url)
 
         if headers == None:
-            headers = self.reset_headers()
+            headers = self._reset_headers()
 
         response = requests.get(url,         
                                 headers=headers,
@@ -273,7 +275,7 @@ class ApiConnection(object):
 
 
 
-    def call(self,url,func,data=None,return_json=True, stream=False):
+    def _call(self,url,func,data=None,return_json=True, stream=False):
         '''call will issue the call, and issue a refresh token
         given a 401 response.
         :param func: the function (eg, post, get) to call

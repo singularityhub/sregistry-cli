@@ -62,7 +62,7 @@ def search_all(self):
 
     bot.spinner.start()
     url = '%s/collections/' %self.base
-    results = self.paginate_get(url)
+    results = self._paginate_get(url)
     bot.spinner.stop()   
 
     if len(results) == 0:
@@ -94,7 +94,7 @@ def search_collection(self, query):
     rows = []
 
     try:
-        result = self.get(url)
+        result = self._get(url)
     except SystemExit:
         bot.info("No containers found.")
         sys.exit(1)

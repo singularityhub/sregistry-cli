@@ -40,11 +40,11 @@ class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
  
         self.base = base
-        self.update_base() 
-        self.update_headers()
+        self._update_base() 
+        self._update_headers()
         super(ApiConnection, self).__init__(**kwargs)
 
-    def update_base(self, new_base=None):
+    def _update_base(self, new_base=None):
 
         if new_base is None:
             new_base = base

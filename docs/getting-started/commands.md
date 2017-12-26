@@ -5,7 +5,6 @@ pertain to interaction with the local sregistry database.
 
 
 ## Add
-
 For all clients, we can add an image or delete an image with .
 
 # add or remove.

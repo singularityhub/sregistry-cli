@@ -65,7 +65,10 @@ def get_client():
 
         # These are global functions used across modules
         from sregistry.database import (
-            init_db, add, rm, rmi, ls, get_or_create_collection 
+            init_db, add, get, rm, rmi, ls, inspect,
+            get_container,
+            get_collection, 
+            get_or_create_collection 
         )
         bot.info('[client|%s] [database|%s]' %(SREGISTRY_CLIENT,
                                                SREGISTRY_DATABASE))
@@ -73,12 +76,16 @@ def get_client():
         # Actions
         Client._init_db = init_db
         Client.add = add
+        Client.get = get
+        Client.inspect = inspect
         Client.rm = rm
         Client.rmi = rmi
         Client.ls = ls
 
         # Collections
         Client.get_or_create_collection = get_or_create_collection
+        Client.get_container = get_container
+        Client.get_collection = get_collection
 
     return Client()
 

@@ -19,13 +19,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.utils import ( mkdir_p, get_image_hash )
 from sregistry.logger import bot
 from sregistry.utils import ( 
-    write_json, 
     check_install, 
+    get_image_hash,
+    mkdir_p,
     parse_image_name, 
-    remove_uri 
+    remove_uri,
+    write_json
 )
 from sregistry.defaults import (
     SREGISTRY_DATABASE
@@ -47,8 +48,7 @@ def get_or_create_collection(self, name):
 
     '''
     from sregistry.database.models import Collection
-
-    collection = Collection.query.filter(Collection.name == name).first()
+    collection = self.get_collection(name)
 
     # If it doesn't exist, create it
     if collection is None:
@@ -59,12 +59,65 @@ def get_or_create_collection(self, name):
     return collection
 
 
+def get_collection(self, name):
+    '''get a collection, if it exists, otherwise return None.
+    '''
+    from sregistry.database.models import Collection
+    return Collection.query.filter(Collection.name == name).first()
+
+
+def get_container(self, name, collection_id, tag="latest", version=None):
+    '''get a container, otherwise return None.
+    '''
+    from sregistry.database.models import Container
+    return Container.query.filter(Container.collection_id == collection_id,
+                                  Container.name == name,
+                                  Container.tag == tag).first()
+
+
 # ACTIONS ######################################################################
+
+def get(self, name):
+    '''Do a get for a container, and then a collection, and then return None
+       if no result is found.
+    Parameters
+    ==========
+    name: should coincide with either the collection name, or the container
+          name with the collection. A query is done first for the collection,
+          and then the container, and the path to the image file returned.
+    '''
+    from sregistry.database.models import Collection, Container
+    names = parse_image_name( remove_uri (name) )
+ 
+    # First look for a collection (required)
+    collection = self.get_collection(name=names['collection'])
+    container = None
+
+    if collection is None:
+        bot.error('Collection %s does not exist.' %names['collection'])
+    else:
+        container = self.get_container(collection_id=collection.id,
+                                       name=names['image'], 
+                                       tag=names['tag'])
+        if container is not None:
+            print(container.image)
+    return container
+
 
 def ls(self, query):
     '''List local images
     '''
     print("write me")
+
+def inspect(self, name):
+    '''Inspect a local image in the database, which typically includes the
+       basic fields in the model.
+    '''
+    container = self.get(name)
+    if container is not None:
+        print(container)
+        print(json.dumps(dict(container.__dict__), indent=4, sort_keys=True))
+
 
 def rmi(self, image_name):
     '''Remove an image from the database and filesystem.
@@ -111,11 +164,15 @@ def add(self, image_path=None, image_name=None, names=None, url=None, metadata=N
         Collection
     )
 
+    if not os.path.exists(image_path):
+        bot.error('Cannot find %s' %image_path)
+        sys.exit(1)
+
     if image_name is None:
         bot.error('You must provide an image uri <collection>/<namespace>')
         sys.exit(1)
     names = parse_image_name( remove_uri(image_name) )
-    bot.info('Adding %s to registry' % names['uri'])    
+    bot.debug('Adding %s to registry' % names['uri'])    
 
     # If Singularity is installed, inspect image for metadata
     if check_install() is True and metadata is None and image_path is not None:
@@ -143,7 +200,7 @@ def add(self, image_path=None, image_name=None, names=None, url=None, metadata=N
     if version is None and image_path is not None:
         version = get_image_hash(image_path)
 
-    container = Container(metrics=metadata,
+    container = Container(metrics=json.dumps(metadata),
                           name=names['image'],
                           image=image_path,
                           client=self.client_name,

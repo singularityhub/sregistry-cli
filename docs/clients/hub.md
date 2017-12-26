@@ -1,3 +1,27 @@
+# Singularity Hub Client
+
+## Pull
+The most likely thing that you would want to do with the client is pull an image. And
+if you have just installed sregistry and done nothing else, this is the default client
+that is used. The only difference between this pull and the Singularity pull is that
+this pull will be saved to your local database. This means you can easily find and
+manage images later. Here is how to pull:
+
+```
+sregistry pull vsoch/hello-world
+[client|hub] [database|/home/vanessa/.singularity/sregistry.db]
+Progress |===================================| 100.0% 
+[container] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+Success! /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+Notice how the image is saved (and named) under it's collection folder, and with the full path corresponding
+to all information about the version we could find. @vsoch might change this storage strategy to have the full
+image path correspond to include the collection too - it's not decided if a folder for each collection is the best
+way to go. [What do you think](https://www.github.com/singularityhub/sregistry-cli/issues)?
+
+#
+
 Don't forget that the Singularity Hub client also supports the [global client commands](../getting-started/commands.md)
 
 #########################################

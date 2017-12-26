@@ -83,7 +83,7 @@ def search(self):
 
     url = '%s/collections/' %self.base
 
-    results = self.paginate_get(url)
+    results = self._paginate_get(url)
    
     if len(results) == 0:
         bot.info("No container collections found.")
@@ -108,7 +108,7 @@ def collection_search(self, query):
     query = query.lower().strip('/')
     url = '%s/collection/%s' %(self.base, query)
 
-    result = self.get(url)
+    result = self._get(url)
     if len(result) == 0:
         bot.info("No collections found.")
         sys.exit(1)
@@ -146,7 +146,7 @@ def label_search(self, key=None, value=None):
     else:
         url = '%s/labels/search/%s/key' % (self.base, key)
 
-    result = self.get(url)
+    result = self._get(url)
     if len(result) == 0:
         bot.info("No labels found.")
         sys.exit(0)
@@ -190,7 +190,7 @@ def container_search(self, query, across_collections=False, environment=False,
         else:
             url = '%s/container/search/collection/%s/name/%s' % (self.base, q['collection'], q['image'])
 
-    result = self.get(url)
+    result = self._get(url)
     if "containers" in result:
         result = result['containers']
 

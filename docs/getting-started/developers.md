@@ -90,6 +90,20 @@ container.name
 # 'expfactory-test'
 ```
 
+And we can look at the simple organization on the file system:
+
+```
+$ tree $HOME/.singularity/shub/
+/home/vanessa/.singularity/shub/
+├── expfactory
+│   └── expfactory-test:master.simg
+└── vsoch
+    ├── hello-world-latest@ed9755a0871f04db3e14971bec56a33f.simg
+    └── hello-world-latest.simg
+```
+
+And note the database is one level up from there at `$HOME/.singularity/sregistry.db`
+
 If you are implementing this in a "pull" function for a specific client, you would
 probably want to return the final `container.image` (the path for usage). You
 might, before the call to add, also have other calls to make, and metadata to add:
@@ -139,6 +153,13 @@ By default, images that you pull (or otherwise interact with) are brought to you
 
 
 ### Get
+A "get" will work to point you to an image that you have in storage, or an image url that you need to pull. It will use the same logic to parse your requested name as is used to save an image, so you should be as specific as needed. For example, let's do a "get" for the image we added above.
+
+```
+from sregistry.main import Client
+Client.get('vsoch/hello-world')
+```
+
 STOPPED HERE - need to write these functions. GET should return the image from storage, and if not in storage, a uri to download.
 
 ### List

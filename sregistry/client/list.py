@@ -20,7 +20,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.main import Client
 import sys
 import pwd
 import os
@@ -28,10 +27,10 @@ import os
 
 def main(args,parser,subparser):
 
-    sreg = Client()
-
+    from sregistry.main import Client as cli
+    
     for query in args.query:
         if query in ['','*']:
             query = None
 
-        sreg.ls(query=query,args=args)
+        cli.ls(query=query,args=args)

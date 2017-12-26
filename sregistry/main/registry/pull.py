@@ -58,7 +58,7 @@ def pull(self, images, file_name=None, save=True):
         url = "%s/container/%s/%s:%s" %(self.base, q['collection'], q['image'], q['tag'])
         bot.debug('Retrieving manifest at %s' %url)
 
-        manifest = self.get(url)
+        manifest = self._get(url)
 
         if file_name is None:
             file_name = q['storage'].replace('/','-')

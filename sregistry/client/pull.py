@@ -20,7 +20,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.main import Client
 import sys
 import pwd
 import os
@@ -28,8 +27,8 @@ import os
 
 def main(args,parser,subparser):
 
-    cli = Client()
-
+    from sregistry.main import Client as cli
+    
     # Does the user want to save the image?
     do_save = True
     if args.nocache is True or not hasattr(cli,'storage'):

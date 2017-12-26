@@ -20,14 +20,38 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-import sys
-import pwd
+import traceback
 import os
+import select
+import sys
 
 
 def main(args,parser,subparser):
 
     from sregistry.main import Client as cli
-    for image in args.image:
-        response = cli.remove(image=image,
-                              force=args.force)
+    shells = [bpython, python]
+    for shell in shells:
+        try:
+            return shell(cli)
+        except ImportError:
+            pass
+    
+
+def ipython(cli):
+    '''Not sure how to add the client to the working environment, so
+      disabled for now
+    '''
+    from IPython import start_ipython
+    from sregistry.main import Client as cli
+    start_ipython(argv=[], locals_={'cli':cli})
+
+
+def bpython(cli):
+    import bpython
+    from sregistry.main import Client as cli
+    bpython.embed(locals_={'client':cli})
+
+def python(cli):
+    import code
+    from sregistry.main import Client as cli
+    code.interact(local={"client":cli})

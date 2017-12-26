@@ -27,7 +27,10 @@ import os
 
 def main(args,parser,subparser):
 
-    from sregistry.main import Client as cli
-    for image in args.image:
-        response = cli.remove(image=image,
-                              force=args.force)
+    from sregistry.main import Client as cli  
+    images = args.query
+    if not isinstance(images, list):
+        images = [images]
+
+    for image in images:
+        cli.inspect(image)

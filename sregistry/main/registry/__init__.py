@@ -37,18 +37,18 @@ class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
  
         self.base = base
-        self.update_secrets()
-        self.update_headers()
-        self.update_base() 
+        self._update_secrets()
+        self._update_headers()
+        self._update_base() 
         super(ApiConnection, self).__init__(**kwargs)
 
-    def update_base(self):
+    def _update_base(self):
         if self.base is not None:
             if not self.base.endswith('api'):
                 self.base = '%s/api' %self.base.strip('/')
 
 
-    def read_response(self,response, field="detail"):
+    def _read_response(self,response, field="detail"):
         '''attempt to read the detail provided by the response. If none, 
         default to using the reason'''
 
@@ -59,7 +59,7 @@ class Client(ApiConnection):
         return message
 
 
-    def update_secrets(self):
+    def _update_secrets(self):
         '''update secrets will take a secrets credential file
         either located at .sregistry or the environment variable
         SREGISTRY_CLIENT_SECRETS and update the current client 
@@ -69,7 +69,7 @@ class Client(ApiConnection):
         if self.secrets is not None:
             if "base" in self.secrets:
                 self.base = self.secrets['base']
-                self.update_base()
+                self._update_base()
 
     def __str__(self):
         return type(self)
