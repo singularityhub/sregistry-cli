@@ -151,7 +151,7 @@ class ApiConnection(object):
 # Requests
 
 
-    def delete(self,url,return_json=True):
+    def _delete(self,url,return_json=True):
         '''delete request, use with caution
         '''
         bot.debug('DELETE %s' %url)
@@ -160,7 +160,7 @@ class ApiConnection(object):
                           return_json=return_json)
 
 
-    def put(self,url,data=None,return_json=True):
+    def _put(self,url,data=None,return_json=True):
         '''put request
         '''
         bot.debug("PUT %s" %url)

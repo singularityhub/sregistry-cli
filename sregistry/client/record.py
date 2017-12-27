@@ -24,6 +24,7 @@ import sys
 import pwd
 import os
 
+#TODO: need to make sure to maintain uniqueness when adding images/remote
 
 def main(args, parser, subparser):
     '''the record command is intended for working with remote endpoint records,
@@ -40,4 +41,4 @@ def main(args, parser, subparser):
         images = [images]
 
     for image in images:
-        cli.record(image_name=args.name, action=args.action)
+        cli.record(image, action=args.action)

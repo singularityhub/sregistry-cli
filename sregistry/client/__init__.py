@@ -81,15 +81,6 @@ def get_parser():
                      type=str, default="*")
 
 
-    # List local containers and collections
-    ls = subparsers.add_parser("list",
-                               help="list local containers")
-
-    ls.add_argument("query", nargs='*',
-                     help="container list filter", 
-                     type=str, default="*")
-
-
     # Work with database records (not images)
     if hasattr(cli,'record'):
 
@@ -153,6 +144,7 @@ def get_parser():
 
 
     # A more specific search, implemented by sregistry
+    # TODO: this should be moved to be handled by registry search function
     if hasattr(cli,'container_search'):
 
         search.add_argument('--runscript','-r', dest="runscript", 
@@ -306,7 +298,6 @@ def main():
     if args.command == "inspect": from .inspect import main
     if args.command == "images": from .images import main
     if args.command == "labels": from .labels import main
-    if args.command == "list": from .list import main
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
     if args.command == "record": from .record import main

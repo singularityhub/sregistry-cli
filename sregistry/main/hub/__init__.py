@@ -29,7 +29,7 @@ from .pull import pull
 from .record import record
 from .query import (
     search,
-    search_all, 
+    list_all, 
     search_collection
 )
 
@@ -60,5 +60,5 @@ class Client(ApiConnection):
 Client.pull = pull
 Client.record = record
 Client.search = search
-Client.ls = search_all
+Client.list = list_all
 Client._search_collection = search_collection

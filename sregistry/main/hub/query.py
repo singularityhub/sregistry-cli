@@ -57,7 +57,7 @@ def search(self, query=None, args=None):
 # Search Helpers
 ##################################################################
 
-def search_all(self, **kwargs):
+def list_all(self, **kwargs):
     '''a "show all" search that doesn't require a query'''
 
     bot.spinner.start()

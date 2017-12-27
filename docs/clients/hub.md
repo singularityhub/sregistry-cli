@@ -1,5 +1,19 @@
 # Singularity Hub Client
 
+These sections will detail use of the Singularity Hub clients for `sregistry`, which is
+the default backend client to use given that no other environment variables are set. For a detailed list of
+the environment variables and settings that you can configure, see the [getting started](../getting-started) pages. 
+For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients)
+see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are
+specific to the Singularity Hub client:
+
+ - *pull*: `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
+ - *list*: `[remote]` list all image collections in Singularity Hub
+
+Each of these commands will be detailed with examples in the various [client walkthroughs](../clients), and if you are implementing an endpoint, there are also details about how you should "fill in the space" to
+implement your custom client.
+
+
 ## Pull
 The most likely thing that you would want to do with the client is pull an image. And
 if you have just installed sregistry and done nothing else, this is the default client
