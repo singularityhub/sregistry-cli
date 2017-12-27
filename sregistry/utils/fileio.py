@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import errno
 import os
 import re
+import shutil
 import requests
 
 import json
@@ -51,6 +52,15 @@ def mkdir_p(path):
 ############################################################################
 ## FILE OPERATIONS #########################################################
 ############################################################################
+
+def copyfile(source, destination, force=True):
+    '''copy a file from a source to its destination.
+    '''
+    if os.path.exists(destination) and force is True:
+        os.remove(destination)
+    shutil.copyfile(source, destination)
+    return destination
+
 
 def write_file(filename, content, mode="w"):
     '''write_file will open a file, "filename" and write content, "content"

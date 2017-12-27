@@ -26,27 +26,62 @@ sregistry add --name expfactory/example expfactory-expfactory-master-test.simg
 ```
 
 In the above, I've taken the local file `expfactory-expfactory-master-test.simg` and moved
-it into my storage and database.
+it into my storage and database. The file will be removed from the present working directory. You can achieve the equivalent to add an image to your database and storage but make a copy with copy.
 
-**TODO**: write and document how to add (but make a copy of the image instead of moving it)
+```
+sregistry add --copy --name expfactory/example expfactory-expfactory-master-test.simg 
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[container] expfactory/example:latest
+```
+
+
 
 ## Images
 I can then use a simple "images" operation to list the available images. and in the list I can
-see the image newly added. Note that this format is likely to change as its further developed.
+see the image newly added. 
 
 ```
 sregistry images
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:
  
-1  expfactory	expfactory-test	master	03c1ab08e58c6a5101bc790cd9836d25
-2  vsoch	hello-world	latest	22aa66e0c80847c676f34f35e70ea066
-3  vsoch	hello-world	latest	ed9755a0871f04db3e14971bec56a33f
-4  expfactory	example	latest	b102e9f4c1b2228d6e21755b27c32ed2
+1  December 27, 2017	hub	vsoch/hello-world:latest@5808346196ab69c3fcdc2394de358840
+2  December 27, 2017	hub	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+3  December 27, 2017	hub	vsoch/hello-pancakes:latest@22aa66e0c80847c676f34f35e70ea066
+4  December 27, 2017	hub	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
 ```
 
-**TODO**: write and document how to filter listing.
+If you want to filter the listing, just add a search term!
 
+
+```
+sregistry images expfactory
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Containers:
+ 
+1  December 27, 2017	hub	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
+```
+
+## Get
+Great! We've added images, and we know how to list and search. But how do we use them? After you have secured an image in your local database (using the add example above) to interact with it you can use the `get` command, and again you can reference the image based on its uri. Here are some examples.
+
+```
+$ sregistry get vsoch/hello-world:latest@5808346196ab69c3fcdc2394de358840
+/home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg
+
+$ sregistry get vsoch/hello-pancakes:latest@22aa66e0c80847c676f34f35e70ea066
+/home/vanessa/.singularity/shub/vsoch/hello-pancakes:latest.simg
+```
+
+It logically follows that you should be very specific about the image that you are asking for. You can use these get statements with singularity (or other) commands too!
+
+```
+$ singularity run $(sregistry get vsoch/hello-world)
+RaawwWWWWWRRRR!!
+
+$ ls -l $(sregistry get vsoch/hello-world)
+-rw------- 1 vanessa vanessa 65347615 Dec 25 11:08 /home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg
+```
 
 ## Inspect
 You probably would want to inspect your images to get more detail about a particular one! Do that as follows:
@@ -113,8 +148,19 @@ Notice how the client is already loaded into the space!
 
 ## Remove
 The client can either remove an image from the database record (rm) but **not** the container
-in storage (`rm`) or delete the database record **and** theimage (`rmi`).
+in storage (`rm`) or delete the database record **and** theimage (`rmi`). That looks like this:
 
 ```
-WRITE ME
+sregistry rm vsoch/hello-world
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+/home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg
+[rm] vsoch/hello-world:latest
+
+$ sregistry rmi vsoch/hello-world
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+/home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg
+[rmi] vsoch/hello-world:latest
 ```
+
+The first example removes the image from the database (but not the file) and the second removes the
+file from storage and the image.

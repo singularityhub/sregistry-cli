@@ -90,7 +90,7 @@ def get_parser():
                      type=str, default="*")
 
 
-    # Add local containers to storage, if client has it
+    # Add/copy local containers to storage, if client has it
     if hasattr(cli,'storage'):
         add = subparsers.add_parser("add",
                                     help="add a container to local storage")
@@ -101,7 +101,25 @@ def get_parser():
 
         add.add_argument("--name", dest='name', 
                          help='name of image, in format "library/image"', 
-                         type=str, required=True)
+                         type=str)
+
+        add.add_argument('--copy', dest="copy", 
+                         help="copy the container instead of moving it.", 
+                         default=False, action='store_true')
+
+        rm = subparsers.add_parser("rm",
+                                   help="remove a container from the database")
+
+        rm.add_argument("image", nargs=1,
+                        help='name of image, in format "library/image"', 
+                        type=str)
+
+        rmi = subparsers.add_parser("rmi",
+                                    help="remove a container from the database AND storage")
+
+        rmi.add_argument("image", nargs=1,
+                         help='name of image, in format "library/image"', 
+                         type=str)
 
 
     # List or search containers and collections
@@ -272,6 +290,8 @@ def main():
     if args.command == "list": from .list import main
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
+    if args.command == "rm": from .rm import main
+    if args.command == "rmi": from .rmi import main
     if args.command == "search": from .search import main
     if args.command == "shell": from .shell import main
 

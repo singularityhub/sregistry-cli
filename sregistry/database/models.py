@@ -70,6 +70,9 @@ class Collection(Base):
     def __repr__(self):
         return '<Collection %r>' % (self.name)
 
+    def __str__(self):
+        return '<Collection %r>' % (self.name)
+
     def url(self):
         '''return the collection url'''
         return "file://"        
@@ -118,12 +121,16 @@ class Container(Base):
             return '<Container %r>' % (self.name)
         return '<Container %r>' % (self.uri)
 
+    def __str__(self):
+        if self.uri is None:
+            return '<Container %r>' % (self.name)
+        return '<Container %r>' % (self.uri)
+
     def get_uri(self):
         '''generate a uri on the fly from database parameters if one is not
         saved with the initial model (it should be, but might not be possible)
         '''
-        collection = Collection.query.filter(id=self.collection_id).first()
-        uri = "%s/%s:%s" %(collection.name, self.name, self.tag)
+        uri = "%s/%s:%s" %(self.collection.name, self.name, self.tag)
         if self.version is not None:
             uri = "%s@%s" %(uri, self.version)
         return uri

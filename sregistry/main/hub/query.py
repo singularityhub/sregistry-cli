@@ -1,6 +1,6 @@
 '''
 
-ls: search and query functions for client
+query: search and query functions for client
 
 Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
 University.

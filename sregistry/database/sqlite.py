@@ -19,15 +19,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from dateutil import parser
 from sregistry.logger import bot
 from sregistry.utils import ( 
     check_install, 
+    copyfile,
     get_image_hash,
     mkdir_p,
     parse_image_name, 
     remove_uri,
     write_json
 )
+from sqlalchemy import or_
 from sregistry.defaults import (
     SREGISTRY_DATABASE
 )
@@ -70,9 +73,14 @@ def get_container(self, name, collection_id, tag="latest", version=None):
     '''get a container, otherwise return None.
     '''
     from sregistry.database.models import Container
+    if version is None:
+        return Container.query.filter(Container.collection_id == collection_id,
+                                      Container.name == name,
+                                      Container.tag == tag).first()
     return Container.query.filter(Container.collection_id == collection_id,
                                   Container.name == name,
-                                  Container.tag == tag).first()
+                                  Container.tag == tag,
+                                  Container.version == version).first()
 
 
 # ACTIONS ######################################################################
@@ -109,15 +117,20 @@ def images(self, query=None):
 
     rows = []
     if query is not None:   
-        #TODO: need to write better function here to search images...
-        print('Custom query not written yet!')       
-    
-    containers = Container.query.all()
-    if len(containers) > 0:
-        bot.custom('Containers:\n')
-        for c in containers:
-            rows.append([c.collection.name, c.name, c.tag, c.version])
+        like = "%" + query + "%"
+        containers = Container.query.filter(or_(Container.name == query,
+                                                Container.tag.like(like),
+                                                Container.uri.like(like),
+                                                Container.name.like(like))).all() 
+    else:
+        containers = Container.query.all()
 
+    if len(containers) > 0:
+        bot.custom(prefix='Containers:\n', color="RED")
+        for c in containers:
+            uri = c.get_uri()
+            created_at = c.created_at.strftime('%B %d, %Y')
+            rows.append([created_at, c.client, uri])
         bot.table(rows) 
     return containers
 
@@ -140,17 +153,29 @@ def inspect(self, name):
 def rmi(self, image_name):
     '''Remove an image from the database and filesystem.
     '''
-    print("write me")
+    container = self.rm(image_name, delete=True)
+    if container is not None:
+        bot.info("[rmi] %s" % name)
+    
 
-
-def rm(self, image_name):
+def rm(self, image_name, delete=False):
     '''Remove an image from the database, akin to untagging the image. This
-    does not delete the file from the cache.
+    does not delete the file from the cache, unless delete is set to True
+    (as called by rmi).
     '''
-    print("write me")
+    container = self.get(image_name)
+    if container is not None:
+        name = container.uri or container.get_uri()
+        image = container.image
+        self.session.delete(container)
+        self.session.commit()
+        if os.path.exists(image) and delete is True:
+            os.remove(container.image)
+            return image
+        bot.info("[rm] %s" % name)
 
 
-def add(self, image_path=None, image_name=None, names=None, url=None, metadata=None, save=True):
+def add(self, image_path=None, image_name=None, names=None, url=None, metadata=None, save=True, copy=False):
     '''get or create a container, including the collection to add it to.
     This function can be used from a file on the local system, or via a URL
     that has been downloaded. Either way, if one of url, version, or image_file
@@ -162,12 +187,15 @@ def add(self, image_path=None, image_name=None, names=None, url=None, metadata=N
     image_path: full path to image file
     metadata: any extra metadata to keep for the image (dict)
     save: if True, move the image to the cache if it's not there
-    names: a dictionary with extracted names for the container and collection
+    copy: If True, copy the image instead of moving it.
+
+    image_name: a uri that gets parsed into a names object that looks like:
     {'collection': 'vsoch',
      'image': 'hello-world',
      'storage': 'vsoch/hello-world-latest.img',
      'tag': 'latest',
-     'uri': 'vsoch/hello-world:latest'}
+     'version': '12345'
+     'uri': 'vsoch/hello-world:latest@12345'}
 
     After running add, the user will take some image in a working
     directory, add it to the database, and have it available for search
@@ -210,7 +238,10 @@ def add(self, image_path=None, image_name=None, names=None, url=None, metadata=N
         storage_folder = "%s/%s" %(self.storage, storage_folder)
         mkdir_p(storage_folder)
         storage_path = "%s/%s" %(self.storage, names['storage'])
-        os.rename(image_path, storage_path)
+        if copy is True:
+            copyfile(image_path, storage_path)
+        else:
+            os.rename(image_path, storage_path)
         image_path = storage_path
 
     # Get a hash of the file for the version, or use provided
@@ -225,6 +256,7 @@ def add(self, image_path=None, image_name=None, names=None, url=None, metadata=N
                           tag=names['tag'],
                           version=version,
                           url=url,
+                          uri=names['uri'],
                           collection_id=collection.id)
 
 
