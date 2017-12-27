@@ -165,7 +165,7 @@ def rmi(self, image_name):
     '''
     container = self.rm(image_name, delete=True)
     if container is not None:
-        bot.info("[rmi] %s" % name)
+        bot.info("[rmi] %s" % container)
     
 
 def rm(self, image_name, delete=False):
@@ -179,8 +179,9 @@ def rm(self, image_name, delete=False):
         image = container.image
         self.session.delete(container)
         self.session.commit()
-        if os.path.exists(image) and delete is True:
-            os.remove(container.image)
+        if image is not None:
+            if os.path.exists(image) and delete is True:
+                os.remove(container.image)
             return image
         bot.info("[rm] %s" % name)
 
