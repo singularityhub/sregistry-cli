@@ -99,6 +99,10 @@ def get_parser():
                          help="full path to image file", 
                          type=str)
 
+        add.add_argument("--name", dest='name', 
+                         help='name of image, in format "library/image"', 
+                         type=str, required=True)
+
 
     # List or search containers and collections
     if hasattr(cli,'search'):

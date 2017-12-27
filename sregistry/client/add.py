@@ -28,4 +28,10 @@ import os
 def main(args, parser, subparser):
 
     from sregistry.main import Client as cli
-    cli.add(args.image)
+
+    images = args.image
+    if not isinstance(images, list):
+        images = [images]
+
+    for image in images:
+        cli.add(image_path=image, image_name=args.name)
