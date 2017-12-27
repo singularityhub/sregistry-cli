@@ -106,7 +106,13 @@ def get(self, name, quiet=False):
                                        name=names['image'], 
                                        tag=names['tag'])
         if container is not None and quiet is False:
-            print(container.image)
+            if container.image is not None:
+                print(container.image)
+            elif container.url is not None:
+                print(container.url)
+            else:
+                bot.info('No remote url or storage file found for %s' %name)
+
     return container
 
 
@@ -126,11 +132,15 @@ def images(self, query=None):
         containers = Container.query.all()
 
     if len(containers) > 0:
-        bot.custom(prefix='Containers:\n', color="RED")
+        message = "  [date]   [location]  [client]\t[uri]"
+        bot.custom(prefix='Containers:', message=message, color="RED")
         for c in containers:
             uri = c.get_uri()
             created_at = c.created_at.strftime('%B %d, %Y')
-            rows.append([created_at, c.client, uri])
+            location = 'local '
+            if c.image is None:
+               location = 'remote'
+            rows.append([created_at, location, "   [%s]" %c.client, uri])
         bot.table(rows) 
     return containers
 
@@ -210,9 +220,11 @@ def add(self, image_path=None, image_name=None, names=None, url=None, metadata=N
         Collection
     )
 
-    if not os.path.exists(image_path):
-        bot.error('Cannot find %s' %image_path)
-        sys.exit(1)
+    # We can only save if the image is provided
+    if image_path is not None:
+        if not os.path.exists(image_path) and save is True:
+            bot.error('Cannot find %s' %image_path)
+            sys.exit(1)
 
     if image_name is None:
         bot.error('You must provide an image uri <collection>/<namespace>')
@@ -248,6 +260,10 @@ def add(self, image_path=None, image_name=None, names=None, url=None, metadata=N
     version = names.get('version')
     if version is None and image_path is not None:
         version = get_image_hash(image_path)
+
+    # Just in case the client didn't provide it, see if we have in metadata
+    if url is None and "url" in metadata:
+        url = metadata['url']
 
     container = Container(metrics=json.dumps(metadata),
                           name=names['image'],

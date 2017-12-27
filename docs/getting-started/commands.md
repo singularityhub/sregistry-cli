@@ -35,7 +35,6 @@ sregistry add --copy --name expfactory/example expfactory-expfactory-master-test
 ```
 
 
-
 ## Images
 I can then use a simple "images" operation to list the available images. and in the list I can
 see the image newly added. 
@@ -43,23 +42,20 @@ see the image newly added.
 ```
 sregistry images
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:
- 
-1  December 27, 2017	hub	vsoch/hello-world:latest@5808346196ab69c3fcdc2394de358840
-2  December 27, 2017	hub	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-3  December 27, 2017	hub	vsoch/hello-pancakes:latest@22aa66e0c80847c676f34f35e70ea066
-4  December 27, 2017	hub	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
+Containers:   [date]   [location]  [client]	[uri]
+1  December 27, 2017	local	   [hub]	vsoch/hello-pancakes:latest@22aa66e0c80847c676f34f35e70ea066
+2  December 27, 2017	local	   [hub]	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
+3  December 27, 2017	local	   [hub]	vsoch/sregistry-example:v1.0@b102e9f4c1b2228d6e21755b27c32ed2
+4  December 27, 2017	remote 	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 ```
 
+Note that you will see, for each image, the client that was use, the date added, the complete uri (and importantly) whether
+the image file exists in storage locally (local) or if it's just a remote entry (remote). 
 If you want to filter the listing, just add a search term!
 
-
 ```
-sregistry images expfactory
-[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:
- 
-1  December 27, 2017	hub	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
+Containers:   [date]   [location]  [client]	[uri]
+1  December 27, 2017	local	   [hub]	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
 ```
 
 ## Get

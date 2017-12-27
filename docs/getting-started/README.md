@@ -5,7 +5,8 @@ Registry Global (SRG) client, and then walk through a brief tutorial for using
 the client, both on the command line and from within Python.
 
  - [Commands](#commands): a general review of the sets of commands found for particular client endpoints.
- - [Database](#database): The SRG client maintains a record of the images you are managing via a local database.gub
+ - [Database](#database): The SRG client maintains a record of the images you are managing via a local database.
+ - [Settings](#settings): Settings are managed via environment variables.
  - [Client](#client): The client itself is a shell that intuitively responds to environment configuration hints to connect you to different storage endpoints.
  - [Endpoints](#endpoints): The endpoints are generally cloud hosted services and storage for images. We push and pull from our local registry to and from endpoints. This means that you can 
 
@@ -24,7 +25,7 @@ tree -L 1 $HOME/.singularity
 
 It also means that when you interact with a storage endpoint using Singularity registry, it will honor your Singularity cache folder. This means that if you use sregistry to manage images, when you run Singularity proper those images will be found.
 
-## Differences
+### Differences
 You can best think of the `sregistry` client as an extension to Singularity, one that adds a layer of organization to images that live on your system. It fits the niche of the local user, whether on his personal machine or home node on a cluster, to be able to move images between common places, search, and generally manage them. A few additional keys points:
 
  - the `sregistry` client, in that it can be served from a Singularity image, has many fewer constraints to the modules that can be installed. For example, instead of using older python libraries for web requests that are supported on the oldest operating systems, we can use a modern library called `requests`. This makes it much easier for development, and for integration with third party libraries. 
@@ -93,6 +94,9 @@ On the back end, this means that we are storing (minimally) some path, and metad
  - If you manually go in and remove an image, the database cannot know. However when you try to retrieve the image, a best effort will be taken to fix the manual change. For example, a record is kept of the url and associated method used to get the image, and it will redo this operation if not found. With the strategy, you can delete the files in your cache and re-create your database by downloading them again.
 
 
+## Settings
+The sregistry client is driven by environment variables. Since each call is quick, you can have a lot of power to switch between endpoints and clients just by way of changing an environment variable for the call. We will review the most important defaults, and then a robust list of all that you can set. 
+
 ### Environment Variable Defaults
 The database path, an sqlite3 file, is determed based on the environment variable
 `SREGISTRY_DATABASE`. If not found, it will be written to our singularity cache
@@ -118,6 +122,30 @@ If you have exported the variable `SINGULARITY_DISABLE_CACHE`, an option with
 the Singularity command line software to not cache anything, SRegistry will honor
 this and not maintain a database. If you want to keep the cache but just disable
 the SRegistry database, then export `SREGISTRY_DISABLE=yes`.
+
+
+### Environment Variables List
+The variables you can set are:
+
+ - *SREGISTRY_CLIENT_SECRETS*: currently, this is only used to store a Singularity Registry token, if you are an admin and have push rights. Generally, it's a json file stored at `$HOME/.sregistry` that has a dictionary lookup with a key for each client to store any necessary parameters.
+ - *SINGULARITY_DISABLE_CACHE*: By default, `sregistry` honors your Singularity configuration, meaning that if you have disabled the cache entirely (coinciding with pulling / interacting with images in temporary locations) the `sregistry` client will not use a database or cache. If this variable is found as a derivate of y/yes/true, this means that we simply use the commands as tools to work with images locally.
+ - *SREGISTRY_DISABLE*: If for some reason you don't want to disable your Singularity cache but you do want to disable the `sregistry` database and storage, set this to one of y/yes/true.
+ - *SREGISTRY_CLIENT*: Set the client (either as an export or runtime) to determine which endpoint you want to use. By default, Singularity Hub is used, and functions that are available for all commands (detailed in this section and also reviewed under [commands](commands.md) are available.
+ - *SREGISTRY_DATABASE*: The `sregistry` has two parts - a database file (sqlite3) and a storage location for the images. This variable should be to a folder where you want the application to live. By default, it will use the same Singularity cache folder (`$HOME/.singularity`), meaning that you would find the database at `$HOME/.singularity/sregistry.db` alongside your docker, metadata, and shub folders.
+ - *SREGISTRY_STORAGE*: The storage of images is **drumroll** exactly the same as your Singularity cache for Singularity images! If your `SREGISTRY_DATABASE` is set to `$HOME/.singularity`, then the storage goes into `$HOME/.singularity/shub`. The one difference is that with `sregistry` we create a folder one level up that coincides with the collection name. For example:
+
+```
+tree $HOME/.singularity.shub
+
+/home/vanessa/.singularity/shub/
+├── expfactory
+│   └── expfactory-master:v2.0.simg
+└── vsoch
+    ├── hello-pancakes:latest.simg
+    └── hello-world:latest.simg
+```
+
+The organization is trivial for `sregistry` because images are interacted with via uri (unique resource identifier). This is also a way to distinguish images that you have pulled via Singularity into the cache (and aren't in your database) from those retrieved with `sregistry`, and organized and present in the database. For future versions of Singularity it would be ideal to give the user an option to add images in this format (and possibly add to the database, if the integration is available).
 
 
 ## Client

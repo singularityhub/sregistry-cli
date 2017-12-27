@@ -61,7 +61,8 @@ def pull(self, images, file_name=None, save=True):
         bot.debug('Retrieving manifest at %s' %url)
 
         manifest = self._get(url)
-        
+        manifest['selfLink'] = url        
+
         if file_name is None:
             file_name = q['storage'].replace('/','-')
 

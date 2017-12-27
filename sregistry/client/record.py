@@ -26,14 +26,18 @@ import os
 
 
 def main(args, parser, subparser):
+    '''the record command is intended for working with remote endpoint records,
+       such as adding an entry to the local database for the record without
+       downloading the image. To do the same but retrieve and store the image,
+       the user should use pull. To retrieve but not store the image, the user
+       can use pull with no-cache.
+    '''
 
     from sregistry.main import Client as cli
-
     images = args.image
-    if not isinstance(images, list):
+
+    if not isinstance(images,list):
         images = [images]
 
     for image in images:
-        cli.add(image_path=image,
-                image_name=args.name,
-                copy=args.copy)
+        cli.record(image_name=args.name, action=args.action)

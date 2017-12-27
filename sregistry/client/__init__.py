@@ -90,8 +90,27 @@ def get_parser():
                      type=str, default="*")
 
 
+    # Work with database records (not images)
+    if hasattr(cli,'record'):
+
+        record = subparsers.add_parser("record",
+                                       help="interact with a container record.")
+
+        record.add_argument('--action', '-a',
+                            default='add',
+                            const='add',
+                            nargs='?',
+                            choices=['add'],
+                            help='add an image record, without a file (default: %(default)s)')
+        
+        record.add_argument("image", nargs=1,
+                            help="name of image, in format 'library/image'", 
+                            type=str)
+
     # Add/copy local containers to storage, if client has it
     if hasattr(cli,'storage'):
+
+        # Add an image file
         add = subparsers.add_parser("add",
                                     help="add a container to local storage")
 
@@ -290,6 +309,7 @@ def main():
     if args.command == "list": from .list import main
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
+    if args.command == "record": from .record import main
     if args.command == "rm": from .rm import main
     if args.command == "rmi": from .rmi import main
     if args.command == "search": from .search import main

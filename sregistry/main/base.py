@@ -58,12 +58,11 @@ class ApiConnection(object):
         bot.info('[client|%s] [database|%s]' %(self.client_name,
                                                self.database))
 
-
     def __repr__(self):
-        return "[client][%s]" %self.__module__
+        return "[client][%s]" %self.client_name
 
     def __str__(self):
-        return "[client][%s]" %self.__module__
+        return "[client][%s]" %self.client_name
 
     def client_name(self):
         return self.__module__.split('.')[-1]
