@@ -77,7 +77,7 @@ def get_container(self, name, collection_id, tag="latest", version=None):
 
 # ACTIONS ######################################################################
 
-def get(self, name):
+def get(self, name, quiet=False):
     '''Do a get for a container, and then a collection, and then return None
        if no result is found.
     Parameters
@@ -93,21 +93,33 @@ def get(self, name):
     collection = self.get_collection(name=names['collection'])
     container = None
 
-    if collection is None:
-        bot.error('Collection %s does not exist.' %names['collection'])
-    else:
+    if collection is not None:
         container = self.get_container(collection_id=collection.id,
                                        name=names['image'], 
                                        tag=names['tag'])
-        if container is not None:
+        if container is not None and quiet is False:
             print(container.image)
     return container
 
 
-def images(self, query):
-    '''List local images
+def images(self, query=None):
+    '''List local images in the database, optionally with a query.
     '''
-    print("write me")
+    from sregistry.database.models import Collection, Container
+
+    rows = []
+    if query is not None:   
+        #TODO: need to write better function here to search images...
+        print('Custom query not written yet!')       
+    
+    containers = Container.query.all()
+    if len(containers) > 0:
+        bot.custom('Containers:\n')
+        for c in containers:
+            rows.append([c.collection.name, c.name, c.tag, c.version])
+
+        bot.table(rows) 
+    return containers
 
 
 def inspect(self, name):
