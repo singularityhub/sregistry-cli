@@ -144,7 +144,7 @@ Containers:   [date]   [location]  [client]	[uri]
 2  December 28, 2017	remote	   [registry]	vanessa/tacos:latest
 ```
 
-And we find a remote record and a local image in storage, both obtained from the registry client. The general idea here is to maintain a (non versioned) remote record, if it was originally retrieved. I (@vsoch) was originally going to not allow records without versions, but this might make sense to have for particular resources.
+And we find a remote record and a local image in storage, both obtained from the registry client. The general idea here is to maintain a (non versioned) remote record, if it was originally retrieved. I ([@vsoch](https://www.github.com/vsoch)) was originally going to not allow records without versions, but this might make sense to have for particular resources.
 
 Note that both of these commands are available from within python using the client:
 

@@ -36,7 +36,7 @@ Success! /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04
 ```
 
 Notice how the image is saved (and named) under it's collection folder, and with the full path corresponding
-to all information about the version we could find. @vsoch might change this storage strategy to have the full
+to all information about the version we could find. [@vsoch](https://www.github.com/vsoch) might change this storage strategy to have the full
 image path correspond to include the collection too - it's not decided if a folder for each collection is the best
 way to go. [What do you think](https://www.github.com/singularityhub/sregistry-cli/issues)? You can also do this from within python:
 

@@ -1,24 +1,25 @@
-  - title: "Singularity Registry Global Client"
+  - title: "Home"
     url: "/sregistry-cli/"
     slug: sregistry-cli
-
   - title: "Installation"
     url: "/sregistry-cli/install"
     slug: install
   - title: "Getting Started"
-    url: "/sregistry-cli/commands"
-    slug: commands
+    url: "/sregistry-cli/getting-started"
+    slug: getting-started
     sections:
-      - title: Quick Start
-        slug: quick-start
-      - title: Detailed Start
-        slug: detailed-start
-
-  - title: "Contribute an Experiment"
-    url: "/sregistry-cli/developers"
-    slug: contribute
-    sections:
-      - title: "Contribute a Container"
-        slug: contribute-a-container
-      - title: "Contribute an Experiment"
-        slug: contribute-an-experiment
+      - title: User Guide
+        slug: user-guide
+      - title: Commands
+        slug: commands
+      - title: Database
+        slug: database
+      - title: Settings
+        slug: settings
+      - title: Client
+        slug: client
+      - title: Endpoints
+        slug: endpoints
+  - title: "Client Tutorials"
+    url: "/sregistry-cli/clients"
+    slug: clients

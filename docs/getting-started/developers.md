@@ -11,7 +11,7 @@ toc: false
 This walkthrough will show interaction with the Singularity Registry Global client from within Python. This is what you would be interested in if you want to integrate the client into your own applications. If you are interested in steps to develop a new integration endpoint, read about [that here](/sregistry-cli/contribute-client).
 
 ## Environment variables
-If you recall from the [getting started](/sregistry-cli), sregistry will help you to manage
+If you recall from the [getting started](/sregistry-cli/getting-started), sregistry will help you to manage
 a local database, and the settings are determined by environment variables. We can
 check the defaults that are set from within python. Here is what we see if there are
 no special variables exported. These commands are from the terminal after installing
@@ -41,7 +41,7 @@ You should also remember that you can also customize the database location with 
  - ensure the right client is exported, or have a logical entrypoint for the user to do this
  - during development, make sure you do this yourself!
 
-If you are interested in the logic for the environment settings or have a suggestion for a new setting, you can see the complete list of variables the [sregistry/defaults.py](../../sregistry/defaults.py).
+If you are interested in the logic for the environment settings or have a suggestion for a new setting, you can see the complete list of variables the [sregistry/defaults.py](https://github.com/singularityhub/sregistry-cli/blob/master/sregistry/defaults.py).
 
 
 ## Shell

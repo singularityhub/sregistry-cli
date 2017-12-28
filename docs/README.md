@@ -30,27 +30,27 @@ Importantly, the Singularity Global Client does not have any dependency on Docke
 
 ## Available Clients
  - [Singularity Hub](https://www.singularity-hub.org) [default] is a cloud hosted builder service to connect your Github repositories to, and Singularity recipes found within will be built and available via the Singularity command line and Singularity Global Client tools. If you are a scientist that values version control, collaboration, and image sharing and you don't have a build environment other than your local machine, this is the way to go!
- - [Singularity Registry](registry-client): is one level up from the global client, because it provides a complete web interface, and substantial database (postgresql) for management of Singularity images. This can be used by a user on a local machine, and is best suited for an institution that wants to host their own registry.
+ - [Singularity Registry](/sregistry-cli/client-registry): is one level up from the global client, because it provides a complete web interface, and substantial database (postgresql) for management of Singularity images. This can be used by a user on a local machine, and is best suited for an institution that wants to host their own registry.
 
 ## Which should I use?
 In the context below, each of these endpoints represents a remote service that you would interact with. It could be the case that you host your own Singulairty Registry, but then have the need to (still) interact with someone else's. By default, you will get the most commonly wanted, which is Singularity Hub.
 
 *Singularity Hub*
-If you have a **few container collections** and value **version control** and **collaboration on recipes** then you are encouraged to use [Singularity Hub](https://www.singularity-hub.org). It will build via commits, deployments, or manual triggers. [Read more](clients/hub.md). 
+If you have a **few container collections** and value **version control** and **collaboration on recipes** then you are encouraged to use [Singularity Hub](https://www.singularity-hub.org). It will build via commits, deployments, or manual triggers. **[Read more](/sregistry-cli/client-hub)**. 
 
 *Singularity Registry*
-If you want **control** of your own registry, a nice web interface, (optionally) an ability to manage users, and can build on premise (or on your local machine), then you should use [Singularity Registry](https://www.github.com/singularityhub/sregistry). This means that you will serve a web portal like Singularity Hub for your container collections, and it can be customized for yourself or your institution. The files will live on the server (or personal computer) where you installed it, and you can use any of the plugins (e.g., LDAP) that come with it. This is also a nice option for the single user that wants to quickly organize and find images just via a deployment on localhost, but wants a little more than a small sqlite3 database.
+If you want **control** of your own registry, a nice web interface, (optionally) an ability to manage users, and can build on premise (or on your local machine), then you should use [Singularity Registry](https://www.github.com/singularityhub/sregistry). This means that you will serve a web portal like Singularity Hub for your container collections, and it can be customized for yourself or your institution. The files will live on the server (or personal computer) where you installed it, and you can use any of the plugins (e.g., LDAP) that come with it. This is also a nice option for the single user that wants to quickly organize and find images just via a deployment on localhost, but wants a little more than a small sqlite3 database. **[Read more](/sregistry-cli/client-registry)**. 
 
 ## Getting Help
 This is an open source project. Please contribute to the package, or post feedback and questions as <a href="https://github.com/singularityhub/sregistry-cli" target="_blank">issues</a>.
 
 ## Contributing
- - [Add a Client](contributing/client.md): How to contribute a new client, meaning a storage or other endpoint for Singularity images.
- - [Documentation](contributing/docs.md): How to help improve this documentation.
+ - [Add a Client](/sregistry-cli/contribute-client): How to contribute a new client, meaning a storage or other endpoint for Singularity images.
+ - [Documentation](/sregistry-cli/contribute-docs): How to help improve this documentation.
 
 ## License
 
-This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICENSE).
+This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](https://github.com/singularityhub/sregistry-cli/blob/master/LICENSE).
 
 
 <div>

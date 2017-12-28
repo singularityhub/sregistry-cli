@@ -50,7 +50,7 @@ From: continuumio/miniconda3
     ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 
     # Install SRegistry Global
-    cd /opt && git clone -b add/globus https://www.github.com/singularityhub/sregistry-cli
+    cd /opt && git clone https://www.github.com/singularityhub/sregistry-cli
     cd sregistry-cli
     /opt/conda/bin/pip install setuptools
 
