@@ -19,6 +19,8 @@ From: continuumio/miniconda3
 %appenv hub
     SREGISTRY_CLIENT=hub
     export SREGISTRY_CLIENT
+%apprun hub
+    exec /opt/conda/bin/sregistry "$@"
 
 
 #######################################
@@ -28,6 +30,8 @@ From: continuumio/miniconda3
 %appenv registry
     SREGISTRY_CLIENT=registry
     export SREGISTRY_CLIENT
+%apprun registry
+    exec /opt/conda/bin/sregistry "$@"
 
 
 %labels
