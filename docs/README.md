@@ -54,5 +54,5 @@ This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICEN
 
 
 <div>
-    <a href="/sregistry-cli/install"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+    <a href="/sregistry-cli/getting-started"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

@@ -6,12 +6,12 @@ permalink: /developers
 toc: false
 ---
 
-# Singularity Registry Global Client
+# SRegistry Global Client for Developers
 
-This walkthrough will show interaction with the Singularity Registry Global client from within Python. This is what you would be interested in if you want to integrate the client into your own applications. If you are interested in steps to develop a new integration endpoint, read about [that here](integration.md).
+This walkthrough will show interaction with the Singularity Registry Global client from within Python. This is what you would be interested in if you want to integrate the client into your own applications. If you are interested in steps to develop a new integration endpoint, read about [that here](/sregistry-cli/contribute-client).
 
 ## Environment variables
-If you recall from the [getting started](README.md), sregistry will help you to manage
+If you recall from the [getting started](/sregistry-cli), sregistry will help you to manage
 a local database, and the settings are determined by environment variables. We can
 check the defaults that are set from within python. Here is what we see if there are
 no special variables exported. These commands are from the terminal after installing
@@ -383,5 +383,5 @@ Here is a general list of thoughts and ideas that I'd be interested in feedback 
 
 <div>
     <a href="/sregistry-cli/"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
-    <a href="/sregistry-cli/commands.html"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+    <a href="/sregistry-cli/commands"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

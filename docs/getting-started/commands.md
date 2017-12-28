@@ -13,7 +13,7 @@ pertain to interaction with the local sregistry database. This section shows the
 running from the host command line (which could be an executable installed to python or
 a singularity image of the same name). In both cases, the executable is called `sregistry`.
 It is not written yet, but a separate guide will be made for interaction using the pre-built
-Singularity image. For these same functions for within python (for developers) [see here](developers.md). As a reminder, the global commands are the following:
+Singularity image. For these same functions for within python (for developers) [see here](/sregistry-cli/developers). As a reminder, the global commands are the following:
 
  - *add*: `[local]`: corresponds with adding an image file on your host directly to your registry. Not everything is downloaded from the cloud!
  - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
@@ -172,6 +172,6 @@ sregistry rmi vsoch/hello-world:latest
 ```
 
 <div>
-    <a href="/sregistry-cli/developers.html"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
-    <a href="/sregistry-cli/"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+    <a href="/sregistry-cli/getting-started"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/developers"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

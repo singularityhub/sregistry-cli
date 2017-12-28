@@ -1,3 +1,11 @@
+---
+layout: default
+title: Getting Started
+pdf: true
+permalink: /getting-started
+toc: false
+---
+
 # Getting Started
 
 In the pages here we will first review some important concepts about the Singularity
@@ -50,7 +58,7 @@ The following commands are considered "local" in that they come with every clien
  - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
-These specific commands are [demonstrated with more example](commands.md).
+These specific commands are [demonstrated with more examples](/sregistry-cli/commands).
 
 ### Client (remote)
 This next set of commands, while they interact with local resources, are primarily implemented by the specific clients. For example, a pull from Singularity Hub is going to have particular commands using the Singularity Hub API.
@@ -61,7 +69,7 @@ This next set of commands, while they interact with local resources, are primari
  - *record*: `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
  - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
 
-Each of these commands will be detailed with examples in the various [client walkthroughs](../clients), and if you are implementing an endpoint, there are also details about how you should "fill in the space" to
+Each of these commands will be detailed with examples in the various [client walkthroughs](/sregistry-cli/clients), and if you are implementing an endpoint, there are also details about how you should "fill in the space" to
 implement your custom client.
 
 ## Database
@@ -130,7 +138,7 @@ The variables you can set are:
  - *SREGISTRY_CLIENT_SECRETS*: currently, this is only used to store a Singularity Registry token, if you are an admin and have push rights. Generally, it's a json file stored at `$HOME/.sregistry` that has a dictionary lookup with a key for each client to store any necessary parameters.
  - *SINGULARITY_DISABLE_CACHE*: By default, `sregistry` honors your Singularity configuration, meaning that if you have disabled the cache entirely (coinciding with pulling / interacting with images in temporary locations) the `sregistry` client will not use a database or cache. If this variable is found as a derivate of y/yes/true, this means that we simply use the commands as tools to work with images locally.
  - *SREGISTRY_DISABLE*: If for some reason you don't want to disable your Singularity cache but you do want to disable the `sregistry` database and storage, set this to one of y/yes/true.
- - *SREGISTRY_CLIENT*: Set the client (either as an export or runtime) to determine which endpoint you want to use. By default, Singularity Hub is used, and functions that are available for all commands (detailed in this section and also reviewed under [commands](commands.md) are available.
+ - *SREGISTRY_CLIENT*: Set the client (either as an export or runtime) to determine which endpoint you want to use. By default, Singularity Hub is used, and functions that are available for all commands (detailed in this section and also reviewed under [commands](/sregistry-cli/commands) are available.
  - *SREGISTRY_DATABASE*: The `sregistry` has two parts - a database file (sqlite3) and a storage location for the images. This variable should be to a folder where you want the application to live. By default, it will use the same Singularity cache folder (`$HOME/.singularity`), meaning that you would find the database at `$HOME/.singularity/sregistry.db` alongside your docker, metadata, and shub folders.
  - *SREGISTRY_STORAGE*: The storage of images is **drumroll** exactly the same as your Singularity cache for Singularity images! If your `SREGISTRY_DATABASE` is set to `$HOME/.singularity`, then the storage goes into `$HOME/.singularity/shub`. The one difference is that with `sregistry` we create a folder one level up that coincides with the collection name. For example:
 
@@ -174,7 +182,12 @@ An endpoint is a remote place to put or get images. It could be Singularity Hub 
 
 Now that we've discussed these concepts, let's jump into using the client. We have two getting started guides:
 
- - [developers](developers.md): a getting started for developers that want to interact with the client from within Python.
- - [command-line](commands.md): a getting started for command line use of the client.
+ - [command-line](/sregistry-cli/commands): a getting started for command line use of the client.
+ - [developers](/sregistry-cli/developers): a getting started for developers that want to interact with the client from within Python.
 
-Once you've mastered the basics, take a look at the [specific clients documentation](../clients)
+Once you've mastered the basics, take a look at the [specific clients documentation](/sregistry-cli/clients)
+
+<div>
+    <a href="/sregistry-cli/"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/commands"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+</div><br>
