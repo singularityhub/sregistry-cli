@@ -1,0 +1,25 @@
+  - title: "Home"
+    url: "/sregistry-cli/"
+    slug: sregistry-cli
+  - title: "Installation"
+    url: "/sregistry-cli/install"
+    slug: install
+  - title: "Getting Started"
+    url: "/sregistry-cli/getting-started"
+    slug: getting-started
+    sections:
+      - title: User Guide
+        slug: user-guide
+      - title: Commands
+        slug: commands
+      - title: Database
+        slug: database
+      - title: Settings
+        slug: settings
+      - title: Client
+        slug: client
+      - title: Endpoints
+        slug: endpoints
+  - title: "Client Tutorials"
+    url: "/sregistry-cli/clients"
+    slug: clients

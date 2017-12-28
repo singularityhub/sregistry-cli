@@ -42,7 +42,7 @@ def remove(self, image, force=False):
 
     SREGISTRY_EVENT = self.authorize(request_type="delete", names=q)
     headers = {'Authorization': SREGISTRY_EVENT }
-    self.update_headers(fields=headers)
+    self._update_headers(fields=headers)
 
     continue_delete = True
     if force is False:
@@ -53,8 +53,8 @@ def remove(self, image, force=False):
             continue_delete = False
 
     if continue_delete is True:
-        response = self.delete(url)
-        message = self.read_response(response)
+        response = self._delete(url)
+        message = self._read_response(response)
         bot.info("Response %s, %s" %(response.status_code, message))
 
     else:

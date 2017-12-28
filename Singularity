@@ -3,11 +3,36 @@ From: continuumio/miniconda3
 
 # sudo singularity build sregistry.simg Singularity
 
+
+#######################################
+# Global
+#######################################
+
 %runscript
     exec /opt/conda/bin/sregistry "$@"
 
-%apprun sregistry
+
+#######################################
+# Singularity Hub
+#######################################
+
+%appenv hub
+    SREGISTRY_CLIENT=hub
+    export SREGISTRY_CLIENT
+%apprun hub
     exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
+# Singularity Registry
+#######################################
+
+%appenv registry
+    SREGISTRY_CLIENT=registry
+    export SREGISTRY_CLIENT
+%apprun registry
+    exec /opt/conda/bin/sregistry "$@"
+
 
 %labels
     maintainer vsochat@stanford.edu
@@ -32,4 +57,6 @@ From: continuumio/miniconda3
     cd /opt && git clone https://www.github.com/singularityhub/sregistry-cli
     cd sregistry-cli
     /opt/conda/bin/pip install setuptools
-    /opt/conda/bin/python setup.py install
+
+    # This installs all "install extras"
+    /opt/conda/bin/pip install -e .

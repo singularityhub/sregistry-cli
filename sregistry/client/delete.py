@@ -20,7 +20,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.main import Client
 import sys
 import pwd
 import os
@@ -28,8 +27,7 @@ import os
 
 def main(args,parser,subparser):
 
-    cli = Client()
-
+    from sregistry.main import Client as cli
     for image in args.image:
         response = cli.remove(image=image,
                               force=args.force)

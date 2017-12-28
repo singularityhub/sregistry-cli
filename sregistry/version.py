@@ -36,10 +36,16 @@ INSTALL_REQUIRES = (
     ('requests-toolbelt', {'exact_version': '0.8.0'}),
     ('retrying', {'exact_version': '1.3.3'}),
     ('pygments', {'min_version': '2.1.3'}),
+    ('sqlalchemy', {'min_version': None}),
     ('oauth2client', {'exact_version': '3.0'})
 )
 
 # Submodule Requirements
+
+INSTALL_REQUIRES_GLOBUS = (
+
+    ('globus-sdk[jwt]', {'exact_version': '1.3.0'}),
+)
 
 INSTALL_REQUIRES_DROPBOX = (
 )

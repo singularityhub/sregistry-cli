@@ -24,6 +24,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
+from sregistry.defaults import SREGISTRY_DATABASE
+import threading
 import shutil
 import requests
 import tempfile
@@ -39,59 +41,51 @@ class ApiConnection(object):
  
         self.headers = None
         self.base = None
-        self.reset_headers()
+        self._reset_headers()
 
+        # If client initialized with _init_db, do it
+        if hasattr(self,"_init_db"):
+            self._init_db(SREGISTRY_DATABASE)
 
-# Container Functions
-# Any or none can be implemented by a subclass
+        # TO DO: need to implement higher level functions that work with images
+        # to do corresponding action in database.
+        # we need a sort of call back for push, pull, delete, etc.
 
-#    def pull(self):
-#        return
+    def speak(self):
+        '''a function for the client to announce him or herself, depending
+           on the level specified.
+        '''
+        bot.info('[client|%s] [database|%s]' %(self.client_name,
+                                               self.database))
 
-#    def push(self):
-#        return
+    def __repr__(self):
+        return "[client][%s]" %self.client_name
 
-#    def ls(self):
-#        return
+    def __str__(self):
+        return "[client][%s]" %self.client_name
 
+    def client_name(self):
+        return self.__module__.split('.')[-1]
 
-#    def remove(self):
-#        return
-
-#    def authenticate(self):
-#        return
-
-#    def search(self):
-#        return
-
-
-# Search
-
-#    def container_search(self):
-#        return
-
-#    def collection_search(self):
-#        return
-
-#    def label_search(self):
-#        return
 
 # Headers
 
-    def get_headers(self):
+    def _get_headers(self):
         return self.headers
 
-    def reset_headers(self):
+    def _reset_headers(self):
         self.headers = {'Content-Type':"application/json"}
 
-    def update_headers(self,fields=None):
+    def _update_headers(self,fields=None):
         '''update headers with a token & other fields
         '''
+        reset_headers = True
         if hasattr(self, 'headers'):
-            if self.headers is None:
-                self.reset_headers()
-        else:
-            self.reset_headers()
+            if self.headers is not None:
+                reset_headers = False
+
+        if reset_headers is True:
+            self._reset_headers()
 
         if fields is not None:
             for key,value in fields.items():
@@ -104,50 +98,50 @@ class ApiConnection(object):
 # Requests
 
 
-    def delete(self,url,return_json=True):
+    def _delete(self,url,return_json=True):
         '''delete request, use with caution
         '''
         bot.debug('DELETE %s' %url)
-        return self.call(url,
-                         func=requests.delete,
-                         return_json=return_json)
+        return self._call(url,
+                          func=requests.delete,
+                          return_json=return_json)
 
 
-    def put(self,url,data=None,return_json=True):
+    def _put(self,url,data=None,return_json=True):
         '''put request
         '''
         bot.debug("PUT %s" %url)
-        return self.call(url,
-                         func=requests.put,
-                         data=data,
-                         return_json=return_json)
+        return self._call(url,
+                          func=requests.put,
+                          data=data,
+                          return_json=return_json)
 
 
 
-    def post(self,url,data=None,return_json=True):
+    def _post(self,url,data=None,return_json=True):
         '''post will use requests to get a particular url
         '''
         bot.debug("POST %s" %url)
-        return self.call(url,
-                         func=requests.post,
-                         data=data,
-                         return_json=return_json)
+        return self._call(url,
+                          func=requests.post,
+                          data=data,
+                          return_json=return_json)
 
 
 
 
-    def get(self,url,headers=None,token=None,data=None,return_json=True):
+    def _get(self,url,headers=None,token=None,data=None,return_json=True):
         '''get will use requests to get a particular url
         '''
         bot.debug("GET %s" %url)
-        return self.call(url,
-                        func=requests.get,
-                        data=data,
-                        return_json=return_json)
+        return self._call(url,
+                          func=requests.get,
+                          data=data,
+                          return_json=return_json)
 
 
 
-    def paginate_get(self, url, headers=None, return_json=True, start_page=None):
+    def _paginate_get(self, url, headers=None, return_json=True, start_page=None):
         '''paginate_call is a wrapper for get to paginate results
         '''
         get = '%s&page=1' %(url)
@@ -156,7 +150,7 @@ class ApiConnection(object):
 
         results = []
         while get is not None:
-            result = self.get(url, headers=headers, return_json=return_json)
+            result = self._get(url, headers=headers, return_json=return_json)
             # If we have pagination:
             if isinstance(result, dict):
                 if 'results' in result:
@@ -177,24 +171,28 @@ class ApiConnection(object):
 
         fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
         os.close(fd)
-        response = self.stream(url,headers=headers,stream_to=tmp_file)
 
-        if isinstance(response, HTTPError):
-            bot.error("Error downloading %s, exiting." %url)
-            sys.exit(1)
-        shutil.move(tmp_file, file_name)
+        # Check here if exists
+        if requests.head(url).status_code == 200:
+            response = self._stream(url,headers=headers,stream_to=tmp_file)
+
+            if isinstance(response, HTTPError):
+                bot.error("Error downloading %s, exiting." %url)
+                sys.exit(1)
+            shutil.move(tmp_file, file_name)
+        else:
+            bot.error("Invalid URL %s" %url)
         return file_name
 
 
-
-    def stream(self, url, headers=None, stream_to=None):
+    def _stream(self, url, headers=None, stream_to=None):
         '''stream is a get that will stream to file_name
         '''
 
         bot.debug("GET %s" %url)
 
         if headers == None:
-            headers = self.reset_headers()
+            headers = self._reset_headers()
 
         response = requests.get(url,         
                                 headers=headers,
@@ -231,7 +229,7 @@ class ApiConnection(object):
 
 
 
-    def call(self,url,func,data=None,return_json=True, stream=False):
+    def _call(self,url,func,data=None,return_json=True, stream=False):
         '''call will issue the call, and issue a refresh token
         given a 401 response.
         :param func: the function (eg, post, get) to call

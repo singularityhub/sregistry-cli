@@ -20,22 +20,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.main import Client
 import sys
 import pwd
 import os
 
 
 def main(args,parser,subparser):
-
-    # Does the user have a valid image?
-    sreg = Client()
-
+    '''the list command corresponds with listing images for an external
+       resource. This is different from listing images that are local to the
+       database, which should be done with "images"
+    '''
+    from sregistry.main import Client as cli
+    
     for query in args.query:
         if query in ['','*']:
             query = None
 
-        try:
-            sreg.ls(query=query,args=args)
-        except NotImplementedError:
-            bot.info('Search is not available for this endpoint.')
+        cli.ls(query=query)

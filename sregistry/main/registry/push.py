@@ -121,7 +121,7 @@ def push(self, path, name, tag=None, compress=False):
 
     try:
         r = requests.post(url, data=monitor, headers=headers)
-        message = self.read_response(r)
+        message = self._read_response(r)
 
         print('\n[Return status {0} {1}]'.format(r.status_code, message))
 

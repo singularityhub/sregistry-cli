@@ -28,10 +28,30 @@ import sys
 import os
 
 
-def pull(self, images, file_name=None):
+def pull(self, images, file_name=None, save=True):
+    '''pull an image from an endpoint
+ 
+    Parameters
+    ==========
+    images: refers to the uri given by the user to pull in the format
+    <collection>/<namespace>. You should have an API that is able to 
+    retrieve a container based on parsing this uri.
+    file_name: the user's requested name for the file. It can 
+               optionally be None if the user wants a default.
+    save: if True, you should save the container to the database
+          using self.add()
+    
+    Returns
+    =======
+    finished: a single container path, or list of paths
+    '''
+
+    if not isinstance(images,list):
+        images = [images]
 
     bot.debug('Execution of PULL for %s images' %len(images))
 
+    finished = []
     for image in images:
 
         q = parse_image_name(image, ext='simg')
@@ -40,17 +60,35 @@ def pull(self, images, file_name=None):
         url = "%s/container/%s/%s:%s" %(self.base, q['collection'], q['image'], q['tag'])
         bot.debug('Retrieving manifest at %s' %url)
 
-        manifest = self.get(url)
-        
+        manifest = self._get(url)
+        manifest['selfLink'] = url        
+
         if file_name is None:
             file_name = q['storage'].replace('/','-')
-    
-        # TODO: check here in advance if exists, if it does, don't pull
 
         image_file = self.download(url=manifest['image'],
                                    file_name=file_name,
                                    show_progress=True)
 
-        bot.debug('Retrieved image file %s' %image_file)
+        # If the user is saving to local storage
+        if save is True:
+            image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
+            container = self.add(image_path=image_file,
+                                 image_name=image_uri,
+                                 metadata=manifest,
+                                 url=manifest['image'])
+            image_file = container.image
+
+
         if os.path.exists(image_file):
+            bot.debug('Retrieved image file %s' %image_file)
             bot.custom(prefix="Success!", message=image_file)
+            finished.append(image_file)
+
+        # Reset file name back to None in case of multiple downloads
+        file_name = None
+
+    # If the user is only asking for one image
+    if len(finished) == 1:
+        finished = finished[0]
+    return finished

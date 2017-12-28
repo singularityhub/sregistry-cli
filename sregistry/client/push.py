@@ -20,13 +20,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.main import Client
 import sys
 import pwd
 import os
 
 
 def main(args,parser,subparser):
+
+    from sregistry.main import Client as cli
 
     # Does the user have a valid image?
     image = args.image[0]
@@ -35,9 +36,7 @@ def main(args,parser,subparser):
         bot.error("Please supply one or more paths to existing images.")
         sys.exit(1)
 
-    
     # Authenticate
-    cli = Client()
     response = cli.push(path=image,
                         name=args.name,
                         tag=args.tag)

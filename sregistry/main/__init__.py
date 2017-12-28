@@ -25,8 +25,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from .base import ApiConnection
 from sregistry.utils import check_install
+from sregistry.defaults import (
+    SREGISTRY_DATABASE, 
+    SREGISTRY_CLIENT
+)
 from sregistry.logger import bot
 import os
+
 
 def get_client():
     '''get the correct client depending on the driver of interest. If 
@@ -39,14 +44,52 @@ def get_client():
     if not check_install():
         bot.warning('Singularity is not installed, function might be limited.')
 
-    # Switch based on client secrets set or found
-    if os.environ.get('SREGISTRY_CLIENT_SECRETS') is None:
-        from .hub import Client
-        cli = Client
-    else:
-        from .registry import Client
-        cli = Client
+    # If no obvious credential provided, we can use SREGISTRY_CLIENT
+    if SREGISTRY_CLIENT == 'globus':
+        from .globus import Client
 
-    return cli
+    elif SREGISTRY_CLIENT == 'hub':
+        from .hub import Client
+
+    elif SREGISTRY_CLIENT == 'registry':
+        from .registry import Client
+
+    # Fall back to singularity hub (should never hit this)
+    else:
+        from .hub import Client
+
+    Client.client_name = SREGISTRY_CLIENT
+
+    # Add the database, if wanted
+    if SREGISTRY_DATABASE is not None:
+
+        # These are global functions used across modules
+        from sregistry.database import (
+            init_db, add, get, rm, rmi, 
+            images, inspect,
+            get_container,
+            get_collection, 
+            get_or_create_collection 
+        )
+
+        # Actions
+        Client._init_db = init_db
+        Client.add = add
+        Client.get = get
+        Client.inspect = inspect
+        Client.rm = rm
+        Client.rmi = rmi
+        Client.images = images
+
+        # Collections
+        Client.get_or_create_collection = get_or_create_collection
+        Client.get_container = get_container
+        Client.get_collection = get_collection
+
+    return Client()
 
 Client = get_client()
+
+# Initialize the database
+if hasattr(Client, '_init_db'):
+    Client._init_db(SREGISTRY_DATABASE)

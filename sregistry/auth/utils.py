@@ -70,28 +70,6 @@ def generate_credential(s):
     return credentials
 
 
-def read_client_secrets(secrets=None):
-    '''for private or protected registries, a client secrets file is required
-       to be located at .sregistry. If no secrets are found, we use default
-       of Singularity Hub, and return a dummy secrets.
-    '''
-    client_secrets = {'base': "https://singularity-hub.org/api" }
-
-    # If token file not provided, check environment
-    if secrets is None:
-        secrets = os.environ.get("SREGISTRY_CLIENT_SECRETS")
-
-    # Fall back to default
-    if secrets is None:
-        userhome = pwd.getpwuid(os.getuid())[5]
-        secrets = "%s/.sregistry" % (userhome)
-
-    if secrets is not None:
-        if os.path.exists(secrets):
-            client_secrets = read_json(secrets)
-    return client_secrets
-
-
 def generate_header_signature(secret, payload, request_type):
     '''Authorize a client based on encrypting the payload with the client
        secret, timestamp, and other metadata
