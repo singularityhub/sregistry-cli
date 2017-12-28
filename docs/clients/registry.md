@@ -1,3 +1,11 @@
+---
+layout: default
+title: Singularity Registry Client
+pdf: true
+permalink: /client-registry
+toc: false
+---
+
 # Singularity Registry Client
 
 A Singularity Registry backend is optimized to interact with a Singularit Registry, the configuration which is set in a credentials file typically located at `$SREGISTRY_CLIENT_SECRETS` that defaults to `$HOME/.sregistry`. If you aren't familiar with a Singularity Registry, it is an open source effort to empower institutions to host their own registries. It's more substantial then this `sregistry` client as it involves a bit of set up and configuration, and must run on a server with Docker. To read more, [view the documentation here](https://singularityhub.github.io/sregistry). You should check out the [getting started](../getting-started) pages for a list of environment variables that you can configure, and the [global commands](../getting-started/commands.md) for commands that are useful for all clients. Here we will review the set of commands that are specific to the Singularity Registry client:
@@ -276,3 +284,8 @@ rows = client.search()
 ```
 
 This has been a general review of the custom commands for Singularity Registry. Don't forget that the Singularity Registry client also supports the [global client commands](../getting-started/commands.md) such as `inspect`, `images`, and `get`.
+
+<div>
+    <a href="/sregistry-cli/"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/client-hub.html"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+</div><br>

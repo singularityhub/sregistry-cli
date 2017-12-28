@@ -1,3 +1,11 @@
+---
+layout: default
+title: Getting Started Developers
+pdf: true
+permalink: /developers
+toc: false
+---
+
 # Singularity Registry Global Client
 
 This walkthrough will show interaction with the Singularity Registry Global client from within Python. This is what you would be interested in if you want to integrate the client into your own applications. If you are interested in steps to develop a new integration endpoint, read about [that here](integration.md).
@@ -371,3 +379,9 @@ Here is a general list of thoughts and ideas that I'd be interested in feedback 
    - clean the database / cache (meaning fixing broken links, etc.)
    - use clients and associated metadata to refresh or update a database (with caution).
  - What happens with shared caches?
+
+
+<div>
+    <a href="/sregistry-cli/"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/commands.html"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+</div><br>

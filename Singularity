@@ -1,7 +1,7 @@
 Bootstrap: docker
 From: continuumio/miniconda3
 
-# sudo singularity build sregistry Singularity
+# sudo singularity build sregistry.simg Singularity
 
 
 #######################################
@@ -25,7 +25,7 @@ From: continuumio/miniconda3
 # Singularity Registry
 #######################################
 
-%appenv hub
+%appenv registry
     SREGISTRY_CLIENT=registry
     export SREGISTRY_CLIENT
 
@@ -50,9 +50,9 @@ From: continuumio/miniconda3
     ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 
     # Install SRegistry Global
-    cd /opt && git clone https://www.github.com/singularityhub/sregistry-cli
+    cd /opt && git clone -b add/globus https://www.github.com/singularityhub/sregistry-cli
     cd sregistry-cli
     /opt/conda/bin/pip install setuptools
 
     # This installs all "install extras"
-    /opt/conda/pip install -e .
+    /opt/conda/bin/pip install -e .

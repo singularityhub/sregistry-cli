@@ -67,59 +67,6 @@ class ApiConnection(object):
     def client_name(self):
         return self.__module__.split('.')[-1]
 
-# TODO: each image should have it's type, and the operation used to get it, and there should be a function / way to share a little databsae and then redownload. Likely we would need to instantiate a separate client for each subset of types, and this might be done with some global script instead of individual clients?
-
-# TODO: make this into a proper template for others to use :)
-
-# Container Functions
-# Any or none can be implemented by a subclass. Note the arguments that are
-# needed for each, along with their descriptions.
-
-#    def pull(self, image, file_name, save):
-#         '''pull an image from an endpoint
-# 
-#         Parameters
-#         ==========
-#         image: refers to the uri given by the user to pull in the format
-#         <collection>/<namespace>. You should have an API that is able to 
-#         retrieve a container based on parsing this uri.
-#         file_name: the user's requested name for the file. It can 
-#             optionally be None if the user wants a default.
-#         save: if True, you should save the container to the database
-#               using self.add()
-#         Returns
-#         =======
-#         container: the pulled container path for the user
-#         '''
-#
-#    def push(self):
-#        return
-
-#    def ls(self):
-#        return
-
-
-#    def remove(self):
-#        return
-
-#    def authenticate(self):
-#        return
-
-#    def search(self):
-#        return
-
-
-# Search
-
-#    def container_search(self):
-#        return
-
-#    def collection_search(self):
-#        return
-
-#    def label_search(self):
-#        return
-
 
 # Headers
 

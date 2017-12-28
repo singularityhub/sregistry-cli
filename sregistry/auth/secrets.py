@@ -53,7 +53,7 @@ def update_client_secrets(backend, updates, secrets=None, save=True):
         secrets = read_client_secrets()
     if backend not in secrets:
         secrets[backend] = {}
-    secrets.update(updates)
+    secrets[backend].update(updates)
 
     # The update typically includes a save
     if save is True:

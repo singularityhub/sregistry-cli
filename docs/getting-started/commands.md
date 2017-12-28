@@ -1,3 +1,11 @@
+---
+layout: default
+title: Getting Started with Commands
+pdf: true
+permalink: /commands
+toc: false
+---
+
 # Global Commands
 
 The following commands are provided for the client for all endpoints, as they
@@ -162,3 +170,8 @@ The first example has found and removed an image and record, and the second is j
 sregistry rmi vsoch/hello-world:latest
 sregistry rmi vsoch/hello-world:latest
 ```
+
+<div>
+    <a href="/sregistry-cli/developers.html"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+</div><br>

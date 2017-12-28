@@ -16,5 +16,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 ## [vxx](https://github.com/singularityware/singularity-python/tree/development) (0.0.2)
 
 **creation**
+ - clients for Singularity Hub and Singularity Registry and local use
+ - addition of (mostly complete) documentation, Changelog, and Singularity file
  - this is the initial creation of just the singularity registry client, to be separate from
 singularity python.

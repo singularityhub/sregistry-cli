@@ -1,3 +1,18 @@
+---
+layout: default
+title: {{ site.name }}
+pdf: true
+permalink: /
+---
+
+<div style="float:right; margin-bottom:50px; color:#666">
+</div>
+
+<div>
+    <img src="img/logo.png" style="float:left">
+</div><br><br>
+
+
 # Singularity Global Client
 Welcome to the Singularity Global Client documentation! 
 
@@ -10,15 +25,12 @@ The simplest use case of the Singularity Global Client is to provide the single 
 Importantly, the Singularity Global Client does not have any dependency on Docker (the current deployment strategies for a Registry or Singularity Hub) and there is no need for extensive setup beyond installation and a single file (sqlite3) database. The user could install the library locally, or just pull a singularity image with it ready to go.
 
 ## Getting Started
- - [Installation](install.md): quick steps to get up and running with the Singularity Registry Global Client.
- - [Global Commands](getting-started/README.md): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
+ - [Installation](install): quick steps to get up and running with the Singularity Registry Global Client. This includes a local installation, or the option to use a Singularity image.
+ - [Global Commands](commands): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
 
 ## Available Clients
- - [Singularity Registry](clients/registry.md): is one level up from the global client, because it provides a complete web interface, and substantial database (postgresql) for management of Singularity images. This can be used by a user on a local machine, and is best suited for an institution that wants to host their own registry.
+ - [Singularity Registry](registry-client): is one level up from the global client, because it provides a complete web interface, and substantial database (postgresql) for management of Singularity images. This can be used by a user on a local machine, and is best suited for an institution that wants to host their own registry.
  - [Singularity Hub](https://www.singularity-hub.org) is a cloud hosted builder service to connect your Github repositories to, and Singularity recipes found within will be built and available via the Singularity command line and Singularity Global Client tools. If you are a scientist that values version control, collaboration, and image sharing and you don't have a build environment other than your local machine, this is the way to go!
-
-## Under Development Clients
- - [Globus](clients/globus.md): For users of Globus, this integration will allow for saving and sharing images via Globus endpoints.
 
 
 ## Which should I use?
@@ -36,8 +48,12 @@ This is an open source project. Please contribute to the package, or post feedba
 ## Contributing
  - [Add a Client](contributing/client.md): How to contribute a new client, meaning a storage or other endpoint for Singularity images.
  - [Documentation](contributing/docs.md): How to help improve this documentation.
- - [Singularity Registry](contributing/registry.md): How to contribute to the open source Singularity Registry software.
 
 ## License
 
 This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICENSE).
+
+
+<div>
+    <a href="/sregistry-cli/install"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+</div><br>

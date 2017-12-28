@@ -1,3 +1,11 @@
+---
+layout: default
+title: Singularity Hub Client
+pdf: true
+permalink: /client-hub
+toc: false
+---
+
 # Singularity Hub Client
 
 These sections will detail use of the Singularity Hub clients for `sregistry`, which is
@@ -153,3 +161,8 @@ Containers:   [date]   [location]  [client]	[uri]
 
 If you have a record and then later pull the image, the record is considered equivalent and updated.
 Don't forget that the Singularity Hub client also supports the [global client commands](../getting-started/commands.md)
+
+<div>
+    <a href="/sregistry-cli/"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/client-registry.html"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+</div><br>
