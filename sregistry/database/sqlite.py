@@ -186,7 +186,14 @@ def rm(self, image_name, delete=False):
         bot.info("[rm] %s" % name)
 
 
-def add(self, image_path=None, image_name=None, names=None, url=None, metadata=None, save=True, copy=False):
+def add(self, image_path=None,
+              image_name=None,
+              names=None,
+              url=None,
+              metadata=None,
+              save=True, 
+              copy=False):
+
     '''get or create a container, including the collection to add it to.
     This function can be used from a file on the local system, or via a URL
     that has been downloaded. Either way, if one of url, version, or image_file

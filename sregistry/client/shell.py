@@ -27,7 +27,7 @@ import os
 def main(args,parser,subparser):
 
     from sregistry.main import Client as cli
-    shells = [bpython, python]
+    shells = [python, bpython]
     for shell in shells:
         try:
             return shell(cli)
@@ -47,9 +47,15 @@ def ipython(cli):
 def bpython(cli):
     import bpython
     from sregistry.main import Client as cli
-    bpython.embed(locals_={'client':cli})
+    from sregistry.database.models import Container, Collection
+    bpython.embed(locals_={'client': cli,
+                           'Container': Container,
+                           'Collection': Collection})
 
 def python(cli):
     import code
+    from sregistry.database.models import Container, Collection
     from sregistry.main import Client as cli
-    code.interact(local={"client":cli})
+    code.interact(local={"client":cli,
+                         'Container': Container,
+                         'Collection': Collection})

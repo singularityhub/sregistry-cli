@@ -31,6 +31,7 @@ from sqlalchemy import (
     func
 )
 
+from sqlalchemy.schema import UniqueConstraint
 from sregistry.logger import bot
 from sregistry.defaults import ( SREGISTRY_DATABASE, SREGISTRY_STORAGE )
 from sqlalchemy import create_engine
@@ -53,7 +54,7 @@ class Collection(Base):
     '''
     __tablename__ = 'collection'
     id = Column(Integer, primary_key=True)
-    name = Column(String(150))
+    name = Column(String(150), unique=True)
     token = Column(String(50))
     created_at = Column(DateTime, default=func.now())
     containers = relationship('Container',
@@ -112,9 +113,15 @@ class Container(Base):
     uri = Column(String(500), nullable=True)
     client = Column(String(50), nullable=False)
     version = Column(String(250), nullable=True)
-    collection_id = Column(Integer, 
+    collection_id = Column(Integer,
                            ForeignKey('collection.id'),
                            nullable=False)
+
+    __table_args__ = (UniqueConstraint('collection_id', 
+                                       'name',
+                                       'tag',
+                                       'client', 
+                                       'version', name='_container_uc'),)
 
     def __repr__(self):
         if self.uri is None:

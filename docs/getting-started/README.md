@@ -55,11 +55,11 @@ These specific commands are [demonstrated with more example](commands.md).
 ### Client (remote)
 This next set of commands, while they interact with local resources, are primarily implemented by the specific clients. For example, a pull from Singularity Hub is going to have particular commands using the Singularity Hub API.
 
- - *pull*: `[remote->local]` is a common use case. It says "there is this image somewhere remote and I want to pull it from there to my local host."
- - *push*: `[local->remote]` takes an image in your local resource and puts it in some remote one. 
- - *list*: `[remote]` list images for a remote endpoint.
  - *delete*: `[remote]`: delete an image from a remote endpoint. You likely will need some kind of credential.
- - *search*: `[remote]`: the entrypoint for a search to a remote endpoint.
+ - *pull*: `[remote->local]` is a common use case. It says "there is this image somewhere remote and I want to pull it from there to my local host."
+ - *push*: `[local->remote]` takes an image in your local resource and puts it in some remote one.
+ - *record*: `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
+ - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
 
 Each of these commands will be detailed with examples in the various [client walkthroughs](../clients), and if you are implementing an endpoint, there are also details about how you should "fill in the space" to
 implement your custom client.

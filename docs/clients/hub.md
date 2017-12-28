@@ -8,10 +8,8 @@ see the [commands](../getting-started/commands.md) documentation. Here we will r
 specific to the Singularity Hub client:
 
  - *pull*: `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
- - *list*: `[remote]` list all image collections in Singularity Hub
-
-Each of these commands will be detailed with examples in the various [client walkthroughs](../clients), and if you are implementing an endpoint, there are also details about how you should "fill in the space" to
-implement your custom client.
+ - *search*: `[remote]` list all image collections in Singularity Hub
+ - *record*: `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
 
 
 ## Pull
@@ -32,7 +30,14 @@ Success! /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04
 Notice how the image is saved (and named) under it's collection folder, and with the full path corresponding
 to all information about the version we could find. @vsoch might change this storage strategy to have the full
 image path correspond to include the collection too - it's not decided if a folder for each collection is the best
-way to go. [What do you think](https://www.github.com/singularityhub/sregistry-cli/issues)?
+way to go. [What do you think](https://www.github.com/singularityhub/sregistry-cli/issues)? You can also do this from within python:
+
+```
+sregistry shell
+client.client_name
+# 'hub'
+client.pull('vsoch/hello-world')
+```
 
 ## Inspect
 After you pull the image, you can easily inspect it. This includes metadata extracted from
