@@ -47,3 +47,18 @@ To build a singularity container
 sudo singularity build sregistry.simg Singularity
 ```
 
+And now anywhere in these pages where you run an sregistry command, instead just
+reference the image:
+
+```
+./sregistry.simg
+```
+
+and to activate a particular client endpoint, thanks to the [Standard Container Integration Format](https://containersftw.github.io/SCI-F/)
+you can just use an `--app` flag instead:
+
+```
+singularity run --app registry sregistry.simg
+```
+
+I (@vsoch) expect to be improving these docs (asciinemas!) and adding additional endpoints soon!
