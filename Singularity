@@ -12,7 +12,6 @@ From: continuumio/miniconda3
     exec /opt/conda/bin/sregistry "$@"
 
 
-
 #######################################
 # Singularity Hub
 #######################################
@@ -54,4 +53,6 @@ From: continuumio/miniconda3
     cd /opt && git clone https://www.github.com/singularityhub/sregistry-cli
     cd sregistry-cli
     /opt/conda/bin/pip install setuptools
-    /opt/conda/bin/python setup.py install
+
+    # This installs all "install extras"
+    /opt/conda/pip install -e .
