@@ -31,14 +31,7 @@ def main(args,parser,subparser):
        search
     '''
     from sregistry.main import Client as cli  
-    images = args.query
-    if not isinstance(images, list):
-        images = [images]
 
-    for image in images:
-        cli.inspect(image)
-
-    from sregistry.main import Client as cli
     for query in args.query:
         if query in ['','*']:
             query = None

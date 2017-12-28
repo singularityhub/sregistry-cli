@@ -7,9 +7,9 @@ For the globally shared commands (e.g., "add", "get", "inspect," "images," and a
 see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are
 specific to the Singularity Hub client:
 
- - *pull*: `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
- - *search*: `[remote]` list all image collections in Singularity Hub
- - *record*: `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
+ - [pull](#pull): `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
+ - [search](#search): `[remote]` list all image collections in Singularity Hub
+ - [record](#record): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
 
 
 ## Pull
@@ -40,7 +40,7 @@ client.pull('vsoch/hello-world')
 ```
 
 ## Inspect
-After you pull the image, you can easily inspect it. This includes metadata extracted from
+While this isn't considered a client command (you can use it across clients) its useful now to inspect the container we've just pulled. The inspection includes metadata extracted from
 the Singularity Hub API, along with from the image (if Singularity was installed on the host
 that downloaded it).
 
@@ -84,51 +84,42 @@ sregistry inspect vsoch/hello-world
 }
 ```
 
+and the same works from within python:
+
+```
+client.inspect('vsoch/hello-world')
+```
+
 Notice that the client is relevant to Singularity Hub. You could imagine at some point using
 different clients to retrieve images with possibly the same (without version) names, in which case
 this keeps them separate. It's less important for this use case, and more important so that in the future when you want to do some operation with this image, we know the backend to use to perform it.
 
 
-Don't forget that the Singularity Hub client also supports the [global client commands](../getting-started/commands.md)
+## Search
+Search is the correct way to list or search a remote endpoint, distinguished from "images" which does the same for your local database. For Singularity Hub you can do a search without arguments to list all containers at the endpoint:
 
-#########################################
-# Pull
-#########################################
+```
+sregistry search
+```
 
-# Let's initiaelize a client, and look at the commands offered
-cli = Client()
+or you can issue a search for a specific collection and container
 
-# What kind of client? Since we didn't set anything special, it's for SHub
-type(cli)
-# sregistry.main.hub.Client
+```
+ sregistry search vsoch/hello-world
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Containers vsoch/hello-world
+1  [name]	vsoch/hello-world
+2  [date]	Oct 18, 2017 01:06PM
+3  vsoch/hello-world:latest
+```
 
-# Pull works just as it would with Singularity, but we don't need the uri
-image = cli.pull('vsoch/hello-world')
-# Progress |===================================| 100.0%
-# Success! vsoch-hello-world-latest.simg
-image
-'vsoch-hello-world-latest.simg'
+We can also do this same thing from within Python, and get back rows (lists of the result) to work with.
 
-# You can also pull a list of images, note that you get a list back
-images = cli.pull(['vsoch/hello-world', 'singularityhub/hello-registry'])
-# Progress |===================================| 100.0% 
-# Success! vsoch-hello-world-latest.simg
-# Progress |===================================| 100.0% 
-# Success! singularityhub-hello-registry-latest.simg
+```
+sregistry shell 
+# akin to starting a shell and doing from from sregistry.main import Client as client
 
-images
-# ['vsoch-hello-world-latest.simg', 'singularityhub-hello-registry-latest.simg']
-# It's recommended to do in serial, so if one fails you can still get
-# the finished paths to the others.
-
-
-#########################################
-# Search
-#########################################
-
-# Search is a tool to search or list a *remote* registry. Here is how you
-# run it for Singularity HUb to see all container collections
-rows = cli.search()
+rows = client.search()
 
 # You can also query by a container - note this currently just supports
 # knowing the full name
@@ -137,37 +128,28 @@ cli.search('vsoch/hello-world')
 # 1  [name]	vsoch/hello-world
 # 2  [date]	Oct 18, 2017 01:06PM
 # 3  vsoch/hello-world:latest
+```
 
+## Record
+Finally, the "record" command is akin to a pull, but you don't care about retrieving the image. You just want the metadata! You can also do this with the command line:
 
+```
+sregistry record vsoch/hello-world
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[container] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+```
 
-###################################################################
-# Push
-###################################################################
+and then view that a record (see the remote label) for our image was added to our images:
 
-from singularity.registry.client import Client
+```
+sregistry images
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Containers:   [date]   [location]  [client]	[uri]
+1  December 27, 2017	local 	   [hub]	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
+2  December 27, 2017	local 	   [hub]	vsoch/sregistry-example:v1.0@b102e9f4c1b2228d6e21755b27c32ed2
+7  December 28, 2017	local 	   [registry]	library/tacolicious:gobacktosleep@5b0c0982-9e9a-4e66-8aa1-91ae2cba4cd3
+8  December 28, 2017	remote	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+```
 
-sreg = Client()    # Singularity Registry Client
-                   # Default base: 127.0.0.1
-                   # Secrets: $HOME/.sregistry OR
-                   # $SREGISTRY_CLIENT_SECRETS
-
-
-# Push an image, this is the path on your filesystem
-image_path = 'vsoch-hello-world-master.img'
-
-# This is the tag, and image name you want in the registry
-image_tag = 'rawr'
-image_name = 'vsoch/dinosaurs'
-
-response = sreg.push(path=image_path,
-                     name=image_name,
-                     tag=image_tag)
-
-# DEBUG Headers found: Content-Type
-# [================================] 391/391 MB - 00:00:00
-# Upload finished! [Return status 201 created]
-
-
-###################################################################
-# Query
-###################################################################
+If you have a record and then later pull the image, the record is considered equivalent and updated.
+Don't forget that the Singularity Hub client also supports the [global client commands](../getting-started/commands.md)

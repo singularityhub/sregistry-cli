@@ -74,13 +74,16 @@ def get_container(self, name, collection_id, tag="latest", version=None):
     '''
     from sregistry.database.models import Container
     if version is None:
-        return Container.query.filter(Container.collection_id == collection_id,
-                                      Container.name == name,
-                                      Container.tag == tag).first()
-    return Container.query.filter(Container.collection_id == collection_id,
-                                  Container.name == name,
-                                  Container.tag == tag,
-                                  Container.version == version).first()
+        container = Container.query.filter_by(collection_id = collection_id,
+                                              name = name,
+                                              tag = tag).first()
+    container = Container.query.filter_by(collection_id = collection_id,
+                                          name = name,
+                                          tag = tag,
+                                          version = version).first()
+    return container
+
+
 
 
 # ACTIONS ######################################################################
@@ -104,10 +107,16 @@ def get(self, name, quiet=False):
     if collection is not None:
         container = self.get_container(collection_id=collection.id,
                                        name=names['image'], 
-                                       tag=names['tag'])
+                                       tag=names['tag'],
+                                       version=names['version'])
+
         if container is not None and quiet is False:
+
+            # The container image file exists [local]
             if container.image is not None:
                 print(container.image)
+
+            # The container has a url (but not local file)
             elif container.url is not None:
                 print(container.url)
             else:
@@ -149,6 +158,7 @@ def inspect(self, name):
     '''Inspect a local image in the database, which typically includes the
        basic fields in the model.
     '''
+    print(name)
     container = self.get(name)
     if container is not None:
         collection = container.collection.name
@@ -266,27 +276,48 @@ def add(self, image_path=None,
 
     # Get a hash of the file for the version, or use provided
     version = names.get('version')
-    if version is None and image_path is not None:
-        version = get_image_hash(image_path)
+    if version is None:
+        if image_path is not None:
+            version = get_image_hash(image_path)
+        else:
+            version = ''  # we can't determine a version, not in API/no file
 
     # Just in case the client didn't provide it, see if we have in metadata
     if url is None and "url" in metadata:
         url = metadata['url']
 
-    container = Container(metrics=json.dumps(metadata),
-                          name=names['image'],
-                          image=image_path,
-                          client=self.client_name,
-                          tag=names['tag'],
-                          version=version,
-                          url=url,
-                          uri=names['uri'],
-                          collection_id=collection.id)
+    # First check that we don't have one already!
+    container = self.get_container(name=names['image'],
+                                   collection_id=collection.id, 
+                                   tag=names['tag'],
+                                   version=version)
 
+    # The container did not exist, create it
+    if container is None:
+        action = "new"
+        container = Container(metrics=json.dumps(metadata),
+                              name=names['image'],
+                              image=image_path,
+                              client=self.client_name,
+                              tag=names['tag'],
+                              version=version,
+                              url=url,
+                              uri=names['uri'],
+                              collection_id=collection.id)
 
-    self.session.add(container)
-    collection.containers.append(container)
+        self.session.add(container)
+        collection.containers.append(container)
+
+    # The container existed, update it.
+    else:
+        action = "update"
+        metrics = json.loads(container.metrics)
+        metrics.update(metadata)
+        container.url=url
+        container.client=self.client_name
+        container.image=image_path
+        container.metrics=json.dumps(metrics)
+
     self.session.commit()
-
-    bot.info("[container] %s" % names['uri'])
+    bot.info("[container][%s] %s" % (action,names['uri']))
     return container

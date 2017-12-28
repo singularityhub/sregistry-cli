@@ -31,7 +31,7 @@ import sys
 import os
 
 
-def search(self, query=None, args=None):
+def search(self, query=None, **kwargs):
     '''query a Singularity registry for a list of images. 
      If query is None, collections are listed. 
 
@@ -49,7 +49,7 @@ def search(self, query=None, args=None):
         return self._search_collection(query)
 
     # Search collections across all fields
-    return self.ls()
+    return self.list()
 
 
 

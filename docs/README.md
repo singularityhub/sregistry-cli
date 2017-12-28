@@ -1,14 +1,18 @@
 # Singularity Global Client
+Welcome to the Singularity Global Client documentation! 
 
-The simplest use case of the Singularity Global Client is to provide the single user a local registry for containers, and to have the registry easily connect with other cloud storage servies and hosted Singularity tools. It's understood that as a researcher or general developer you have many options for storage, and singularity global client intends to make it easy to connect to them, both from the command line and from within python (for developers).
+## What is the Singularity Global Client?
+The core of this software is a *local* client for the single user to manage images. This means a local (flat file) database orchestrated with a storage folder that is friendly for use on a personal machine or shared resource.
+
+## Why was it created?
+The simplest use case of the Singularity Global Client is to provide the single user a local registry for containers, and to have the registry easily connect with other cloud storage services and hosted Singularity tools. It's understood that as a researcher or general developer you have many options for storage, and sometimes your choices are determined by what happens to be provided to you. Singularity, by way of needing to be installed on legacy systems, could never (realistically) implement every storage and endpoint connection that could be wanted. If it did, it would be very challenging to do without using modern libraries that are available on newer operating systems. Singularity Global Client intends to empower Singularity users to interact with containers across these storage types. It exposes a common interface to to connect to and interact with containers both from the command line and from within python (for developers).
+
+Importantly, the Singularity Global Client does not have any dependency on Docker (the current deployment strategies for a Registry or Singularity Hub) and there is no need for extensive setup beyond installation and a single file (sqlite3) database. The user could install the library locally, or just pull a singularity image with it ready to go.
 
 ## Getting Started
-
- - [Global Commands](getting-started/README.md): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to.
-
+ - [Global Commands](getting-started/README.md): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
 
 ## Available Clients
- - [Singularity Global Client](clients/local.md): A *local* client for the single user to manage images. There is no dependency on Docker, or need for extensive setup beyond installation and a single file (sqlite3) database. This would work well on a personal machine or the home node of your cluster.
  - [Singularity Registry](clients/registry.md): is one level up from the global client, because it provides a complete web interface, and substantial database (postgresql) for management of Singularity images. This can be used by a user on a local machine, and is best suited for an institution that wants to host their own registry.
  - [Singularity Hub](https://www.singularity-hub.org) is a cloud hosted builder service to connect your Github repositories to, and Singularity recipes found within will be built and available via the Singularity command line and Singularity Global Client tools. If you are a scientist that values version control, collaboration, and image sharing and you don't have a build environment other than your local machine, this is the way to go!
 
@@ -17,7 +21,7 @@ The simplest use case of the Singularity Global Client is to provide the single 
 
 
 ## Which should I use?
-In the context below, each of these endpoints represents a remote service that you would interact with. It could be the case that you host your own Singulairty Registry, but then have the need to (still) interact with someone else's.
+In the context below, each of these endpoints represents a remote service that you would interact with. It could be the case that you host your own Singulairty Registry, but then have the need to (still) interact with someone else's. By default, you will get the most commonly wanted, which is Singularity Hub.
 
 *Singularity Hub*
 If you have a **few container collections** and value **version control** and **collaboration on recipes** then you are encouraged to use [Singularity Hub](https://www.singularity-hub.org). It will build via commits, deployments, or manual triggers. [Read more](clients/hub.md). 

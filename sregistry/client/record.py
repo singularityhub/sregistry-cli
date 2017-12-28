@@ -24,8 +24,6 @@ import sys
 import pwd
 import os
 
-#TODO: need to make sure to maintain uniqueness when adding images/remote
-
 def main(args, parser, subparser):
     '''the record command is intended for working with remote endpoint records,
        such as adding an entry to the local database for the record without

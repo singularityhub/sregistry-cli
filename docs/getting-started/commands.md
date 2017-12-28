@@ -144,19 +144,16 @@ Notice how the client is already loaded into the space!
 
 ## Remove
 The client can either remove an image from the database record (rm) but **not** the container
-in storage (`rm`) or delete the database record **and** theimage (`rmi`). That looks like this:
+in storage (`rm`) or delete the database record **and** theimage (`rmi`). You **must** be specific about versions, if they exist. If you ask to remove a general image with tag (when versions exist) it will not honor the command, and we take this more conservative approach to deletion. The correct usage looks like this (this is for the rmi command that removes the record and image in storage, if it exists:
 
 ```
-sregistry rm vsoch/hello-world
+sregistry rmi vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-/home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg
-[rm] vsoch/hello-world:latest
+/home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
 
-$ sregistry rmi vsoch/hello-world
+sregistry rmi vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-/home/vanessa/.singularity/shub/vsoch/hello-world:latest.simg
-[rmi] vsoch/hello-world:latest
+https://www.googleapis.com/download/storage/v1/b/singularityhub/o/singularityhub%2Fgithub.com%2Fvsoch%2Fhello-world%2Fe279432e6d3962777bb7b5e8d54f30f4347d867e%2Fed9755a0871f04db3e14971bec56a33f%2Fed9755a0871f04db3e14971bec56a33f.simg?generation=1508072025589820&alt=media
 ```
 
-The first example removes the image from the database (but not the file) and the second removes the
-file from storage and the image.
+The first example has found and removed an image and record, and the second is just a record (a url for an image).

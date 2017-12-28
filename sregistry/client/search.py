@@ -33,6 +33,6 @@ def main(args,parser,subparser):
             query = None
 
         try:
-            cli.list(query=query,args=args)
+            cli.search(query=query, args=args)
         except NotImplementedError:
             bot.info('Search is not available for this endpoint.')

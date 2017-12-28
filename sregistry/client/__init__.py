@@ -68,9 +68,9 @@ def get_parser():
     inspect = subparsers.add_parser("inspect",
                                     help="inspect a container in your database")
 
-    inspect.add_argument("query", nargs='*', 
+    inspect.add_argument("query", nargs=1,
                           help="container search query to inspect", 
-                          type=str, default="*")
+                          type=str, default=None)
 
     # Get path to an image
     get = subparsers.add_parser("get",
