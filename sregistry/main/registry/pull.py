@@ -24,7 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from sregistry.logger import bot
 from sregistry.utils import parse_image_name
 import os
-
+import sys
 
 def pull(self, images, file_name=None, save=True):
     '''pull an image from a singularity registry
@@ -59,6 +59,13 @@ def pull(self, images, file_name=None, save=True):
         bot.debug('Retrieving manifest at %s' %url)
 
         manifest = self._get(url)
+
+        if isinstance(manifest, int):
+            if manifest == 400:
+                bot.error('Bad request (400). Is this a private container?')
+            elif manifest == 404:
+                bot.error('Container not found (404)')
+            sys.exit(1)
 
         if file_name is None:
             file_name = q['storage'].replace('/','-')

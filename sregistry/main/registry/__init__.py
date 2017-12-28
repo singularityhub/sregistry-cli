@@ -77,7 +77,7 @@ class Client(ApiConnection):
     
 
 Client.authorize = authorize
-Client.ls = ls
+Client.list = ls
 Client.remove = remove
 Client.pull = pull
 Client.push = push
