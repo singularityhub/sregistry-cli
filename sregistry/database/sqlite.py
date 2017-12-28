@@ -77,10 +77,11 @@ def get_container(self, name, collection_id, tag="latest", version=None):
         container = Container.query.filter_by(collection_id = collection_id,
                                               name = name,
                                               tag = tag).first()
-    container = Container.query.filter_by(collection_id = collection_id,
-                                          name = name,
-                                          tag = tag,
-                                          version = version).first()
+    else:
+        container = Container.query.filter_by(collection_id = collection_id,
+                                              name = name,
+                                              tag = tag,
+                                              version = version).first()
     return container
 
 
@@ -198,7 +199,6 @@ def rm(self, image_name, delete=False):
 
 def add(self, image_path=None,
               image_name=None,
-              names=None,
               url=None,
               metadata=None,
               save=True, 
@@ -281,6 +281,7 @@ def add(self, image_path=None,
             version = get_image_hash(image_path)
         else:
             version = ''  # we can't determine a version, not in API/no file
+        names['version'] = version
 
     # Just in case the client didn't provide it, see if we have in metadata
     if url is None and "url" in metadata:

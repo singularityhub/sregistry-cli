@@ -10,6 +10,7 @@ The simplest use case of the Singularity Global Client is to provide the single 
 Importantly, the Singularity Global Client does not have any dependency on Docker (the current deployment strategies for a Registry or Singularity Hub) and there is no need for extensive setup beyond installation and a single file (sqlite3) database. The user could install the library locally, or just pull a singularity image with it ready to go.
 
 ## Getting Started
+ - [Installation](install.md): quick steps to get up and running with the Singularity Registry Global Client.
  - [Global Commands](getting-started/README.md): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
 
 ## Available Clients
@@ -29,9 +30,13 @@ If you have a **few container collections** and value **version control** and **
 *Singularity Registry*
 If you want **control** of your own registry, a nice web interface, (optionally) an ability to manage users, and can build on premise (or on your local machine), then you should use [Singularity Registry](https://www.github.com/singularityhub/sregistry). This means that you will serve a web portal like Singularity Hub for your container collections, and it can be customized for yourself or your institution. The files will live on the server (or personal computer) where you installed it, and you can use any of the plugins (e.g., LDAP) that come with it. This is also a nice option for the single user that wants to quickly organize and find images just via a deployment on localhost, but wants a little more than a small sqlite3 database.
 
-## Help and Contribution
+## Getting Help
 This is an open source project. Please contribute to the package, or post feedback and questions as <a href="https://github.com/singularityhub/sregistry-cli" target="_blank">issues</a>.
 
+## Contributing
+ - [Add a Client](contributing/client.md): How to contribute a new client, meaning a storage or other endpoint for Singularity images.
+ - [Documentation](contributing/docs.md): How to help improve this documentation.
+ - [Singularity Registry](contributing/registry.md): How to contribute to the open source Singularity Registry software.
 
 ## License
 

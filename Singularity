@@ -1,13 +1,35 @@
 Bootstrap: docker
 From: continuumio/miniconda3
 
-# sudo singularity build sregistry.simg Singularity
+# sudo singularity build sregistry Singularity
+
+
+#######################################
+# Global
+#######################################
 
 %runscript
     exec /opt/conda/bin/sregistry "$@"
 
-%apprun sregistry
-    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
+# Singularity Hub
+#######################################
+
+%appenv hub
+    SREGISTRY_CLIENT=hub
+    export SREGISTRY_CLIENT
+
+
+#######################################
+# Singularity Registry
+#######################################
+
+%appenv hub
+    SREGISTRY_CLIENT=registry
+    export SREGISTRY_CLIENT
+
 
 %labels
     maintainer vsochat@stanford.edu

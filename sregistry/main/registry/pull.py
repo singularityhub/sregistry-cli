@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import parse_image_name
+from sregistry.utils import ( parse_image_name, remove_uri )
 import os
 import sys
 
@@ -52,13 +52,14 @@ def pull(self, images, file_name=None, save=True):
     finished = []
     for image in images:
 
-        q = parse_image_name(image)
+        q = parse_image_name( remove_uri(image) )
 
         # Verify image existence, and obtain id
         url = "%s/container/%s/%s:%s" %(self.base, q['collection'], q['image'], q['tag'])
         bot.debug('Retrieving manifest at %s' %url)
 
         manifest = self._get(url)
+        manifest['selfLink'] = url
 
         if isinstance(manifest, int):
             if manifest == 400:
@@ -76,7 +77,9 @@ def pull(self, images, file_name=None, save=True):
 
         # If the user is saving to local storage
         if save is True:
-            image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
+            image_uri = "%s/%s:%s" %(manifest['collection'], 
+                                     manifest['name'],
+                                     manifest['tag'])
             container = self.add(image_path = image_file,
                                  image_name = image_uri,
                                  metadata = manifest,

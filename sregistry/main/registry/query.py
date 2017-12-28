@@ -30,7 +30,7 @@ import sys
 import os
 
 
-def ls(self, query=None, args=None):
+def search(self, query=None, args=None):
     '''query a Singularity registry for a list of images. 
      If query is None, collections are listed. 
 
@@ -50,27 +50,22 @@ def ls(self, query=None, args=None):
 
         # List all containers in collection query/
         if query.endswith('/'):  # collection search
-            return self.collection_search(query)
+            return self._collection_search(query)
 
         # List containers across collections called /query
         elif query.startswith('/'):  
-            return self.container_search(query, across_collections=True)
+            return self._container_search(query, across_collections=True)
 
         # List details of a specific collection container
-        elif "/" in query or ":" in query:  
-            if args is not None:
-                return self.container_search(query, deffile=args.deffile,
-                                                    environment=args.environ,
-                                                    runscript=args.runscript,
-                                                    test=args.test)
-            return self.container_search(query)
+        elif "/" in query or ":" in query:
+            return self._container_search(query)
 
         # Search collections across all fields
-        return self.collection_search(query=query)
+        return self._collection_search(query=query)
 
 
     # Search collections across all fields
-    return self.search()
+    return self._search_all()
 
 
 
@@ -78,7 +73,7 @@ def ls(self, query=None, args=None):
 # Search Helpers
 ##################################################################
 
-def search(self):
+def search_all(self):
     '''a "show all" search that doesn't require a query'''
 
     url = '%s/collections/' %self.base
@@ -99,6 +94,7 @@ def search(self):
                               c['detail'] ])
 
     bot.table(rows)
+    return rows
 
 
 def collection_search(self, query):
@@ -121,7 +117,7 @@ def collection_search(self, query):
                       container['detail'] ])
 
     bot.table(rows)
-
+    return rows
 
 def label_search(self, key=None, value=None):
     '''search across labels'''
@@ -163,11 +159,10 @@ def label_search(self, key=None, value=None):
                     "%s:%s" %(l['key'],l['value']) ]
         rows.append(entry)
     bot.table(rows)
+    return rows
 
 
-
-def container_search(self, query, across_collections=False, environment=False,
-                     deffile=False, runscript=False, test=False):
+def container_search(self, query, across_collections=False):
     '''search for a specific container. If across collections is False,
     the query is parsed as a full container name and a specific container
     is returned. If across_collections is True, the container is searched
@@ -211,22 +206,4 @@ def container_search(self, query, across_collections=False, environment=False,
                       print_date ])
 
     bot.table(rows)
-
-    # Finally, show metadata and other values
-    if test is True or deffile is True or environment is True or runscript is True:
-        bot.newline() 
-        for c in result:
-            metadata = c['metadata']
-
-            if test is True:
-                bot.custom(prefix='%test', message=metadata['test'], color="CYAN")
-                bot.newline()
-            if deffile is True:
-                bot.custom(prefix='Singularity', message=metadata['deffile'], color="CYAN")
-                bot.newline()
-            if environment is True:
-                bot.custom(prefix='%environment', message=metadata['environment'], color="CYAN")
-                bot.newline()
-            if runscript is True:
-                bot.custom(prefix='%runscript', message=metadata['runscript'], color="CYAN")
-                bot.newline()
+    return rows

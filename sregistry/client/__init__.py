@@ -35,11 +35,6 @@ def get_parser():
     from sregistry.main import Client as cli
 
     # Global Variables
-    parser.add_argument("--version", dest='version', 
-                        help="show software version", 
-                        default=False, action='store_true')
-
-
     parser.add_argument('--debug', dest="debug", 
                         help="use verbose logging to debug.", 
                         default=False, action='store_true')
@@ -50,6 +45,10 @@ def get_parser():
                                        title='actions',
                                        description=description,
                                        dest="command")
+
+    # print version and exit
+    version = subparsers.add_parser("version",
+                                    help="show software version")
  
     # Local shell with client loaded
     shell = subparsers.add_parser("shell",
@@ -142,26 +141,6 @@ def get_parser():
                          help="container search query, don't specify for all", 
                          type=str, default="*")
 
-
-    # A more specific search, implemented by sregistry
-    # TODO: this should be moved to be handled by registry search function
-    if hasattr(cli,'container_search'):
-
-        search.add_argument('--runscript','-r', dest="runscript", 
-                            help="show the runscript for each container", 
-                            default=False, action='store_true')
-
-        search.add_argument('--def','-df', dest="deffile", 
-                            help="show the deffile for each container.", 
-                            default=False, action='store_true')
-
-        search.add_argument('--env','-e', dest="environ", 
-                            help="show the environment for each container.", 
-                            default=False, action='store_true')
-
-        search.add_argument('--test','-t', dest="test", 
-                            help="show the test for each container.", 
-                            default=False, action='store_true')
 
     # Push an image
     if hasattr(cli,'push'):
@@ -269,11 +248,21 @@ def main():
     parser = get_parser()
     subparsers = get_subparsers(parser)
 
+    def help(return_code=0):
+        '''print help, including the software version and active client 
+           and exit with return code.
+        '''
+
+        version = sregistry.__version__
+        name = cli.client_name
+
+        print("\nSingularity Registry Global Client v%s [%s]" %(version, name))
+        parser.print_help()
+        sys.exit(return_code)
+    
     # If the user didn't provide any arguments, show the full help
     if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(0)
-
+        help()
     try:
         args = parser.parse_args()
     except:
@@ -283,14 +272,15 @@ def main():
     if args.debug is False:
         os.environ['MESSAGELEVEL'] = "INFO"
 
+    # Show the version and exit
+    if args.command == "version":
+        print(sregistry.__version__)
+        sys.exit(0)
+
     # The client will announce itself (backend/database) unless it's get
     if args.command not in ["get"]:
         cli.speak()
     
-    if args.version is True:
-        print(sregistry.__version__)
-        sys.exit(0)
-
     # Does the user want a shell?
     if args.command == "add": from .add import main
     if args.command == "get": from .get import main
@@ -316,9 +306,7 @@ def main():
     except UnboundLocalError:
         return_code = 1
 
-    # If we get down here are the user didn't 
-    parser.print_help()    
-    sys.exit(return_code)
+    help(return_code)
 
 if __name__ == '__main__':
     main()

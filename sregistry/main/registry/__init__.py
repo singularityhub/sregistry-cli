@@ -29,6 +29,7 @@ import os
 from .auth import authorize
 from .pull import pull
 from .push import push
+from .record import record
 from .delete import remove
 from .query import *
 
@@ -77,11 +78,12 @@ class Client(ApiConnection):
     
 
 Client.authorize = authorize
-Client.list = ls
 Client.remove = remove
 Client.pull = pull
 Client.push = push
+Client.record = record
 Client.search = search
-Client.collection_search = collection_search
-Client.container_search = container_search
-Client.label_search = label_search
+Client._search_all = search_all
+Client._collection_search = collection_search
+Client._container_search = container_search
+Client._label_search = label_search
