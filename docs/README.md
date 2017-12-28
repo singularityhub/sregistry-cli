@@ -29,9 +29,8 @@ Importantly, the Singularity Global Client does not have any dependency on Docke
  - [Global Commands](commands): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
 
 ## Available Clients
+ - [Singularity Hub](https://www.singularity-hub.org) [default] is a cloud hosted builder service to connect your Github repositories to, and Singularity recipes found within will be built and available via the Singularity command line and Singularity Global Client tools. If you are a scientist that values version control, collaboration, and image sharing and you don't have a build environment other than your local machine, this is the way to go!
  - [Singularity Registry](registry-client): is one level up from the global client, because it provides a complete web interface, and substantial database (postgresql) for management of Singularity images. This can be used by a user on a local machine, and is best suited for an institution that wants to host their own registry.
- - [Singularity Hub](https://www.singularity-hub.org) is a cloud hosted builder service to connect your Github repositories to, and Singularity recipes found within will be built and available via the Singularity command line and Singularity Global Client tools. If you are a scientist that values version control, collaboration, and image sharing and you don't have a build environment other than your local machine, this is the way to go!
-
 
 ## Which should I use?
 In the context below, each of these endpoints represents a remote service that you would interact with. It could be the case that you host your own Singulairty Registry, but then have the need to (still) interact with someone else's. By default, you will get the most commonly wanted, which is Singularity Hub.

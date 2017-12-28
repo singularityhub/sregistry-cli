@@ -11,7 +11,7 @@ toc: false
 To install from the Github repository:
 
 ```
-git clone https://www.github.com/singularityhub/sregistry-cli
+git clone https://www.github.com/singularityhub/sregistry-cli.git
 cd sregistry-cli
 python setup.py install
 ```
