@@ -23,6 +23,9 @@ Singularity image. For these same functions for within python (for developers) [
  - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
+A quick rundown of basic commands is shown in this asciicast.
+
+[![asciicast](https://asciinema.org/a/154623.png)](https://asciinema.org/a/154623?speed=3)
 
 ## Add
 Adding an image to your database, meaning a local file, is the simplest action that you can perform, as it doesn't requite any remote endpoint or even web connectivity. Let's try doing this now.

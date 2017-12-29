@@ -24,6 +24,8 @@ The simplest use case of the Singularity Global Client is to provide the single 
 
 Importantly, the Singularity Global Client does not have any dependency on Docker (the current deployment strategies for a Registry or Singularity Hub) and there is no need for extensive setup beyond installation and a single file (sqlite3) database. The user could install the library locally, or just pull a singularity image with it ready to go.
 
+[![asciicast](https://asciinema.org/a/154519.png)](https://asciinema.org/a/154519?speed=4)
+
 ## Getting Started
  - [Installation](install): quick steps to get up and running with the Singularity Registry Global Client. This includes a local installation, or the option to use a Singularity image.
  - [Global Commands](commands): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
