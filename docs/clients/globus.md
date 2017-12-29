@@ -99,14 +99,12 @@ globusconnectpersonal -statusGlobus Online:   connected
 Transfer Status: idle
 ```
 
-I think you would want to stop and start the endpoint after this change. Note that when I made changes and tried a `globuspersonalconnect -ls <endpoint_id>`, I didn't see any output. I have faith! It doesn't hurt to do a restart:
+I think you would want to stop and start the endpoint after this change. Note that if you try to do `globuspersonalconnect -ls <endpoint_id>`, you won't see any output, nor will you in the web interface. The default does not show hidden folders, but it's there. It doesn't hurt to do a restart:
 
 ```
 globusconnectpersonal -stop
 globusconnectpersonal -start &
 ```
-
-NOTE: This seems to be a bug that the default endpoint command hides hidden files, and we wouldn't want this to be the case . I'm pausing here for now until this can be resolved.
 
 Finally, make sure to grab your endpoint's id, because we will need to add it to the application to be aware of next. I don't know of the "best way" to search for an endpoint, but I used my email to find it.
 
@@ -123,14 +121,79 @@ or you could search with a filter like "my-endpoints"
 globus endpoint search --filter-scope my-endpoints
 ```
 
+## 2. Add the endpoint to sregistry
+The SRegistry client will find your endpoint based on an environment variable, and so you could export it.
+
+```
+SREGISTRY_GLOBUS_ENDPOINT_ID=74f0809a-d11a-11e7-962c-22000a8cbd7d
+export SREGISTRY_GLOBUS_ENDPOINT_ID
+```
+But it's easier to just run a command with it once, and then not do that.
+
+```
+SREGISTRY_GLOBUS_ENDPOINT_ID=74f0809a-d11a-11e7-962c-22000a8cbd7d SREGISTRY_CLIENT=globus sregistry shell
+```
+
+If you don't, it will just get angry at you and exit:
+
+```
+SREGISTRY_CLIENT=globus sregistry shell
+ERROR SREGISTRY_GLOBUS_ENDPOINT_ID not set or in /home/vanessa/.sregistry
+```
+
+After you do this, when you run the command you will find yourself in... a globus shell!
+
+```
+SREGISTRY_CLIENT=globus sregistry shell
+[client|globus] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>> 
+```
+
+And if you were to peek at your sregistry secrets file, you would see that the
+endpoint is saved.
+
+
+```
+cat $HOME/.sregistry
+{
+    "username": "vsoch",
+    "globus": {
+        "SREGISTRY_GLOBUS_ENDPOINT_ID": "74f0809a-d11a-11e7-962c-22000a8cbd7d"
+    },
+    "token": "3c00ebba888c238a50820bb9a1f38518c9360b31",
+    "base": "http://127.0.0.1"
+}
+```
+
+To review, the logic for this flow is as follows:
+
+ - A globus endpoint id on the host is required for using Globus. This is because all transfers of files are using the Globus APIs. If you want to move containers with another method, don't use the Globus client.
+ - If the globus endpoint id is found in the environment, this takes priority over any previously saved, and updates it.
+ - If a globus endpoint id isn't found in the environment, we check for a previously saved in the sregistry secrets. If we find it, you are good to go (and this is why you only need to run the command above once).
+ - If a globus endpoint id isn't found in the environment nor the sregistry secrets, you get an error message.
+
+## 3. Use the client
+Although the client is added, we don't technically login until you try to use the endpoint.
+
+This section is currently being written. We need to have validation of:
+
+  1. creation, existence, and listing of shared endpoints
+  2. endpoint metadata and file types
+  3. immediacy of files to be transferred
+
+
 ## 2. Commands
 Here we will review the set of commands that are specific to the SRegistry Globus client:
 
- - *pull*: `[remote->local]` is a common use case. It says "get this remote registry image and pull it from there to my storage."
- - *push*: `[local->remote]` takes an image on your host and pushes to the registry (if you have permission).
+ - *pull*: `[remote->local]` retrieve an image from a remote Globus endpoint, add to your local endpoint
+ - *push*: `[local->remote]` transfer an image from your local Globus endpoint to another remote.
  - *record*: `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
- - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
- - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential (note this isn't implemented yet for the registry, but is noted here as a todo).
+ - *search*: `[remote]`: without arguments, list remote endpoints. With a query (endpoint name or id) list containers  for this remote endpoint.
+ - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential.
 
 
 ## Sanity Checks
@@ -146,6 +209,6 @@ Here we will review the set of commands that are specific to the SRegistry Globu
 ## Search
 
 <div>
-    <a href="/sregistry-cli/"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/clients"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
     <a href="/sregistry-cli/client-hub.html"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

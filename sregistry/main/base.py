@@ -57,6 +57,12 @@ class ApiConnection(object):
         '''
         bot.info('[client|%s] [database|%s]' %(self.client_name,
                                                self.database))
+        if hasattr(self, '_speak')
+            self._speak()
+
+
+    def __speak(self):
+        return "[client][%s]" %self.client_name
 
     def __repr__(self):
         return "[client][%s]" %self.client_name

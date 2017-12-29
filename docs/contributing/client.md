@@ -135,6 +135,33 @@ cp -R sregistry/main/__template__ sregistry/main/myclient
 
 To describe the above in more detail, the base of a client is the ApiConnection (in `main/base.py`), which comes with standard functions for web requests, showing progress bars with a download, get, etc. Your "myclient" will subclass that, and onto it you will add the custom functions for push, pull (and the others that are important). This happens in the `main/myclient/__init__.py` where your client is generated. Then, if the user wants to use `myclient` the environment variable is detected in `main/__init.__py` and your Client imported from it's respective folder. You can follow along the template for more detail, and feel free to improve it with a pull request.  We will quickly discuss functions that will be useful to you, globally:
 
+#### Metadata
+Did you notice that the client usually announces who he/she is?
+
+```
+>>> client.speak()
+[client|globus] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+```
+
+If you want to add additional information, then implement a function for your class called `_speak` and it will be found and called from the main function. For example, if I wrote the function like this:
+
+```
+def _speak(self):
+    '''add the custom metadata to show the user'''    
+    custom = "endpoint-id"
+    bot.info('[%s][12345]' %custom)
+```
+
+The main `speak()` function would produce
+
+```
+>>> client.speak()
+[client|globus] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[endpoint-id][12345]
+```
+
+This function was created for an easy way to communicate start up (or other) settings to the user. Feel free to use it.
+
 #### Logging
 If you import the bot, you get with him a bunch of easy to use functions for different levels along with functions. For example, here are different levels of messages coinciding with what gets displayed depending on the user export of `MESSAGELEVEL`:
 
