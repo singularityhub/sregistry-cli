@@ -23,6 +23,18 @@ From: continuumio/miniconda3
     exec /opt/conda/bin/sregistry "$@"
 
 
+
+#######################################
+# Globus
+#######################################
+
+%appenv globus
+    SREGISTRY_CLIENT=globus
+    export SREGISTRY_CLIENT
+%apprun globus
+    exec /opt/conda/bin/sregistry "$@"
+
+
 #######################################
 # Singularity Registry
 #######################################
