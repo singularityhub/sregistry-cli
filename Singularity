@@ -19,7 +19,7 @@ From: continuumio/miniconda3
 %appenv google-storage
     SREGISTRY_CLIENT=google-storage
     export SREGISTRY_CLIENT
-%apprun hub
+%apprun google-storage
     exec /opt/conda/bin/sregistry "$@"
 
 
