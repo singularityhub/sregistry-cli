@@ -28,23 +28,26 @@ def main(args,parser,subparser):
 
     from sregistry.main import Client as cli
 
-    shells = { 'python':python,
-               'bpython': bpython,
-               'ipython': ipython }
+    lookup = { 'ipython': ipython,
+               'python': python,
+               'bpython': bpython }
+
+    shells = ['ipython', 'python', 'bpython']
 
     # If the user asked for a specific shell via environment
     shell = cli._get_and_update_setting('SREGISTRY_SHELL')
     if shell is not None:
         shell = shell.lower()
-        if shell in shells:
+        if shell in lookup:
             try:    
-                return shells[shell]()
+                return lookup[shell]()
             except ImportError:
                 pass
 
-    for name,shell in shells.items():
+    # Otherwise present order of liklihood to have on system
+    for shell in shells:
         try:
-            return shell(cli)
+            return lookup[shell]()
         except ImportError:
             pass
     

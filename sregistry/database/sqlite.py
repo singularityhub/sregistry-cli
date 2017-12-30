@@ -316,7 +316,8 @@ def add(self, image_path=None,
         metrics.update(metadata)
         container.url=url
         container.client=self.client_name
-        container.image=image_path
+        if image_path is not None:
+            container.image=image_path
         container.metrics=json.dumps(metrics)
 
     self.session.commit()

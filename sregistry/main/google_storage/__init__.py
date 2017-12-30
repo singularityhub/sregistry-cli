@@ -31,15 +31,12 @@ from retrying import retry
 from google.cloud import storage
 from googleapiclient.discovery import build
 from oauth2client.client import GoogleCredentials
-from oauth2client.tools import run_flow as run_oauth2
-from oauth2client.client import flow_from_clientsecrets
 from googleapiclient.errors import HttpError
 
-# from .pull import pull
+from .pull import pull
 from .push import ( push, upload )
-# from .record import record
-# from .query import search
-
+from .record import record
+from .query import ( container_query, list_containers, search, search_all )
 
 class Client(ApiConnection):
 
@@ -49,6 +46,11 @@ class Client(ApiConnection):
         self._update_headers()
         self._init_client()
         super(ApiConnection, self).__init__(**kwargs)
+
+    def _speak(self):
+        '''add the bucket name to be printed to the user at appropriate times
+        '''
+        bot.info('[bucket][%s]' %self._bucket_name)
 
     def _update_secrets(self):
         '''The user is required to have an application secrets file in his
@@ -92,28 +94,17 @@ class Client(ApiConnection):
             self._bucket = self._bucket_service.get_bucket(self._bucket_name)
         except google.cloud.exceptions.NotFound:
             self._bucket = self._bucket_service.create_bucket(self._bucket_name)
-        bot.info('[bucket][%s]' %self._bucket_name)
         return self._bucket
-
-
-    @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000,stop_max_attempt_number=10)
-    def _delete(object_name):
-        '''delete_file will delete a file from a bucket
-            object_name: the "name" parameter of the object.
-        '''
-        try:
-            operation = self._service.objects().delete(bucket=self.bucket,
-                                                       object=object_name).execute()
-        except HttpError as e:
-            pass
-            operation = e
-        return operation
 
 
 
 # Add your different functions imported at the top to the client here
-# Client.pull = pull
+Client.pull = pull
 Client.push = push
 Client._upload = upload
-# Client.record = record
-# Client.search = search
+Client.record = record
+
+Client.search = search
+Client._search_all = search_all
+Client._container_query = container_query
+Client._list_containers = list_containers

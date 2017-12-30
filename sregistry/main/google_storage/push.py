@@ -23,13 +23,13 @@ from sregistry.client import Singularity
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     get_image_hash,
-    parse_image_name,
-    parse_header
+    parse_image_name
 )
 
-# see the registry push for example of how to do this
+from sregistry.main.google_storage.utils import prepare_metadata
 from googleapiclient.http import MediaFileUpload
 from retrying import retry
+import collections
 import requests
 import six
 import json
@@ -63,9 +63,9 @@ def push(self, path, name, tag=None):
         version = get_image_hash(path)
         names = parse_image_name(name,tag=tag, version=version)    
 
-    # Update metadata with names and sregistry stamp
+    # Update metadata with names
+    metadata = metadata['data']
     metadata.update(names)
-    metadata['client'] = 'sregistry'
 
     #TODO: use multiple threads/other to upload
     manifest = self._upload(source=path, 
@@ -90,24 +90,23 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
        This would be the method to do the same using the storage client,
        but not easily done for resumable
 
-        blob = self._bucket.blob(destination)
-        blob.upload_from_filename(filename=source, 
-                                  content_type="application/zip",
-                                  client=self._service)
+       blob = self._bucket.blob(destination)
+       blob.upload_from_filename(filename=source, 
+                                 content_type="application/zip",
+                                 client=self._service)
 
-        url = blob.public_url
-        if isinstance(url, six.binary_type):
-            url = url.decode('utf-8')
+       url = blob.public_url
+       if isinstance(url, six.binary_type):
+           url = url.decode('utf-8')
 
-        return url
-
+       return url
     '''
+    env = 'SREGISTRY_GOOGLE_STORAGE_PRIVATE'
+    keep_private = self._get_and_update_setting(env)
 
-    #TODO: metadata isn't being set.
     media = MediaFileUpload(source, chunksize=chunk_size, resumable=True)
     request = self._service.objects().insert(bucket=self._bucket_name, 
                                              name=destination,
-                                             body=metadata,
                                              media_body=media)
 
     response = None
@@ -121,4 +120,19 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
                 bar.show(progress.resumable_progress / (1024*1024.0))
         except:
             raise
+
+    # When we finish upload, get as blob
+    blob = self._bucket.blob(destination)
+    if blob.exists():
+
+        if not keep_private:
+            blob.make_public()
+    
+        # If the user has a dictionary of metadata to update
+        if metadata is not None:
+            body = prepare_metadata(metadata)
+            blob.metadata = metadata   
+            blob._properties['metadata'] = metadata
+            blob.patch()
+
     return response

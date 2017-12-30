@@ -62,6 +62,17 @@ class ApiConnection(object):
         bot.info('[client|%s] [database|%s]' %(self.client_name,
                                                self.database))
 
+        self._speak()
+
+    def _speak(self):
+        '''this function should be subclassed if the client has additional
+           information to give the user, beyond it's name and the database
+           location. Be careful about adding extra prints to various functions
+           because with a command like "get" the expectation is to print a
+           download url (and nothing else)
+        '''
+        pass
+
     def __repr__(self):
         return "[client][%s]" %self.client_name
 
