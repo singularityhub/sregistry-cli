@@ -22,14 +22,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from sregistry.logger import bot
 from sregistry.auth import read_client_secrets
 from sregistry.main import ApiConnection
+import google
 import json
 import sys
 import os
 
+from retrying import retry
+from google.cloud import storage
+from googleapiclient.discovery import build
+from oauth2client.client import GoogleCredentials
+from googleapiclient.errors import HttpError
+
 # from .pull import pull
-# from .push import push
+from .push import ( push, upload )
 # from .record import record
 # from .query import search
+
+
+# The name for the new bucket
+bucket_name = 'my-new-bucket'
+
+# Creates the new bucket
+bucket = storage_client.create_bucket(bucket_name)
+
+print('Bucket {} created.'.format(bucket.name))
 
 class Client(ApiConnection):
 
@@ -57,32 +73,50 @@ class Client(ApiConnection):
            get the bucket, and then instantiate the client.
         '''
         env = 'SREGISTRY_GOOGLE_STORAGE_BUCKET'
-        self.bucket = self._get_and_update_setting(env)
-        if self.bucket is None:
-            self.bucket = 
+        self._bucket_name = self._get_and_update_setting(env)
+        self._service = self._get_service()
+        if self.bucket_name is None:
+            self.bucket_name = 'sregistry-%s' %os.environ['USER']
+        self._get_bucket()
 
-#TODO: stopped here - just write these functions, yo!
-# Imports the Google Cloud client library
-#from google.cloud import storage
 
-# Instantiates a client
-#storage_client = storage.Client()
+    def _get_service(self):
+        '''get version 1 of the google storage API
+        :param version: version to use (default is v1)
+        '''
+        return storage.Client()
 
-# The name for the new bucket
-#bucket_name = 'my-new-bucket'
 
-# Creates the new bucket
-#bucket = storage_client.create_bucket(bucket_name)
+    @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
+    def _get_bucket(self):
+        '''get a bucket based on a bucket name. If it doesn't exist, create it.
+        '''
+        try:
+            self._bucket = self._service.get_bucket(self.bucket_name)
+        except google.cloud.exceptions.NotFound:
+            self._bucket = self._service.create_bucket(self.bucket_name)
+        bot.info('[bucket][%s]' %self.bucket_name)
+        return self._bucket
 
-#print('Bucket {} created.'.format(bucket.name))
-#
 
-    def __str__(self):
-        return type(self)
+    @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000,stop_max_attempt_number=10)
+    def _delete(object_name):
+        '''delete_file will delete a file from a bucket
+            object_name: the "name" parameter of the object.
+        '''
+        try:
+            operation = self._service.objects().delete(bucket=self.bucket,
+                                                       object=object_name).execute()
+        except HttpError as e:
+            pass
+            operation = e
+        return operation
+
 
 
 # Add your different functions imported at the top to the client here
 # Client.pull = pull
-# Client.push = push
+Client.push = push
+Client._upload = upload
 # Client.record = record
 # Client.search = search

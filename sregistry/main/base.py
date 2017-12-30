@@ -52,6 +52,7 @@ class ApiConnection(object):
         # to do corresponding action in database.
         # we need a sort of call back for push, pull, delete, etc.
 
+
 # Metadata
 
     def speak(self):
