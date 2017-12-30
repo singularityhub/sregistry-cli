@@ -26,8 +26,6 @@ import json
 import sys
 import os
 
-# here you should import the functions from the files in this
-# folder that you add to your client (at the bottom)
 # from .pull import pull
 # from .push import push
 # from .record import record
@@ -39,6 +37,7 @@ class Client(ApiConnection):
  
         self._update_secrets()
         self._update_headers()
+        self._init_client()
         super(ApiConnection, self).__init__(**kwargs)
 
     def _update_secrets(self):
@@ -49,8 +48,18 @@ class Client(ApiConnection):
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
         self.secrets = self._get_and_update_setting(env)
         if self.secrets is None:
-            bot.error('You must export the %s to use the Google Storage client')
+            bot.error('You must export %s to use Google Storage client' %env)
             sys.exit(1)
+
+    def _init_client(self):
+        '''init client will check if the user has defined a bucket that
+           differs from the default, use the application credentials to 
+           get the bucket, and then instantiate the client.
+        '''
+        env = 'SREGISTRY_GOOGLE_STORAGE_BUCKET'
+        self.bucket = self._get_and_update_setting(env)
+        if self.bucket is None:
+            self.bucket = 
 
 #TODO: stopped here - just write these functions, yo!
 # Imports the Google Cloud client library

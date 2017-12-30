@@ -239,9 +239,14 @@ This will either be the value set in the environment (first priority) or the set
 setting = self._get_and_update_setting('SREGISTRY_MYCLIENT_ID')
 ```
 
-Given that something is found in the environment, it will also update the secrets, and importantly, save it indexed by your client name.
+Given that something is found in the environment, it will also update the secrets, and importantly, save it indexed by your client name. For the above, in the client secrets file (default `$HOME/.sregistry`) we would see the following update:
 
-
+```
+{
+  'myclient': {'SREGISTRY_MYCLIENT_ID': setting }
+}
+```
+where `setting` corresponds to whatever was found in the environment. The client name (`myclient`) is obtained from the client itself (`self.client_name`). Then if we wanted to just read client secrets (used by the functions above):
 
 ```
 from sregistry.auth import read_client_secrets
