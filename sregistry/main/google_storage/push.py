@@ -22,17 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from sregistry.client import Singularity
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
+    get_image_hash,
     parse_image_name,
     parse_header
 )
 
 # see the registry push for example of how to do this
 from googleapiclient.http import MediaFileUpload
-from requests_toolbelt import (
-    MultipartEncoder,
-    MultipartEncoderMonitor
-)
-
 from retrying import retry
 import requests
 import six
@@ -59,29 +55,66 @@ def push(self, path, name, tag=None):
     # here is an exampole of getting metadata for a container
     cli = Singularity()
     metadata = cli.inspect(image_path=path, quiet=True)
+    metadata = json.loads(metadata)
 
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(name,tag=tag)
-    
-    bot.spinner.start()
-    result = self._upload(path, names['storage'])
-    print(result)
-    bot.spinner.stop()
+    if names['version'] is None:
+        version = get_image_hash(path)
+        names = parse_image_name(name,tag=tag, version=version)    
+
+    #TODO: use multiple threads/other to upload
+    manifest = self._upload(path, names['storage'])
+
+    # If result is successful, save container record
+    if result is not None:
+        metadata.update(manifest)
+        container = self.add(image_name=names['uri'],
+                             metadata=metadata,
+                             url=manifest['mediaLink'])
+    print(manifest['mediaLink'])
 
 
 
 @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
-def upload(self, source, destination):
+def upload(self, source, destination, chunk_size = 2 * 1024 * 1024):
     '''upload a file from a source to a destination. The client is expected
        to have a bucket (self._bucket) that is created when instantiated.
+     
+       This would be the method to do the same using the storage client,
+       but not easily done for resumable
+
+        blob = self._bucket.blob(destination)
+        blob.upload_from_filename(filename=source, 
+                                  content_type="application/zip",
+                                  client=self._service)
+
+        url = blob.public_url
+        if isinstance(url, six.binary_type):
+            url = url.decode('utf-8')
+
+        return url
+
     '''
-    blob = self._bucket.blob(destination)
-    blob.upload_from_filename(filename=source, 
-                              content_type="application/zip",
-                              client=self._service)
+    filename = os.path.basename(source)
+    print('Uploading: %s to bucket://%s/%s ' % (filename, 
+                                                self._bucket_name,
+                                                destination))
 
-    url = blob.public_url
-    if isinstance(url, six.binary_type):
-        url = url.decode('utf-8')
+    media = MediaFileUpload(source, chunksize=chunk_size, resumable=True)
+    request = self._service.objects().insert(bucket=self._bucket_name, 
+                                             name=destination,
+                                             media_body=media)
 
-    return url
+    response = None
+    total = request.resumable._size / (1024*1024.0)
+    bar = ProgressBar(expected_size=total, filled_char='=')
+    while response is None:
+        error = None
+        try:
+            progress, response = request.next_chunk()
+            if progress:
+                bar.show(progress.resumable_progress / (1024*1024.0))
+        except:
+            raise
+    return response

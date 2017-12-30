@@ -31,6 +31,8 @@ from retrying import retry
 from google.cloud import storage
 from googleapiclient.discovery import build
 from oauth2client.client import GoogleCredentials
+from oauth2client.tools import run_flow as run_oauth2
+from oauth2client.client import flow_from_clientsecrets
 from googleapiclient.errors import HttpError
 
 # from .pull import pull
@@ -54,8 +56,8 @@ class Client(ApiConnection):
            file. If not, 
         '''
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
-        self.secrets = self._get_and_update_setting(env)
-        if self.secrets is None:
+        self._secrets = self._get_and_update_setting(env)
+        if self._secrets is None:
             bot.error('You must export %s to use Google Storage client' %env)
             sys.exit(1)
 
@@ -72,11 +74,13 @@ class Client(ApiConnection):
         self._get_bucket()
 
 
-    def _get_service(self):
+    def _get_service(self, version='v1'):
         '''get version 1 of the google storage API
         :param version: version to use (default is v1)
         '''
-        return storage.Client()
+        self._bucket_service = storage.Client()
+        credentials = GoogleCredentials.get_application_default()
+        return build('storage', version, credentials=credentials) 
 
 
     @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
@@ -84,9 +88,9 @@ class Client(ApiConnection):
         '''get a bucket based on a bucket name. If it doesn't exist, create it.
         '''
         try:
-            self._bucket = self._service.get_bucket(self._bucket_name)
+            self._bucket = self._bucket_service.get_bucket(self._bucket_name)
         except google.cloud.exceptions.NotFound:
-            self._bucket = self._service.create_bucket(self._bucket_name)
+            self._bucket = self._bucket_service.create_bucket(self._bucket_name)
         bot.info('[bucket][%s]' %self._bucket_name)
         return self._bucket
 
