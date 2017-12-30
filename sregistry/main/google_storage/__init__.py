@@ -39,14 +39,6 @@ from .push import ( push, upload )
 # from .query import search
 
 
-# The name for the new bucket
-bucket_name = 'my-new-bucket'
-
-# Creates the new bucket
-bucket = storage_client.create_bucket(bucket_name)
-
-print('Bucket {} created.'.format(bucket.name))
-
 class Client(ApiConnection):
 
     def __init__(self, secrets=None, base=None, **kwargs):
@@ -75,8 +67,8 @@ class Client(ApiConnection):
         env = 'SREGISTRY_GOOGLE_STORAGE_BUCKET'
         self._bucket_name = self._get_and_update_setting(env)
         self._service = self._get_service()
-        if self.bucket_name is None:
-            self.bucket_name = 'sregistry-%s' %os.environ['USER']
+        if self._bucket_name is None:
+            self._bucket_name = 'sregistry-%s' %os.environ['USER']
         self._get_bucket()
 
 
@@ -92,10 +84,10 @@ class Client(ApiConnection):
         '''get a bucket based on a bucket name. If it doesn't exist, create it.
         '''
         try:
-            self._bucket = self._service.get_bucket(self.bucket_name)
+            self._bucket = self._service.get_bucket(self._bucket_name)
         except google.cloud.exceptions.NotFound:
-            self._bucket = self._service.create_bucket(self.bucket_name)
-        bot.info('[bucket][%s]' %self.bucket_name)
+            self._bucket = self._service.create_bucket(self._bucket_name)
+        bot.info('[bucket][%s]' %self._bucket_name)
         return self._bucket
 
 

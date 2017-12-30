@@ -65,21 +65,16 @@ def push(self, path, name, tag=None):
     
     bot.spinner.start()
     result = self._upload(path, names['storage'])
+    print(result)
     bot.spinner.stop()
 
 
 
 @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
 def upload(self, source, destination):
-    '''get_folder will return the folder with folder_name, and if create=True,
-    will create it if not found. If folder is found or created, the metadata is
-    returned, otherwise None is returned
-    :param storage_service: the drive_service created from get_storage_service
-    :param bucket: the bucket object from get_bucket
-    :param file_name: the name of the file to upload
-    :param bucket_path: the path to upload to
+    '''upload a file from a source to a destination. The client is expected
+       to have a bucket (self._bucket) that is created when instantiated.
     '''
-
     blob = self._bucket.blob(destination)
     blob.upload_from_filename(filename=source, 
                               content_type="application/zip",
