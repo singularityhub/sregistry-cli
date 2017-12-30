@@ -216,7 +216,32 @@ And since you defined the `Client`in `myclient/__init__.py`, a subfolder, it is 
 
 
 ### 5. Think about credentials and settings
-You can use functions to read client secrets with our provided function:
+The primary (recommended) way for users to interact with your client is via environment variables. To maintain the `SREGISTRY` environment variable namespace, you should use the following convention:
+
+```
+`SREGISTRY_<CLIENTNAME>_<VARIABLE>`
+```
+
+Notice that it starts with `SREGISTRY_`, the client name comes next, and then finally the variable name. Also note that we are using all caps. If you are using an environment variable that is defined from another service or application (for example, Google has the user export credentials to `GOOGLE_APPLICATION_CREDENTIALS` you should honor that name and not add the `SREGISTRY_` prefix so the user only has to define it once.
+
+#### Helper Functions
+To make this easy for your development, we have created a set of functions that live with all clients to get and update environment variables. In the examples below, we will start with high level functions, and then move into more detailed functions used by them. First, you might want to get an environment variable from the user. You can do that with `client._get_setting()`. Let's say that I tell my user to export a credential to `SREGISTRY_MYCLIENT_ID`. If I want to look for it in the environment, and then if not found, look in the client secrets file, I would do:
+
+```
+# self refers to the sregistry.main.Client
+
+setting = self._get_setting('SREGISTRY_MYCLIENT_ID')
+```
+
+This will either be the value set in the environment (first priority) or the settings file (second priority) and then `None` if not found. If you want to, on top of finding any result, save it to the secrets to be found the next time (so the user doesn't have to define it) then use `client._get_and_update_setting()`
+
+```
+setting = self._get_and_update_setting('SREGISTRY_MYCLIENT_ID')
+```
+
+Given that something is found in the environment, it will also update the secrets, and importantly, save it indexed by your client name.
+
+
 
 ```
 from sregistry.auth import read_client_secrets

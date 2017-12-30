@@ -13,6 +13,17 @@ From: continuumio/miniconda3
 
 
 #######################################
+# Google Cloud Storage
+#######################################
+
+%appenv google-storage
+    SREGISTRY_CLIENT=google-storage
+    export SREGISTRY_CLIENT
+%apprun hub
+    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
 # Singularity Hub
 #######################################
 
