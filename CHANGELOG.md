@@ -13,10 +13,18 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
  - migration guidance (how to convert images?)
  - changed behaviour (recipe sections work differently)
 
-## [vxx](https://github.com/singularityware/singularity-python/tree/development) (0.0.2)
+
+## [0.0.3](https://github.com/singularityware/singularity-python/tree/master) (0.0.3)
+
+**additions**
+ - client.speak() now also calls `_speak()` for subclass to implement with extra messages to user.
+ - client._get_setting() and client._get_and_update_setting() retrieve / update environment settings
+
+**bug fixes**
+ - record after pull doesn't override image, if one existed 
 
 **creation**
- - clients for Singularity Hub and Singularity Registry and local use
+ - clients for Singularity Hub, Singularity Registry, Google Storage, and local use
  - addition of (mostly complete) documentation, Changelog, and Singularity file
  - this is the initial creation of just the singularity registry client, to be separate from
 singularity python.
