@@ -27,24 +27,38 @@ import os
 def main(args,parser,subparser):
 
     from sregistry.main import Client as cli
-    shells = [python, bpython]
-    for shell in shells:
+
+    shells = { 'python':python,
+               'bpython': bpython,
+               'ipython': ipython }
+
+    # If the user asked for a specific shell via environment
+    shell = cli._get_and_update_setting('SREGISTRY_SHELL')
+    if shell is not None:
+        shell = shell.lower()
+        if shell in shells:
+            try:    
+                return shells[shell]()
+            except ImportError:
+                pass
+
+    for name,shell in shells.items():
         try:
             return shell(cli)
         except ImportError:
             pass
     
 
-def ipython(cli):
+def ipython():
     '''Not sure how to add the client to the working environment, so
-      disabled for now
+      disabled for now.
     '''
-    from IPython import start_ipython
-    from sregistry.main import Client as cli
-    start_ipython(argv=[], locals_={'cli':cli})
+    from sregistry.main import Client as client
+    from IPython import embed
+    embed()
 
 
-def bpython(cli):
+def bpython():
     import bpython
     from sregistry.main import Client as cli
     from sregistry.database.models import Container, Collection
@@ -52,7 +66,7 @@ def bpython(cli):
                            'Container': Container,
                            'Collection': Collection})
 
-def python(cli):
+def python():
     import code
     from sregistry.database.models import Container, Collection
     from sregistry.main import Client as cli

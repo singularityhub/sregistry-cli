@@ -150,7 +150,11 @@ sregistry shell
 'hub'
 >>> 
 ```
-Notice how the client is already loaded into the space!
+Notice how the client is already loaded into the space! If you want to specify the shell to use, export SREGISTRY_SHELL first:
+
+```
+SREGISTRY_SHELL=ipython sregistry shell
+```
 
 
 ## Remove

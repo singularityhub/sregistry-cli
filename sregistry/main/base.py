@@ -111,8 +111,8 @@ class ApiConnection(object):
         # If the setting is found, update the client secrets
         if setting is not None:
             updates = {name : setting}
-            setting = update_client_secrets(backend=self.client_name, 
-                                            updates=updates)
+            update_client_secrets(backend=self.client_name, 
+                                  updates=updates)
         return setting
 
 

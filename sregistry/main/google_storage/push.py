@@ -63,11 +63,17 @@ def push(self, path, name, tag=None):
         version = get_image_hash(path)
         names = parse_image_name(name,tag=tag, version=version)    
 
+    # Update metadata with names and sregistry stamp
+    metadata.update(names)
+    metadata['client'] = 'sregistry'
+
     #TODO: use multiple threads/other to upload
-    manifest = self._upload(path, names['storage'])
+    manifest = self._upload(source=path, 
+                            destination=names['storage'],
+                            metadata=metadata)
 
     # If result is successful, save container record
-    if result is not None:
+    if manifest is not None:
         metadata.update(manifest)
         container = self.add(image_name=names['uri'],
                              metadata=metadata,
@@ -77,7 +83,7 @@ def push(self, path, name, tag=None):
 
 
 @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
-def upload(self, source, destination, chunk_size = 2 * 1024 * 1024):
+def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=None):
     '''upload a file from a source to a destination. The client is expected
        to have a bucket (self._bucket) that is created when instantiated.
      
@@ -96,14 +102,12 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024):
         return url
 
     '''
-    filename = os.path.basename(source)
-    print('Uploading: %s to bucket://%s/%s ' % (filename, 
-                                                self._bucket_name,
-                                                destination))
 
+    #TODO: metadata isn't being set.
     media = MediaFileUpload(source, chunksize=chunk_size, resumable=True)
     request = self._service.objects().insert(bucket=self._bucket_name, 
                                              name=destination,
+                                             body=metadata,
                                              media_body=media)
 
     response = None

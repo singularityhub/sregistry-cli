@@ -52,14 +52,15 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         '''The user is required to have an application secrets file in his
-           or her environment, which if found, gets exported to the secrets 
-           file. If not, 
+           or her environment. The information isn't saved to the secrets
+           file, but the client exists with error if the variable isn't found.
         '''
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
-        self._secrets = self._get_and_update_setting(env)
+        self._secrets = self._get_setting(env)
         if self._secrets is None:
             bot.error('You must export %s to use Google Storage client' %env)
             sys.exit(1)
+
 
     def _init_client(self):
         '''init client will check if the user has defined a bucket that
