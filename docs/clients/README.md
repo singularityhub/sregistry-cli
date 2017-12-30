@@ -10,8 +10,9 @@ toc: false
 Singularity Registry Global client has tutorials and walkthroughs for the following clients:
 
  - [Global Commands](/sregistry-cli/commands): commands for all clients.
- - [Singularity Hub](/sregistry-cli/hub): the default endpoint will work (search and pull) images from Singularity Hub.
- - [Singularity Registry](/sregistry-cli/registry): to interact with an institution or personally hosted Singularity Registry.
+ - [Google Storage](/sregistry-cli/client-google-storage): interact with images from Google Storage
+ - [Singularity Hub](/sregistry-cli/client-hub): the default endpoint will work (search and pull) images from Singularity Hub.
+ - [Singularity Registry](/sregistry-cli/client-registry): to interact with an institution or personally hosted Singularity Registry.
 
 <div>
     <a href="/sregistry-cli/getting-started"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>

@@ -51,6 +51,8 @@ INSTALL_REQUIRES_DROPBOX = (
 )
 
 INSTALL_REQUIRES_GOOGLE_STORAGE = (
+    ('google-cloud-storage', {'min_version': '1.4.0'}),
+
 )
 
 INSTALL_REQUIRES_GOOGLE_DRIVE = (

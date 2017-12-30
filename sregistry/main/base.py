@@ -25,6 +25,7 @@ from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_DATABASE
+from sregistry.auth import ( read_client_secrets, update_client_secrets )
 import threading
 import shutil
 import requests
@@ -51,12 +52,26 @@ class ApiConnection(object):
         # to do corresponding action in database.
         # we need a sort of call back for push, pull, delete, etc.
 
+
+# Metadata
+
     def speak(self):
         '''a function for the client to announce him or herself, depending
            on the level specified.
         '''
         bot.info('[client|%s] [database|%s]' %(self.client_name,
                                                self.database))
+
+        self._speak()
+
+    def _speak(self):
+        '''this function should be subclassed if the client has additional
+           information to give the user, beyond it's name and the database
+           location. Be careful about adding extra prints to various functions
+           because with a command like "get" the expectation is to print a
+           download url (and nothing else)
+        '''
+        pass
 
     def __repr__(self):
         return "[client][%s]" %self.client_name
@@ -66,6 +81,50 @@ class ApiConnection(object):
 
     def client_name(self):
         return self.__module__.split('.')[-1]
+
+
+    def _get_setting(self, name):
+        '''return a setting from the environment (first priority) and then
+           secrets (second priority) if one can be found. If not, return None.
+        ''' 
+
+        # First priority is the environment
+        setting = os.environ.get(name)
+
+        # Second priority is the secrets file
+        if setting is None:
+            secrets = read_client_secrets()
+            if self.client_name in secrets:
+                secrets = secrets[self.client_name]
+                if name in secrets:
+                    setting = secrets[name]
+
+        return setting
+
+
+    def _get_and_update_setting(self, name):
+        '''Look for a setting in the environment (first priority) and then
+           the settings file (second). If something is found, the settings
+           file is updated. The order of operations works as follows:
+
+           1. The .sregistry settings file is used as a cache for the variable
+           2. the environment variable always takes priority to cache, and if
+              found, will update the cache.
+           3. If the variable is not found and the cache is set, we are good
+           5. If the variable is not found and the cache isn't set, return None
+
+           So the user of the function can assume a return of None equates to
+           not set anywhere, and take the appropriate action.
+        ''' 
+
+        setting = self._get_setting(name)
+
+        # If the setting is found, update the client secrets
+        if setting is not None:
+            updates = {name : setting}
+            update_client_secrets(backend=self.client_name, 
+                                  updates=updates)
+        return setting
 
 
 # Headers
