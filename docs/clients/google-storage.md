@@ -11,7 +11,7 @@ toc: false
 These sections will detail use of the Google Storage client for `sregistry`, which is a connection to a Google Storage
 cloud bucket. 
 
-[![asciicast](https://asciinema.org/a/154858.png)](https://asciinema.org/a/154858?speed=4)
+[![asciicast](https://asciinema.org/a/154858.png)](https://asciinema.org/a/154858?speed=3)
 
 ## Getting Started
 If you are using the sregistry image, the client is likely already installed. If you want to install this natively (or build a custom container) the command to install the module extras is:
