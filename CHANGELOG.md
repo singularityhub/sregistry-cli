@@ -19,6 +19,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
  - client.speak() now also calls `_speak()` for subclass to implement with extra messages to user.
  - client._get_setting() and client._get_and_update_setting() retrieve / update environment settings
  - `SREGISTRY_THUMBNAIL` can be set for upload to Google Drive (or other clients that have thumbnails)
+ - addition of the credential cache, so each client can have a private credentials file/folder if user enables
 
 **bug fixes**
  - record after pull doesn't override image, if one existed 
