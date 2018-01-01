@@ -193,12 +193,12 @@ Now when I look in my inbox... hoho!
 
 And how about sharing with a friend? Yes, this in fact did happen - it was received on a smart phone and added to drive.
 
->> Share them from a car?
->> Or share them in a bar? 
->> Share them on a plane,
->> ...or whilst in Spain!
->> No matter where you are...
->> your containers are never far!
+>> Share them from a car? <br>
+>> Or share them in a bar?  <br>
+>> Share them on a plane, <br>
+>> ...or whilst in Spain! <br>
+>> No matter where you are... <br>
+>> your containers are never far! <br>
 
 <img src="/sregistry-cli/img/google-drive-share-phone.png" width="400px"><br>
 
