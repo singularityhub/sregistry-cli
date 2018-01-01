@@ -18,11 +18,32 @@ A client is an endpoint that you might want to push or pull Singularity images (
  - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential.
 
 ## Getting Started
+I'll briefly outline the order of operations that I (@vsoch) have taken when adding a new client, because when you go about it in a certain way, it's very logical.
+
+
+### Order of Operations
+In a nutshell, do this:
+
+```
+1.                    2.          3.         4.           5.         6.           7. 
+[skeleton client] --> [shell] --> [push] --> [search] --> [pull] --> [record] --> [share]
+```
+
+1. Very importantly, as you go through each step, write the documentation for it. It's very easy to test as you go, and write notes about different functions when they are fresh in your mind.
+2. I start with the template (more detail below) and add the basic steps to instantiate an empty client `shell` (sregistry shell). Using the shell, I first implement whatever is needed for authentication, usually by commenting out the init functions to start, and then working in the terminal window. These steps to connect the user to the remote service may mean checking for a credentials file and then issuing some sort of request, checking for variables, or otherwise interacting with the user.
+3. When you have a basic client that is authenticated with a service, write the `push` function first. Your goal is to start with a local image file, and ultimately get it into your storage place. It needs to have organization and metadata to identify it as a container, **and** easily provide a uri back to the user.
+4. Once you have "push" working, it's trivial to push a few images. Do this. Write some documentation about it if you haven't already. When you have a few different ones, then it's logical to write `search` (functions in the template query.py file) because you have images with metadata to work with, and a client that can interact with the service.)
+5. After push and search are done, write the `pull` function. It's going to be similar to search because you will start with searching for a particular container given some user query, but then you add the step to actually download and add it to the local storage.
+6. Following `pull` you should write the `record` function. It will be trivial and simple because it's exactly the same as pull, but for the final call to the `add` function you don't provide an image file.
+7. After this core, implement any of the extra functions relevant to your client (like share!) Usually at this point I'm super excited and I record an asciinema for it, and finish up the documentation.
+
+
+### The General Steps
 We are going to generally follow these steps. Note that these docs haven't been fully written out, so the instructions are brief for now. Expect more soon!
 
 1. Adding the client dependencies
 2. Start with a template for the client. This will mean filling in basic functions with your custom calls to get or send images. 
-3. Add any custom or hidden functions 
+3. Add any custom or hidden functions
 4. Add the client to the application. This means registering its uri (e.g., `hub`) to the client's logic when it initializes.
 5. Think about credentials. We advocate for an approach that determines needed credentials based on envirionment variables, and thus you can ask a user to export what is needed for your functions to find. 
 6. Think about settings. If you need a more enduring storage for settings, `sregistry` has a default settings file where you can write a data structure for your client.
@@ -133,7 +154,33 @@ The first step is thus to create your client folder under `main`. We have provid
 cp -R sregistry/main/__template__ sregistry/main/myclient
 ```
 
-To describe the above in more detail, the base of a client is the ApiConnection (in `main/base.py`), which comes with standard functions for web requests, showing progress bars with a download, get, etc. Your "myclient" will subclass that, and onto it you will add the custom functions for push, pull (and the others that are important). This happens in the `main/myclient/__init__.py` where your client is generated. Then, if the user wants to use `myclient` the environment variable is detected in `main/__init.__py` and your Client imported from it's respective folder. You can follow along the template for more detail, and feel free to improve it with a pull request.  We will quickly discuss functions that will be useful to you, globally:
+To describe the above in more detail, the base of a client is the ApiConnection (in `main/base.py`), which comes with standard functions for web requests, showing progress bars with a download, get, etc. Your "myclient" will subclass that, and onto it you will add the custom functions for push, pull (and the others that are important). This happens in the `main/myclient/__init__.py` where your client is generated. Then, if the user wants to use `myclient` the environment variable is detected in `main/__init.__py` and your Client imported from it's respective folder. You can follow along the template for more detail, and feel free to improve it with a pull request.  We will quickly discuss functions that will be useful to you, globally.
+
+
+#### Fun Customization
+If you have a service that needs a thumbnail, for a cute robot you can use a function provided:
+
+```
+from sregistry.utils import get_thumbnail
+thumbnail = get_thumbnail()
+# thumbnail
+'/home/vanessa/Documents/Dropbox/Code/sregistry/sregistry-cli/sregistry/database/robot.png'
+```
+
+Here is what he looks like:
+
+![../img/robot.png](../img/robot.png)
+
+Note that if you (or your user) exports their own thumbnail, you can change this value! You should
+generally choose an image no greater than 2MB, and one that has a minimum width of 220px (these are the standards
+defined by [Google Drive](https://developers.google.com/drive/v3/web/file), they may differ for different services. here is how to export your thumbnail:
+
+```
+SREGISTRY_THUMBNAIL = /path/to/myrobot.png
+export SREGISTRY_THUMBNAIL
+```
+or of course you can set this for your client during the initialization, so the variable is found later. Have fun!
+
 
 #### Logging
 If you import the bot, you get with him a bunch of easy to use functions for different levels along with functions. For example, here are different levels of messages coinciding with what gets displayed depending on the user export of `MESSAGELEVEL`:
@@ -216,38 +263,76 @@ And since you defined the `Client`in `myclient/__init__.py`, a subfolder, it is 
 
 
 ### 5. Think about credentials and settings
-The primary (recommended) way for users to interact with your client is via environment variables. To maintain the `SREGISTRY` environment variable namespace, you should use the following convention:
+Environment variables are the primary way in which the user interacts with the clients to define parameters. In addition to the [environment variables](/sregistry-cli/getting-started#environment-variables-lists), your client can also choose to keep a cache of a variable, meaning an entry in the default `SREGISTRY_CLIENT_SECRETS` file (default is `$HOME/.sregistry`) OR using a custom file or folder (defined for you at `self._credential_cache`). The advantages of either approach are that a user doesn't need to set a parameter again, and if a record is needed in the future for some setup, it isn't lost in the environment. You as a client developer are responsible for deciding how to manage this cache, because something direct like an access token may not be appropriate, but instead a path to a file that contains it. To help interact with this cache, we have provided the default client that your client will subclass with helper functions.
+
+ - [Settings](#settings): should be derived primarily from the environment, and with the naming schema specific to your client (see more below).
+ - [Storage](#storage): we provide for you functions to easily get and update parameters for your client, along with two methods for saving, depending on what needs to be saved.
+ - [Helpers](#helpers): include functions for saving parameters to the default `sregistry` settings file, or to a client secrets file that is specifically for your client.
+
+
+#### Settings
+If you have any settings or parameters that you need to obtain from the user, the recommended way to do this is check for them in a function called by your client `__init__`, and then get them from settings, use a default, or exit if required and not found. First, we will talk about interaction of your client with the user. The user is going to set environment variables that you tell him about, and your variables must live in the sregistry namespace for your client. To maintain the `SREGISTRY` environment variable namespace, you should use the following convention:
 
 ```
 `SREGISTRY_<CLIENTNAME>_<VARIABLE>`
 ```
 
-Notice that it starts with `SREGISTRY_`, the client name comes next, and then finally the variable name. Also note that we are using all caps. If you are using an environment variable that is defined from another service or application (for example, Google has the user export credentials to `GOOGLE_APPLICATION_CREDENTIALS` you should honor that name and not add the `SREGISTRY_` prefix so the user only has to define it once. However, in addition to the environment variables, clients can choose to keep a cache of a variable, meaning an entry in the default `SREGISTRY_CLIENT_SECRETS` file (default is `$HOME/.sregistry`). The advantages of this are that a user doesn't need to set a parameter again, and if a record is needed in the future for some setup, it isn't lost in the environment. The individual clients are responsible for deciding how to manage this cache, because something direct like an access token may not be appropriate, but instead a path to a file that contains it. To help interact with this cache, we have provided the default client that your client will subclass with helper functions.
+Notice that it starts with `SREGISTRY_`, the client name comes next, and then finally the variable name. Also note that we are using all caps. How should you decide how to name things? If you are using an environment variable that is defined from another service or application (for example, Google has the user export credentials to `GOOGLE_APPLICATION_CREDENTIALS` you should honor that name and not add the `SREGISTRY_` prefix so the user only has to define it once. 
 
+
+#### Storage
+It might be the case that you need more than a shared json file (the `sregistry` settings file shared by all clients) for your secrets or client. Toward this aim, each client is configured to automatically generate a credentials cache path. The path is found with the client at `client._credential_cache` and the following applies:
+
+ - If the user has specified [environment settings](/sregistry-cli/getting-started#environment-variable-lists) to indicate disabling the credential cache, the value of `client._credential_cache` will be `None` and you should not use it.
+ - If the cache is enabled, `client._credential_cache` will return a path in the format `<SREGISTRY_DATABASE>/.sregistry/<CLIENT>`. For a default `SREGISTRY_DATABASE` and a client called `MYCLIENT` the path returned would be `$HOME/.sregistry/myclient`.
+ - The `client._credential_cache`, if defined, will not exist. The reason for this is that you as the developer can choose to use it as a file, or a folder with some set of files inside. In both cases, you are required to write the file or create the folder, and we recommend the following functions:
+
+```
+# Make a directory (recursive)
+from sregistry.utils import mkdir_p
+
+# Write or read json
+from sregistry.utils import read_json, write_json
+
+# Write or read file
+from sregistry.utils import write_file, read_file
+```
 
 #### Helper Functions
-To make this easy for your development, we have created a set of functions that live with all clients to get and update environment variables. In the examples below, we will start with high level functions, and then move into more detailed functions used by them. First, you might want to get an environment variable from the user. You can do that with `client._get_setting()`. Let's say that I tell my user to export a credential to `SREGISTRY_MYCLIENT_ID`. If I want to look for it in the environment, and then if not found, look in the client secrets file, I would do:
+To make it easy for development, we have created a set of functions that live with all clients to get and update environment variables. In the examples below, we will start with high level functions, and then move into more detailed functions used by them.
+
+
+##### GET
+First, you might decide for your client (let's call it `myclient`) that your user can optionally set `SREGISTRY_MYCLIENT_ID`. If you just want to get the variable from the user, and return `None` if it's not found, you can use the following function:
 
 ```
 # self refers to the sregistry.main.Client
 
 setting = self._get_setting('SREGISTRY_MYCLIENT_ID')
 ```
+Note that the above function looks first in the environment, and then in the secrets file. If it's not found in either place, `None` is returned.
 
-This will either be the value set in the environment (first priority) or the settings file (second priority) and then `None` if not found. If you want to, on top of finding any result, save it to the secrets to be found the next time (so the user doesn't have to define it) then use `client._get_and_update_setting()`
+
+##### GET and UPDATE
+For our next example, we want to do the same, but instead of just a get, we want to save the parameter that we find in the `sregistry` client settings file (so it's found next time without the user needing to set it). That would look like this:
 
 ```
 setting = self._get_and_update_setting('SREGISTRY_MYCLIENT_ID')
 ```
 
-Given that something is found in the environment, it will also update the secrets, and importantly, save it indexed by your client name. For the above, in the client secrets file (default `$HOME/.sregistry`) we would see the following update:
+Given that something is found in the environment, it will also update the settings file, and importantly, save it indexed by your client name. For the above, in the client secrets file (default `$HOME/.sregistry`) we would see the following update:
 
 ```
 {
   'myclient': {'SREGISTRY_MYCLIENT_ID': setting }
 }
 ```
-where `setting` corresponds to whatever was found in the environment. The client name (`myclient`) is obtained from the client itself (`self.client_name`). Then if we wanted to just read client secrets (used by the functions above):
+
+where `setting` corresponds to whatever was found in the environment. The client name (`myclient`) is obtained from the client itself (`self.client_name`). 
+
+
+##### GET (entire settings file)
+If you would prefer to read the entire file (one level down from the above, and used by the functions above):
 
 ```
 from sregistry.auth import read_client_secrets
@@ -260,7 +345,8 @@ secrets
  'username': 'vsoch'}
 ```
 
-If you need to write some settings there (please use environment variables and give the user instructions for credentials and other secrets) then you can update secrets too.
+##### UPDATE (entire settings file)
+Let's say we get the entire settings file, we make many changes, and then we want to update:
 
 ```
 from sregistry.auth import update_client_secrets
@@ -277,6 +363,30 @@ Then you will notice you have an entry for `myclient` in the secrets with your s
  'myclient': {'pancakes':'latkes'},
  'token': '3c00ebba888c238a50820bb9a1f38518c9360b31',
  'username': 'vsoch'}
+```
+
+You can also call the update function and give it an already defined secrets to update:
+
+```
+secrets = update_client_secrets(backend="myclient", 
+                                updates={'pancakes':'latkes'},
+                                secrets=secrets)
+
+```
+
+We generally don't advocate for this approach, because it's important to maintain the separation of client storage locations.
+
+
+
+
+
+It's also common practice to ask the user to download some credential file, and then
+authorize via a url. For this purpose, we provide a basic function that prompts the user
+to go to a url that you provide, accept something, and then enter a code (and return
+it to your client).
+
+```
+code = self._auth_flow(url)
 ```
 
 ### 7. Test the client!

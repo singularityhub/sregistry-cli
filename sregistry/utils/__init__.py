@@ -5,7 +5,8 @@ from .recipes import (
 from .terminal import (
     run_command,
     check_install,
-    get_installdir
+    get_installdir,
+    get_thumbnail
 )
 from .cache import get_cache
 from .names import (

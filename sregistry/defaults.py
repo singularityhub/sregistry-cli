@@ -59,31 +59,65 @@ def getenv(variable_key, default=None, required=False, silent=True):
     return variable
 
 
-#######################################################################
+################################################################################
 # SRegistry
-#######################################################################
+
+
+#########################
+# Global Settings
+#########################
 
 USERHOME = pwd.getpwuid(os.getuid())[5]
 DISABLE_CACHE = convert2boolean(getenv("SINGULARITY_DISABLE_CACHE", False))
 DISABLE_DATABASE = convert2boolean(getenv("SREGISTRY_DISABLE", False))
 SREGISTRY_CLIENT = getenv("SREGISTRY_CLIENT", "hub")
 
-# If the user isn't caching images, don't save
-if DISABLE_CACHE is True or DISABLE_DATABASE is True:
-    SREGISTRY_DATABASE = None
-    SREGISTRY_STORAGE = None
 
-# If the user is caching...
-else:
+#########################
+# Fun Settings
+#########################
+
+# None defaults to robot. Path must exist, and ensure image < 2MB and min 220px
+SREGISTRY_THUMBNAIL = getenv('SREGISTRY_THUMBNAIL')
+
+
+#########################
+# Database and Storage
+#########################
+
+# Database folder, inside where we put storage and credentials folder
+_database = os.path.join(USERHOME, ".singularity")
+SREGISTRY_DATABASE = None
+SREGISTRY_STORAGE = None
+SREGISTRY_BASE = None
+
+# If the user didn't disable caching or the database
+if not DISABLE_CACHE and DISABLE_DATABASE is False:
+
     # First priority goes to database path set in environment,
     # and if it's not set, default to home folder
-    _database = os.path.join(USERHOME, ".singularity")
-    SREGISTRY_DATABASE = getenv("SREGISTRY_DATABASE", _database)
+    SREGISTRY_BASE = getenv("SREGISTRY_DATABASE", _database)
 
-    # Storage is a subfolder of the database, shub
+    # Storage defaults to a subfolder of the database, shub
     _storage = os.path.join(_database, "shub")
     SREGISTRY_STORAGE = getenv("SREGISTRY_STORAGE", _storage)
-    SREGISTRY_DATABASE = "%s/sregistry.db" %SREGISTRY_DATABASE
+    SREGISTRY_DATABASE = "%s/sregistry.db" %SREGISTRY_BASE
+
+
+#########################
+# Credential Cache
+#########################
+
+# Credentials and client secrets
+DISABLE_CREDENTIAL_CACHE = getenv('SREGISTRY_DISABLE_CREDENTIAL_CACHE', False)
+DISABLE_CREDENTIAL_CACHE = convert2boolean(DISABLE_CREDENTIAL_CACHE)
+CREDENTIAL_CACHE = None
 
 _secrets = os.path.join(USERHOME, ".sregistry")
 SREGISTRY_CLIENT_SECRETS = getenv('SREGISTRY_CLIENT_SECRETS', _secrets)
+
+# We only use the credential cache if user didn't disable it
+# and if the entire sregistry database isn't disabled for use.
+if not DISABLE_CREDENTIAL_CACHE and SREGISTRY_DATABASE is not None:
+    _credentials = os.environ.get('SREGISTRY_CREDENTIALS_CACHE', _database)
+    CREDENTIAL_CACHE = '%s/.sregistry' %_credentials

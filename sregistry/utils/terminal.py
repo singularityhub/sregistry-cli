@@ -84,7 +84,18 @@ def check_install(software=None, quiet=True):
 def get_installdir():
     '''get_installdir returns the installation directory of the application
     '''
-    return os.path.abspath(os.path.dirname(__file__))
+    return os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+
+def get_thumbnail():
+    '''return the robot.png thumbnail from the database folder.
+       if the user has exported a different image, use that instead.
+    '''
+    from defaults import SREGISTRY_THUMBNAIL
+    if SREGISTRY_THUMBNAIL is not None:
+        if os.path.exists(SREGISTRY_THUMBNAIL)
+        return SREGISTRY_THUMBNAIL
+    return "%s/database/robot.png" %get_installdir()
 
 
 def run_command(cmd, sudo=False):
