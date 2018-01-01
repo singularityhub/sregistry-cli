@@ -45,7 +45,7 @@ Singularity Registry Global Client works by way of obtaining information from th
 ### Fun Environment
 By default, your Google Drive containers will have a robot icon. Here he is:
 
-<img src="../img/robot.png" width="600px"><br>
+<img src="/sregistry-cli/img/robot.png" width="600px"><br>
 
 But you can choose your own custom thumbnail! Simply export the `SREGISTRY_THUMBNAIL` variable. If you are sharing containers and want some kind of branding, this is a good way to do that.
 
@@ -189,7 +189,7 @@ Share to vsochat@stanford.edu complete: 09522476006874428495!
 
 Now when I look in my inbox... hoho!
 
-<img src="../img/google-drive-share.png" width="800px"><br>
+<img src="/sregistry-cli/img/google-drive-share.png" width="800px"><br>
 
 And how about sharing with a friend? Yes, this in fact did happen - it was received on a smart phone and added to drive.
 
@@ -200,14 +200,14 @@ And how about sharing with a friend? Yes, this in fact did happen - it was recei
 >> No matter where you are...
 >> your containers are never far!
 
-<img src="../img/google-drive-share-phone.png" width="400px"><br>
+<img src="/sregistry-cli/img/google-drive-share-phone.png" width="400px"><br>
 
 
 **Note** to future self, do not allow self to write "poetry" at 1:00am.
 
 But you want to know what is most exciting? The share has a robot thumbnail. That you can customize by exporting a path to `SREGISTRY_THUMBNAIL` on your host, however you please! Let's look at him again, because we can.
 
-<img src="../img/google-drive-robot.png" width="400px"><br>
+<img src="/sregistry-cli/img/google-drive-robot.png" width="400px"><br>
 
 
 If you don't feel sheer joy and life completion from having robots in your Google Drive, I'm not sure anything can help you now, my friend. Okay, let's now bring down the excitement and go back to square one... time to review the basics! Starting with a push.
