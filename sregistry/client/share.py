@@ -36,4 +36,5 @@ def main(args, parser, subparser):
         images = [images]
 
     for image in images:
-        cli.share(query=image, share_to=args.share_to)
+        print(image)
+        cli.share(image, share_to=args.share_to)

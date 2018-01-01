@@ -67,7 +67,7 @@ Here we will review the set of commands that are specific to the Google Drive cl
  - [pull](#pull): `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
  - [search](#search): `[remote]` list all image collections in Singularity Hub
  - [record](#record): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
- - [share](share): Share a container!
+ - [share](share): Share a container! This means sharing a container like you would a file in Google Drive, and the recipient getting an email about the shared container.
 
 For all of the examples below, we will export our client preference to be `google-drive`
 
@@ -127,43 +127,126 @@ object?   -> Details about 'object', use 'object??' for extra details.
 Here we see straight away that we are interacting with a folder at the root of our drive called "sregistry" (the default) and the google-drive client. The printing of this folder without error means a successful connection to your drive.
 
 
+## Search
+The most exciting new function added, thanks to Google Drive, is the ability to share! So let's show it first. First we can look at the containers available to us in our drive. This is what search is for, and we can be brief and then jump to share:
 
+
+```
+sregistry search
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+[drive://sregistry] Containers
+   [drive://sregistry] 		[id]	[uri]
+1  1LuHUUhEMiWulnJiqBF0-5DgiJvSsvuPq	vsoch/hello-world:latest@846442ecd7487f99fce3b8fb68ae15af
+2  1HO6Y4cmC9UeLizSUptyZA28KQ5mNvCTw	vsoch/hello-world:latest@846442ecd7487f99fce3b8fb68ae15af
+3  1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe	expfactory/expfactory:master
+```
+
+We don't have very many, so I can confidently search for "expfactory" and know that the first returned result is that third image. If I wanted to just search for this query, I could get a bunch more metadata about it:
+
+
+```
+sregistry search expfactory
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+[drive://sregistry] Found 1 containers
+expfactory/expfactory:master
+id         1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe
+tag        master
+uri        expfactory/expfactory:master
+type       container
+name       expfactory/expfactory:master.simg
+image      expfactory
+version    846442ecd7487f99fce3b8fb68ae15af
+storage    expfactory/expfactory:master.simg
+collection expfactory
+org.label-schema.usage /.singularity.d/runscript.help
+org.label-schema.build-size 544MB
+org.label-schema.build-date 2017-11-07T15:08:18+00:00
+org.label-schema.schema-version 1.0
+org.label-schema.usage.singularity.deffile Singularity
+org.label-schema.usage.singularity.version 2.4-feature-squashbuild-secbuild.g818b648
+org.label-schema.usage.singularity.deffile.from ubuntu:14.04
+org.label-schema.usage.singularity.runscript.help /.singularity.d/runscript.help
+org.label-schema.usage.singularity.deffile.bootstrap docker
+
+```
+
+Old news! Let's get to the fun... the new "share" function!
+
+## Share
+The most exciting new function added, thanks to Google Drive, is the ability to share! Let's use the share command to send to container we found above to my (or someone else's) email:
+
+```
+sregistry share --email vsochat@stanford.edu expfactory
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+expfactory
+Share to vsochat@stanford.edu complete: 09522476006874428495!
+```
+
+Now when I look in my inbox... hoho!
+
+![../img/google-drive-share.png](../img/google-drive-share.png)
+
+And how about sharing with a friend? Yes, this in fact did happen - it was received on a smart phone and added to drive.
+
+>> Share them from a car?
+>> Or share them in a bar? 
+>> Share them on a plane,
+>> ...or whilst in Spain!
+>> No matter where you are...
+>> your containers are never far!
+
+![../img/google-drive-share-phone.png](../img/google-drive-share-phone.png)
+**Note** to future self, do not allow self to write "poetry" at 1:00am.
+
+But you want to know what is most exciting? The share has a robot thumbnail. That you can customize by exporting a path to `SREGISTRY_THUMBNAIL` on your host, however you please!
+
+![../img/google-drive-robot.png](../img/google-drive-robot.png)
+
+If you don't feel sheer joy and life completion from having robots in your Google Drive, I'm not sure anything can help you now, my friend. Okay, let's now bring down the excitement and go back to square one... time to review the basics! Starting with a push.
 
 
 ## Push
-If you don't have any images in your bucket, that is probably a good start to add some. In this case we will add an image sitting in our present working directory.
+Here we have an image on my Desktop. let's push it to Google Drive.
 
 ```
-sregistry push --name vsoch/hello-world:latest vsoch-hello-world-master-latest.simg
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
+sregistry push --name vsoch/hello-world:pancakes vsoch-hello-world-master-latest.simg
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f.simg
 ```
 
-You will see again the connection to the bucket, and then a progress bar that shows the status of the upload, and the progress bar is replaced by the final container url. By default, this push command doesn't add a container to our local storage database, but just a record that it exists in Google. To see the record, you can list your images:
+This push is a little different - I opted to use the robot spinner instead of the progress bar.
+
+Now let's search our remote to see the record that was added:
 
 ```
-sregistry images
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	remote	   [google-storage]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:test@846442ecd7487f99fce3b8fb68ae15af
+sregistry search
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+[drive://sregistry] Containers
+   [drive://sregistry] 		[id]	[uri]
+1  1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+2  1cTzw47GstQxF4NXrpdzxIoRwn7ZjCz1J	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+3  1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe	expfactory/expfactory:master
+5  1HO6Y4cmC9UeLizSUptyZA28KQ5mNvCTw	vsoch/hello-world:latest@846442ecd7487f99fce3b8fb68ae15af
 ```
+
+Yes, I've been testing the same image many times, and naming it the same thing :). Note that it's currently a bug I anticipate that pushing the same image will result in TWO equally named files. What we need to do is first query based on the metadata and then perform an update instead of create. It's too late to start now, but if you want to jump on it please [open an issue and go for it!](https://www.github.com/singularityhub/sregistry-cli/issues)
 
 At this point you have remote records, but no images locally. You could do a "get" or an "inspect".
 
 Note that if you try to manually upload images to your Google Drive, they won't be found by the client. This is because in order to be identified as containers, they have a value in their properties (metadata) for `type:container`. Thus, if you use some different method to add containers to your Google Drive `sregistry` folder, you should minimally set this metadata.
 
 
-
 ## Get
 For a remote image record, if you do a "get" you will be given the remote url:
 
 ```
-sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
+sregistry get expfactory/expfactory:master
+https://www.googleapis.com/drive/v3/files/1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe?alt=media
 ```
 
 If you don't want to get the url but you want to look at all metadata, then use "inspect."
@@ -172,158 +255,103 @@ If you don't want to get the url but you want to look at all metadata, then use 
 Of course you can inspect an image (here we will inspect the image we just pushed above), and you will see a ton of goodness:
 
 ```
-sregistry inspect vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
+sregistry inspect expfactory/expfactory:master
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+expfactory/expfactory:master
+https://www.googleapis.com/drive/v3/files/1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe?alt=media
 {
-    "client": "google-storage",
-    "collection": "vsoch",
-    "collection_id": 1,
-    "created_at": "2017-12-29 00:05:09",
-    "id": 1,
+    "client": "google-drive",
+    "collection": "expfactory",
+    "collection_id": 2,
+    "created_at": "2018-01-01 05:38:25",
+    "id": 6,
     "image": null,
     "metrics": {
-        "attributes": {
-            "deffile": "Bootstrap: docker\nFrom: ubuntu:14.04\n\n%labels\nMAINTAINER vanessasaur\nWHATAMI dinosaur\n\n%environment\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n%files\nrawr.sh /rawr.sh\n\n%runscript\nexec /bin/bash /rawr.sh\n",
-            "environment": "# Custom environment shell code should follow\n\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n",
-            "help": null,
-            "labels": {
-                "MAINTAINER": "vanessasaur",
-                "WHATAMI": "dinosaur",
-                "org.label-schema.build-date": "2017-10-15T12:52:56+00:00",
-                "org.label-schema.build-size": "333MB",
-                "org.label-schema.schema-version": "1.0",
-                "org.label-schema.usage.singularity.deffile": "Singularity",
-                "org.label-schema.usage.singularity.deffile.bootstrap": "docker",
-                "org.label-schema.usage.singularity.deffile.from": "ubuntu:14.04",
-                "org.label-schema.usage.singularity.version": "2.4-feature-squashbuild-secbuild.g780c84d"
-            },
-            "runscript": "#!/bin/sh \n\nexec /bin/bash /rawr.sh\n",
-            "test": null
-        },
-        "branch": "master",
-        "bucket": "sregistry-vanessa",
-        "collection": "vsoch",
-        "commit": "e279432e6d3962777bb7b5e8d54f30f4347d867e",
-        "contentType": "application/octet-stream",
-        "crc32c": "1FCMGQ==",
-        "etag": "CIHy5PnTstgCEAE=",
-        "generation": "1514668522289409",
-        "id": "sregistry-vanessa/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg/1514668522289409",
-        "image": "hello-world",
-        "kind": "storage#object",
-        "md5Hash": "7ZdVoIcfBNs+FJcb7FajPw==",
-        "mediaLink": "https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media",
-        "metageneration": "1",
-        "name": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg",
-        "selfLink": "https://www.googleapis.com/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg",
-        "size": "65347615",
-        "size_mb": "333",
-        "storage": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg",
-        "storageClass": "STANDARD",
-        "tag": "latest",
-        "timeCreated": "2017-12-30T21:15:22.270Z",
-        "timeStorageClassUpdated": "2017-12-30T21:15:22.270Z",
-        "type": "container",
-        "updated": "2017-12-30T21:15:22.270Z",
-        "uri": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f",
-        "version": "ed9755a0871f04db3e14971bec56a33f"
+        "id": "1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe",
+        "name": "expfactory/expfactory:master.simg",
+        "properties": {
+            "collection": "expfactory",
+            "image": "expfactory",
+            "org.label-schema.build-date": "2017-11-07T15:08:18+00:00",
+            "org.label-schema.build-size": "544MB",
+            "org.label-schema.schema-version": "1.0",
+            "org.label-schema.usage": "/.singularity.d/runscript.help",
+            "org.label-schema.usage.singularity.deffile": "Singularity",
+            "org.label-schema.usage.singularity.deffile.bootstrap": "docker",
+            "org.label-schema.usage.singularity.deffile.from": "ubuntu:14.04",
+            "org.label-schema.usage.singularity.runscript.help": "/.singularity.d/runscript.help",
+            "org.label-schema.usage.singularity.version": "2.4-feature-squashbuild-secbuild.g818b648",
+            "storage": "expfactory/expfactory:master.simg",
+            "tag": "master",
+            "type": "container",
+            "uri": "expfactory/expfactory:master",
+            "version": "846442ecd7487f99fce3b8fb68ae15af"
+        }
     },
-    "name": "hello-world",
-    "tag": "latest",
-    "uri": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f",
-    "url": "https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media",
-    "version": "ed9755a0871f04db3e14971bec56a33f"
+    "name": "expfactory",
+    "tag": "master",
+    "uri": "expfactory/expfactory:master",
+    "url": "https://www.googleapis.com/drive/v3/files/1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe?alt=media",
+    "version": ""
 }
 ```
 
+One thing I'm not happy about is the subtle differences between the metadata data structures between clients. A lot of this has to do with having different APIs, but I think we can generally do better. Please [post an issue](https://www.github.com/singularityhub/sregistry-cli/issues) if you have ideas!
+
+
 ### Record
-Finally, if you don't have a record locally but want to get one that already exists, then use record.
+Finally, if you don't have a record locally but want to get one that already exists, then use record. Here I look at images on the remote:
 
 ```
-sregistry record vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Searching for vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f in gs://sregistry-vanessa
-[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+sregistry search
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+[drive://sregistry] Containers
+   [drive://sregistry] 		[id]	[uri]
+1  1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+2  1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe	expfactory/expfactory:master
+```
+
+Then I ask for the record based on the Google Drive id:
+
+```
+vanessa@vanessa-ThinkPad-T460s:~/Desktop$ sregistry record 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+Searching for 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt in drive://sregistry
+[container][new] vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+```
+
+The search is done and the record created, and I can see it (the last one with pancakes):
+
+```
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+Containers:   [date]   [location]  [client]	[uri]
+1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
+3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
+4  January 01, 2018	remote	   [google-drive]	expfactory/expfactory:master
+5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 ```
 
 If you had an image already, it won't be replaced, but the record will be updated.
 
 
-## Pull and Search
-Now let's say that we pushed an image a while back to Google Storage, we have the record locally, and we want to get it. We could use "get" to get the url and then plug it into our special download logic, or we could instead want to pull the image to our local `sregistry` database. This would mean that the "remote" record gets updated to "local" because we actually have the image! How do we do that? We will go through two scenarios. In the first, we've totally forgotten about our local database (or it blew up) and we need to search the remote endpoint. In the second, we have our local database and just want to get one (pull).
-
-### Search
-A search without any parameters will essentially list all containers in the configured storage bucket. But how do we know what is a container?
-
->> a container is defined by having the metadata key "type" with value "container" and this is set by the upload (push) client.
-
-Thus, if you do some fancy operation outside of using the client to upload containers to storage, make sure that you add this metadata value, otherwise they will not be found. Let's do a quick search to get our list in Google Storage. This action has no dependency on a local storage or database.
-
-```
-sregistry search
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-[gs://sregistry-vanessa] Containers
-1      174 MB	/home/vanessa/desktop/expfactory:latest
-2       62 MB	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-```
-
-Then to look at details for a more specific search, let's try searching for "vsoch"
-
-```
-sregistry search vsoch
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-[gs://sregistry-vanessa] Found 1 containers
-vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg 
-id:      sregistry-vanessa/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg/1514668522289409
-uri:     vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-updated: 2017-12-30 21:15:24.132000+00:00
-size:    62 MB
-md5:     7ZdVoIcfBNs+FJcb7FajPw==
-```
-
 ### Pull
 With pull, we might have a record (or did a search to find a container that we liked, as shown above). In this case, instead of inspect or get, we just use pull.
 
 ```
-sregistry pull vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Searching for vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f in gs://sregistry-vanessa
-Progress |===================================| 100.0% 
-[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-Success! /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+sregistry pull vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[folder][sregistry]
+Searching for vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f in drive://sregistry
 ```
 
-Did you notice that this was an update? The reason is because we already had the record in our database from when we pushed it in the first place, and the record was updated to now be for a local file:
-
-```
-sregistry images
-sregistry images
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-storage]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:test@846442ecd7487f99fce3b8fb68ae15af
-```
-
-and if we do a get, instead of the url we get the path to the file:
-
-```
-sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-/home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
-```
-
-You can also see in the pull output that on the backend of pull is the same search as you did before. This means that
-if you want to be precise, you should ask for the complete uri (version included). If you aren't precise, it will do
-a search across name fields and give you the first match. Be careful, my linux penguins.
+And then you have it locally. Be careful with download quotas for images with this method - I tested the same thing a bunch of times, and got an error about exceeding my quota. That probably means it's time to call it day! Happy New Year from @vsoch and the robots! :D
 
 <div>
-    <a href="/sregistry-cli/client-google-drive"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
-    <a href="/sregistry-cli/client-registry.html"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+    <a href="/sregistry-cli/client-google-storage"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/client-registry"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

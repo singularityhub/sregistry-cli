@@ -99,9 +99,11 @@ def push(self, path, name, tag=None):
                                                  body = body).execute()
  
         bot.spinner.stop()
+        print(image['name'])
 
     except HttpError:
         bot.error('Error uploading %s' %path)
         pass
 
     return image
+

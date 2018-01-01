@@ -156,7 +156,8 @@ def container_query(self, query, quiet=False):
 
             bot.info(image['uri'])
 
-            for key,val in image.items():
+            for key in sorted(image, key=len):
+                val = image[key]
                 if isinstance(val,str):
                     bot.custom(prefix=key.ljust(10), message=val, color="CYAN")
             bot.newline()

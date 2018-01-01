@@ -51,31 +51,21 @@ def record(self, images, action='add'):
     for image in images:
 
         # Use container search to find the container based on uri
-        bot.info('Searching for %s in drive://%s' %(q['uri'],self._base))
-        matches = self._container_query(q['uri'], quiet=True)
+        bot.info('Searching for %s in drive://%s' %(image,self._base))
+        matches = self._container_query(image, quiet=True)
 
         if len(matches) == 0:
             bot.info('No matching containers found.')
             sys.exit(0)
        
-        # If the user didn't provide a file, make one based on the names
-        if file_name is None:
-            file_name = q['storage'].replace('/','-')
-
         # We give the first match, the uri should be unique and known
         image = matches[0]
 
         request = self._service.files().get_media(fileId=image['id'])
 
-        image_uri = q['uri']
-        if "uri" in image:
-            image_uri = image['uri']
-
-        #TODO: need to test with getting complete data...
-
-        # Update metadata with selfLink
-        metadata['selfLink'] = request.uri
-
+        image_uri = image['properties']['uri']
+        names = parse_image_name( remove_uri(image_uri) )
+        
         # Use add without image path so added as a record
         container = self.add(image_name=image_uri,
                              metadata=image,

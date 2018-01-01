@@ -38,12 +38,12 @@ import os
 
 
 
-def share(query, share_to):
+def share(self, query, share_to):
     '''share will use the client to get an image based on a query, and then
        the link with an email or endpoint (share_to) of choice.
     '''
 
-    images = self._container_query(query)
+    images = self._container_query(query, quiet=True)
     if len(images) == 0:
         bot.error('Cannot find a remote image matching %s' %query)
         sys.exit(0)
@@ -55,7 +55,8 @@ def share(query, share_to):
             # Handle error
             print(exception)
         else:
-            print(response.get('id'))
+            share_id = response.get('id')
+            bot.info('Share to %s complete: %s!' %(share_to, share_id))
 
     batch = self._service.new_batch_http_request(callback=callback)
     user_permission = {

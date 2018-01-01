@@ -308,7 +308,7 @@ def main():
     if args.command == "rm": from .rm import main
     if args.command == "rmi": from .rmi import main
     if args.command == "search": from .search import main
-    if args.command == "share": from .share import share
+    if args.command == "share": from .share import main
     if args.command == "shell": from .shell import main
 
     # Pass on to the correct parser
