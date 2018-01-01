@@ -24,7 +24,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from .base import ApiConnection
-from sregistry.utils import check_install
+from sregistry.utils import ( 
+    check_install, 
+    mkdir_p 
+)
+from sregistry.auth import get_credential_cache
 from sregistry.defaults import (
     SREGISTRY_DATABASE, 
     SREGISTRY_CLIENT
@@ -47,13 +51,15 @@ def get_client():
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
     if SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
-    elif SREGISTRY_CLIENT == 'drive': from .drive import Client
-    # https://gist.github.com/rajarsheem/1d9790f0e9846fb429d7
+    elif SREGISTRY_CLIENT == 'google-drive': from .google_drive import Client
     elif SREGISTRY_CLIENT == 'google-storage': from .google_storage import Client
     elif SREGISTRY_CLIENT == 'registry': from .registry import Client
     else: from .hub import Client
 
     Client.client_name = SREGISTRY_CLIENT
+
+    # Create credentials cache, if it doesn't exist
+    Client._credential_cache = get_credential_cache()
 
     # Add the database, if wanted
     if SREGISTRY_DATABASE is not None:

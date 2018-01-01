@@ -132,12 +132,15 @@ this and not maintain a database. If you want to keep the cache but just disable
 the SRegistry database, then export `SREGISTRY_DISABLE=yes`.
 
 
-### Environment Variables List
-The variables you can set are:
+### Environment Variables Lists
+The `sregistry` client exposes a lot of customization through environment variables, so you as the user have the power to configure it exactly as you need, or stick to defaults that are reasonably set. In these sections, we will review the sets of environment variables for you to use. If you are a developer, see our [client contribution guide](/sregistry-cli/contribute-client) for details on interacting with these environment variables.
+
+
+#### Database and Storage
+The database refers to the sqlite3 file used to store metadata, typically in the user's home, and the storage refers to the actual folder of images. You can control this behavior with the following environment variables.
 
  - *SREGISTRY_CLIENT*: Set the client (either as an export or runtime) to determine which endpoint you want to use. By default, Singularity Hub is used, and functions that are available for all commands (detailed in this section and also reviewed under [commands](/sregistry-cli/commands) are available.
  - *SREGISTRY_SHELL*: When you use `sregistry shell` it will default to looking for python, bpython, and then ipython. If you have preference for one or the other, set this variable. Note that it will persist in your `.sregistry` secrets, so if you change your mind you should set the variable again, or remove it from here.
- - *SREGISTRY_CLIENT_SECRETS*: currently, this is only used to store a Singularity Registry token, if you are an admin and have push rights. Generally, it's a json file stored at `$HOME/.sregistry` that has a dictionary lookup with a key for each client to store any necessary parameters.
  - *SINGULARITY_DISABLE_CACHE*: By default, `sregistry` honors your Singularity configuration, meaning that if you have disabled the cache entirely (coinciding with pulling / interacting with images in temporary locations) the `sregistry` client will not use a database or cache. If this variable is found as a derivate of y/yes/true, this means that we simply use the commands as tools to work with images locally.
  - *SREGISTRY_DISABLE*: If for some reason you don't want to disable your Singularity cache but you do want to disable the `sregistry` database and storage, set this to one of y/yes/true.
  - *SREGISTRY_DATABASE*: The `sregistry` has two parts - a database file (sqlite3) and a storage location for the images. This variable should be to a folder where you want the application to live. By default, it will use the same Singularity cache folder (`$HOME/.singularity`), meaning that you would find the database at `$HOME/.singularity/sregistry.db` alongside your docker, metadata, and shub folders.
@@ -156,6 +159,13 @@ tree $HOME/.singularity.shub
 
 The organization is trivial for `sregistry` because images are interacted with via uri (unique resource identifier). This is also a way to distinguish images that you have pulled via Singularity into the cache (and aren't in your database) from those retrieved with `sregistry`, and organized and present in the database. For future versions of Singularity it would be ideal to give the user an option to add images in this format (and possibly add to the database, if the integration is available).
 
+#### Credentials and Settings
+Credentials broadly refer to tokens and secrets (authentication and refresh tokens, for example) needed by various clients to authenticate you to their services. The `sregistry` client has two storage strategies for handling credentials and settings.
+
+ - [SREGISTRY_CLIENT_SECRETS](#): is a file that is accessible to all clients, and is indexed by the client name (e.g., `google-storage`. This is a file where you can expect to keep parameters for different clients, and likely details about these settings are provided in the [client documentation](/sregistry-cli/clients). This is also where, if you manage or use a singularity registry, you are instructed to keep your token. The default location of this json file is at `$HOME/.sregistry`, and if you want to change that, simply define this variable. If you don't use or host a registry and the default location is good, you don't need to set this variable.
+ - [SREGISTRY_DISABLE_CREDENTIAL_CACHE](#): if you want to disable caching credentials entirely, meaning that you will not take advantage of refresh tokens (not recommended) you can export this variable as some derivative of yes/y/true. Note that an alternative would be to use the client as you need, and then manually delete the file.
+ - [SREGISTRY_DISABLE_CREDENTIAL_<client>](#): It might be the case that you want to disable credential caching on a per-client basis. To do this, just export the variable above with the client that you want to disable.
+ - [SREGISTRY_CREDENTIALS_CACHE](#) By default, we use the database folder (`SREGISTRY_DATABASE`) as the credentials cache folder, and create a subfolder `.sregistry` in it for the client-specific credential files. This means that, by default, the `google-drive` client would use the file `$HOME/.singularity/.sregistry/google-drive` for it's refresh tokens, and the path `$HOME/.singularity/.sregistry` is the default path that you can override with `SREGISTRY_CREDENTIALS_CACHE`. If you are ok with the defaults, there is no need to set this.
 
 ## Client
 Each client might have slight variability in the functions that it supports. For example,

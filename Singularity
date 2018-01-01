@@ -23,6 +23,19 @@ From: continuumio/miniconda3
     exec /opt/conda/bin/sregistry "$@"
 
 
+
+#######################################
+# Google Cloud Drive
+#######################################
+
+%appenv google-drive
+    SREGISTRY_CLIENT=google-drive
+    export SREGISTRY_CLIENT
+%apprun google-drive
+    exec /opt/conda/bin/sregistry "$@"
+
+
+
 #######################################
 # Singularity Hub
 #######################################

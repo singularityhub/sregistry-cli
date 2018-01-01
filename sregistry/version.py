@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -56,6 +56,7 @@ INSTALL_REQUIRES_GOOGLE_STORAGE = (
 )
 
 INSTALL_REQUIRES_GOOGLE_DRIVE = (
+    ('google-api-python-client', {'min_version': '1.6.4'}),
 )
 
 INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
