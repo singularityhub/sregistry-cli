@@ -29,6 +29,7 @@ from sregistry.utils import (
 
 from sregistry.main.google_storage.utils import prepare_metadata
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.errors import HttpError
 from retrying import retry
 import requests
 import base64

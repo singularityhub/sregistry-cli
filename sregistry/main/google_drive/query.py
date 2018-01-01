@@ -74,7 +74,7 @@ def list_containers(self):
         bot.info("No containers found, based on properties type:container")
         sys.exit(1)
 
-    return results
+    return containers
 
 
 def search_all(self):

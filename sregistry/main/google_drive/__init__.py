@@ -38,9 +38,10 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client import client as oclient
 
 from .utils import ( create_folder, get_or_create_folder )
-#from .pull import pull
+from .pull import pull
 from .push import push
-#from .record import record
+from .record import record
+from .share import share
 from .query import ( container_query, list_containers, search, search_all )
 
 class Client(ApiConnection):
@@ -123,10 +124,10 @@ class Client(ApiConnection):
 
 
 # Add your different functions imported at the top to the client here
-#Client.pull = pull
+Client.pull = pull
 Client.push = push
-#Client._upload = upload
-#Client.record = record
+Client.record = record
+Client.share = share
 
 Client._get_or_create_folder = get_or_create_folder
 Client._create_folder = create_folder

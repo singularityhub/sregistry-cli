@@ -161,6 +161,20 @@ def get_parser():
                            help='name of image, in format "library/image"', 
                            type=str, required=True)
 
+    # Share an image
+    if hasattr(cli,'share'):
+
+        share = subparsers.add_parser("share",
+                                       help="share a remote image")
+
+        share.add_argument("image", nargs=1,
+                           help="full uri of image", 
+                           type=str)
+
+        share.add_argument("--email", dest='share_to', 
+                            help='email (or share point) to share with', 
+                            type=str, default=None)
+
 
     # Pull an image
     if hasattr(cli,'pull'):
@@ -294,6 +308,7 @@ def main():
     if args.command == "rm": from .rm import main
     if args.command == "rmi": from .rmi import main
     if args.command == "search": from .search import main
+    if args.command == "share": from .share import share
     if args.command == "shell": from .shell import main
 
     # Pass on to the correct parser
