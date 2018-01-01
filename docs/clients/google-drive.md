@@ -207,7 +207,7 @@ And how about sharing with a friend? Yes, this in fact did happen - it was recei
 
 But you want to know what is most exciting? The share has a robot thumbnail. That you can customize by exporting a path to `SREGISTRY_THUMBNAIL` on your host, however you please! Let's look at him again, because we can.
 
-<img src="/sregistry-cli/img/google-drive-robot.png" width="400px"><br>
+<img src="/sregistry-cli/img/google-drive-robot.png" width="600px"><br>
 
 
 If you don't feel sheer joy and life completion from having robots in your Google Drive, I'm not sure anything can help you now, my friend. Okay, let's now bring down the excitement and go back to square one... time to review the basics! Starting with a push.
