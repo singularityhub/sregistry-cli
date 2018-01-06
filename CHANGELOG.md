@@ -13,9 +13,10 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
  - migration guidance (how to convert images?)
  - changed behaviour (recipe sections work differently)
 
-## [0.0.4](https://github.com/singularityware/singularity-python/tree/development) (0.0.4)
+## [0.0.5](https://github.com/singularityware/singularity-python/tree/development) (0.0.5)
 
 **additions**
+ - added authentication to pull so that private sregistry images can be pulled
  - client.speak() now also calls `_speak()` for subclass to implement with extra messages to user.
  - client._get_setting() and client._get_and_update_setting() retrieve / update environment settings
  - `SREGISTRY_THUMBNAIL` can be set for upload to Google Drive (or other clients that have thumbnails)
