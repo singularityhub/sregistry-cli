@@ -30,7 +30,7 @@ LICENSE = "LICENSE"
 
 INSTALL_REQUIRES = (
 
-    ('dateutils', {'min_version': "0.6.6"}),   
+    ('dateutils', {'min_version': "0.6.6"}),
     ('demjson', {'exact_version': "2.2.4"}),
     ('python-dateutil', {'exact_verison': "2.5.3"}),
     ('requests', {'exact_version': '2.18.4'}),
