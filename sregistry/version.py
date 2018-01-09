@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -30,6 +30,7 @@ LICENSE = "LICENSE"
 
 INSTALL_REQUIRES = (
 
+    ('dateutils', {'min_version': "0.6.6"}),   
     ('demjson', {'exact_version': "2.2.4"}),
     ('python-dateutil', {'exact_verison': "2.5.3"}),
     ('requests', {'exact_version': '2.18.4'}),
