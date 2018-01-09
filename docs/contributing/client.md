@@ -299,8 +299,45 @@ from sregistry.utils import write_file, read_file
 ```
 
 #### Helper Functions
-To make it easy for development, we have created a set of functions that live with all clients to get and update environment variables. In the examples below, we will start with high level functions, and then move into more detailed functions used by them.
+To make it easy for development, we have created a set of functions that live with all clients to do checks, along with get and update environment variables. In the examples below, we will start with high level functions, and then move into more detailed functions used by them.
 
+
+##### Check for secrets
+It might be the case that you want to do a quick check that secrets exist for your client. For example, for the `registry` client pull and push functions, there is no feasible way to interact with a registry if the client hasn't defined the `registry` key in his or her client secrets! Actually, there are many things we might want to check for:
+
+ - does the secrets file exist, period?
+ - does the secrets file have a lookup for the client?
+ - does the lookup have one or more parameters defined?
+ - if the parameter is defined, is it None or empty?
+
+We provide an easy way to do these checks for a client, and we will walk through them in a shell:
+
+```
+sregistry shell
+client.client_name
+'hub'
+```
+
+This first function will check for a secrets file, and specifically, that the client `hub` has an entry in it. If not defined, it would exit and tell the user.
+
+```
+# Do I have a secrets file, period?
+client.require_secrets()
+
+# will exit if not found
+
+# Do I have a secrets file with parameter "name" defined?
+client.require_secrets(params='name')
+
+# Do I have a secrets file with parameters "name" and "group" defined?
+client.require_secrets(params=p["name", "group"])
+```
+
+and so, for example, in the push and pull functions, since we require secrets period, we can just call:
+
+```
+self.require_secrets()
+```
 
 ##### GET
 First, you might decide for your client (let's call it `myclient`) that your user can optionally set `SREGISTRY_MYCLIENT_ID`. If you just want to get the variable from the user, and return `None` if it's not found, you can use the following function:

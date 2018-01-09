@@ -44,9 +44,15 @@ def require_secrets(self, params=None):
     # Check 1: the client must have secrets, period
     has_secrets = True
 
-    # Secret file was not found, period
-    if self.secrets is None: 
+    # Secrets file not asked for (incorrectly) but still wanted
+    # The client shouldn't be calling this function if didn't init secrets
+    if not hasattr(self,'secrets'):
         has_secrets = False
+
+    # Secret file was not found, period
+    elif hasattr(self,'secrets'):
+        if self.secrets is None: 
+            has_secrets = False
 
     # The client isn't defined in the secrets file
     elif self.client_name not in self.secrets: 
