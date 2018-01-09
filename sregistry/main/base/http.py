@@ -96,9 +96,12 @@ def paginate_get(self, url, headers=None, return_json=True, start_page=None):
 
 def download(self, url, file_name, headers=None, show_progress=True):
     '''stream to a temporary file, rename on successful completion
-    :param file_name: the file name to stream to
-    :param url: the url to stream from
-    :param headers: additional headers to add
+
+    Parameters
+    ==========
+    file_name: the file name to stream to
+    url: the url to stream from
+    headers: additional headers to add
     '''
 
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
@@ -163,10 +166,13 @@ def stream(self, url, headers=None, stream_to=None):
 def call(self,url,func,data=None,return_json=True, stream=False):
     '''call will issue the call, and issue a refresh token
     given a 401 response.
-    :param func: the function (eg, post, get) to call
-    :param url: the url to send file to
-    :param data: additional data to add to the request
-    :param return_json: return json if successful
+
+    Parameters
+    ==========
+    func: the function (eg, post, get) to call
+    url: the url to send file to
+    data: additional data to add to the request
+    return_json: return json if successful
     '''
  
     if data is not None:
