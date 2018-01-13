@@ -59,7 +59,6 @@ def pull(self, images, file_name=None, save=True):
         bot.debug('Retrieving manifest at %s' %url)
 
         manifest = self._get(url)
-        manifest['selfLink'] = url
 
         if isinstance(manifest, int):
             if manifest == 400:
@@ -67,6 +66,9 @@ def pull(self, images, file_name=None, save=True):
             elif manifest == 404:
                 bot.error('Container not found (404)')
             sys.exit(1)
+
+        # Add self link to manifest
+        manifest['selfLink'] = url
 
         if file_name is None:
             file_name = q['storage'].replace('/','-')
