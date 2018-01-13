@@ -303,7 +303,7 @@ class ApiConnection(object):
 
 
 
-    def _call(self,url,func,data=None,return_json=True, stream=False):
+    def _call(self,url,func,data=None,return_json=True, stream=False, retry=True):
         '''call will issue the call, and issue a refresh token
         given a 401 response.
         :param func: the function (eg, post, get) to call
@@ -336,6 +336,11 @@ class ApiConnection(object):
 
         # Errored response, try again with refresh
         if response.status_code == 401:
+
+            # TODO: here need to update token, and try again with retry=False
+            #if retry is True:
+            #    self._update_token()
+
             bot.error("Your credentials are expired! %s: %s" %(response.reason,
                                                                response.status_code))
             sys.exit(1)

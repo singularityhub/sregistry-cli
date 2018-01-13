@@ -115,6 +115,7 @@ def parse_image_name(image_name, tag=None, version=None,
 
     # Piece together the filename
     uri = "%s/%s" % (collection, image_name)    
+    url = uri
     if tag is not None:
         uri = "%s:%s" % (uri, tag)
     if version is not None:
@@ -123,8 +124,9 @@ def parse_image_name(image_name, tag=None, version=None,
     storage = "%s.%s" %(uri, ext)
     result = {"collection": collection,
               "image": image_name,
+              "url": url,
               "tag": tag,
-              "version":version,
+              "version": version,
               "storage": storage,
               "uri": uri}
 
