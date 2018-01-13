@@ -68,9 +68,10 @@ class Client(ApiConnection):
         '''
         self.secrets = read_client_secrets()
         if self.secrets is not None:
-            if "base" in self.secrets:
-                self.base = self.secrets['base']
-                self._update_base()
+            if "registry" in self.secrets:
+                if "base" in self.secrets['registry']:
+                    self.base = self.secrets['registry']['base']
+                    self._update_base()
 
     def __str__(self):
         return type(self)
