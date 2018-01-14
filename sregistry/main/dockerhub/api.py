@@ -194,6 +194,7 @@ def download_layers(self, repo_name, digest=None, destination=None):
         download = self.download
         _stream = self._stream
 
+
     # Download each layer atomically
     tasks = []
     layers = []
@@ -556,7 +557,7 @@ def extract_labels(self):
     manifest: the manifest to use
     
     '''
-    labels = self.get_config(manifest, 'Labels')
+    labels = self.get_config(manifest, 'Labels'):
     if len(labels) == 0:
         labels = None:
 
