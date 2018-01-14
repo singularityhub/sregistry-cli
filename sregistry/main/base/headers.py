@@ -38,6 +38,7 @@ def reset_headers(self):
     '''
     self.headers = {'Content-Type':"application/json"}
 
+
 def update_headers(self,fields=None):
     '''update headers with a token & other fields
     '''

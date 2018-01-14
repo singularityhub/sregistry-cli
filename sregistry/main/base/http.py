@@ -38,6 +38,7 @@ def delete(self,url,return_json=True):
     '''
     bot.debug('DELETE %s' %url)
     return self._call(url,
+                      headers=headers,
                       func=requests.delete,
                       return_json=return_json)
 
@@ -47,6 +48,7 @@ def put(self,url,data=None,return_json=True):
     '''
     bot.debug("PUT %s" %url)
     return self._call(url,
+                      headers=headers,
                       func=requests.put,
                       data=data,
                       return_json=return_json)
@@ -58,6 +60,7 @@ def post(self,url,data=None,return_json=True):
     '''
     bot.debug("POST %s" %url)
     return self._call(url,
+                      headers=headers,
                       func=requests.post,
                       data=data,
                       return_json=return_json)
@@ -68,6 +71,7 @@ def get(self,url,headers=None,token=None,data=None,return_json=True):
     '''
     bot.debug("GET %s" %url)
     return self._call(url,
+                      headers=headers,
                       func=requests.get,
                       data=data,
                       return_json=return_json)
@@ -97,18 +101,18 @@ def paginate_get(self, url, headers=None, return_json=True, start_page=None):
 def download(self, url, file_name, headers=None, show_progress=True):
     '''stream to a temporary file, rename on successful completion
 
-    Parameters
-    ==========
-    file_name: the file name to stream to
-    url: the url to stream from
-    headers: additional headers to add
+        Parameters
+        ==========
+        file_name: the file name to stream to
+        url: the url to stream from
+        headers: additional headers to add
     '''
 
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
     os.close(fd)
 
     # Check here if exists
-    if requests.head(url).status_code == 200:
+    if requests.head(url).status_code in [200, 401]:
         response = self._stream(url,headers=headers,stream_to=tmp_file)
 
         if isinstance(response, HTTPError):
@@ -116,22 +120,31 @@ def download(self, url, file_name, headers=None, show_progress=True):
             sys.exit(1)
         shutil.move(tmp_file, file_name)
     else:
-        bot.error("Invalid URL %s" %url)
+        bot.error("Invalid url or permissions %s" %url)
     return file_name
 
 
-def stream(self, url, headers=None, stream_to=None):
+def stream(self, url, headers=None, stream_to=None, retry=True):
     '''stream is a get that will stream to file_name
     '''
 
     bot.debug("GET %s" %url)
 
+    # Ensure headers are present, update if not
     if headers == None:
-        headers = self._reset_headers()
+        if self.headers is None:
+            self._reset_headers()
+        headers = self.headers.copy()
 
     response = requests.get(url,         
                             headers=headers,
                             stream=True)
+
+    # Deal with token if necessary
+    if response.status_code == 401 and retry is True:
+        if hasattr(self,'_update_token'):
+            self._update_token(response)
+            return self._stream(url, headers, stream_to, retry=False)
 
     if response.status_code == 200:
 
@@ -163,14 +176,18 @@ def stream(self, url, headers=None, stream_to=None):
 
 
 
-def call(self, url,func,data=None,return_json=True, stream=False, retry=True):
+def call(self, url, func, data=None, headers=None, 
+                          return_json=True, stream=False, 
+                          retry=True):
+
     '''call will issue the call, and issue a refresh token
-    given a 401 response.
+    given a 401 response, and if the client has a _update_token function
 
     Parameters
     ==========
     func: the function (eg, post, get) to call
     url: the url to send file to
+    headers: if not None, update the client self.headers with dictionary
     data: additional data to add to the request
     return_json: return json if successful
     '''
@@ -179,8 +196,13 @@ def call(self, url,func,data=None,return_json=True, stream=False, retry=True):
         if not isinstance(data,dict):
             data = json.dumps(data)
 
+    heads = self.headers.copy()
+    if headers is not None:
+        if isinstance(headers,dict):
+            heads.update(headers)
+
     response = func(url=url,
-                    headers=self.headers,
+                    headers=heads,
                     data=data,
                     stream=stream)
 
@@ -202,8 +224,11 @@ def call(self, url,func,data=None,return_json=True, stream=False, retry=True):
 
         # If client has method to update token, try it once
         if retry is True and hasattr(self,'_update_token'):
-            self._update_token()
+
+            # A result of None indicates no update to the call
+            self._update_token(response)
             return self._call(url, func, data=data,
+                              headers=headers,
                               return_json=return_json,
                               stream=stream, retry=False)
 
@@ -216,8 +241,7 @@ def call(self, url,func,data=None,return_json=True, stream=False, retry=True):
         if return_json:
 
             try:
-                response =  response.json()
-
+                response = response.json()
             except ValueError:
                 bot.error("The server returned a malformed response.")
                 sys.exit(1)

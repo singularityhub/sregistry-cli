@@ -2,9 +2,9 @@
 
 sregistry.api: base template for making a connection to an API
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -40,9 +40,14 @@ import os
 
         
 
-def get_setting(self, name):
+def get_setting(self, name, default=None):
     '''return a setting from the environment (first priority) and then
        secrets (second priority) if one can be found. If not, return None.
+
+       Parameters
+       ==========
+       name: they key (index) of the setting to look up
+       default: (optional) if not found, return default instead.
     ''' 
 
     # First priority is the environment
@@ -56,10 +61,12 @@ def get_setting(self, name):
             if name in secrets:
                 setting = secrets[name]
 
+    if setting is None and default is not None:
+        setting = default
     return setting
 
 
-def get_and_update_setting(self, name):
+def get_and_update_setting(self, name, default=None):
     '''Look for a setting in the environment (first priority) and then
        the settings file (second). If something is found, the settings
        file is updated. The order of operations works as follows:
@@ -68,7 +75,8 @@ def get_and_update_setting(self, name):
        2. the environment variable always takes priority to cache, and if
           found, will update the cache.
        3. If the variable is not found and the cache is set, we are good
-       5. If the variable is not found and the cache isn't set, return None
+       5. If the variable is not found and the cache isn't set, return
+          default (default is None)
 
        So the user of the function can assume a return of None equates to
        not set anywhere, and take the appropriate action.
@@ -81,4 +89,8 @@ def get_and_update_setting(self, name):
         updates = {name : setting}
         update_client_secrets(backend=self.client_name, 
                               updates=updates)
+
+    if setting is None and default is not None:
+        setting = default
+
     return setting

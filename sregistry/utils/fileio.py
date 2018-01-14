@@ -48,6 +48,34 @@ def mkdir_p(path):
             bot.error("Error creating path %s, exiting." % path)
             sys.exit(1)
 
+############################################################################
+## COMPRESSION #############################################################
+############################################################################
+
+def extract_tar(archive, output_folder):
+    '''extract a tar archive to a specified output folder
+
+    Parameters
+    ==========
+    archive: the archive file to extract
+    output_folder: the output folder to extract to
+
+    '''
+    from .terminal import run_command
+
+    # If extension is .tar.gz, use -xzf
+    args = '-xf'
+    if archive.endswith(".tar.gz"):
+        args = '-xzf'
+
+    # Just use command line, more succinct.
+    command = ["tar", args, archive, "-C", output_folder, "--exclude=dev/*"]
+    if not bot.is_quiet():
+        print("Extracting %s" % archive)
+
+    return run_command(command)
+
+
 
 ############################################################################
 ## FILE OPERATIONS #########################################################
@@ -79,16 +107,21 @@ def write_json(json_obj, filename, mode="w", print_pretty=True):
     '''
     with open(filename, mode) as filey:
         if print_pretty:
-            filey.writelines(
-                json.dumps(
+            filey.writelines(print_json(json_obj))
+        else:
+            filey.writelines(json.dumps(json_obj))
+    return filename
+
+
+def print_json(json_obj):
+    ''' just dump the json in a "pretty print" format
+    '''
+    return json.dumps(
                     json_obj,
                     indent=4,
                     separators=(
                         ',',
-                        ': ')))
-        else:
-            filey.writelines(json.dumps(json_obj))
-    return filename
+                        ': '))
 
 
 def read_file(filename, mode="r", readlines=True):
