@@ -21,6 +21,7 @@ from .names import (
 from .fileio import (
     clean_up,
     copyfile,
+    create_tar,
     extract_tar,
     mkdir_p,
     print_json,

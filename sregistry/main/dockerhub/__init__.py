@@ -164,9 +164,9 @@ Client.pull = pull
 # Api functions for image layers and manifests (hidden)
 Client._create_metadata_tar = create_metadata_tar
 Client._download_layers = download_layers
-Client._extract_runscript = extract_runscript,
-Client._extract_labels = extract_labels,
-Client._extract_env = extract_env,
+Client._extract_runscript = extract_runscript
+Client._extract_labels = extract_labels
+Client._extract_env = extract_env
 Client._get_config = get_config
 Client._get_digests = get_digests
 Client._get_download_cache = get_download_cache

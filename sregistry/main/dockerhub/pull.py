@@ -23,6 +23,7 @@ from sregistry.logger import bot
 from sregistry.client import Singularity
 from sregistry.utils import ( parse_image_name, remove_uri, extract_tar, which )
 import tarfile
+import tempfile
 import os
 import sys
 

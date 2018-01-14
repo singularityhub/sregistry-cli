@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from requests.exceptions import HTTPError
 from sregistry.defaults import SINGULARITY_CACHE
 from sregistry.logger import bot
-from sregistry.utils import ( mkdir_p, print_json, get_template )
+from sregistry.utils import ( mkdir_p, print_json, get_template, create_tar )
 import requests
 import tempfile
 import math
@@ -413,12 +413,14 @@ def get_config(self, key="Entrypoint", delim='\n'):
     cmd = None
 
     if 2 in self.manifests:
+        manifest = self.manifests[2]
         if "config" in manifest:
             if key in manifest['config']:
                 cmd = manifest['config'][spec]
 
     # If we didn't find the config value in version 2
     if cmd is None and 1 in self.manifests:
+        manifest = self.manifests[1]
         if "history" in manifest:
             for entry in manifest['history']:
                 if 'v1Compatibility' in entry:
@@ -490,7 +492,7 @@ def extract_env(self):
     '''extract the environment from the manifest, or return None.
        Used by functions env_extract_image, and env_extract_tar
     '''
-    environ = self.get_config('Env')
+    environ = self._get_config('Env')
     if environ is not None:
         if not isinstance(environ, list):
             environ = [environ]
@@ -557,8 +559,8 @@ def extract_labels(self):
     manifest: the manifest to use
     
     '''
-    labels = self.get_config('Labels')
-    if len(labels) == 0:
+    labels = self._get_config('Labels')
+    if labels in [[],'',None]:
         labels = None
 
     return labels
