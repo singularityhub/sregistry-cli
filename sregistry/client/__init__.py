@@ -190,6 +190,10 @@ def get_parser():
                            help='custom name for image', 
                            type=str, default=None)
 
+        pull.add_argument('--force','-f', dest="force", 
+                            help="force overwrite of existing image", 
+                            default=False, action='store_true')
+
         pull.add_argument('--no-cache', dest="nocache", 
                            help="if storage active, don't add the image to it", 
                            default=False, action='store_true')

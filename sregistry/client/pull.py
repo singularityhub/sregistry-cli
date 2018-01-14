@@ -36,4 +36,5 @@ def main(args,parser,subparser):
     
     response = cli.pull(images=args.image,
                         file_name=args.name,
+                        force=args.force,
                         save=do_save)

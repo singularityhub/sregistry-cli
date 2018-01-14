@@ -28,7 +28,7 @@ import os
 import sys
 
 
-def pull(self, images, file_name=None, save=True):
+def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     '''pull an image from a docker hub. This is a (less than ideal) workaround
        that actually does the following:
 
@@ -73,7 +73,12 @@ def pull(self, images, file_name=None, save=True):
 
         # Use Singularity to build the image, based on user preference
         if file_name is None:
-            file_name = q['storage'].replace('/','-')
+            file_name = self._get_storage_name(q)
+
+        # Determine if the user already has the image
+        if os.path.exists(file_name) and force is False:
+            bot.error('Image exists! Remove first, or use --force to overwrite')
+            sys.exit(1)
 
         # Build from sandbox 
         sandbox = tempfile.mkdtemp()

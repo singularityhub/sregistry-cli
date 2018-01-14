@@ -31,27 +31,6 @@ def print_date(date, format='%b %d, %Y %I:%M%p'):
     return datetime_object.strftime(format)
 
 
-def get_image_name(manifest, extension='simg', use_commit=False, use_hash=False):
-    '''get_image_name will return the image name for a manifest. The user
-       can name based on a hash or commit, or a name with the collection,
-       namespace, branch, and tag.
-    '''
-    if use_hash:
-        image_name = "%s.%s" %(manifest['version'], extension)
-
-    elif use_commit:
-        image_name = "%s.%s" %(manifest['commit'], extension)
-
-    else:
-        image_name = "%s-%s-%s.%s" %(manifest['name'].replace('/','-'),
-                                     manifest['branch'].replace('/','-'),
-                                     manifest['tag'].replace('/',''),
-                                     extension)
-            
-    bot.info("Singularity Registry Image: %s" %image_name)
-    return image_name
-
-
 def get_image_hash(image_path):
     '''return an md5 hash of the file based on a criteria level. This
     is intended to give the file a reasonable version.

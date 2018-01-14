@@ -25,6 +25,7 @@ from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_DATABASE
+from sregistry.utils import mkdir_p
 from sregistry.auth import ( read_client_secrets, update_client_secrets )
 import threading
 import shutil
@@ -94,3 +95,19 @@ def get_and_update_setting(self, name, default=None):
         setting = default
 
     return setting
+
+
+def get_storage_name(self, names):
+    '''use a parsed names dictionary from get_image_name (above) to return
+       the path in storage based on the user's preferences
+
+       Parameters
+       ==========
+       names: the output from parse_image_name
+    '''
+    storage_folder = os.path.dirname(names['storage'])
+    storage_folder = "%s/%s" %(self.storage, storage_folder)
+    mkdir_p(storage_folder)
+    file_name = names['storage'].replace('/','-')
+    storage_path = "%s/%s" %(self.storage, file_name)
+    return storage_path
