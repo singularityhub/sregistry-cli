@@ -68,6 +68,9 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # This is the Docker Hub namespace and repository
         layers = self._download_layers(q['url'], digest)
 
+        # This is the url where the manifests were obtained
+        url = self._get_manifest_selfLink(q['url'], digest)
+
         # Create client to build from sandbox
         cli = Singularity()
 
@@ -108,7 +111,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
             container = self.add(image_path = image_file,
                                  image_name = q['uri'],
                                  metadata = self.manifests,
-                                 url = q['uri'])
+                                 url = url)
 
             # When the container is created, this is the path to the image
             image_file = container.image

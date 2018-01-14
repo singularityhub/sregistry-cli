@@ -59,9 +59,12 @@ def record(self, images, action='add'):
         # This is the Docker Hub namespace and repository
         manifests = self._get_manifests(q['url'], digest)
 
+        # This is the url where the manifests were obtained
+        url = self._get_manifest_selfLink(q['url'], digest)
+
         # We again use the "add" function, but we don't give an image path
         # so it's just added as a record
         container = self.add(image_name=q['uri'],
                              metadata=manifests,
-                             url=q['uri'])
+                             url=url)
 

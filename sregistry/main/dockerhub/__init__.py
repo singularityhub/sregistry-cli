@@ -29,16 +29,13 @@ import os
 
 # here you should import the functions from the files in this
 # folder that you add to your client (at the bottom)
-from .api import ( create_metadata_tar, download_layers, 
+from .api import ( create_metadata_tar, download_layers, get_manifest_selfLink,
                    get_config, get_digests, get_layer, get_manifest,
                    get_manifests, get_download_cache, get_size,
                    extract_env, extract_labels, extract_runscript,
                    update_token )
 from .pull import pull
-
-# from .push import push
-# from .record import record
-# from .query import search
+from .record import record
 
 class Client(ApiConnection):
 
@@ -158,8 +155,7 @@ class Client(ApiConnection):
 
 # Functions exposed to the client
 Client.pull = pull
-# Client.record = record
-# Client.search = search
+Client.record = record
 
 # Api functions for image layers and manifests (hidden)
 Client._create_metadata_tar = create_metadata_tar
@@ -175,3 +171,4 @@ Client._get_manifest = get_manifest
 Client._get_manifests = get_manifests
 Client._get_size = get_size
 Client._update_token = update_token
+Client._get_manifest_selfLink = get_manifest_selfLink

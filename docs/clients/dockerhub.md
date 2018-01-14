@@ -57,9 +57,21 @@ Singularity Registry Global Client works by way of obtaining information from th
 |SREGISTRY_DOCKERHUB_CMD |     not set         | If found as yes/t/true/y or some derivation, use "CMD" instead of "EntryPoint" for container runscript|
 
 
-#### Authentication
-You will notice in the above table that you have multiple options for authenticating with Docker Hub. We recommend that you use the standard docker credential file (generated with `docker login` that is usually located at `$HOME/.docker/config.json` with your secrets token. If you choose to export your username and password, we do not send it beyond the client (or cache it anywhere) but instead generate a base64 encoded string to pass with the header to identify you and ask for a token. **Important** `sregistry` will not cache or otherwise save any of your credential information to the `.sregistry` secrets. This information must be set in the environment (either the path to the file or username and password) for each usage of the client.
+The following variables are specific to Singularity (not the Singularity Registry Global Client) and honored during a Docker Hub pull:
 
+| Variable                    |        Default |          Description |
+|-----------------------------|----------------|----------------------|
+|SINGULARITY_CACHEDIR  | `$HOME/.singularity`           | Set the root of the cache for layer downloads |
+|SINGULARITY_DISABLE_CACHE  | not set               | Disable the Singularity cache entirely (uses temporary directory) |
+
+
+#### Authentication
+You will notice in the above table that you have multiple options for authenticating with Docker Hub. We recommend that you use the standard docker credential file (generated with `docker login` that is usually located at `$HOME/.docker/config.json` with your secrets token. To do this:
+
+ 1. `docker login` to generate the file (if it doesn't exist)
+ 2. export `SREGISTRY_DOCKERHUB_SECRETS` to be the path to this file
+
+As an alternative option, you can also choose to export your username and password, and the client will do the same to base64 encode them (this is the token in the docker config file. Whatever you choose, we do not send your username and password out in the open beyond the client (or cache it anywhere) but instead generate a base64 encoded string to pass with the header to identify you and ask for a token. **Important** `sregistry` will not cache or otherwise save any of your credential information to the `.sregistry` secrets. This information must be set in the environment (either the path to the file or username and password) for each usage of the client.
 
 ## Commands
 For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](../getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are specific to the Google Storage client:
@@ -79,15 +91,12 @@ but note that you could just as easily define the variable for one command:
 SREGISTRY_CLIENT=dockerhub sregistry shell
 ```
 
-# STOPPED HERE
-
 ## Shell
-After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the google-storage `sregistry` client, just ask for it:
+After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the Docker Hub `sregistry` client, just ask for it:
 
 ```
 sregistry shell
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
 
@@ -97,201 +106,122 @@ IPython 5.1.0 -- An enhanced Interactive Python.
 help      -> Python's own help system.
 object?   -> Details about 'object', use 'object??' for extra details.
 
-In [1]: 
+In [1]: client.speak()
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ```
 
-Here we see straight away that we are using the default bucket name (`sregistry-vanessa`) and the google-storage client. The printing of the bucket on the first line indicates we successfully connected to it.
 
-## Push
-If you don't have any images in your bucket, that is probably a good start to add some. In this case we will add an image sitting in our present working directory.
+## Pull
+The most likely action you want to do with a Docker Hub endpoint is to pull. Pull in this context is different than a pull from Singularity Registry, because we aren't pulling an entire, pre-built image - we are assembling layers at pull time and building an image with them. Specifically we:
+
+ 1. **obtain image manifests from Docker Hub** based on an image unique resource identifier (uri) e.g., `ubuntu:latest`. Currently, the image manifests we look for are schemaVersion 1 and 2. Version 1 has important metadata relevant to environment, labels, and the EntryPoint and Cmd (what Singularity will use as the runscript). Version 2 has sizes for layers, and in some cases returns a list of manifests that the user (you!) can choose based on selecting an operating system and system architecture. If you do a simple record (and not pull) it's these manifests that will be obtained and stored in your database.
+ 2. **download layers into a sandbox** and build a squashfs image from the sandbox (per usual with Singularity, build is recommended to do using sudo). The client will detect if you are running the command as sudo (user id 0) and adjust the command to singularity appropriately.
+ 3. **add the image** to your local storage and sregistry manager so you can find it later.
+
+If you are interested in seeing how to ask for a particular architecture or operating system (given that the image provides it) please see the [environment](#environment). setting for more details. Here is an example of using the Docker Hub `sregistry` client.
 
 ```
-sregistry push --name vsoch/hello-world:latest vsoch-hello-world-master-latest.simg
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
+sregistry pull ubuntu:latest
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Exploding /usr/local/libexec/singularity/bootstrap-scripts/environment.tar
+Exploding /home/vanessa/.singularity/docker/sha256:50aff78429b146489e8a6cb9334d93a6d81d5de2edc4fbf5e2d4d9253625753e.tar.gz
+Exploding /home/vanessa/.singularity/docker/sha256:f6d82e297bce031a3de1fa8c1587535e34579abce09a61e37f5a225a8667422f.tar.gz
+Exploding /home/vanessa/.singularity/docker/sha256:275abb2c8a6f1ce8e67a388a11f3cc014e98b36ff993a6ed1cc7cd6ecb4dd61b.tar.gz
+Exploding /home/vanessa/.singularity/docker/sha256:9f15a39356d6fc1df0a77012bf1aa2150b683e46be39d1c51bc7a320f913e322.tar.gz
+Exploding /home/vanessa/.singularity/docker/sha256:fc0342a94c89e477c821328ccb542e6fb86ce4ef4ebbf1098e85669e051ef0dd.tar.gz
+Exploding /home/vanessa/.singularity/docker/metadata/sha256:c6a9ef4b9995d615851d7786fbc2fe72f72321bee1a87d66919b881a0336525a.tar.gz
+WARNING: Building container as an unprivileged user. If you run this container as root
+WARNING: it may be missing some functionality.
+Building FS image from sandbox: /tmp/tmpbd78kvnf
+Building Singularity FS image...
+Building Singularity SIF container image...
+Singularity container built: /home/vanessa/.singularity/shub/library-ubuntu:latest.simg
+Cleaning up...
+
+[container][new] library/ubuntu:latest
+Success! /home/vanessa/.singularity/shub/library-ubuntu:latest.simg
 ```
 
-You will see again the connection to the bucket, and then a progress bar that shows the status of the upload, and the progress bar is replaced by the final container url. By default, this push command doesn't add a container to our local storage database, but just a record that it exists in Google. To see the record, you can list your images:
+Notice that the first layer extracted is the standard environment metadata tar. The next set of layers come from the user's default cache (either set as the Singularity default or a user specified, we honor the Singularity envionment variable settings for this, and use a temporary directory if it's disabled. The final layer is a metadata tar that is specifically for the runscript, environment, and labels (if found in the manifest). After you do a pull, you can see the record in your local database (see the last record):
 
 ```
 sregistry images
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	remote	   [google-storage]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:test@846442ecd7487f99fce3b8fb68ae15af
+1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
+3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
+4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
+5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
+7  January 14, 2018	local 	   [dockerhub]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
 ```
 
-At this point you have remote records, but no images locally. You could do a "get" or an "inspect".
-
-## Get
-For a remote image record, if you do a "get" you will be given the remote url:
+## Record
+You might want to grab metadata for an image but not pull and download layers. You can use record for that. Let's first get the record for an anaconda image:
 
 ```
-sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
+registry record continuumio/anaconda3
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[container][new] continuumio/anaconda3:latest
 ```
 
-If you don't want to get the url but you want to look at all metadata, then use "inspect."
-
-## Inspect
-Of course you can inspect an image (here we will inspect the image we just pushed above), and you will see a ton of goodness:
+It's a really quick action, because all we've done is obtained the manifests. We can see the record in our images list:
 
 ```
-sregistry inspect vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
+sregistry images
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Containers:   [date]   [location]  [client]	[uri]
+1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
+3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
+4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
+5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
+7  January 14, 2018	local 	   [dockerhub]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+8 January 14, 2018	remote	   [dockerhub]	continuumio/anaconda3:latest
+```
+
+Since we didn't ask for an image, the record just records the uri without a version. What did we get? let's inspect it.
+
+```
+sregistry inspect continuumio/anaconda3:latest
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+continuumio/anaconda3:latest
 {
-    "client": "google-storage",
-    "collection": "vsoch",
-    "collection_id": 1,
-    "created_at": "2017-12-29 00:05:09",
-    "id": 1,
+    "client": "dockerhub",
+    "collection": "continuumio",
+    "collection_id": 5,
+    "created_at": "2018-01-14 22:08:41",
+    "id": 10,
     "image": null,
     "metrics": {
-        "attributes": {
-            "deffile": "Bootstrap: docker\nFrom: ubuntu:14.04\n\n%labels\nMAINTAINER vanessasaur\nWHATAMI dinosaur\n\n%environment\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n%files\nrawr.sh /rawr.sh\n\n%runscript\nexec /bin/bash /rawr.sh\n",
-            "environment": "# Custom environment shell code should follow\n\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n",
-            "help": null,
-            "labels": {
-                "MAINTAINER": "vanessasaur",
-                "WHATAMI": "dinosaur",
-                "org.label-schema.build-date": "2017-10-15T12:52:56+00:00",
-                "org.label-schema.build-size": "333MB",
-                "org.label-schema.schema-version": "1.0",
-                "org.label-schema.usage.singularity.deffile": "Singularity",
-                "org.label-schema.usage.singularity.deffile.bootstrap": "docker",
-                "org.label-schema.usage.singularity.deffile.from": "ubuntu:14.04",
-                "org.label-schema.usage.singularity.version": "2.4-feature-squashbuild-secbuild.g780c84d"
-            },
-            "runscript": "#!/bin/sh \n\nexec /bin/bash /rawr.sh\n",
-            "test": null
+        "1": {
+            "architecture": "amd64",
+            "fsLayers": [
+                {
+                    "blobSum": "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4"
+                },
+                ...
+
+            ],
+            "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+            "schemaVersion": 2,
+            "selfLink": "https://index.docker.io/v2/continuumio/anaconda3/manifests/latest"
         },
-        "branch": "master",
-        "bucket": "sregistry-vanessa",
-        "collection": "vsoch",
-        "commit": "e279432e6d3962777bb7b5e8d54f30f4347d867e",
-        "contentType": "application/octet-stream",
-        "crc32c": "1FCMGQ==",
-        "etag": "CIHy5PnTstgCEAE=",
-        "generation": "1514668522289409",
-        "id": "sregistry-vanessa/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg/1514668522289409",
-        "image": "hello-world",
-        "kind": "storage#object",
-        "md5Hash": "7ZdVoIcfBNs+FJcb7FajPw==",
-        "mediaLink": "https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media",
-        "metageneration": "1",
-        "name": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg",
-        "selfLink": "https://www.googleapis.com/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg",
-        "size": "65347615",
-        "size_mb": "333",
-        "storage": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg",
-        "storageClass": "STANDARD",
-        "tag": "latest",
-        "timeCreated": "2017-12-30T21:15:22.270Z",
-        "timeStorageClassUpdated": "2017-12-30T21:15:22.270Z",
-        "type": "container",
-        "updated": "2017-12-30T21:15:22.270Z",
-        "uri": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f",
-        "version": "ed9755a0871f04db3e14971bec56a33f"
+        "selfLink": "https://index.docker.io/v2/continuumio/anaconda3/manifests"
     },
-    "name": "hello-world",
+    "name": "anaconda3",
     "tag": "latest",
-    "uri": "vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f",
-    "url": "https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media",
-    "version": "ed9755a0871f04db3e14971bec56a33f"
+    "uri": "continuumio/anaconda3:latest",
+    "url": "continuumio/anaconda3:latest",
+    "version": ""
 }
-```
-
-### Record
-Finally, if you don't have a record locally but want to get one that already exists, then use record.
 
 ```
-sregistry record vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Searching for vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f in gs://sregistry-vanessa
-[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-```
-
-If you had an image already, it won't be replaced, but the record will be updated.
-
-
-## Pull and Search
-Now let's say that we pushed an image a while back to Google Storage, we have the record locally, and we want to get it. We could use "get" to get the url and then plug it into our special download logic, or we could instead want to pull the image to our local `sregistry` database. This would mean that the "remote" record gets updated to "local" because we actually have the image! How do we do that? We will go through two scenarios. In the first, we've totally forgotten about our local database (or it blew up) and we need to search the remote endpoint. In the second, we have our local database and just want to get one (pull).
-
-### Search
-A search without any parameters will essentially list all containers in the configured storage bucket. But how do we know what is a container?
-
->> a container is defined by having the metadata key "type" with value "container" and this is set by the upload (push) client.
-
-Thus, if you do some fancy operation outside of using the client to upload containers to storage, make sure that you add this metadata value, otherwise they will not be found. Let's do a quick search to get our list in Google Storage. This action has no dependency on a local storage or database.
-
-```
-sregistry search
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-[gs://sregistry-vanessa] Containers
-1      174 MB	/home/vanessa/desktop/expfactory:latest
-2       62 MB	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-```
-
-Then to look at details for a more specific search, let's try searching for "vsoch"
-
-```
-sregistry search vsoch
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-[gs://sregistry-vanessa] Found 1 containers
-vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg 
-id:      sregistry-vanessa/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg/1514668522289409
-uri:     vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-updated: 2017-12-30 21:15:24.132000+00:00
-size:    62 MB
-md5:     7ZdVoIcfBNs+FJcb7FajPw==
-```
-
-### Pull
-With pull, we might have a record (or did a search to find a container that we liked, as shown above). In this case, instead of inspect or get, we just use pull.
-
-```
-sregistry pull vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Searching for vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f in gs://sregistry-vanessa
-Progress |===================================| 100.0% 
-[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-Success! /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
-```
-
-Did you notice that this was an update? The reason is because we already had the record in our database from when we pushed it in the first place, and the record was updated to now be for a local file:
-
-```
-sregistry images
-sregistry images
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-storage]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:test@846442ecd7487f99fce3b8fb68ae15af
-```
-
-and if we do a get, instead of the url we get the path to the file:
-
-```
-sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-/home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
-```
-
-You can also see in the pull output that on the backend of pull is the same search as you did before. This means that
-if you want to be precise, you should ask for the complete uri (version included). If you aren't precise, it will do
-a search across name fields and give you the first match. Be careful, my linux penguins.
+the above is truncated in the middle, but what you should know is that the middle chunk contains both versions of the manifest, if available.
 
 <div>
     <a href="/sregistry-cli/commands"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
-    <a href="/sregistry-cli/client-google-drive"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+    <a href="/sregistry-cli/client-google-storage"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

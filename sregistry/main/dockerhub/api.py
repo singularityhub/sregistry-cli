@@ -126,6 +126,24 @@ def get_manifests(self, repo_name, digest=None):
     return self.manifests
 
 
+def get_manifest_selfLink(self, repo_name, digest=None):
+    ''' get a selfLink for the manifest, for use by the client get_manifest
+        function, along with the parents pull and record
+ 
+       Parameters
+       ==========
+       repo_name: reference to the <username>/<repository>:<tag> to obtain
+       digest: a tag or shasum version
+
+    '''
+    url = "%s/%s/manifests" % (self.base, repo_name)
+
+    # Add a digest - a tag or hash (version)
+    if digest is None:
+        digest = 'latest'
+    return "%s/%s" % (url, digest)
+
+
 def get_manifest(self, repo_name, digest=None, schema_version="v1"):
     '''
        get_manifest should return an image manifest
@@ -139,12 +157,8 @@ def get_manifest(self, repo_name, digest=None, schema_version="v1"):
        schema_version: the schema version to return, defaults to v1 (older)
 
     '''
-    url = "%s/%s/manifests" % (self.base, repo_name)
 
-    # Add a digest - a tag or hash (version)
-    if digest is None:
-        digest = 'latest'
-    url = "%s/%s" % (url, digest)
+    url = self._get_manifest_selfLink(repo_name, digest)
 
     bot.verbose("Obtaining manifest: %s" % url)
 
