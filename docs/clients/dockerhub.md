@@ -16,61 +16,70 @@ Singularity proper will be the best solution if you want to pull and otherwise i
  - you have credentials at `$HOME/.docker/config.json` you want to utilize
  - you want to use a private hosted (or otherwise different) registry endpoint 
 
-##TODO: add credential and instruction here for setting:
+To quicky review, using this client (for pull) you will do the following:
 
-SREGISTRY_DOCKERHUB_USERNAME # login username (overrides credential file)
-SREGISTRY_DOCKERHUB_PASSWORD # login password (overrides credential file)
-SREGISTRY_DOCKERHUB_SECRETS  # default is no secrets (header or credentials)
-SREGISTRY_DOCKERHUB_NO_HTTPS # default is unset
-SREGISTRY_DOCKERHUB_VERSION  # default is v1
-SREGISTRY_DOCKERHUB_OS
-SREGISTRY_DOCKERHUB_ARCHITECTURE
-SREGISTRY_DOCKERHUB_CMD Use "CMD" instead of "EntryPoint"
+ 1. obtain image manifests from Docker Hub based on an image unique resource identifier (uri) e.g., `ubuntu:latest`
+ 2. download layers into a sandbox, and build a squashfs image from the sandbox (per usual with Singularity, build is recommended to do using sudo)
+ 3. add the image to your local storage and sregistry manager so you can find it later.
 
-When you use credentials, they are not saved to .sregistry secrets. 
+The "images" from Docker Hub are layers, and the layers that you obtain depend on the uri that you ask for, along with the host architecture and operating system. See the [environment](#environment). setting for more details.
+
 
 ## Getting Started
-If you are using the sregistry image, the client is likely already installed. If you want to install this natively (or build a custom container) the command to install the module extras is:
+The Docker Hub module does not require any extra dependencies other than having Singularity on the host.
+
+To get started, you simply need to install the `sregistry` client:
 
 ```
-pip install sregistry[google-storage]
+pip install sregistry
 
-# or locally
+# or from source
 git clone https://www.github.com/singularityhub/sregistry-cli.git
-cd sregistry-cli
-pip install -e .[google-storage]
+cd sregistry-cli 
+python setup.py install
 ```
 
-The next steps we will take are to first set up authentication, and then define your Storage Bucket (and other settings) via environment variables. 
+The next steps we will take are to first set up authentication and other environment variables of interest, and then review the basic usage.
 
 ### Environment
-Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Google Storage, you will first need to [set up authentication](https://cloud.google.com/docs/authentication/getting-started) by following those steps. It comes down to creating a file and saving it on your system with the variable name `GOOGLE_APPLICATION_CREDENTIALS`. This variable will be found and used every time you use the storage Client, without needing to save anything to the secrets.
+Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Docker Hub, we have defined the following environment variables (and defaults).
 
-Thus, the complete list of this required variable (and other options, with defaults shown) are the following:
 
- - [GOOGLE_APPLICATION_CREDENTIALS](https://cloud.google.com/docs/authentication/getting-started) should point to the file provided.
- - [SREGISTRY_GOOGLE_STORAGE_BUCKET](https://cloud.google.com/storage/docs/json_api/v1/buckets): is the name for the bucket you want to create. If not provided, we use your username prefixed with "sregistry."
- - `SREGISTRY_GOOGLE_STORAGE_PRIVATE`: by default, images that you upload will be made public, meaning that a user that stumbles on the URL (or has permission to read your bucket otherwise) will be able to see and download them. If you want to make an image private (one time or globally with an export in your bash profile) you should export this variable as some derivative of yes/true. If no variable is found, images are made public by default. If you set the variable once, it will be saved in your configuration for all subsequent images.
+| Variable                    |        Default |          Description |
+|-----------------------------|----------------|----------------------|
+|SREGISTRY_DOCKERHUB_SECRETS  | None           | The path to your `.docker/config.json` credentials (if you want to use it) |
+|SREGISTRY_DOCKERHUB_USERNAME | None           | login username to Docker Hub. If set, will override the secrets file |
+|SREGISTRY_DOCKERHUB_PASSWORD | None           | the login password to Docker Hub. If set, will override the secrets file |
+|SREGISTRY_DOCKERHUB_NO_HTTPS | not set        | If found as yes/t/true/y or some derivation, make calls without https (usually for local registries and not recommended)  
+|SREGISTRY_DOCKERHUB_VERSION  |  v2            | the Docker Hub API version to use |
+|SREGISTRY_DOCKERHUB_OS       | linux          | The choice of operating system to use from the schema version 2 image manifest |
+|SREGISTRY_DOCKERHUB_ARCHITECTURE| amd64       | the system architecture to use from the schema verison 2 image manifest
+|SREGISTRY_DOCKERHUB_CMD |     not set         | If found as yes/t/true/y or some derivation, use "CMD" instead of "EntryPoint" for container runscript|
 
-Notice that the first variable is not prefixed with `SREGISTRY_` and this is because it is already defined for the Google namespace, and use by `sregistry`.
 
+#### Authentication
+You will notice in the above table that you have multiple options for authenticating with Docker Hub. We recommend that you use the standard docker credential file (generated with `docker login` that is usually located at `$HOME/.docker/config.json` with your secrets token. If you choose to export your username and password, we do not send it beyond the client (or cache it anywhere) but instead generate a base64 encoded string to pass with the header to identify you and ask for a token. **Important** `sregistry` will not cache or otherwise save any of your credential information to the `.sregistry` secrets. This information must be set in the environment (either the path to the file or username and password) for each usage of the client.
+
+
+## Commands
 For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](../getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are specific to the Google Storage client:
 
- - [pull](#pull): `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
- - [search](#search): `[remote]` list all image collections in Singularity Hub
- - [record](#record): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
+ - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
+ - [record](#record): `[remote->local]` obtain Docker Hub manifests and metadata to save to the database, but don't pull layers to build a container.
 
-For all of the examples below, we will export our client preference to be `google-storage`
+For all of the examples below, we will export our client preference to be `dockerhub`
 
 ```
-SREGISTRY_CLIENT=google-storage
+SREGISTRY_CLIENT=dockerhub
 export SREGISTRY_CLIENT
 ```
 but note that you could just as easily define the variable for one command:
 
 ```
-SREGISTRY_CLIENT=google-storage sregistry shell
+SREGISTRY_CLIENT=dockerhub sregistry shell
 ```
+
+# STOPPED HERE
 
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the google-storage `sregistry` client, just ask for it:
