@@ -557,8 +557,8 @@ def extract_labels(self):
     manifest: the manifest to use
     
     '''
-    labels = self.get_config(manifest, 'Labels'):
+    labels = self.get_config('Labels')
     if len(labels) == 0:
-        labels = None:
+        labels = None
 
     return labels

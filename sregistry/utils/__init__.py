@@ -6,7 +6,8 @@ from .terminal import (
     run_command,
     check_install,
     get_installdir,
-    get_thumbnail
+    get_thumbnail,
+    which
 )
 from .cache import get_cache
 from .names import (
