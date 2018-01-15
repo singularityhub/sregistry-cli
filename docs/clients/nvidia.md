@@ -2,7 +2,7 @@
 layout: default
 title: Docker Hub Client
 pdf: true
-permalink: /client-ngc
+permalink: /client-nvidia
 toc: false
 ---
 
@@ -37,11 +37,11 @@ Singularity Registry Global Client works by way of obtaining information from th
 
 | Variable                    |        Default |          Description |
 |-----------------------------|----------------|----------------------|
-|SREGISTRY_NGC_TOKEN  | None (required)        | Your API token associated with your account, generated [here](https://ngc.nvidia.com/configuration/api-key)|
-|SREGISTRY_NGC_BASE | ngcr.io           | the api base (default is ngcr.io) |
-|SREGISTRY_NGC_VERSION | v2           | the version of the API to use (default is v2) |
-|SREGISTRY_NGC_USERNAME | $oauthtoken           | if the username could be different, set it here (defaults to $oauthtoken) |
-|SREGISTRY_NGC_NOHTTPS | not set        | If found as yes/t/true/y or some derivation, make calls without https (usually for local registries and not recommended)  
+|SREGISTRY_NVIDIA_TOKEN  | None (required)        | Your API token associated with your account, generated [here](https://ngc.nvidia.com/configuration/api-key)|
+|SREGISTRY_NVIDIA_BASE | ngcr.io           | the api base (default is ngcr.io) |
+|SREGISTRY_NVIDIA_VERSION | v2           | the version of the API to use (default is v2) |
+|SREGISTRY_NVIDIA_USERNAME | $oauthtoken           | if the username could be different, set it here (defaults to $oauthtoken) |
+|SREGISTRY_NVIDIA_NOHTTPS | not set        | If found as yes/t/true/y or some derivation, make calls without https (usually for local registries and not recommended)  
 
 The following variables are *shared* between different `sregistry` clients that have a Docker registry backend.
 
@@ -71,26 +71,26 @@ The following variables are specific to Singularity (not the Singularity Registr
 You should first export your secret token for the api:
 
 ```
-SREGISTRY_NGC_TOKEN = "xxxxxx"
-export SREGISTRY_NGC_TOKEN
+SREGISTRY_NVIDIA_TOKEN = "xxxxxx"
+export SREGISTRY_NVIDIA_TOKEN
 ```
 
 If you don't, you won't get very far!
 
 
 ```
-SREGISTRY_CLIENT=ngc sregistry shell
+SREGISTRY_CLIENT=nvidia sregistry shell
 ERROR You must have an Nvidia GPU cloud token to use it.
 ```
 
 Once you export your token (and increase the message level) you can see that there is an Authentication header added to the client:
 
 ```
-MESSAGELEVEL=5 SREGISTRY_CLIENT=ngc sregistry shell
+MESSAGELEVEL=5 SREGISTRY_CLIENT=nvidia sregistry shell
 DEBUG credentials cache
 DEBUG Headers found: Content-Type,Accept,Authorization
 DEBUG Database located at sqlite:////home/vanessa/.singularity/sregistry.db
-[client|ngc] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ePython 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 ...
 ```
@@ -101,17 +101,17 @@ For a detailed list of other (default) environment variables and settings that y
  - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
  - [record](#record): `[remote->local]` obtain Docker Hub manifests and metadata to save to the database, but don't pull layers to build a container.
 
-For all of the examples below, we will export our client preference to be `ngc`
+For all of the examples below, we will export our client preference to be `nvidia`
 
 ```
-SREGISTRY_CLIENT=ngc
+SREGISTRY_CLIENT=nvidia
 export SREGISTRY_CLIENT
 ```
 
 but note that you could just as easily define the variable for one command (as we did above):
 
 ```
-SREGISTRY_CLIENT=ngc sregistry shell
+SREGISTRY_CLIENT=nvidia sregistry shell
 ```
 
 ## Shell
@@ -119,7 +119,7 @@ After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact 
 
 ```
 sregistry shell
-[client|ngc] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
 
@@ -144,7 +144,7 @@ If you are interested in seeing how to ask for a particular architecture or oper
 
 ```
 sregistry pull tensorflow:17.11
-[client|ngc] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [1/6] ||----------------------------------|   0.0%
 Progress |===================================| 100.0% 
 Progress |===================================| 100.0% 
@@ -226,7 +226,7 @@ Containers:   [date]   [location]  [client]	[uri]
 5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
 7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
-8  January 15, 2018	local 	   [ngc]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
+8  January 15, 2018	local 	   [nvidia]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
 ```
 
 ## Record
@@ -243,7 +243,7 @@ update the existing record:
 
 ```
 sregistry record caffe2:17.10
-[client|ngc] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][update] nvidia/caffe2:17.10
 ```
 
@@ -261,8 +261,8 @@ Containers:   [date]   [location]  [client]	[uri]
 5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
 7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
-8  January 15, 2018	local 	   [ngc]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
-9  January 15, 2018	remote	   [ngc]	nvidia/caffe2:17.10
+8  January 15, 2018	local 	   [nvidia]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
+9  January 15, 2018	remote	   [nvidia]	nvidia/caffe2:17.10
 ```
 
 ## Inspect
@@ -270,11 +270,11 @@ And we can inspect it!
 
 ```
 sregistry inspect nvidia/caffe2:17.10
-[client|ngc] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 nvidia/caffe2:17.10
 https://nvcr.io/v2/nvidia/caffe2/manifests/17.10
 {
-    "client": "ngc",
+    "client": "nvidia",
     "collection": "nvidia",
     "collection_id": 6,
     "created_at": "2018-01-15 15:33:30",
@@ -330,7 +330,7 @@ All of these functions are also available to interact with via the python client
 
 ```
 sregistry shell
-[client|ngc] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
 

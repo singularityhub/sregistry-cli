@@ -125,6 +125,14 @@ def format_container_name(name, special_characters=None):
 
 
 def remove_uri(container):
-    '''remove_uri will remove docker:// or shub:// from the uri
+    '''remove_uri will remove the uri, and if a particular uri
+docker:// or shub:// from the uri
     '''
+    accepted_uris = ['docker', 
+                     'shub', 
+                     'registry', 
+                     'nvidia', 
+                     'google-storage',
+                     'google-drive']
+
     return container.replace('docker://', '').replace('shub://', '')

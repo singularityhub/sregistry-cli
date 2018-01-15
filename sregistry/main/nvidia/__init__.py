@@ -96,14 +96,14 @@ class Client(ApiConnection):
            to set the base, api version, and protocol via a settings file
            of environment variables:
  
-           SREGISTRY_NGC_BASE: defaults to nvcr.io
-           SREGISTRY_NGC_TOKEN: defaults to $oauthtoken
-           SREGISTRY_NGC_VERSION: defaults to v2
-           SREGISTRY_NGC_NO_HTTPS: defaults to not set (so https)
+           SREGISTRY_NVIDIA_BASE: defaults to nvcr.io
+           SREGISTRY_NVIDIA_TOKEN: defaults to $oauthtoken
+           SREGISTRY_NVIDIA_VERSION: defaults to v2
+           SREGISTRY_NVIDIA_NO_HTTPS: defaults to not set (so https)
 
         '''
-        base = self._get_setting('SREGISTRY_NGC_BASE')
-        version = self._get_setting('SREGISTRY_NGC_VERSION')
+        base = self._get_setting('SREGISTRY_NVIDIA_BASE')
+        version = self._get_setting('SREGISTRY_NVIDIA_VERSION')
 
         if base is None:
             base = "nvcr.io"
@@ -111,7 +111,7 @@ class Client(ApiConnection):
         if version is None:
             version = "v2"
 
-        nohttps = self._get_setting('SREGISTRY_NGC_NOHTTPS')
+        nohttps = self._get_setting('SREGISTRY_NVIDIA_NOHTTPS')
         if nohttps is None:
             nohttps = "https://"
         else:
@@ -130,8 +130,8 @@ class Client(ApiConnection):
            from there.
         '''
         # If the user has defined secrets, use them
-        token = self._get_and_update_setting('SREGISTRY_NGC_TOKEN')
-        username = self._get_and_update_setting('SREGISTRY_NGC_USERNAME')
+        token = self._get_and_update_setting('SREGISTRY_NVIDIA_TOKEN')
+        username = self._get_and_update_setting('SREGISTRY_NVIDIA_USERNAME')
 
         if username is None:
             username = "$oauthtoken"
