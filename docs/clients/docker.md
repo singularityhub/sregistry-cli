@@ -10,6 +10,8 @@ toc: false
 
 These sections will detail use of the Docker Hub client for `sregistry`, which is a connection to the default Docker Hub API. This Docker client is also used (and extended) by other clients (e.g., Nvidia Container Cloud).
 
+[![asciicast](https://asciinema.org/a/157156.png)](https://asciinema.org/a/157156?speed=3)
+
 ## Why would I want to use this?
 Singularity proper will be the best solution if you want to pull and otherwise interact with Docker images. However, under the circumstance that you want additional behavior or features not yet implemented in Singularity:
 
