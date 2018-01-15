@@ -28,11 +28,24 @@ import json
 import sys
 import os
 
-from .api import ( create_metadata_tar, download_layers, get_manifest_selfLink,
-                   get_config, get_digests, get_layer, get_manifest,
-                   get_manifests, get_download_cache, get_size,
-                   extract_env, extract_labels, extract_runscript,
-                   update_token )
+# The core of nvidia is actually docker
+from sregistry.main.docker.api import ( 
+    create_metadata_tar, 
+    download_layers, 
+    get_manifest_selfLink,
+    get_config, 
+    get_digests, 
+    get_layer,
+    get_manifest,
+    get_manifests,
+    get_download_cache,
+    get_size,
+    extract_env,
+    extract_labels,
+    extract_runscript,
+    update_token
+)
+
 from .pull import pull
 from .record import record
 

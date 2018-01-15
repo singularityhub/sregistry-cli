@@ -49,7 +49,7 @@ def get_client():
         bot.warning('Singularity is not installed, function might be limited.')
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
-    if SREGISTRY_CLIENT == 'dockerhub': from .dockerhub import Client
+    if SREGISTRY_CLIENT == 'docker': from .docker import Client
     elif SREGISTRY_CLIENT == 'ngc': from .ngc import Client
     elif SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client

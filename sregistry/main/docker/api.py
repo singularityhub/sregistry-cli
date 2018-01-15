@@ -43,7 +43,7 @@ def update_token(self, response):
     ==========
     response: the http request response to parse for the challenge.
     
-    https://ngc.nvidia.com/configuration/api-key
+    https://docs.docker.com/registry/spec/auth/token/
     '''
 
     not_asking_auth = "Www-Authenticate" not in response.headers
@@ -173,6 +173,7 @@ def get_manifest(self, repo_name, digest=None, schema_version="v1"):
     return manifest
  
 
+
 def download_layers(self, repo_name, digest=None, destination=None):
     ''' download layers is a wrapper to do the following for a client loaded
         with a manifest for an image:
@@ -201,7 +202,6 @@ def download_layers(self, repo_name, digest=None, destination=None):
     layers = []
     for digest in digests:
 
-        # This is the final destination for the file
         targz = "%s/%s.tar.gz" % (destination, digest)
 
         # Only download if not in cache already
@@ -397,7 +397,7 @@ def get_size(self, add_padding=True, round_up=True, return_mb=True):
 ################################################################################
 
 
-def get_config(self, key="Entrypoint", delim='\n'):
+def get_config(self, key="Entrypoint", delim=None):
     '''get_config returns a particular key (default is Entrypoint)
         from a VERSION 1 manifest obtained with get_manifest.
 
@@ -434,7 +434,8 @@ def get_config(self, key="Entrypoint", delim='\n'):
 
     # Standard is to include commands like ['/bin/sh']
     if isinstance(cmd, list):
-        cmd = delim.join(cmd)
+        if delim is not None:
+            cmd = delim.join(cmd)
     bot.verbose("Found Docker config (%s) %s" % (key, cmd))
     return cmd
 
@@ -540,6 +541,7 @@ def extract_runscript(self):
                      % command.upper())
 
         # If the command is a list, join. (eg ['/usr/bin/python','hello.py']
+        bot.debug(cmd)
         if not isinstance(cmd, list):
             cmd = [cmd]
 

@@ -8,12 +8,12 @@ toc: false
 
 # SRegistry Client: Nvidia Container Registry
 
-These sections will detail use of the Nvidia Container Cloud client for `sregistry`, which is a connection to the Docker registry served y Nvidia.
+These sections will detail use of the Nvidia Container Cloud client for `sregistry`, which is a connection to the Docker registry served y Nvidia. Implementation wise, this means that we start with the basic [docker](/sregistry-cli/client-docker) client, and tweak it.
 
 ## Why would I want to use this?
 Singularity proper will be the best solution if you want to pull and otherwise interact with Docker images. However, the Nvidia Container Cloud uses a slightly different authentication protocol (use of `$oauthtoken` as a username, and password as an API token, and so this client helps to support those customizations.
 
-As with [Docker Hub](/sregistry-cli/client-dockerhub) The images are built from layers, and the layers that you obtain depend on the uri that you ask for, along with the host architecture and operating system. See the [environment](#environment). setting for more details.
+As with [Docker Hub](/sregistry-cli/client-docker) The images are built from layers, and the layers that you obtain depend on the uri that you ask for, along with the host architecture and operating system. See the [environment](#environment). setting for more details.
 
 ## Getting Started
 The Nvidia Container Registry module does not require any extra dependencies other than having Singularity on the host.
@@ -209,7 +209,7 @@ Containers:   [date]   [location]  [client]	[uri]
 4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
 5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [dockerhub]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
 
 ```
 
@@ -217,7 +217,7 @@ Notice that the first layer extracted is the standard environment metadata tar. 
 
 ```
 sregistry images
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
 1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
@@ -225,7 +225,7 @@ Containers:   [date]   [location]  [client]	[uri]
 4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
 5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [dockerhub]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
 8  January 15, 2018	local 	   [ngc]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
 ```
 
@@ -234,7 +234,7 @@ We can do the same action as above, but without the download! You might want to 
 
 ```
 sregistry record caffe2:17.10
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][new] continuumio/anaconda3:latest
 ```
 
@@ -252,7 +252,7 @@ We can see the record in our images list (last one):
 
 ```
 sregistry images
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
 1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
@@ -260,7 +260,7 @@ Containers:   [date]   [location]  [client]	[uri]
 4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
 5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [dockerhub]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
 8  January 15, 2018	local 	   [ngc]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
 9  January 15, 2018	remote	   [ngc]	nvidia/caffe2:17.10
 ```

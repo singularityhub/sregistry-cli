@@ -46,10 +46,10 @@
 # Docker Hub
 #######################################
 
-%appenv dockerhub
-    SREGISTRY_CLIENT=dockerhub
+%appenv docker
+    SREGISTRY_CLIENT=docker
     export SREGISTRY_CLIENT
-%apprun dockerhub
+%apprun docker
     exec /opt/conda/bin/sregistry "$@"
 
 

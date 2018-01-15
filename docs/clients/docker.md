@@ -2,13 +2,13 @@
 layout: default
 title: Docker Hub Client
 pdf: true
-permalink: /client-dockerhub
+permalink: /client-docker
 toc: false
 ---
 
 # SRegistry Client: Docker Hub
 
-These sections will detail use of the Docker Hub client for `sregistry`, which is a connection to the default Docker Hub API. 
+These sections will detail use of the Docker Hub client for `sregistry`, which is a connection to the default Docker Hub API. This Docker client is also used (and extended) by other clients (e.g., Nvidia Container Cloud).
 
 ## Why would I want to use this?
 Singularity proper will be the best solution if you want to pull and otherwise interact with Docker images. However, under the circumstance that you want additional behavior or features not yet implemented in Singularity:
@@ -42,7 +42,7 @@ python setup.py install
 The next steps we will take are to first set up authentication and other environment variables of interest, and then review the basic usage.
 
 ### Environment
-Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Docker Hub, we have defined the following environment variables (and defaults).
+Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Docker Hub, since there are shared Docker variables that use the namespace `SREGISTRY_DOCKER`, this base client uses the namespace `SREGISTRY_DOCKERHUB`. We have defined the following environment variables (and defaults).
 
 
 | Variable                    |        Default |          Description |
@@ -92,16 +92,16 @@ For a detailed list of other (default) environment variables and settings that y
  - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
  - [record](#record): `[remote->local]` obtain Docker Hub manifests and metadata to save to the database, but don't pull layers to build a container.
 
-For all of the examples below, we will export our client preference to be `dockerhub`
+For all of the examples below, we will export our client preference to be `docker`
 
 ```
-SREGISTRY_CLIENT=dockerhub
+SREGISTRY_CLIENT=docker
 export SREGISTRY_CLIENT
 ```
 but note that you could just as easily define the variable for one command:
 
 ```
-SREGISTRY_CLIENT=dockerhub sregistry shell
+SREGISTRY_CLIENT=docker sregistry shell
 ```
 
 ## Shell
@@ -109,7 +109,7 @@ After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact 
 
 ```
 sregistry shell
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
 
@@ -120,7 +120,7 @@ help      -> Python's own help system.
 object?   -> Details about 'object', use 'object??' for extra details.
 
 In [1]: client.speak()
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ```
 
 
@@ -135,7 +135,7 @@ If you are interested in seeing how to ask for a particular architecture or oper
 
 ```
 sregistry pull ubuntu:latest
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Exploding /usr/local/libexec/singularity/bootstrap-scripts/environment.tar
 Exploding /home/vanessa/.singularity/docker/sha256:50aff78429b146489e8a6cb9334d93a6d81d5de2edc4fbf5e2d4d9253625753e.tar.gz
 Exploding /home/vanessa/.singularity/docker/sha256:f6d82e297bce031a3de1fa8c1587535e34579abce09a61e37f5a225a8667422f.tar.gz
@@ -159,7 +159,7 @@ Notice that the first layer extracted is the standard environment metadata tar. 
 
 ```
 sregistry images
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
 1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
@@ -167,7 +167,7 @@ Containers:   [date]   [location]  [client]	[uri]
 4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
 5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [dockerhub]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
 ```
 
 ## Record
@@ -175,7 +175,7 @@ You might want to grab metadata for an image but not pull and download layers. Y
 
 ```
 sregistry record continuumio/anaconda3
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][new] continuumio/anaconda3:latest
 ```
 
@@ -183,7 +183,7 @@ It's a really quick action, because all we've done is obtained the manifests. We
 
 ```
 sregistry images
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
 1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
@@ -191,18 +191,18 @@ Containers:   [date]   [location]  [client]	[uri]
 4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
 5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [dockerhub]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
-8 January 14, 2018	remote	   [dockerhub]	continuumio/anaconda3:latest
+7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+8 January 14, 2018	remote	   [docker]	continuumio/anaconda3:latest
 ```
 
 Since we didn't ask for an image, the record just records the uri without a version. What did we get? let's inspect it.
 
 ```
 sregistry inspect continuumio/anaconda3:latest
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 continuumio/anaconda3:latest
 {
-    "client": "dockerhub",
+    "client": "docker",
     "collection": "continuumio",
     "collection_id": 5,
     "created_at": "2018-01-14 22:08:41",
@@ -238,8 +238,8 @@ the above is truncated in the middle, but what you should know is that the middl
 Here is an example of a typical flow to download an image, and then use it. We will set the client at runtime to be Docker Hub (and not the default of Singularity Hub)
 
 ```
-SREGISTRY_CLIENT=dockerhub sregistry pull centos:7
-[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+SREGISTRY_CLIENT=docker sregistry pull centos:7
+[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Progress |===================================| 100.0% 
 [1/1] |===================================| 100.0% 
 Exploding /usr/local/libexec/singularity/bootstrap-scripts/environment.tar
