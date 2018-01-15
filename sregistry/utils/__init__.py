@@ -6,11 +6,11 @@ from .terminal import (
     run_command,
     check_install,
     get_installdir,
-    get_thumbnail
+    get_thumbnail,
+    which
 )
 from .cache import get_cache
 from .names import (
-    get_image_name,
     get_image_hash,
     format_container_name,
     parse_image_name,
@@ -18,11 +18,15 @@ from .names import (
     print_date
 )
 from .fileio import (
+    clean_up,
     copyfile,
+    create_tar,
+    extract_tar,
     mkdir_p,
-    write_file,
-    write_json,
+    print_json,
     read_file,
     read_json,
-    clean_up
+    write_file,
+    write_json
 )
+from .templates import ( get_template )

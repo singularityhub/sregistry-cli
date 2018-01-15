@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -59,6 +59,17 @@ def get_singularity_version(singularity_version=None):
     return singularity_version
 
 
+def which(software=None):
+    '''get_install will return the path to where Singularity (or another
+       executable) is installed.
+    '''
+    if software is None:
+        software = "singularity"
+    cmd = ['which', software ]
+    try:
+        return run_command(cmd)
+    except: # FileNotFoundError
+        return None
 
 
 def check_install(software=None, quiet=True):

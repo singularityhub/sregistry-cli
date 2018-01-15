@@ -82,6 +82,12 @@ SREGISTRY_THUMBNAIL = getenv('SREGISTRY_THUMBNAIL')
 
 
 #########################
+# Multiprocessing
+#########################
+
+SREGISTRY_WORKERS = int(getenv("SREGISTRY_PYTHON_THREADS", 9))
+
+#########################
 # Database and Storage
 #########################
 
@@ -105,13 +111,18 @@ if not DISABLE_CACHE and DISABLE_DATABASE is False:
 
 
 #########################
-# Credential Cache
+# Caches
 #########################
 
 # Credentials and client secrets
 DISABLE_CREDENTIAL_CACHE = getenv('SREGISTRY_DISABLE_CREDENTIAL_CACHE', False)
 DISABLE_CREDENTIAL_CACHE = convert2boolean(DISABLE_CREDENTIAL_CACHE)
 CREDENTIAL_CACHE = None
+
+# Download Cache for Singularity layers (not complete images)
+userhome = pwd.getpwuid(os.getuid())[5]
+_cache = os.path.join(userhome, ".singularity")
+SINGULARITY_CACHE = getenv("SINGULARITY_CACHEDIR", default=_cache)
 
 _secrets = os.path.join(USERHOME, ".sregistry")
 SREGISTRY_CLIENT_SECRETS = getenv('SREGISTRY_CLIENT_SECRETS', _secrets)

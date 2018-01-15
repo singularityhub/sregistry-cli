@@ -31,27 +31,6 @@ def print_date(date, format='%b %d, %Y %I:%M%p'):
     return datetime_object.strftime(format)
 
 
-def get_image_name(manifest, extension='simg', use_commit=False, use_hash=False):
-    '''get_image_name will return the image name for a manifest. The user
-       can name based on a hash or commit, or a name with the collection,
-       namespace, branch, and tag.
-    '''
-    if use_hash:
-        image_name = "%s.%s" %(manifest['version'], extension)
-
-    elif use_commit:
-        image_name = "%s.%s" %(manifest['commit'], extension)
-
-    else:
-        image_name = "%s-%s-%s.%s" %(manifest['name'].replace('/','-'),
-                                     manifest['branch'].replace('/','-'),
-                                     manifest['tag'].replace('/',''),
-                                     extension)
-            
-    bot.info("Singularity Registry Image: %s" %image_name)
-    return image_name
-
-
 def get_image_hash(image_path):
     '''return an md5 hash of the file based on a criteria level. This
     is intended to give the file a reasonable version.
@@ -65,7 +44,9 @@ def get_image_hash(image_path):
 
 
 def parse_image_name(image_name, tag=None, version=None, 
-                                 defaults=True, ext="simg"):
+                                 defaults=True, ext="simg",
+                                 default_collection="library",
+                                 default_tag="latest"):
 
     '''return a collection and repo name and tag
     for an image file.
@@ -87,7 +68,7 @@ def parse_image_name(image_name, tag=None, version=None,
     if len(image_name) == 1:
         collection = ''
         if defaults is True:
-            collection = "library"
+            collection = default_collection
         image_name = image_name[0]
 
     # Collection and image provided
@@ -111,10 +92,11 @@ def parse_image_name(image_name, tag=None, version=None,
     
     # If still no tag, use default or blank
     if tag is None and defaults is True:
-        tag = "latest"
+        tag = default_tag
 
     # Piece together the filename
     uri = "%s/%s" % (collection, image_name)    
+    url = uri
     if tag is not None:
         uri = "%s:%s" % (uri, tag)
     if version is not None:
@@ -123,8 +105,9 @@ def parse_image_name(image_name, tag=None, version=None,
     storage = "%s.%s" %(uri, ext)
     result = {"collection": collection,
               "image": image_name,
+              "url": url,
               "tag": tag,
-              "version":version,
+              "version": version,
               "storage": storage,
               "uri": uri}
 
@@ -142,6 +125,14 @@ def format_container_name(name, special_characters=None):
 
 
 def remove_uri(container):
-    '''remove_uri will remove docker:// or shub:// from the uri
+    '''remove_uri will remove the uri, and if a particular uri
+docker:// or shub:// from the uri
     '''
+    accepted_uris = ['docker', 
+                     'shub', 
+                     'registry', 
+                     'nvidia', 
+                     'google-storage',
+                     'google-drive']
+
     return container.replace('docker://', '').replace('shub://', '')

@@ -107,9 +107,18 @@ class Singularity:
             print(output)
         
 
-    def build(self, image_path, spec_path, isolated=False, sandbox=False):
+    def build(self, image_path, spec_path, sudo=True, isolated=False, sandbox=False):
         '''build a singularity image, optionally for an isolated build
-           (requires sudo)'''
+           (requires sudo)
+
+           Parameters
+           ==========
+           image_path: path to image file to build (doesn't have to exist)
+           spec_path: path to base to build from (or Singularity recipe)
+           isolated: if True, do build in `--isolated` mode
+           sandbox: if True, use sandbox mode (folder)
+
+        '''
 
         self._check_install('[build]')
 
@@ -123,9 +132,9 @@ class Singularity:
         if sandbox is True:
             cmd.append('--sandbox')
 
-        cmd = cmd + [image_path,spec_path]
+        cmd = cmd + [image_path, spec_path]
 
-        output = self.run_command(cmd,sudo=True)
+        output = self.run_command(cmd,sudo=sudo)
         self.println(output)     
         return image_path
 
@@ -258,7 +267,7 @@ class Singularity:
         return tmptar
 
 
-    def importcmd(self,image_path,input_source):
+    def importcmd(self, image_path, input_source):
         '''import will import (stdin) to the image
         :param image_path: path to image to import to. 
         :param input_source: input source or file
@@ -266,7 +275,7 @@ class Singularity:
         '''
         self._check_install('[image.import]')
 
-        cmd = ['singularity','image.import',image_path,input_source]
+        cmd = ['singularity','image.import', image_path, input_source ]
         output = self.run_command(cmd,sudo=False)
         self.println(output)        
         return image_path

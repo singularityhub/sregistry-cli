@@ -24,7 +24,7 @@ from sregistry.utils import ( parse_image_name, remove_uri )
 import os
 import sys
 
-def pull(self, images, file_name=None, save=True):
+def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from a singularity registry
  
     Parameters

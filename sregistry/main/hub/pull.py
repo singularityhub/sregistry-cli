@@ -28,7 +28,7 @@ import sys
 import os
 
 
-def pull(self, images, file_name=None, save=True):
+def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from an endpoint
  
     Parameters

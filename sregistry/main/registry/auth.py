@@ -38,17 +38,19 @@ def authorize(self, names, payload=None, request_type="push"):
 
     if self.secrets is not None:
 
-        # Use the payload to generate a digest   push|collection|name|tag|user
-        timestamp = generate_timestamp()
-        credential = generate_credential(self.secrets['username'])
-        credential = "%s/%s/%s" %(request_type,credential,timestamp)
+        if "registry" in self.secrets:
 
-        if payload is None:
-            payload = "%s|%s|%s|%s|%s|" %(request_type,
-                                          names['collection'],
-                                          timestamp,
-                                          names['image'],
-                                          names['tag'])
+            # Use the payload to generate a digest   push|collection|name|tag|user
+            timestamp = generate_timestamp()
+            credential = generate_credential(self.secrets['registry']['username'])
+            credential = "%s/%s/%s" %(request_type,credential,timestamp)
 
-        signature = generate_signature(payload,self.secrets['token'])
-        return "SREGISTRY-HMAC-SHA256 Credential=%s,Signature=%s" %(credential,signature)
+            if payload is None:
+                payload = "%s|%s|%s|%s|%s|" %(request_type,
+                                              names['collection'],
+                                              timestamp,
+                                              names['image'],
+                                              names['tag'])
+
+            signature = generate_signature(payload,self.secrets['registry']['token'])
+            return "SREGISTRY-HMAC-SHA256 Credential=%s,Signature=%s" %(credential,signature)

@@ -264,14 +264,13 @@ def add(self, image_path=None,
 
     # If save, move to registry storage first
     if save is True and image_path is not None:
-        storage_folder = os.path.dirname(names['storage'])
-        storage_folder = "%s/%s" %(self.storage, storage_folder)
-        mkdir_p(storage_folder)
-        storage_path = "%s/%s" %(self.storage, names['storage'])
+        storage_path = self._get_storage_name(names)
+
         if copy is True:
             copyfile(image_path, storage_path)
         else:
             os.rename(image_path, storage_path)
+
         image_path = storage_path
 
     # Get a hash of the file for the version, or use provided

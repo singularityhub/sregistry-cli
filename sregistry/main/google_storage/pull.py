@@ -27,7 +27,7 @@ import os
 import sys
 
 
-def pull(self, images, file_name=None, save=True):
+def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from google storage, based on the identifier
  
     Parameters
