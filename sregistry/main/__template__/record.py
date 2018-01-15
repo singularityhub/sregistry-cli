@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import parse_image_name
+from sregistry.utils import ( parse_image_name, remove_uri )
 
 import requests
 import shutil
@@ -53,7 +53,7 @@ def record(self, images, action='add'):
 
     for image in images:
 
-        q = parse_image_name(image, ext='simg')
+        q = parse_image_name(remove_uri(image))
 
         # Verify image existence, and obtain id
         url = "..." # This should be some url for your endpoint to get metadata

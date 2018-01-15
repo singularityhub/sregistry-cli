@@ -27,12 +27,15 @@ import os
 
 def main(args,parser,subparser):
 
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
+
     for query in args.query:
         if query in ['','*']:
             query = None
 
         try:
+            cli = get_client(query)
+            cli.announce(args.command)
             cli.search(query=query, args=args)
         except NotImplementedError:
             bot.info('Search is not available for this endpoint.')

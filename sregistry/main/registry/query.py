@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import parse_image_name
+from sregistry.utils import ( parse_image_name, remove_uri )
 from dateutil import parser
 
 import json
@@ -171,7 +171,7 @@ def container_search(self, query, across_collections=False):
 
     query = query.lower().strip('/')
 
-    q = parse_image_name(query, defaults=False)
+    q = parse_image_name(remove_uri(query), defaults=False)
 
     if q['tag'] is not None:
         if across_collections is True:

@@ -53,7 +53,7 @@ def record(self, images, action='add'):
     # If used internally we want to return a list to the user.
     for image in images:
 
-        q = parse_image_name( remove_uri(image) )
+        q = parse_image_name(remove_uri(image))
         digest = q['version'] or q['tag']
 
         # This is the Docker Hub namespace and repository

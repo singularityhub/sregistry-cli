@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import parse_image_name
+from sregistry.utils import ( parse_image_name, remove_uri )
 
 import sys
 import os
@@ -37,7 +37,7 @@ from sregistry.auth import (
 def remove(self, image, force=False):
     '''delete an image to Singularity Registry'''
 
-    q = parse_image_name(image)
+    q = parse_image_name(remove_uri(image))
     url = '%s/container/%s/%s:%s' % (self.base, q["collection"], q["image"], q["tag"])
 
     SREGISTRY_EVENT = self.authorize(request_type="delete", names=q)

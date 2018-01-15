@@ -28,6 +28,7 @@ import os
 def main(args, parser, subparser):
 
     from sregistry.main import Client as cli
+    cli.announce(args.command)
 
     images = args.image
     if not isinstance(images, list):

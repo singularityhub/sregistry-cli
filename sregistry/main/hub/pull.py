@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import parse_image_name
+from sregistry.utils import ( parse_image_name, remove_uri )
 
 import requests
 import shutil
@@ -54,7 +54,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
-        q = parse_image_name(image, ext='simg')
+        q = parse_image_name(remove_uri(image))
 
         # Verify image existence, and obtain id
         url = "%s/container/%s/%s:%s" %(self.base, q['collection'], q['image'], q['tag'])

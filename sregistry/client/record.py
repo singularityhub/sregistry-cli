@@ -25,6 +25,7 @@ import pwd
 import os
 
 def main(args, parser, subparser):
+
     '''the record command is intended for working with remote endpoint records,
        such as adding an entry to the local database for the record without
        downloading the image. To do the same but retrieve and store the image,
@@ -32,11 +33,13 @@ def main(args, parser, subparser):
        can use pull with no-cache.
     '''
 
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
     images = args.image
 
     if not isinstance(images,list):
         images = [images]
 
     for image in images:
+        cli = get_client(image)
+        cli.announce(args.command)
         cli.record(image, action=args.action)

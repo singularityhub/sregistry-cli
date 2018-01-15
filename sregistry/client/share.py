@@ -24,12 +24,12 @@ import sys
 import pwd
 import os
 
+
 def main(args, parser, subparser):
     '''sharing an image means sending a remote share from an image you
        control to a contact, usually an email.
     '''
-
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
     images = args.image
 
     if not isinstance(images,list):
@@ -37,4 +37,8 @@ def main(args, parser, subparser):
 
     for image in images:
         print(image)
+        
+        # Detect any uri, and refresh client if necessary
+        cli = get_client(image)
+        cli.announce(args.command)
         cli.share(image, share_to=args.share_to)

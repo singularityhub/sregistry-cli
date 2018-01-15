@@ -13,15 +13,18 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
  - migration guidance (how to convert images?)
  - changed behaviour (recipe sections work differently)
 
-## [0.0.6](https://github.com/singularityware/singularity-python/tree/development) (0.0.6)
-**additions**
+The versions coincide with releases on pip. Only major versions will be released as tags on Github.
+
+## [development](https://github.com/singularityware/singularity-python/tree/development) (development)
+ - added support to select client based on uri (e.g., `SREGISTRY_CLIENT=hub` maps to `hub://` 
+
+## [0.0.6](https://pypi.python.org/pypi/sregistry/0.0.6) (0.0.6)
  - added base client for Docker, and Nvidia Container Registry
 
-## [0.0.5](https://github.com/singularityware/singularity-python/tree/development) (0.0.5)
-**dependency**
- - adding dateutils requirement.
+## [0.0.5](https://pypi.python.org/pypi/sregistry/0.0.5) (0.0.5)
 
 **additions**
+ - added dateutils requirement
  - added authentication to pull so that private sregistry images can be pulled
  - client.speak() now also calls `_speak()` for subclass to implement with extra messages to user.
  - client._get_setting() and client._get_and_update_setting() retrieve / update environment settings

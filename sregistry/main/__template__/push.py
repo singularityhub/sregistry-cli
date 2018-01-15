@@ -25,7 +25,8 @@ from sregistry.client import Singularity
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     parse_image_name,
-    parse_header
+    parse_header,
+    remove_uri
 )
 
 # see the registry push for example of how to do this
@@ -68,7 +69,7 @@ def push(self, path, name, tag=None):
     metadata = cli.inspect(image_path=path, quiet=True)
 
     # This returns a data structure with collection, container, based on uri
-    names = parse_image_name(name,tag=tag)
+    names = parse_image_name(remove_uri(name),tag=tag)
 
     # If you want a spinner
     bot.spinner.start()

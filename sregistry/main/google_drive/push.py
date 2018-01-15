@@ -24,7 +24,8 @@ from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     get_image_hash,
     get_thumbnail,
-    parse_image_name
+    parse_image_name,
+    remove_uri
 )
 
 from sregistry.main.google_storage.utils import prepare_metadata
@@ -57,10 +58,10 @@ def push(self, path, name, tag=None):
         bot.error('%s does not exist.' %path)
         sys.exit(1)
 
-    names = parse_image_name(name,tag=tag)
+    names = parse_image_name(remove_uri(name),tag=tag)
     if names['version'] is None:
         version = get_image_hash(path)
-        names = parse_image_name(name, tag=tag, version=version)
+        names = parse_image_name(remove_uri(name), tag=tag, version=version)
 
     # get container metadata
     cli = Singularity()

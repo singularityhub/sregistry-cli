@@ -23,7 +23,8 @@ from sregistry.client import Singularity
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     get_image_hash,
-    parse_image_name
+    parse_image_name,
+    remove_uri
 )
 
 from sregistry.main.google_storage.utils import prepare_metadata
@@ -58,10 +59,10 @@ def push(self, path, name, tag=None):
     metadata = json.loads(metadata)
 
     # This returns a data structure with collection, container, based on uri
-    names = parse_image_name(name,tag=tag)
+    names = parse_image_name(remove_uri(name),tag=tag)
     if names['version'] is None:
         version = get_image_hash(path)
-        names = parse_image_name(name,tag=tag, version=version)    
+        names = parse_image_name(remove_uri(name), tag=tag, version=version)    
 
     # Update metadata with names
     metadata = metadata['data']

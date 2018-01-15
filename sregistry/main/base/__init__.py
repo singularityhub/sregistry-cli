@@ -75,6 +75,15 @@ class ApiConnection(object):
 
         self._speak()
 
+    def announce(self, command=None):
+        '''the client will announce itself given that a command is not in a
+           particular predefined list.
+        '''
+        if command is not None:
+            if command not in ['get']:
+                self.speak()
+
+
     def _speak(self):
         '''this function should be subclassed if the client has additional
            information to give the user, beyond it's name and the database
