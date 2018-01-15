@@ -9,7 +9,7 @@ toc: false
 # Getting Started
 
 In the pages here we will first review some important concepts about the Singularity
-Registry Global (SRG) client, and then walk through a brief tutorial for using
+Registry Global (SRG) client, and then provide [install instructions](#install) and [tutorials](#tutorials) for using
 the client, both on the command line and from within Python.
 
  - [Commands](#commands): a general review of the sets of commands found for particular client endpoints.
@@ -28,7 +28,7 @@ We want the `sregistry` client to support the current workflow of using Singular
 tree -L 1 $HOME/.singularity
 ├── docker
 ├── shub
-└── sregistry.sb
+└── sregistry.db
 ```
 
 It also means that when you interact with a storage endpoint using Singularity registry, it will honor your Singularity cache folder. This means that if you use sregistry to manage images, when you run Singularity proper those images will be found.
@@ -190,6 +190,24 @@ And following this step, operations that we do across all clients interact with 
 
 ## Endpoints
 An endpoint is a remote place to put or get images. It could be Singularity Hub (pulling images from Google Cloud Storage), Dropbox (saving and retrieving images from a personal Dropbox) or Globus (moving images to and from endpoints that you control). You might even host one of these endpoints locally, so for the purposes of the client, just remember that it will interact with both your hosted endpoints and others (with appropriate permissions).
+
+## Install
+The most tested approach has been to install `sregistry` in your local python using pip, or from Github:
+
+```
+pip install sregistry
+```
+```
+git clone https://www.github.com/singularityhub/sregistry-cli.git
+cd sregistry-cli
+python setup.py install
+```
+
+If you need to install dependencies for a particular client, just provide the name:
+
+```
+pip install -e .[google-storage]
+```
 
 ## Tutorials
 
