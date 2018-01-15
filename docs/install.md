@@ -16,6 +16,14 @@ cd sregistry-cli
 python setup.py install
 ```
 
+We recommend for the latest features to use the development branch:
+
+```
+git clone -b development https://www.github.com/singularityhub/sregistry-cli.git
+cd sregistry-cli
+python setup.py install
+```
+
 Given that the current endpoints are limited, you will do ok with the above 
 method. However, when the time comes to install specific modules, you would do
 that by specifying the ones you want, e.g.,

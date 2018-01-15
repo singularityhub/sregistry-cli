@@ -16,7 +16,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [development](https://github.com/singularityware/singularity-python/tree/development) (development)
- - added support to select client based on uri (e.g., `SREGISTRY_CLIENT=hub` maps to `hub://` 
+ - added support to select client based on uri (e.g., `SREGISTRY_CLIENT=hub` maps to `hub://`
 
 ## [0.0.6](https://pypi.python.org/pypi/sregistry/0.0.6) (0.0.6)
  - added base client for Docker, and Nvidia Container Registry
