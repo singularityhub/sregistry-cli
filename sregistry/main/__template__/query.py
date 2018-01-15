@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import parse_image_name
+from sregistry.utils import ( parse_image_name, remove_uri )
 from dateutil import parser
 
 import json
@@ -36,6 +36,10 @@ def search(self, query=None, args=None):
 
     EXAMPLE QUERIES:    
     '''
+
+    # You can optionally better parse the image uri (query), but not
+    # necessary
+    # names = parse_image_name(remove_uri(query))
 
     if query is not None:
 

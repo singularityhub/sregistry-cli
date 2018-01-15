@@ -28,10 +28,11 @@ import os
 def main(args, parser, subparser):
 
     from sregistry.main import Client as cli
+    cli.announce(args.command)
 
     images = args.image
     if not isinstance(images, list):
         images = [images]
 
-    for image in images:
+    for image in images:       
         cli.rmi(image)

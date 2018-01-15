@@ -25,7 +25,8 @@ from sregistry.client import Singularity
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     parse_image_name,
-    parse_header
+    parse_header,
+    remove_uri
 )
 from requests_toolbelt import (
     MultipartEncoder,
@@ -89,7 +90,7 @@ def push(self, path, name, tag=None, compress=False):
         ext = 'simg'  # ext3 format
 
     metadata = json.dumps(metadata)
-    names = parse_image_name(name,tag=tag, ext=ext)
+    names = parse_image_name(remove_uri(name),tag=tag, ext=ext)
     url = '%s/push/' % self.base
 
     if compress is True:

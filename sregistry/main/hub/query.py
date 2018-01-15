@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import parse_image_name
+from sregistry.utils import ( parse_image_name, remove_uri )
 from sregistry.main import ApiConnection
 from dateutil import parser
 
@@ -90,7 +90,7 @@ def search_collection(self, query):
 
     query = query.lower().strip('/')
 
-    q = parse_image_name(query, defaults=False)
+    q = parse_image_name(remove_uri(query), defaults=False)
     url = '%s/collection/%s' % (self.base, q['uri'])
     rows = []
 

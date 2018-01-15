@@ -26,30 +26,42 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from .base import ApiConnection
 from sregistry.utils import ( 
     check_install, 
+    get_uri,
     mkdir_p 
 )
 from sregistry.auth import get_credential_cache
-from sregistry.defaults import (
-    SREGISTRY_DATABASE, 
-    SREGISTRY_CLIENT
-)
+from sregistry.defaults import SREGISTRY_DATABASE
 from sregistry.logger import bot
 import os
 
 
-def get_client():
-    '''get the correct client depending on the driver of interest. If 
-       a secrets file for a particular storage is found in the environment
-       we load and check client secrets. If not, we default 
-       to the singularity hub client. If a user has a conflict with
-       multiple secrets active, we can add another kind of logic.
+def get_client(image=None):
     '''
+       get the correct client depending on the driver of interest. The
+       selected client can be chosen based on the environment variable
+       SREGISTRY_CLIENT, and later changed based on the image uri parsed
+       If there is no preference, the default is to load the singularity 
+       hub client.
+
+       Parameters
+       ==========
+       image: if provided, we derive the correct client based on the uri
+       of an image. If not provided, we default to environment, then hub.
+
+    '''
+    from sregistry.defaults import SREGISTRY_CLIENT
+
     # Give the user a warning:
     if not check_install():
         bot.warning('Singularity is not installed, function might be limited.')
 
+    # If an image is provided, use to determine client
+    client_name = get_uri(image)
+    if client_name is not None:
+        SREGISTRY_CLIENT = client_name
+
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
-    if SREGISTRY_CLIENT == 'docker': from .docker import Client
+    if   SREGISTRY_CLIENT == 'docker': from .docker import Client
     elif SREGISTRY_CLIENT == 'nvidia': from .nvidia import Client
     elif SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
@@ -89,10 +101,11 @@ def get_client():
         Client.get_container = get_container
         Client.get_collection = get_collection
 
-    return Client()
+    # Initialize the database
+    cli = Client()
+
+    if hasattr(Client, '_init_db'):
+        cli._init_db(SREGISTRY_DATABASE)
+    return cli
 
 Client = get_client()
-
-# Initialize the database
-if hasattr(Client, '_init_db'):
-    Client._init_db(SREGISTRY_DATABASE)

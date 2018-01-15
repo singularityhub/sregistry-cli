@@ -124,15 +124,50 @@ def format_container_name(name, special_characters=None):
                    for e in name if e.isalnum() or e in special_characters)
 
 
-def remove_uri(container):
-    '''remove_uri will remove the uri, and if a particular uri
-docker:// or shub:// from the uri
-    '''
-    accepted_uris = ['docker', 
-                     'shub', 
-                     'registry', 
-                     'nvidia', 
-                     'google-storage',
-                     'google-drive']
+def get_uri(image):
+    '''get the uri for an image, if within acceptable
+ 
+       Parameters
+       ==========
+       image: the image uri, in the format <uri>://<registry>/<namespace>:<tag>
 
-    return container.replace('docker://', '').replace('shub://', '')
+    '''
+    # Ensure we have a string
+    image = image or ''
+
+    # Find uri prefix, including ://
+    regexp = re.compile('^.+://')
+    uri = regexp.match(image)
+
+    if uri is not None:
+        uri = (uri.group().lower()
+                          .replace('_','-')
+                          .replace('://',''))
+ 
+        accepted_uris = ['docker', 
+                         'hub',
+                         'globus',
+                         'registry', 
+                         'nvidia', 
+                         'google-storage',
+                         'google-drive']
+
+        # Allow for Singularity compatability
+        if uri == "shub": uri = "hub"
+
+        if uri not in accepted_uris:
+            bot.warning('%s is not a recognized uri.' %uri)
+            uri = None
+
+    return uri
+
+
+def remove_uri(image):
+    '''remove_uri will remove the uri from the image path, if provided.
+ 
+       Parameters
+       ==========
+       image: the image uri, in the format <uri>://<registry>/<namespace>:<tag>
+
+    '''
+    return re.sub('^.+://','', image)

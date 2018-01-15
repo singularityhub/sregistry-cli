@@ -54,7 +54,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
-        q = parse_image_name( remove_uri(image) )
+        q = parse_image_name(remove_uri(image))
 
         # Verify image existence, and obtain id
         url = "..." # write your custom endpoint URL here 

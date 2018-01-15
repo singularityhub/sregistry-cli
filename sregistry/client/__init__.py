@@ -294,10 +294,6 @@ def main():
     if args.command == "version":
         print(sregistry.__version__)
         sys.exit(0)
-
-    # The client will announce itself (backend/database) unless it's get
-    if args.command not in ["get"]:
-        cli.speak()
     
     # Does the user want a shell?
     if args.command == "add": from .add import main

@@ -34,6 +34,9 @@ def main(args,parser,subparser):
 
     shells = ['ipython', 'python', 'bpython']
 
+    # The client will announce itself (backend/database) unless it's get
+    cli.announce(args.command)
+
     # If the user asked for a specific shell via environment
     shell = cli._get_and_update_setting('SREGISTRY_SHELL')
     if shell is not None:

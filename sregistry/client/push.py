@@ -27,7 +27,7 @@ import os
 
 def main(args,parser,subparser):
 
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
 
     # Does the user have a valid image?
     image = args.image[0]
@@ -37,6 +37,8 @@ def main(args,parser,subparser):
         sys.exit(1)
 
     # Authenticate
+    cli = get_client(args.name)
+    cli.announce(args.command)
     response = cli.push(path=image,
                         name=args.name,
                         tag=args.tag)

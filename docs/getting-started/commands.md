@@ -8,8 +8,10 @@ toc: false
 
 # Global Commands
 
+## Local Commands
+
 The following commands are provided for the client for all endpoints, as they
-pertain to interaction with the local sregistry database. This section shows the commands
+pertain to interaction with the *local* sregistry database. This section shows the commands
 running from the host command line (which could be an executable installed to python or
 a singularity image of the same name). In both cases, the executable is called `sregistry`.
 It is not written yet, but a separate guide will be made for interaction using the pre-built
@@ -26,6 +28,43 @@ Singularity image. For these same functions for within python (for developers) [
 A quick rundown of basic commands is shown in this asciicast.
 
 [![asciicast](https://asciinema.org/a/154623.png)](https://asciinema.org/a/154623?speed=3)
+
+
+## Remote Commands
+Recommended (but not required) commands for *remote* endpoints can be read about pertaining to [specific clients](/sregistry-cli/clients), and are listed briefly here:
+
+ - [pull](#pull): `[remote->local]` pull an image from a remote endpoint to the local database and storage.
+ - [search](#search): `[remote]` list all image collections in a remote endpoint
+ - [record](#record): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
+ - [share](share): Share a container! For Google Drive, this correponds to sharing a link by email. For other endpoints, it may mean something else.
+
+For each of these remote commands that are client specific, you can select the client via export of an environment variable:
+
+```
+SREGISTRY_CLIENT=google-drive
+export SREGISTRY_CLIENT
+sregistry shell
+client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+```
+
+or you can use the same environment variable, just for one command:
+
+```
+SREGISTRY_CLIENT=google-drive sregistry shell
+```
+
+Finally, you can do away with environment variables, and add a unique resource identifier (uri) to your image names or queries:
+
+```
+# Search a Singularity Registry for container vanessa/tacos
+sregistry search registry://vanessa/tacos
+
+# Pull container vsoch/hello-world from Singularity Hub
+sregistry pull hub://vsoch/hello-world
+
+# Pull container centos:6 from Docker Hub
+sregistry pull docker://centos:6
+```
 
 ## Add
 Adding an image to your database, meaning a local file, is the simplest action that you can perform, as it doesn't requite any remote endpoint or even web connectivity. Let's try doing this now.

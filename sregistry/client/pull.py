@@ -27,14 +27,28 @@ import os
 
 def main(args,parser,subparser):
 
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client, Client as cli
     
     # Does the user want to save the image?
     do_save = True
     if args.nocache is True or not hasattr(cli,'storage'):
         do_save = False
     
-    response = cli.pull(images=args.image,
-                        file_name=args.name,
-                        force=args.force,
-                        save=do_save)
+    images = args.image
+    if not isinstance(images,list):
+        images = [images]
+
+    # if the user has given more than one image, not allowed to name
+    name = args.name
+    if len(images) > 1:
+        name = None
+
+    for image in images:
+
+        # Customize client based on uri
+        cli = get_client(image)
+        cli.announce(args.command)
+        response = cli.pull(images=image,
+                            file_name=name,
+                            force=args.force,
+                            save=do_save)

@@ -54,7 +54,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
-        q = parse_image_name( remove_uri(image) )
+        q = parse_image_name(remove_uri(image))
 
         # Use container search to find the container based on uri
         bot.info('Searching for %s in gs://%s' %(q['uri'],self._bucket_name))
