@@ -268,7 +268,7 @@ Environment variables are the primary way in which the user interacts with the c
  - [Settings](#settings): should be derived primarily from the environment, and with the naming schema specific to your client (see more below).
  - [Storage](#storage): we provide for you functions to easily get and update parameters for your client, along with two methods for saving, depending on what needs to be saved.
  - [Helpers](#helpers): include functions for saving parameters to the default `sregistry` settings file, or to a client secrets file that is specifically for your client.
-
+ - [Tasks](/sregistry-cli/client-tasks): The `sregistry client` includes workers that use multiprocessing if you want to run a bunch of download tasks at the same time, for example.
 
 #### Settings
 If you have any settings or parameters that you need to obtain from the user, the recommended way to do this is check for them in a function called by your client `__init__`, and then get them from settings, use a default, or exit if required and not found. First, we will talk about interaction of your client with the user. The user is going to set environment variables that you tell him about, and your variables must live in the sregistry namespace for your client. To maintain the `SREGISTRY` environment variable namespace, you should use the following convention:

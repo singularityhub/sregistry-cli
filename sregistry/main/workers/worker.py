@@ -65,6 +65,10 @@ class Workers(object):
         progress = 1
         total = len(tasks)
 
+        # if we don't have tasks, don't run
+        if len(tasks) == 0:
+            return
+
         # If two functions are run per task, double total jobs
         if func2 is not None:
             total = total * 2

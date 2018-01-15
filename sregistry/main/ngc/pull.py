@@ -62,11 +62,10 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     finished = []
     for image in images:
 
-        q = parse_image_name(remove_uri(image))
+        q = parse_image_name( remove_uri(image), 
+                              default_collection='nvidia' )
 
         digest = q['version'] or q['tag']
-
-        bot.debug(self.base)
 
         # This is the Docker Hub namespace and repository
         layers = self._download_layers(q['url'], digest)

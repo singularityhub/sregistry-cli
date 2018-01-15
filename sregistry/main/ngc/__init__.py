@@ -20,15 +20,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.auth import read_client_secrets, basic_auth_header
+from sregistry.auth import basic_auth_header
+from sregistry.auth import read_client_secrets
 from sregistry.utils import read_json
 from sregistry.main import ApiConnection
 import json
 import sys
 import os
 
-# here you should import the functions from the files in this
-# folder that you add to your client (at the bottom)
 from .api import ( create_metadata_tar, download_layers, get_manifest_selfLink,
                    get_config, get_digests, get_layer, get_manifest,
                    get_manifests, get_download_cache, get_size,
@@ -40,7 +39,7 @@ from .record import record
 class Client(ApiConnection):
 
     def __init__(self, secrets=None, **kwargs):
-        '''to work with docker hub, we do the following:
+        '''to work with nvidia container registry, we do the following:
 
         1. set the base to index.docker.io, or defined in environment 
         2. assume starting with v2 schema, we won't reverse layers 
@@ -84,26 +83,28 @@ class Client(ApiConnection):
            to set the base, api version, and protocol via a settings file
            of environment variables:
  
-           SREGISTRY_DOCKERHUB_BASE: defaults to index.docker.io
-           SREGISTRY_DOCKERHUB_VERSION: defaults to v1
-           SREGISTRY_DOCKERHUB_NO_HTTPS: defaults to not set (so https)
+           SREGISTRY_NGC_BASE: defaults to nvcr.io
+           SREGISTRY_NGC_TOKEN: defaults to $oauthtoken
+           SREGISTRY_NGC_VERSION: defaults to v2
+           SREGISTRY_NGC_NO_HTTPS: defaults to not set (so https)
 
         '''
-        base = self._get_setting('SREGISTRY_DOCKERHUB_BASE')
-        version = self._get_setting('SREGISTRY_DOCKERHUB_VERSION')
+        base = self._get_setting('SREGISTRY_NGC_BASE')
+        version = self._get_setting('SREGISTRY_NGC_VERSION')
+
         if base is None:
-            base = "index.docker.io"
+            base = "nvcr.io"
+
         if version is None:
             version = "v2"
 
-        nohttps = self._get_setting('SREGISTRY_DOCKERHUB_NOHTTPS')
+        nohttps = self._get_setting('SREGISTRY_NGC_NOHTTPS')
         if nohttps is None:
             nohttps = "https://"
         else:
             nohttps = "http://"
 
         # <protocol>://<base>/<version>
-
         self.base = "%s%s/%s" %(nohttps, base.strip('/'), version)
 
 
@@ -116,38 +117,20 @@ class Client(ApiConnection):
            from there.
         '''
         # If the user has defined secrets, use them
-        credentials = self._get_setting('SREGISTRY_DOCKERHUB_SECRETS')
-        username = self._get_setting('SREGISTRY_DOCKERHUB_USERNAME')
-        password = self._get_setting('SREGISTRY_DOCKERHUB_PASSWORD')
+        token = self._get_and_update_setting('SREGISTRY_NGC_TOKEN')
+        username = self._get_and_update_setting('SREGISTRY_NGC_USERNAME')
+
+        if username is None:
+            username = "$oauthtoken"
+
+        if token is None:
+            bot.error('You must have an Nvidia GPU cloud token to use it.')
+            sys.exit(1)
 
         # Option 1: the user exports username and password
-        if username is not None and password is not None:
-            auth = basic_auth_header(username, password)
+        if token is not None:
+            auth = basic_auth_header(username, token)
             self.headers.update(auth)
-        
-        # Option 2: look in .docker config file
-        if credentials is not None and auth is None:
-            if os.path.exists(credentials):
-                credentials = read_json(credentials)
-
-                # Find a matching auth in .docker config
-                if "auths" in credentials:
-                    for auths, params in credentials['auths'].items():
-                        if self.base in auths:
-                            if 'auth' in params:
-                                auth = "Basic %s" % params['auth']
-                                self.headers['Authorization'] = auth
-
-
-                # Also update headers
-                if 'HttpHeaders' in credentials:
-                    for key, value in credentials['HttpHeaders'].items():
-                        self.headers[key] = value
-
-            else:
-                bot.warning('Credentials file set to %s, but does not exist.')
-
-
 
     def __str__(self):
         return type(self)

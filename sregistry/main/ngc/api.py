@@ -43,7 +43,7 @@ def update_token(self, response):
     ==========
     response: the http request response to parse for the challenge.
     
-    https://docs.docker.com/registry/spec/auth/token/
+    https://ngc.nvidia.com/configuration/api-key
     '''
 
     not_asking_auth = "Www-Authenticate" not in response.headers
@@ -173,7 +173,6 @@ def get_manifest(self, repo_name, digest=None, schema_version="v1"):
     return manifest
  
 
-
 def download_layers(self, repo_name, digest=None, destination=None):
     ''' download layers is a wrapper to do the following for a client loaded
         with a manifest for an image:
@@ -202,6 +201,7 @@ def download_layers(self, repo_name, digest=None, destination=None):
     layers = []
     for digest in digests:
 
+        # This is the final destination for the file
         targz = "%s/%s.tar.gz" % (destination, digest)
 
         # Only download if not in cache already

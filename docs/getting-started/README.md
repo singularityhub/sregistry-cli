@@ -144,7 +144,9 @@ The database refers to the sqlite3 file used to store metadata, typically in the
  - *SINGULARITY_DISABLE_CACHE*: By default, `sregistry` honors your Singularity configuration, meaning that if you have disabled the cache entirely (coinciding with pulling / interacting with images in temporary locations) the `sregistry` client will not use a database or cache. If this variable is found as a derivate of y/yes/true, this means that we simply use the commands as tools to work with images locally.
  - *SREGISTRY_DISABLE*: If for some reason you don't want to disable your Singularity cache but you do want to disable the `sregistry` database and storage, set this to one of y/yes/true.
  - *SREGISTRY_DATABASE*: The `sregistry` has two parts - a database file (sqlite3) and a storage location for the images. This variable should be to a folder where you want the application to live. By default, it will use the same Singularity cache folder (`$HOME/.singularity`), meaning that you would find the database at `$HOME/.singularity/sregistry.db` alongside your docker, metadata, and shub folders.
+ - *SREGISTRY_PYTHON_THREADS*: the number of threads to allocate to the worker (if used, typically is useful for download of layers). Defaults to 9.
  - *SREGISTRY_STORAGE*: The storage of images is **drumroll** exactly the same as your Singularity cache for Singularity images! If your `SREGISTRY_DATABASE` is set to `$HOME/.singularity`, then the storage goes into `$HOME/.singularity/shub`. The one difference is that with `sregistry` we create a folder one level up that coincides with the collection name. For example:
+
 
 ```
 tree $HOME/.singularity.shub

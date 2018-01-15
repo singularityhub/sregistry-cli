@@ -93,10 +93,6 @@ class ApiConnection(object):
     def client_name(self):
         return self.__module__.split('.')[-1]
 
-
-# Multiprocess Worker
-from sregistry.main.base.worker import Workers
-
 # Headers
 ApiConnection._get_headers = get_headers
 ApiConnection._reset_headers = reset_headers

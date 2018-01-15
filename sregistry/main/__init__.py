@@ -50,6 +50,7 @@ def get_client():
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
     if SREGISTRY_CLIENT == 'dockerhub': from .dockerhub import Client
+    elif SREGISTRY_CLIENT == 'ngc': from .ngc import Client
     elif SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
     elif SREGISTRY_CLIENT == 'google-drive': from .google_drive import Client

@@ -44,7 +44,9 @@ def get_image_hash(image_path):
 
 
 def parse_image_name(image_name, tag=None, version=None, 
-                                 defaults=True, ext="simg"):
+                                 defaults=True, ext="simg",
+                                 default_collection="library",
+                                 default_tag="latest"):
 
     '''return a collection and repo name and tag
     for an image file.
@@ -66,7 +68,7 @@ def parse_image_name(image_name, tag=None, version=None,
     if len(image_name) == 1:
         collection = ''
         if defaults is True:
-            collection = "library"
+            collection = default_collection
         image_name = image_name[0]
 
     # Collection and image provided
@@ -90,7 +92,7 @@ def parse_image_name(image_name, tag=None, version=None,
     
     # If still no tag, use default or blank
     if tag is None and defaults is True:
-        tag = "latest"
+        tag = default_tag
 
     # Piece together the filename
     uri = "%s/%s" % (collection, image_name)    

@@ -13,6 +13,7 @@ Singularity Registry Global client has tutorials and walkthroughs for the follow
  - [Docker Hub](/sregistry-cli/client-dockerhub): interact with layers to build images from Docker Hub
  - [Google Storage](/sregistry-cli/client-google-storage): interact with images from Google Storage
  - [Google Drive](/sregistry-cli/client-google-drive): interact with images from Google Drive
+ - [Nvidia Container Registry](/sregistry-cli/client-ngc): Nvidia Container registry serves Docker images
  - [Singularity Hub](/sregistry-cli/client-hub): the default endpoint will work (search and pull) images from Singularity Hub.
  - [Singularity Registry](/sregistry-cli/client-registry): to interact with an institution or personally hosted Singularity Registry.
 

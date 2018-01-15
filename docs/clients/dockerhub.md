@@ -50,11 +50,24 @@ Singularity Registry Global Client works by way of obtaining information from th
 |SREGISTRY_DOCKERHUB_SECRETS  | None           | The path to your `.docker/config.json` credentials (if you want to use it) |
 |SREGISTRY_DOCKERHUB_USERNAME | None           | login username to Docker Hub. If set, will override the secrets file |
 |SREGISTRY_DOCKERHUB_PASSWORD | None           | the login password to Docker Hub. If set, will override the secrets file |
-|SREGISTRY_DOCKERHUB_NO_HTTPS | not set        | If found as yes/t/true/y or some derivation, make calls without https (usually for local registries and not recommended)  
+|SREGISTRY_DOCKERHUB_NOHTTPS | not set        | If found as yes/t/true/y or some derivation, make calls without https (usually for local registries and not recommended)  
 |SREGISTRY_DOCKERHUB_VERSION  |  v2            | the Docker Hub API version to use |
-|SREGISTRY_DOCKERHUB_OS       | linux          | The choice of operating system to use from the schema version 2 image manifest |
-|SREGISTRY_DOCKERHUB_ARCHITECTURE| amd64       | the system architecture to use from the schema verison 2 image manifest
-|SREGISTRY_DOCKERHUB_CMD |     not set         | If found as yes/t/true/y or some derivation, use "CMD" instead of "EntryPoint" for container runscript|
+
+The following variables are relevant for clients that use multiprocessing:
+
+| Variable                    |        Default |          Description |
+|-----------------------------|----------------|----------------------|
+|SREGISTRY_PYTHON_THREADS       | 9          | The number of workers (threads) to allocate to the download client |
+
+
+The following variables are *shared* between different `sregistry` clients that have a Docker registry backend.
+
+
+| Variable                    |        Default |          Description |
+|-----------------------------|----------------|----------------------|
+|SREGISTRY_DOCKER_OS       | linux          | The choice of operating system to use from the schema version 2 image manifest |
+|SREGISTRY_DOCKER_ARCHITECTURE| amd64       | the system architecture to use from the schema verison 2 image manifest
+|SREGISTRY_DOCKER_CMD |     not set         | If found as yes/t/true/y or some derivation, use "CMD" instead of "EntryPoint" for container runscript|
 
 
 The following variables are specific to Singularity (not the Singularity Registry Global Client) and honored during a Docker Hub pull:
@@ -74,7 +87,7 @@ You will notice in the above table that you have multiple options for authentica
 As an alternative option, you can also choose to export your username and password, and the client will do the same to base64 encode them (this is the token in the docker config file. Whatever you choose, we do not send your username and password out in the open beyond the client (or cache it anywhere) but instead generate a base64 encoded string to pass with the header to identify you and ask for a token. **Important** `sregistry` will not cache or otherwise save any of your credential information to the `.sregistry` secrets. This information must be set in the environment (either the path to the file or username and password) for each usage of the client.
 
 ## Commands
-For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](../getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are specific to the Google Storage client:
+For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](../getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are specific to the `sregistry` Docker Hub client.
 
  - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
  - [record](#record): `[remote->local]` obtain Docker Hub manifests and metadata to save to the database, but don't pull layers to build a container.
@@ -161,7 +174,7 @@ Containers:   [date]   [location]  [client]	[uri]
 You might want to grab metadata for an image but not pull and download layers. You can use record for that. Let's first get the record for an anaconda image:
 
 ```
-registry record continuumio/anaconda3
+sregistry record continuumio/anaconda3
 [client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][new] continuumio/anaconda3:latest
 ```
@@ -220,6 +233,42 @@ continuumio/anaconda3:latest
 
 ```
 the above is truncated in the middle, but what you should know is that the middle chunk contains both versions of the manifest, if available.
+
+## Get
+Here is an example of a typical flow to download an image, and then use it. We will set the client at runtime to be Docker Hub (and not the default of Singularity Hub)
+
+```
+SREGISTRY_CLIENT=dockerhub sregistry pull centos:7
+[client|dockerhub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Progress |===================================| 100.0% 
+[1/1] |===================================| 100.0% 
+Exploding /usr/local/libexec/singularity/bootstrap-scripts/environment.tar
+Exploding /home/vanessa/.singularity/docker/sha256:af4b0a2388c69010cf675c050e51cb1fabbdf2303f955c31805b280324fd4523.tar.gz
+Exploding /home/vanessa/.singularity/docker/metadata/sha256:7c987cc7f0a84f94bdad653b5eff809145a53cb4ce2af2070c8ce0527d2f2d52.tar.gz
+WARNING: Building container as an unprivileged user. If you run this container as root
+WARNING: it may be missing some functionality.
+Building FS image from sandbox: /tmp/tmpdpenry16
+Building Singularity FS image...
+Building Singularity SIF container image...
+Singularity container built: /home/vanessa/.singularity/shub/library-centos:7.simg
+Cleaning up...
+
+[container][new] library/centos:7
+Success! /home/vanessa/.singularity/shub/library-centos:7.simg
+```
+
+Now we can use (or otherwise interact with the full path to it) with `get`
+
+```
+sregistry get library/centos:7
+/home/vanessa/.singularity/shub/library-centos:7.simg
+```
+```
+singularity shell $(sregistry get library/centos:7)
+Singularity: Invoking an interactive shell within container...
+
+Singularity library-centos:7.simg:~/Documents/Dropbox/Code/sregistry/sregistry-cli> 
+```
 
 <div>
     <a href="/sregistry-cli/commands"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
