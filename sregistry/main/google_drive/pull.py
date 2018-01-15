@@ -28,7 +28,7 @@ import io
 import sys
 
 
-def pull(self, images, file_name=None, save=True):
+def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from google drive, based on a query (uri or id)
  
     Parameters

@@ -268,7 +268,7 @@ Environment variables are the primary way in which the user interacts with the c
  - [Settings](#settings): should be derived primarily from the environment, and with the naming schema specific to your client (see more below).
  - [Storage](#storage): we provide for you functions to easily get and update parameters for your client, along with two methods for saving, depending on what needs to be saved.
  - [Helpers](#helpers): include functions for saving parameters to the default `sregistry` settings file, or to a client secrets file that is specifically for your client.
-
+ - [Tasks](/sregistry-cli/client-tasks): The `sregistry client` includes workers that use multiprocessing if you want to run a bunch of download tasks at the same time, for example.
 
 #### Settings
 If you have any settings or parameters that you need to obtain from the user, the recommended way to do this is check for them in a function called by your client `__init__`, and then get them from settings, use a default, or exit if required and not found. First, we will talk about interaction of your client with the user. The user is going to set environment variables that you tell him about, and your variables must live in the sregistry namespace for your client. To maintain the `SREGISTRY` environment variable namespace, you should use the following convention:
@@ -299,8 +299,63 @@ from sregistry.utils import write_file, read_file
 ```
 
 #### Helper Functions
-To make it easy for development, we have created a set of functions that live with all clients to get and update environment variables. In the examples below, we will start with high level functions, and then move into more detailed functions used by them.
+To make it easy for development, we have created a set of functions that live with all clients to do checks, along with get and update environment variables. In the examples below, we will start with high level functions, and then move into more detailed functions used by them.
 
+##### Update Token
+If a call (e.g., get, post, etc.) ever returns a 401 response, the base client will automatically check if it has a function called `_update_token`. If so, it will call the function and then issue a retry of the failed request. This means that, if you have some functional logic for obtaining (or refreshing) a token (or updating a token otherwise) you should implement this function for your client. The function will pass the response object to `_update_token`. For example, here is the function in a submodule of your client:
+
+```
+def update_token(self, response):
+    '''
+    '''
+```
+
+and then it's added to the client in the `__init__py`
+
+```
+from .submodule import update_token
+
+Client._update_token = update_token
+```
+
+The token function should exit with status code 1 if the update for the token is unsuccessful (meaning a second try wouldn't be worth it).
+
+##### Check for secrets
+It might be the case that you want to do a quick check that secrets exist for your client. For example, for the `registry` client pull and push functions, there is no feasible way to interact with a registry if the client hasn't defined the `registry` key in his or her client secrets! Actually, there are many things we might want to check for:
+
+ - does the secrets file exist, period?
+ - does the secrets file have a lookup for the client?
+ - does the lookup have one or more parameters defined?
+ - if the parameter is defined, is it None or empty?
+
+We provide an easy way to do these checks for a client, and we will walk through them in a shell:
+
+```
+sregistry shell
+client.client_name
+'hub'
+```
+
+This first function will check for a secrets file, and specifically, that the client `hub` has an entry in it. If not defined, it would exit and tell the user.
+
+```
+# Do I have a secrets file, period?
+client.require_secrets()
+
+# will exit if not found
+
+# Do I have a secrets file with parameter "name" defined?
+client.require_secrets(params='name')
+
+# Do I have a secrets file with parameters "name" and "group" defined?
+client.require_secrets(params=p["name", "group"])
+```
+
+and so, for example, in the push and pull functions, since we require secrets period, we can just call:
+
+```
+self.require_secrets()
+```
 
 ##### GET
 First, you might decide for your client (let's call it `myclient`) that your user can optionally set `SREGISTRY_MYCLIENT_ID`. If you just want to get the variable from the user, and return `None` if it's not found, you can use the following function:

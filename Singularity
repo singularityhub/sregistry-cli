@@ -58,6 +58,11 @@ From: continuumio/miniconda3
     exec /opt/conda/bin/sregistry "$@"
 
 
+%environment
+    PATH=/usr/local/bin:$PATH
+    export PATH
+
+
 %labels
     maintainer vsochat@stanford.edu
 

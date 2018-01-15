@@ -28,7 +28,7 @@ import requests
 import os
 import sys
 
-def pull(self, images, file_name=None, save=True):
+def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from a singularity registry
  
     Parameters
@@ -48,6 +48,9 @@ def pull(self, images, file_name=None, save=True):
 
     if not isinstance(images,list):
         images = [images]
+
+    # Interaction with a registry requires secrets
+    self.require_secrets()
 
     bot.debug('Execution of PULL for %s images' %len(images))
 
@@ -79,6 +82,7 @@ def pull(self, images, file_name=None, save=True):
                 headers = {'Authorization': SREGISTRY_EVENT }
                 self._update_headers(headers)
                 manifest = self._get(url)
+
 
         # Successful pull
         if "image" in manifest:
@@ -115,7 +119,6 @@ def pull(self, images, file_name=None, save=True):
 
 
     upload_to = os.path.basename(names['storage'])
-
 
     encoder = MultipartEncoder(fields={'collection': names['collection'],
                                        'name':names['image'],

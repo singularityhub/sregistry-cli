@@ -2,7 +2,7 @@
 
 Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2016-2017 Vanessa Sochat.
+Copyright (C) 2017 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -20,21 +20,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-import sys
-import pwd
-import os
 
+def get_template(name):
+    '''return a default template for some function in sregistry
+       If there is no template, None is returned.
 
-def main(args,parser,subparser):
+       Parameters
+       ==========
+       name: the name of the template to retrieve
 
-    from sregistry.main import Client as cli
-    
-    # Does the user want to save the image?
-    do_save = True
-    if args.nocache is True or not hasattr(cli,'storage'):
-        do_save = False
-    
-    response = cli.pull(images=args.image,
-                        file_name=args.name,
-                        force=args.force,
-                        save=do_save)
+    '''
+    name = name.lower()
+    templates = dict()
+
+    templates['tarinfo'] = {"gid": 0,
+                            "uid": 0,
+                            "uname": "root",
+                            "gname": "root",
+                            "mode": 493}
+
+    if name in templates:
+        bot.debug("Found template for %s" % (name))
+        return templates[name]
+    else:
+        bot.warning("Cannot find template %s" % (name))
+

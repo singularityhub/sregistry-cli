@@ -49,7 +49,9 @@ def get_client():
         bot.warning('Singularity is not installed, function might be limited.')
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
-    if SREGISTRY_CLIENT == 'hub': from .hub import Client
+    if SREGISTRY_CLIENT == 'docker': from .docker import Client
+    elif SREGISTRY_CLIENT == 'nvidia': from .nvidia import Client
+    elif SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
     elif SREGISTRY_CLIENT == 'google-drive': from .google_drive import Client
     elif SREGISTRY_CLIENT == 'google-storage': from .google_storage import Client

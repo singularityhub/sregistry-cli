@@ -55,6 +55,9 @@ def push(self, path, name, tag=None, compress=False):
         bot.error('%s does not exist.' %path)
         sys.exit(1)
 
+    # Interaction with a registry requires secrets
+    self.require_secrets()
+
     cli = Singularity()
     metadata = cli.inspect(image_path=path, quiet=True)
     metadata = json.loads(metadata)

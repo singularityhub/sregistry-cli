@@ -1,0 +1,64 @@
+#######################################
+# Google Cloud Storage
+#######################################
+
+%appenv google-storage
+    SREGISTRY_CLIENT=google-storage
+    export SREGISTRY_CLIENT
+%apprun google-storage
+    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
+# Google Cloud Drive
+#######################################
+
+%appenv google-drive
+    SREGISTRY_CLIENT=google-drive
+    export SREGISTRY_CLIENT
+%apprun google-drive
+    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
+# Singularity Hub
+#######################################
+
+%appenv hub
+    SREGISTRY_CLIENT=hub
+    export SREGISTRY_CLIENT
+%apprun hub
+    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
+# Singularity Registry
+#######################################
+
+%appenv registry
+    SREGISTRY_CLIENT=registry
+    export SREGISTRY_CLIENT
+%apprun registry
+    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
+# Docker Hub
+#######################################
+
+%appenv docker
+    SREGISTRY_CLIENT=docker
+    export SREGISTRY_CLIENT
+%apprun docker
+    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
+# Nvidia Cloud
+#######################################
+
+%appenv nvidia
+    SREGISTRY_CLIENT=nvidia
+    export SREGISTRY_CLIENT
+%apprun nvidia
+    exec /opt/conda/bin/sregistry "$@"
