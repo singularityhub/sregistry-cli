@@ -13,6 +13,11 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
  - migration guidance (how to convert images?)
  - changed behaviour (recipe sections work differently)
 
+## [0.0.6](https://github.com/singularityware/singularity-python/tree/development) (0.0.6)
+**additions**
+ - added base client for Docker, and Nvidia Container Registry
+
+
 ## [0.0.5](https://github.com/singularityware/singularity-python/tree/development) (0.0.5)
 **dependency**
  - adding dateutils requirement.
