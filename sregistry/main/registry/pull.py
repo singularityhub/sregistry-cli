@@ -22,11 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
+from requests.models import Response
 from sregistry.utils import ( parse_image_name, remove_uri )
+import requests
 import os
 import sys
 
-def pull(self, images, file_name=None, save=True):
+def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from a singularity registry
  
     Parameters
@@ -47,6 +49,9 @@ def pull(self, images, file_name=None, save=True):
     if not isinstance(images,list):
         images = [images]
 
+    # Interaction with a registry requires secrets
+    self.require_secrets()
+
     bot.debug('Execution of PULL for %s images' %len(images))
 
     finished = []
@@ -57,9 +62,7 @@ def pull(self, images, file_name=None, save=True):
         # Verify image existence, and obtain id
         url = "%s/container/%s/%s:%s" %(self.base, q['collection'], q['image'], q['tag'])
         bot.debug('Retrieving manifest at %s' %url)
-
         manifest = self._get(url)
-        manifest['selfLink'] = url
 
         if isinstance(manifest, int):
             if manifest == 400:
@@ -68,29 +71,72 @@ def pull(self, images, file_name=None, save=True):
                 bot.error('Container not found (404)')
             sys.exit(1)
 
-        if file_name is None:
-            file_name = q['storage'].replace('/','-')
+        # Private container collection
+        elif isinstance(manifest, Response):
+
+            # Requires token
+            if manifest.status_code == 403:
+
+                SREGISTRY_EVENT = self.authorize(request_type="pull",
+                                                 names=q)
+                headers = {'Authorization': SREGISTRY_EVENT }
+                self._update_headers(headers)
+                manifest = self._get(url)
+
+
+        # Successful pull
+        if "image" in manifest:
+
+            # Add self link to manifest
+            manifest['selfLink'] = url
+
+            if file_name is None:
+                file_name = q['storage'].replace('/','-')
     
-        image_file = self.download(url=manifest['image'],
-                                   file_name=file_name,
-                                   show_progress=True)
+            image_file = self.download(url=manifest['image'],
+                                       file_name=file_name,
+                                       show_progress=True)
 
-        # If the user is saving to local storage
-        if save is True:
-            image_uri = "%s/%s:%s" %(manifest['collection'], 
-                                     manifest['name'],
-                                     manifest['tag'])
-            container = self.add(image_path = image_file,
-                                 image_name = image_uri,
-                                 metadata = manifest,
-                                 url = manifest['image'])
-            image_file = container.image
+            # If the user is saving to local storage
+            if save is True:
+                image_uri = "%s/%s:%s" %(manifest['collection'], 
+                                         manifest['name'],
+                                         manifest['tag'])
+                container = self.add(image_path = image_file,
+                                     image_name = image_uri,
+                                     metadata = manifest,
+                                     url = manifest['image'])
+                image_file = container.image
 
-        if os.path.exists(image_file):
-            bot.debug('Retrieved image file %s' %image_file)
-            bot.custom(prefix="Success!", message=image_file)
-            finished.append(image_file)
+            if os.path.exists(image_file):
+                bot.debug('Retrieved image file %s' %image_file)
+                bot.custom(prefix="Success!", message=image_file)
+                finished.append(image_file)
 
-    if len(finished) == 1:
-        finished = finished[0]
-    return finished
+        if len(finished) == 1:
+            finished = finished[0]
+        return finished
+
+
+    upload_to = os.path.basename(names['storage'])
+
+    encoder = MultipartEncoder(fields={'collection': names['collection'],
+                                       'name':names['image'],
+                                       'metadata':metadata,
+                                       'tag': names['tag'],
+                                       'datafile': (upload_to, open(upload_from, 'rb'), 'text/plain')})
+
+    progress_callback = create_callback(encoder)
+    monitor = MultipartEncoderMonitor(encoder, progress_callback)
+    headers = {'Content-Type': monitor.content_type,
+               'Authorization': SREGISTRY_EVENT }
+
+    try:
+        r = requests.post(url, data=monitor, headers=headers)
+        message = self._read_response(r)
+
+        print('\n[Return status {0} {1}]'.format(r.status_code, message))
+
+    except KeyboardInterrupt:
+        print('\nUpload cancelled.')
+

@@ -2,7 +2,7 @@
 
 Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2016-2017 Vanessa Sochat.
+Copyright (C) 2017 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -19,22 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.logger import bot
-import sys
-import pwd
-import os
-
-
-def main(args,parser,subparser):
-
-    from sregistry.main import Client as cli
-    
-    # Does the user want to save the image?
-    do_save = True
-    if args.nocache is True or not hasattr(cli,'storage'):
-        do_save = False
-    
-    response = cli.pull(images=args.image,
-                        file_name=args.name,
-                        force=args.force,
-                        save=do_save)
+# Multiprocess Worker
+from sregistry.main.workers.worker import Workers
+from sregistry.main.workers.tasks import download_task

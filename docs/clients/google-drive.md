@@ -10,8 +10,10 @@ toc: false
 
 These sections will detail use of the Google Drive client for `sregistry`, which is a connection to your Google Drive. 
 
+[![asciicast](https://asciinema.org/a/155025.png)](https://asciinema.org/a/155025?speed=3)
+
 ## Getting Started
-If you are using the sregistry image, the client is likely already installed. If you want to install this natively (or build a custom container) the command to install the module extras is:
+If you are using the [sregistry image](https://www.singularity-hub.org/collections/379), the client is likely already installed. If you want to install this natively (or build a custom container) the command to install the module extras is:
 
 ```
 pip install sregistry[google-drive]
@@ -43,7 +45,7 @@ Singularity Registry Global Client works by way of obtaining information from th
 ### Fun Environment
 By default, your Google Drive containers will have a robot icon. Here he is:
 
-![../img/robot.png](../img/robot.png)
+<img src="/sregistry-cli/img/robot.png" width="600px"><br>
 
 But you can choose your own custom thumbnail! Simply export the `SREGISTRY_THUMBNAIL` variable. If you are sharing containers and want some kind of branding, this is a good way to do that.
 
@@ -187,23 +189,26 @@ Share to vsochat@stanford.edu complete: 09522476006874428495!
 
 Now when I look in my inbox... hoho!
 
-![../img/google-drive-share.png](../img/google-drive-share.png)
+<img src="/sregistry-cli/img/google-drive-share.png" width="800px"><br>
 
 And how about sharing with a friend? Yes, this in fact did happen - it was received on a smart phone and added to drive.
 
->> Share them from a car?
->> Or share them in a bar? 
->> Share them on a plane,
->> ...or whilst in Spain!
->> No matter where you are...
->> your containers are never far!
+>> Share them from a car? <br>
+>> Or share them in a bar?  <br>
+>> Share them on a plane, <br>
+>> ...or whilst in Spain! <br>
+>> No matter where you are... <br>
+>> your containers are never far! <br>
 
-![../img/google-drive-share-phone.png](../img/google-drive-share-phone.png)
+<img src="/sregistry-cli/img/google-drive-share-phone.png" width="400px"><br>
+
+
 **Note** to future self, do not allow self to write "poetry" at 1:00am.
 
-But you want to know what is most exciting? The share has a robot thumbnail. That you can customize by exporting a path to `SREGISTRY_THUMBNAIL` on your host, however you please!
+But you want to know what is most exciting? The share has a robot thumbnail. That you can customize by exporting a path to `SREGISTRY_THUMBNAIL` on your host, however you please! Let's look at him again, because we can.
 
-![../img/google-drive-robot.png](../img/google-drive-robot.png)
+<img src="/sregistry-cli/img/google-drive-robot.png" width="600px"><br>
+
 
 If you don't feel sheer joy and life completion from having robots in your Google Drive, I'm not sure anything can help you now, my friend. Okay, let's now bring down the excitement and go back to square one... time to review the basics! Starting with a push.
 

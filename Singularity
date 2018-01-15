@@ -58,6 +58,11 @@ From: continuumio/miniconda3
     exec /opt/conda/bin/sregistry "$@"
 
 
+%environment
+    PATH=/usr/local/bin:$PATH
+    export PATH
+
+
 %labels
     maintainer vsochat@stanford.edu
 
@@ -84,3 +89,5 @@ From: continuumio/miniconda3
 
     # This installs all "install extras"
     /opt/conda/bin/pip install -e .
+    /opt/conda/bin/pip install -e .[google-drive]
+    /opt/conda/bin/pip install -e .[google-storage]
