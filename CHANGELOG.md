@@ -16,6 +16,8 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [development](https://github.com/singularityware/singularity-python/tree/development) (development)
+
+## [0.0.7](https://pypi.python.org/pypi/sregistry/0.0.7) (0.0.7)
  - added support to select client based on uri (e.g., `SREGISTRY_CLIENT=hub` maps to `hub://`
  - fixed bug with environment.tar having different locations across distributions.
 
