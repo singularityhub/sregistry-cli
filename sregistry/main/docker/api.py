@@ -440,6 +440,36 @@ def get_config(self, key="Entrypoint", delim=None):
     return cmd
 
 
+def get_environment_tar(self):
+    '''return the environment.tar generated with the Singularity software.
+       We first try the Linux Filesystem expected location in /usr/libexec
+       If not found, we detect the system archicture
+
+       dirname $(singularity selftest 2>&1 | grep 'lib' | awk '{print $4}' | sed -e 's@\(.*/singularity\).*@\1@')
+    '''
+    from sregistry.utils import ( which, run_command )
+
+    # First attempt - look at File System Hierarchy Standard (FHS)
+    res = which('singularity')['message']
+    libexec = res.replace('/bin/singularity','')
+    envtar = '%s/libexec/singularity/bootstrap-scripts/environment.tar' %libexec
+
+    if os.path.exists(envtar):
+        return envtar
+
+    # Second attempt, debian distribution will identify folder
+    res = which('dpkg-architecture')['message']
+    if res is not None:
+        cmd = ['dpkg-architecture', '-qDEB_HOST_MULTIARCH']
+        triplet = run_command(cmd).strip('\n')
+        envtar = '/usr/lib/%s/singularity/bootstrap-scripts/environment.tar' %triplet
+        if os.path.exists(envtar):
+            return envtar
+
+    # Final, return environment.tar provided in package
+    return "%s/environment.tar" os.path.abspath(os.path.dirname(__file__))
+
+
 def create_metadata_tar(self, destination=None, metadata_folder=".singularity.d"):
     '''create a metadata tar (runscript and environment) to add to the
        downloaded image. This function uses all functions in this section
