@@ -467,7 +467,7 @@ def get_environment_tar(self):
             return envtar
 
     # Final, return environment.tar provided in package
-    return "%s/environment.tar" os.path.abspath(os.path.dirname(__file__))
+    return "%s/environment.tar" %os.path.abspath(os.path.dirname(__file__))
 
 
 def create_metadata_tar(self, destination=None, metadata_folder=".singularity.d"):
