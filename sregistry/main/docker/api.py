@@ -461,7 +461,7 @@ def get_environment_tar(self):
     res = which('dpkg-architecture')['message']
     if res is not None:
         cmd = ['dpkg-architecture', '-qDEB_HOST_MULTIARCH']
-        triplet = run_command(cmd).strip('\n')
+        triplet = run_command(cmd)['message'].strip('\n')
         envtar = '/usr/lib/%s/singularity/bootstrap-scripts/environment.tar' %triplet
         if os.path.exists(envtar):
             return envtar
