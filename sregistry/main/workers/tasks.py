@@ -60,7 +60,7 @@ def download_task(url, headers, destination, download_type='layer'):
     tar_download = download(url, file_name, headers=headers)
 
     try:
-        os.rename(tar_download, destination)
+        shutil.move(tar_download, destination)
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"

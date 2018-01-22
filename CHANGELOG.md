@@ -17,6 +17,8 @@ The versions coincide with releases on pip. Only major versions will be released
 
 ## [development](https://github.com/singularityware/singularity-python/tree/development) (development)
  - added support to select client based on uri (e.g., `SREGISTRY_CLIENT=hub` maps to `hub://`
+ - changed os.rename to shutil.move in order to support moving files between directories that are located in different volumes. 
+
 
 ## [0.0.6](https://pypi.python.org/pypi/sregistry/0.0.6) (0.0.6)
  - added base client for Docker, and Nvidia Container Registry
@@ -40,3 +42,4 @@ The versions coincide with releases on pip. Only major versions will be released
  - addition of (mostly complete) documentation, Changelog, and Singularity file
  - this is the initial creation of just the singularity registry client, to be separate from
 singularity python.
+

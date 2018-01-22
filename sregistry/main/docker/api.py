@@ -30,6 +30,7 @@ import os
 import json
 import re
 import sys
+import shutil
 
 
 ###############################################################################
@@ -348,7 +349,7 @@ def get_layer(self, image_id, repo_name, download_folder=None):
     tar_download = self.download(url, file_name)
 
     try:
-        os.rename(tar_download, download_folder)
+        shutil.move(tar_download, download_folder)
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
