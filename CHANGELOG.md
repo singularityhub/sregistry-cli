@@ -16,6 +16,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [development](https://github.com/singularityware/singularity-python/tree/development) (development)
+ - changed os.rename to shutil.move in order to support moving files between directories that are located in different volumes. 
  - added support to select client based on uri (e.g., `SREGISTRY_CLIENT=hub` maps to `hub://` (0.0.61)
  - fixed bug with environment.tar having different locations across distributions.
 
@@ -41,3 +42,4 @@ The versions coincide with releases on pip. Only major versions will be released
  - addition of (mostly complete) documentation, Changelog, and Singularity file
  - this is the initial creation of just the singularity registry client, to be separate from
 singularity python.
+

@@ -38,6 +38,7 @@ from glob import glob
 import os
 import json
 import sys
+import shutil
 
 
 # COLLECTIONS ##################################################################
@@ -269,7 +270,7 @@ def add(self, image_path=None,
         if copy is True:
             copyfile(image_path, storage_path)
         else:
-            os.rename(image_path, storage_path)
+            shutil.move(image_path, storage_path)
 
         image_path = storage_path
 
