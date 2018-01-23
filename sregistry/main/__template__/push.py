@@ -40,15 +40,6 @@ import json
 import sys
 import os
 
-# These functions might be important to decode/encode secrets.
-# see the registry push for an example
-from sregistry.auth import (
-    generate_signature,
-    generate_credential,
-    generate_timestamp
-)
-
-
 
 def push(self, path, name, tag=None):
     '''push an image to Singularity Registry

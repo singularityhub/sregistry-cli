@@ -38,7 +38,7 @@ import json
 import sys
 import os
 
-from sregistry.auth import (
+from sregistry.main.registry.auth import (
     generate_signature,
     generate_credential,
     generate_timestamp

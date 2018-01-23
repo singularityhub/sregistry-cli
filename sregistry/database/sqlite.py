@@ -37,6 +37,7 @@ from sregistry.defaults import (
 from glob import glob
 import os
 import json
+import shutil
 import sys
 
 
@@ -269,8 +270,8 @@ def add(self, image_path=None,
         if copy is True:
             copyfile(image_path, storage_path)
         else:
-            os.rename(image_path, storage_path)
-
+            shutil.move(image_path, storage_path)
+            
         image_path = storage_path
 
     # Get a hash of the file for the version, or use provided

@@ -23,13 +23,14 @@ from requests.exceptions import HTTPError
 from sregistry.defaults import SINGULARITY_CACHE
 from sregistry.logger import bot
 from sregistry.utils import ( mkdir_p, print_json, get_template, create_tar )
-import requests
-import tempfile
+import json
 import math
 import os
-import json
 import re
+import requests
+import shutil
 import sys
+import tempfile
 
 
 ###############################################################################
@@ -348,7 +349,7 @@ def get_layer(self, image_id, repo_name, download_folder=None):
     tar_download = self.download(url, file_name)
 
     try:
-        os.rename(tar_download, download_folder)
+        shutil.move(tar_download, download_folder)
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
