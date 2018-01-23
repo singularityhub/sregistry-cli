@@ -33,7 +33,7 @@ from .api import ( create_metadata_tar, download_layers, get_manifest_selfLink,
                    get_config, get_digests, get_layer, get_manifest,
                    get_manifests, get_download_cache, get_size,
                    extract_env, extract_labels, extract_runscript,
-                   update_token )
+                   update_token, get_environment_tar )
 from .pull import pull
 from .record import record
 
@@ -172,3 +172,4 @@ Client._get_manifests = get_manifests
 Client._get_size = get_size
 Client._update_token = update_token
 Client._get_manifest_selfLink = get_manifest_selfLink
+Client._get_environment_tar = get_environment_tar

@@ -88,10 +88,8 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # Build from sandbox 
         sandbox = tempfile.mkdtemp()
 
-        # Metadata and container guts must come first
-        res = which('singularity')['message']
-        libexec = res.decode('utf-8').replace('/bin/singularity\n','')
-        envtar = '%s/libexec/singularity/bootstrap-scripts/environment.tar' %libexec
+        # Add environment to the layers
+        envtar = self._get_environment_tar()
         layers = [envtar] + layers
 
         # Create singularity image from an empty folder
