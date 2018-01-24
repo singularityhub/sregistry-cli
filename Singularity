@@ -3,7 +3,6 @@ From: continuumio/miniconda3
 
 # sudo singularity build sregistry.simg Singularity
 
-
 #######################################
 # Global
 #######################################
@@ -21,7 +20,6 @@ From: continuumio/miniconda3
     export SREGISTRY_CLIENT
 %apprun google-storage
     exec /opt/conda/bin/sregistry "$@"
-
 
 
 #######################################
@@ -89,5 +87,6 @@ From: continuumio/miniconda3
 
     # This installs all "install extras"
     /opt/conda/bin/pip install -e .
+    /opt/conda/bin/pip install -e .[registry]
     /opt/conda/bin/pip install -e .[google-drive]
     /opt/conda/bin/pip install -e .[google-storage]

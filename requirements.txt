@@ -1,4 +1,1 @@
-python-dateutil
 requests
-requests-toolbelt
-retrying

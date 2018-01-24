@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from requests.exceptions import HTTPError
 from sregistry.defaults import SINGULARITY_CACHE
 from sregistry.logger import bot
 from sregistry.utils import ( mkdir_p, print_json, get_template, create_tar )

@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -22,10 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # If you need to get metadata (or otherwise interact with an image) use
 # the Singularity client (cli = Singularity() --> cli.inspect(..))
 from sregistry.client import Singularity
-from sregistry.logger import bot, ProgressBar
+from sregistry.logger import bot
 from sregistry.utils import (
     parse_image_name,
-    parse_header,
     remove_uri
 )
 
@@ -36,7 +35,6 @@ from requests_toolbelt import (
 )
 
 import requests
-import json
 import sys
 import os
 

@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -19,21 +19,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from dateutil import parser
 from sregistry.logger import bot
 from sregistry.utils import ( 
     check_install, 
     copyfile,
     get_image_hash,
-    mkdir_p,
     parse_image_name, 
-    remove_uri,
-    write_json
+    remove_uri
 )
 from sqlalchemy import or_
-from sregistry.defaults import (
-    SREGISTRY_DATABASE
-)
 from glob import glob
 import os
 import json

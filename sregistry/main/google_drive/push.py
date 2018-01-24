@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.client import Singularity
-from sregistry.logger import bot, ProgressBar
+from sregistry.logger import bot
 from sregistry.utils import (
     get_image_hash,
     get_thumbnail,
@@ -28,11 +28,8 @@ from sregistry.utils import (
     remove_uri
 )
 
-from sregistry.main.google_storage.utils import prepare_metadata
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
-from retrying import retry
-import requests
 import base64
 import json
 import sys

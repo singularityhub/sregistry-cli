@@ -2,9 +2,9 @@
 
 auth.py: authorization functions for client
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -21,16 +21,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.logger import bot
-import sys
-import os
-
-from sregistry.auth import (
+from sregistry.main.registry.utils import (
     generate_signature,
     generate_credential,
     generate_timestamp
 )
-
 
 def authorize(self, names, payload=None, request_type="push"):
     '''Authorize a client based on encrypting the payload with the client

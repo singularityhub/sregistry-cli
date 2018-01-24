@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -30,13 +30,9 @@ from sregistry.utils import (
 from sregistry.main.google_storage.utils import prepare_metadata
 from googleapiclient.http import MediaFileUpload
 from retrying import retry
-import collections
-import requests
-import six
 import json
 import sys
 import os
-
 
 
 def push(self, path, name, tag=None):

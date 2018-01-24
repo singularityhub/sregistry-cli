@@ -4,9 +4,9 @@ This is a base client that imports functions depending on the API it is
     using. Currently, it supports singularity hub and registry, with default
     to use Singularity Hub.
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -23,11 +23,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from .base import ApiConnection
 from sregistry.utils import ( 
     check_install, 
-    get_uri,
-    mkdir_p 
+    get_uri 
 )
 from sregistry.auth import get_credential_cache
 from sregistry.defaults import SREGISTRY_DATABASE

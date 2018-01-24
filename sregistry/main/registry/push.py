@@ -2,9 +2,9 @@
 
 push.py: push functions for sregistry client
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -37,12 +37,6 @@ import requests
 import json
 import sys
 import os
-
-from sregistry.main.registry.auth import (
-    generate_signature,
-    generate_credential,
-    generate_timestamp
-)
 
 
 def push(self, path, name, tag=None, compress=False):

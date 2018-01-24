@@ -69,6 +69,7 @@ if __name__ == "__main__":
     INSTALL_REQUIRES = get_requirements(lookup)
     INSTALL_REQUIRES_ALL = get_requirements(lookup,'INSTALL_REQUIRES_ALL')
     DROPBOX = get_requirements(lookup,'INSTALL_REQUIRES_DROPBOX')
+    REGISTRY = get_requirements(lookup,'INSTALL_REQUIRES_REGISTRY')
     GLOBUS = get_requirements(lookup,'INSTALL_REQUIRES_GLOBUS')
     GOOGLE_STORAGE = get_requirements(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
     GOOGLE_DRIVE = get_requirements(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
@@ -91,6 +92,7 @@ if __name__ == "__main__":
           extras_require={
               'dropbox': [DROPBOX],
               'globus': [GLOBUS],
+              'registry': [REGISTRY],
               'google-storage': [GOOGLE_STORAGE],
               'google-drive': [GOOGLE_DRIVE],
               'all': [INSTALL_REQUIRES_ALL]

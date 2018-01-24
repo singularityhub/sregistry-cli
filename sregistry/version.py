@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,6 @@ LICENSE = "LICENSE"
 
 INSTALL_REQUIRES = (
     ('requests', {'exact_version': '2.18.4'}),
-    ('retrying', {'exact_version': '1.3.3'}),
     ('pygments', {'min_version': '2.1.3'}),
     ('sqlalchemy', {'min_version': None})
 )
@@ -52,7 +51,8 @@ INSTALL_REQUIRES_DROPBOX = (
 
 INSTALL_REQUIRES_GOOGLE_STORAGE = (
     ('oauth2client', {'min_version': '3.0'}),
-    ('google-cloud-storage', {'min_version': '1.4.0'})
+    ('google-cloud-storage', {'min_version': '1.4.0'}),
+    ('retrying', {'exact_version': '1.3.3'}),
 )
 
 INSTALL_REQUIRES_GOOGLE_DRIVE = (

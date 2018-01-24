@@ -1,10 +1,10 @@
 '''
 
-query: search and query functions for client
+search and query functions for client
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -23,10 +23,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
-from sregistry.main import ApiConnection
-from dateutil import parser
-
-import json
 import sys
 import os
 
@@ -86,8 +82,6 @@ def search_collection(self, query):
     '''collection search will list all containers for a specific
     collection. We assume query is the name of a collection'''
 
-    from sregistry.utils import print_date
-
     query = query.lower().strip('/')
 
     q = parse_image_name(remove_uri(query), defaults=False)
@@ -106,8 +100,7 @@ def search_collection(self, query):
         bot.info("Containers %s" %query)
 
         rows.append(["[name]","%s" %result['name']])
-        modify_date = print_date(result['modify_date'])
-        rows.append(["[date]","%s" %modify_date])
+        rows.append(["[date]","%s" %result['modify_date']])
 
         for c in result['containers']: 
             rows.append([ '%s:%s' %(c['name'], c['tag'])])
