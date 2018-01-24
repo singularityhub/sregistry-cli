@@ -259,7 +259,7 @@ client.inspect('vanessa/tacos:latest')
 ```
 
 ## Push
-Singularity Registry is one of the few clients that has "push," meaning that we can take an image that we have locally and push it to a registry. First, make sure that you have generated your [credentials file](https://singularityhub.github.io/sregistry/credentials.html). Then, find a local image to push. In the example below, we will push an image called "expfactory.simg."
+Singularity Registry is one of the few clients that has "push," meaning that we can take an image that we have locally and push it to a registry. First, make sure that you have generated your [credentials file](https://singularityhub.github.io/sregistry/credentials.html). You **must** be an admin and/or manager of a Singularity Registry to push to it! If it's not running locally, also make sure that your credentials file has the correct url base (the file that you copy paste usually defaults to localhost, and this would be fine given that you are running the registry locally on your machine, and would need to be changed otherwise). Then, find a local image to push. In the example below, we will push an image called "expfactory.simg."
 
 You can export the `SREGISTRY_CLIENT=registry` one time (on the same line before the command)
 
