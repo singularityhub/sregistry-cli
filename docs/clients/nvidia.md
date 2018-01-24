@@ -198,21 +198,6 @@ Cleaning up...
 Success! /home/vanessa/.singularity/shub/nvidia-tensorflow:17.11.simg
 ```
 
-We can then see the image has been added to our local database:
-
-```
-sregistry images
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
-3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
-4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
-5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
-
-```
-
 Notice that the first layer extracted is the standard environment metadata tar. The next set of layers come from the user's default cache (either set as the Singularity default or a user specified, we honor the Singularity envionment variable settings for this, and use a temporary directory if it's disabled. The final layer is a metadata tar that is specifically for the runscript, environment, and labels (if found in the manifest). After you do a pull, you can see the record in your local database (see the last record):
 
 ```
