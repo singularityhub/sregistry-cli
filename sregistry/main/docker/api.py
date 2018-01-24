@@ -19,17 +19,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from requests.exceptions import HTTPError
 from sregistry.defaults import SINGULARITY_CACHE
 from sregistry.logger import bot
 from sregistry.utils import ( mkdir_p, print_json, get_template, create_tar )
-import requests
-import tempfile
+import json
 import math
 import os
-import json
 import re
+import requests
+import shutil
 import sys
+import tempfile
 
 
 ###############################################################################
@@ -348,7 +348,7 @@ def get_layer(self, image_id, repo_name, download_folder=None):
     tar_download = self.download(url, file_name)
 
     try:
-        os.rename(tar_download, download_folder)
+        shutil.move(tar_download, download_folder)
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
@@ -438,6 +438,36 @@ def get_config(self, key="Entrypoint", delim=None):
             cmd = delim.join(cmd)
     bot.verbose("Found Docker config (%s) %s" % (key, cmd))
     return cmd
+
+
+def get_environment_tar(self):
+    '''return the environment.tar generated with the Singularity software.
+       We first try the Linux Filesystem expected location in /usr/libexec
+       If not found, we detect the system archicture
+
+       dirname $(singularity selftest 2>&1 | grep 'lib' | awk '{print $4}' | sed -e 's@\(.*/singularity\).*@\1@')
+    '''
+    from sregistry.utils import ( which, run_command )
+
+    # First attempt - look at File System Hierarchy Standard (FHS)
+    res = which('singularity')['message']
+    libexec = res.replace('/bin/singularity','')
+    envtar = '%s/libexec/singularity/bootstrap-scripts/environment.tar' %libexec
+
+    if os.path.exists(envtar):
+        return envtar
+
+    # Second attempt, debian distribution will identify folder
+    res = which('dpkg-architecture')['message']
+    if res is not None:
+        cmd = ['dpkg-architecture', '-qDEB_HOST_MULTIARCH']
+        triplet = run_command(cmd)['message'].strip('\n')
+        envtar = '/usr/lib/%s/singularity/bootstrap-scripts/environment.tar' %triplet
+        if os.path.exists(envtar):
+            return envtar
+
+    # Final, return environment.tar provided in package
+    return "%s/environment.tar" %os.path.abspath(os.path.dirname(__file__))
 
 
 def create_metadata_tar(self, destination=None, metadata_folder=".singularity.d"):

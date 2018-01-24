@@ -19,12 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.logger import bot
-import sys
-import pwd
-import os
-
-
 def main(args,parser,subparser):
     '''the images entrypoint is intended to list images locally in the user
        database, optionally taking one or more query string to subset the 
@@ -36,4 +30,3 @@ def main(args,parser,subparser):
         if query in ['','*']:
             query = None
         cli.images(query=query)
-

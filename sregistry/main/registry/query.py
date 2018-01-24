@@ -1,10 +1,10 @@
 '''
 
-ls: search and query functions for client
+search and query functions for client
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -23,9 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
-from dateutil import parser
 
-import json
 import sys
 import os
 
@@ -198,12 +196,8 @@ def container_search(self, query, across_collections=False):
     rows = []
     for c in result:        
 
-        # Convert date to readable thing
-        datetime_object = parser.parse(c['add_date'])
-        print_date = datetime_object.strftime('%b %d, %Y %I:%M%p')
         rows.append([ '%s/%s' %(c['collection'], c['name']),
-                      c['tag'],
-                      print_date ])
+                      c['tag'] ])
 
     bot.table(rows)
     return rows

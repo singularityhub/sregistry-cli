@@ -59,7 +59,7 @@ def get_singularity_version(singularity_version=None):
     return singularity_version
 
 
-def which(software=None):
+def which(software=None, strip_newline=True):
     '''get_install will return the path to where Singularity (or another
        executable) is installed.
     '''
@@ -67,7 +67,11 @@ def which(software=None):
         software = "singularity"
     cmd = ['which', software ]
     try:
-        return run_command(cmd)
+        result = run_command(cmd)
+        if strip_newline is True:
+            result['message'] = result['message'].strip('\n')
+        return result
+
     except: # FileNotFoundError
         return None
 
@@ -123,5 +127,8 @@ def run_command(cmd, sudo=False):
     t = output.communicate()[0],output.returncode
     output = {'message':t[0],
               'return_code':t[1]}
+
+    if isinstance(output['message'], bytes):
+        output['message'] = output['message'].decode('utf-8')
 
     return output

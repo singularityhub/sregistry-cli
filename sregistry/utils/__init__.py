@@ -15,8 +15,7 @@ from .names import (
     get_uri,
     format_container_name,
     parse_image_name,
-    remove_uri,
-    print_date
+    remove_uri
 )
 from .fileio import (
     clean_up,

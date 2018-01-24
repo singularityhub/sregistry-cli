@@ -22,13 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
-import shutil
-import requests
-import tempfile
 import json
-import sys
-import re
 import os
+import re
+import requests
+import shutil
+import sys
+import tempfile
 
 
 ################################################################################
@@ -60,7 +60,7 @@ def download_task(url, headers, destination, download_type='layer'):
     tar_download = download(url, file_name, headers=headers)
 
     try:
-        os.rename(tar_download, destination)
+        shutil.move(tar_download, destination)
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"

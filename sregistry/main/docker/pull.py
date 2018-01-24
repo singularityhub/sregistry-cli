@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2018 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2018 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -21,8 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from sregistry.client import Singularity
-from sregistry.utils import ( parse_image_name, remove_uri, extract_tar, which )
-import tarfile
+from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
 import os
 import sys
@@ -86,13 +85,11 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
             bot.error('Image exists! Remove first, or use --force to overwrite')
             sys.exit(1)
 
-        # Build from sandbox 
+        # Build from sandbox
         sandbox = tempfile.mkdtemp()
 
-        # Metadata and container guts must come first
-        res = which('singularity')['message']
-        libexec = res.decode('utf-8').replace('/bin/singularity\n','')
-        envtar = '%s/libexec/singularity/bootstrap-scripts/environment.tar' %libexec
+        # Add environment to the layers
+        envtar = self._get_environment_tar()
         layers = [envtar] + layers
 
         # Create singularity image from an empty folder

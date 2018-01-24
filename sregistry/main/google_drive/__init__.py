@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -21,19 +21,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from sregistry.main import ApiConnection
-from sregistry.defaults import ( SREGISTRY_BASE, SREGISTRY_DATABASE )
-from sregistry.utils import mkdir_p
 from oauth2client.file import Storage
 from oauth2client import tools
 
 import httplib2
-import json
 import sys
 import os
 
-from retrying import retry
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client import client as oclient
 

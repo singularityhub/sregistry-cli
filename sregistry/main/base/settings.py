@@ -21,18 +21,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from requests.exceptions import HTTPError
-
-from sregistry.logger import bot
-from sregistry.defaults import SREGISTRY_DATABASE
 from sregistry.utils import mkdir_p
 from sregistry.auth import ( read_client_secrets, update_client_secrets )
-import threading
-import shutil
-import requests
-import tempfile
-import json
-import sys
 import re
 import os
 

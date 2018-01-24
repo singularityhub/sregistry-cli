@@ -20,15 +20,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from dateutil import parser
 import hashlib
 import os
 import re
-
-
-def print_date(date, format='%b %d, %Y %I:%M%p'):
-    datetime_object = parser.parse(date)
-    return datetime_object.strftime(format)
 
 
 def get_image_hash(image_path):
