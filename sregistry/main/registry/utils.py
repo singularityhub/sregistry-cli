@@ -26,6 +26,13 @@ import hmac
 import os
 import sys
 
+def _encode(item):
+    '''make sure an item is bytes for the digest
+    '''
+    if not isinstance(item,bytes):
+        item = item.encode('utf-8')
+    return item
+
 
 def generate_signature(payload, secret):
     '''use an endpoint specific payload and client secret to generate

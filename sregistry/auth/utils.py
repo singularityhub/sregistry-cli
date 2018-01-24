@@ -25,14 +25,6 @@ import os
 import sys
 
 
-def _encode(item):
-    '''make sure an item is bytes for the digest
-    '''
-    if not isinstance(item,bytes):
-        item = item.encode('utf-8')
-    return item
-
-
 def basic_auth_header(username, password):
     '''generate a base64 encoded header to ask for a token. This means
                 base64 encoding a username and password and adding to the
