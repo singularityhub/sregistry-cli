@@ -258,6 +258,62 @@ $ sregistry shell
 client.inspect('vanessa/tacos:latest')
 ```
 
+## Push
+Singularity Registry is one of the few clients that has "push," meaning that we can take an image that we have locally and push it to a registry. First, make sure that you have generated your [credentials file](https://singularityhub.github.io/sregistry/credentials.html). Then, find a local image to push. In the example below, we will push an image called "expfactory.simg."
+
+You can export the `SREGISTRY_CLIENT=registry` one time (on the same line before the command)
+
+```
+SREGISTRY_CLIENT=registry sregistry push --name milkshakes/pudding:banana expfactory.simg
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[================================] 173/173 MB - 00:00:00
+[Return status 201 Created]
+
+```
+ or export it globally:
+
+```
+export SREGISTRY_CLIENT=registry
+sregistry push --name registry://milkshakes/pudding:banana expfactory.simg
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[================================] 173/173 MB - 00:00:00
+[Return status 201 Created]
+```
+
+Then you should see the image in a remote search:
+
+```
+sregistry search
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Collections
+1  mso4sc/sregistry-cli:latest	http://127.0.0.1/containers/4
+2  milkshakes/pudding:banana	http://127.0.0.1/containers/5
+```
+
+and then add it as a local record, or pull it to your local database.
+
+```
+sregistry record milkshakes/pudding:banana
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[container][new] milkshakes/pudding:banana
+sregistry images | grep banana
+27 January 24, 2018	remote	   [registry]	milkshakes/pudding:banana
+```
+```
+sregistry pull milkshakes/pudding:banana
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Progress |===================================| 100.0% 
+[container][new] milkshakes/pudding:banana
+Success! /home/vanessa/.singularity/shub/milkshakes-pudding:banana.simg
+```
+```
+$ sregistry images | grep banana
+27 January 24, 2018	remote	   [registry]	milkshakes/pudding:banana
+28 January 24, 2018	local 	   [registry]	milkshakes/pudding:banana@846442ecd7487f99fce3b8fb68ae15af
+vanessa@vanessa-ThinkPad-T460s:~/Desktop$
+```
+
+
 ## Search
 Finally, search is the correct way to list or search a remote endpoint, distinguished from "images" which does the same for your local database. For Singularity Registry, as a general user you will be able to see public images. The images you can see correspond with the images you are able to pull. 
 
