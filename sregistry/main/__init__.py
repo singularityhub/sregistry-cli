@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from sregistry.main.base import ApiConnection
 from sregistry.utils import ( 
     check_install, 
     get_uri 
