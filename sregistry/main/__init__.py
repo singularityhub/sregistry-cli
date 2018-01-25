@@ -100,6 +100,11 @@ def get_client(image=None):
         Client.get_container = get_container
         Client.get_collection = get_collection
 
+    # If no database, import dummy functions that return the equivalent
+    else:
+        from sregistry.database.dummy import ( add )
+        Client.add = add
+
     # Initialize the database
     cli = Client()
 
