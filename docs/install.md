@@ -24,6 +24,16 @@ cd sregistry-cli
 python setup.py install
 ```
 
+And you can also install from pip:
+
+```
+# Client and Database
+pip install sregistry[all]
+
+# Client only
+pip install sregistry[all-basic]
+```
+
 Given that the current endpoints are limited, you will do ok with the above 
 method. However, when the time comes to install specific modules, you would do
 that by specifying the ones you want, e.g.,
