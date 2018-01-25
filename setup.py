@@ -109,7 +109,6 @@ if __name__ == "__main__":
               'google-storage-basic': [GOOGLE_STORAGE_BASIC],
               'google-drive-basic': [GOOGLE_DRIVE_BASIC],
               'all-basic': [INSTALL_BASIC_ALL],
-
               'dropbox': [DROPBOX],
               'globus': [GLOBUS],
               'registry': [REGISTRY],
