@@ -97,6 +97,13 @@ SREGISTRY_DATABASE = None
 SREGISTRY_STORAGE = None
 SREGISTRY_BASE = None
 
+# If sqlalchemy isn't installed, user doesn't have support for database
+try:
+    from sqlalchemy import or_
+except ImportError:
+    DISABLE_DATABASE = True
+
+
 # If the user didn't disable caching or the database
 if not DISABLE_CACHE and DISABLE_DATABASE is False:
 
