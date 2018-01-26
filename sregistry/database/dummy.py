@@ -53,7 +53,7 @@ def add(self, image_path=None,
 
     # First check that we don't have one already!
     class container:
-        name=name=names['image']
+        name=names['image']
         tag=names['tag']
         image=image_path
         client=self.client_name
