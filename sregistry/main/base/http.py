@@ -24,7 +24,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
-from sregistry.defaults import DISABLE_SSL_CHECK
 import shutil
 import requests
 import tempfile
@@ -99,6 +98,24 @@ def paginate_get(self, url, headers=None, return_json=True, start_page=None):
     return results
         
 
+def verify(self):
+    '''
+       verify will return a True or False to determine to verify the
+       requests call or not. If False, we should the user a warning message,
+       as this should not be done in production!
+
+    '''
+    from sregistry.defaults import DISABLE_SSL_CHECK
+
+    verify = not DISABLE_SSL_CHECK
+
+    # Give warning, if disabled
+    if verify is False:
+        bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
+
+    return verify
+
+
 def download(self, url, file_name, headers=None, show_progress=True):
     '''stream to a temporary file, rename on successful completion
 
@@ -110,8 +127,10 @@ def download(self, url, file_name, headers=None, show_progress=True):
     '''
 
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
-    verify = not DISABLE_SSL_CHECK
     os.close(fd)
+
+    # Should we verify the request?
+    verify = self._verify()
 
     # Check here if exists
     if requests.head(url, verify=verify).status_code in [200, 401]:
@@ -132,6 +151,8 @@ def stream(self, url, headers=None, stream_to=None, retry=True):
 
     bot.debug("GET %s" %url)
 
+
+
     # Ensure headers are present, update if not
     if headers == None:
         if self.headers is None:
@@ -140,7 +161,7 @@ def stream(self, url, headers=None, stream_to=None, retry=True):
 
     response = requests.get(url,         
                             headers=headers,
-                            verify=not DISABLE_SSL_CHECK,
+                            verify=self._verify(),
                             stream=True)
 
     # Deal with token if necessary
@@ -207,7 +228,7 @@ def call(self, url, func, data=None, headers=None,
     response = func(url=url,
                     headers=heads,
                     data=data,
-                    verify=not DISABLE_SSL_CHECK,
+                    verify=self._verify(),
                     stream=stream)
 
     # Errored response, try again with refresh
