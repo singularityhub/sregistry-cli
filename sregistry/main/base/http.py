@@ -107,13 +107,10 @@ def verify(self):
     '''
     from sregistry.defaults import DISABLE_SSL_CHECK
 
-    verify = not DISABLE_SSL_CHECK
-
-    # Give warning, if disabled
-    if verify is False:
+    if DISABLE_SSL_CHECK is True:
         bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
 
-    return verify
+    return not DISABLE_SSL_CHECK
 
 
 def download(self, url, file_name, headers=None, show_progress=True):
