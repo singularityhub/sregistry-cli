@@ -27,7 +27,7 @@ Importantly, the Singularity Global Client does not have any dependency on Docke
 [![asciicast](https://asciinema.org/a/154519.png)](https://asciinema.org/a/154519?speed=4)
 
 ## Getting Started
- - [Installation](install): quick steps to get up and running with the Singularity Registry Global Client. This includes a local installation, or the option to use a Singularity image.
+ - [Installation](install): quick steps to get up and running with the Singularity Registry Global Client. This includes a local installation, or the option to use a Singularity image. You also have the option to install a "basic" client (meaning just moving images) or a client and storage (a local sqlachemy database).
  - [Global Commands](commands): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
 
 ## Available Clients
