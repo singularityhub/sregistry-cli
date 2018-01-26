@@ -71,7 +71,7 @@ USERHOME = pwd.getpwuid(os.getuid())[5]
 DISABLE_CACHE = convert2boolean(getenv("SINGULARITY_DISABLE_CACHE", False))
 DISABLE_DATABASE = convert2boolean(getenv("SREGISTRY_DISABLE", False))
 SREGISTRY_CLIENT = getenv("SREGISTRY_CLIENT", "hub")
-
+DISABLE_SSL_CHECK = convert2boolean(getenv("SREGISTRY_HTTPS_NOVERIFY", False))
 
 #########################
 # Fun Settings

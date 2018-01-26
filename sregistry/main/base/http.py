@@ -24,6 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
+from sregistry.defaults import DISABLE_SSL_CHECK
 import shutil
 import requests
 import tempfile
@@ -109,10 +110,11 @@ def download(self, url, file_name, headers=None, show_progress=True):
     '''
 
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
+    verify = not DISABLE_SSL_CHECK
     os.close(fd)
 
     # Check here if exists
-    if requests.head(url).status_code in [200, 401]:
+    if requests.head(url, verify=verify).status_code in [200, 401]:
         response = self._stream(url,headers=headers,stream_to=tmp_file)
 
         if isinstance(response, HTTPError):
@@ -138,6 +140,7 @@ def stream(self, url, headers=None, stream_to=None, retry=True):
 
     response = requests.get(url,         
                             headers=headers,
+                            verify=not DISABLE_SSL_CHECK,
                             stream=True)
 
     # Deal with token if necessary
@@ -204,6 +207,7 @@ def call(self, url, func, data=None, headers=None,
     response = func(url=url,
                     headers=heads,
                     data=data,
+                    verify=not DISABLE_SSL_CHECK,
                     stream=stream)
 
     # Errored response, try again with refresh

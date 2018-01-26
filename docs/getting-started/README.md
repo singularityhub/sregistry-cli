@@ -136,6 +136,12 @@ the SRegistry database, then export `SREGISTRY_DISABLE=yes`.
 The `sregistry` client exposes a lot of customization through environment variables, so you as the user have the power to configure it exactly as you need, or stick to defaults that are reasonably set. In these sections, we will review the sets of environment variables for you to use. If you are a developer, see our [client contribution guide](/sregistry-cli/contribute-client) for details on interacting with these environment variables.
 
 
+#### Http and Authentication
+While most of the authentication variables live with the clients, `sregistry` offers a few Global settings to be applied to all web requests.
+
+ - **SREGISTRY_HTTPS_NOVERIFY** will [set verify to False](http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification) when you are making a request, and this means that the server you are using sregistry against has https enabled, but is using an untrusted (usually self-signed) certificate. This option should not be used in production, but is generally useful if you are working with a test server, or are debugging commands. See the [original issue](https://github.com/singularityhub/sregistry-cli/issues/56) for more details. Generally, we do not recommend that you use this more than occasionally. The server certificate in question should be added to your trusted certificates file.
+
+
 #### Database and Storage
 The database refers to the sqlite3 file used to store metadata, typically in the user's home, and the storage refers to the actual folder of images. You can control this behavior with the following environment variables.
 
