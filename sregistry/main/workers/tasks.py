@@ -120,8 +120,10 @@ def download(url, file_name, headers=None, show_progress=True):
     if DISABLE_SSL_CHECK is True:
         bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
 
-    # Check here if exists
-    if requests.head(url, verify=DISABLE_SSL_CHECK).status_code in [200, 401]:
+    verify = not DISABLE_SSL_CHECK
+
+    # Does the url being requested exist?
+    if requests.head(url, verify=verify).status_code in [200, 401]:
         response = stream(url,headers=headers,stream_to=tmp_file)
 
         if isinstance(response, HTTPError):
