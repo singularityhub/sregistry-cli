@@ -33,8 +33,8 @@ from sregistry.main.base.headers import (
 )
 
 from sregistry.main.base.http import ( 
-    call, delete, download, get, 
-    paginate_get, post, put, stream
+    call, delete, download, get, paginate_get, 
+    post, put, stream, verify
 )
 
 from sregistry.main.base.settings import (
@@ -125,3 +125,4 @@ ApiConnection._paginate_get = paginate_get
 ApiConnection._post = post
 ApiConnection._put = put
 ApiConnection._stream = stream
+ApiConnection._verify = verify

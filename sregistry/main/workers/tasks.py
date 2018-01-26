@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from sregistry.defaults import DISABLE_SSL_CHECK
 from requests.exceptions import HTTPError
 
 from sregistry.logger import bot
@@ -116,8 +117,13 @@ def download(url, file_name, headers=None, show_progress=True):
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
     os.close(fd)
 
-    # Check here if exists
-    if requests.head(url).status_code in [200, 401]:
+    if DISABLE_SSL_CHECK is True:
+        bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
+
+    verify = not DISABLE_SSL_CHECK
+
+    # Does the url being requested exist?
+    if requests.head(url, verify=verify).status_code in [200, 401]:
         response = stream(url,headers=headers,stream_to=tmp_file)
 
         if isinstance(response, HTTPError):
@@ -137,9 +143,13 @@ def stream(url, headers, stream_to=None, retry=True):
 
     bot.debug("GET %s" %url)
 
+    if DISABLE_SSL_CHECK is True:
+        bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
+
     # Ensure headers are present, update if not
     response = requests.get(url,         
                             headers=headers,
+                            verify=not DISABLE_SSL_CHECK,
                             stream=True)
 
     # Deal with token if necessary
@@ -193,6 +203,9 @@ def call(url, func, data=None, headers=None,
     return_json: return json if successful
     '''
  
+    if DISABLE_SSL_CHECK is True:
+        bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
+
     if data is not None:
         if not isinstance(data,dict):
             data = json.dumps(data)
@@ -200,6 +213,7 @@ def call(url, func, data=None, headers=None,
     response = func(url=url,
                     headers=headers,
                     data=data,
+                    verify=not DISABLE_SSL_CHECK,
                     stream=stream)
 
     # Errored response, try again with refresh

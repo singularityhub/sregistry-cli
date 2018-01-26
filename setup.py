@@ -19,8 +19,8 @@ def get_lookup():
 
 
 # Read in requirements
-def get_requirements(lookup=None, key='INSTALL_REQUIRES'):
-    '''get_requirements reads in requirements and versions from
+def get_reqs(lookup=None, key='INSTALL_REQUIRES'):
+    '''get requirements, mean reading in requirements and versions from
     the lookup obtained with get_lookup'''
 
     if lookup == None:
@@ -66,13 +66,25 @@ with open('README.md') as filey:
 
 if __name__ == "__main__":
 
-    INSTALL_REQUIRES = get_requirements(lookup)
-    INSTALL_REQUIRES_ALL = get_requirements(lookup,'INSTALL_REQUIRES_ALL')
-    DROPBOX = get_requirements(lookup,'INSTALL_REQUIRES_DROPBOX')
-    REGISTRY = get_requirements(lookup,'INSTALL_REQUIRES_REGISTRY')
-    GLOBUS = get_requirements(lookup,'INSTALL_REQUIRES_GLOBUS')
-    GOOGLE_STORAGE = get_requirements(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
-    GOOGLE_DRIVE = get_requirements(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
+    INSTALL_REQUIRES = get_reqs(lookup)
+
+    # These requirement DON'T include sqlalchemy, only client
+
+    INSTALL_BASIC_ALL = get_reqs(lookup,'INSTALL_BASIC_ALL')
+    DROPBOX_BASIC = get_reqs(lookup,'INSTALL_BASIC_DROPBOX')
+    REGISTRY_BASIC = get_reqs(lookup,'INSTALL_BASIC_REGISTRY')
+    GLOBUS_BASIC = get_reqs(lookup,'INSTALL_BASIC_GLOBUS')
+    GOOGLE_STORAGE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_STORAGE')
+    GOOGLE_DRIVE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_DRIVE')
+
+    # These requirement sets include sqlalchemy, for client+storage
+
+    INSTALL_REQUIRES_ALL = get_reqs(lookup,'INSTALL_REQUIRES_ALL')
+    DROPBOX = get_reqs(lookup,'INSTALL_REQUIRES_DROPBOX')
+    REGISTRY = get_reqs(lookup,'INSTALL_REQUIRES_REGISTRY')
+    GLOBUS = get_reqs(lookup,'INSTALL_REQUIRES_GLOBUS')
+    GOOGLE_STORAGE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
+    GOOGLE_DRIVE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
 
     setup(name=NAME,
           version=VERSION,
@@ -90,12 +102,20 @@ if __name__ == "__main__":
           keywords=KEYWORDS,
           install_requires = INSTALL_REQUIRES,
           extras_require={
+
+              'dropbox-basic': [DROPBOX_BASIC],
+              'globus-basic': [GLOBUS_BASIC],
+              'registry-basic': [REGISTRY_BASIC],
+              'google-storage-basic': [GOOGLE_STORAGE_BASIC],
+              'google-drive-basic': [GOOGLE_DRIVE_BASIC],
+              'all-basic': [INSTALL_BASIC_ALL],
               'dropbox': [DROPBOX],
               'globus': [GLOBUS],
               'registry': [REGISTRY],
               'google-storage': [GOOGLE_STORAGE],
               'google-drive': [GOOGLE_DRIVE],
               'all': [INSTALL_REQUIRES_ALL]
+
           },
           classifiers=[
               'Intended Audience :: Science/Research',

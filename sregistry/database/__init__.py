@@ -1,8 +1,13 @@
-from .models import *
-from .sqlite import ( 
-    add, get, rm, rmi, images, 
-    inspect,
-    get_container,
-    get_collection,
-    get_or_create_collection 
-)
+from sregistry.defaults import SREGISTRY_DATABASE
+
+if SREGISTRY_DATABASE is None:
+    from .dummy import ( add, init_db )
+else:
+    from .models import *
+    from .sqlite import ( 
+        add, get, rm, rmi, images, 
+        inspect,
+        get_container,
+        get_collection,
+        get_or_create_collection 
+    )
