@@ -62,3 +62,11 @@ def add(self, image_path=None,
 
     bot.info("[container][%s] %s" % (action,names['uri']))
     return container
+
+
+def init_db(self, db_path=None):
+    '''initialize the database, meaning we just set the name to be dummy
+    '''
+
+    # Database Setup, use default if uri not provided
+    self.database = 'dummy'

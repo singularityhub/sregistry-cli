@@ -102,8 +102,9 @@ def get_client(image=None):
 
     # If no database, import dummy functions that return the equivalent
     else:
-        from sregistry.database.dummy import ( add )
+        from sregistry.database import ( add, init_db )
         Client.add = add
+        Client._init_db = init_db        
 
     # Initialize the database
     cli = Client()
