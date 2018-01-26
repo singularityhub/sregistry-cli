@@ -71,7 +71,7 @@ USERHOME = pwd.getpwuid(os.getuid())[5]
 DISABLE_CACHE = convert2boolean(getenv("SINGULARITY_DISABLE_CACHE", False))
 DISABLE_DATABASE = convert2boolean(getenv("SREGISTRY_DISABLE", False))
 SREGISTRY_CLIENT = getenv("SREGISTRY_CLIENT", "hub")
-
+DISABLE_SSL_CHECK = convert2boolean(getenv("SREGISTRY_HTTPS_NOVERIFY", False))
 
 #########################
 # Fun Settings
@@ -96,6 +96,13 @@ _database = os.path.join(USERHOME, ".singularity")
 SREGISTRY_DATABASE = None
 SREGISTRY_STORAGE = None
 SREGISTRY_BASE = None
+
+# If sqlalchemy isn't installed, user doesn't have support for database
+try:
+    from sqlalchemy import or_
+except ImportError:
+    DISABLE_DATABASE = True
+
 
 # If the user didn't disable caching or the database
 if not DISABLE_CACHE and DISABLE_DATABASE is False:
