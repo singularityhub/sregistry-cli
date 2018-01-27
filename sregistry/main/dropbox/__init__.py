@@ -23,9 +23,7 @@ from dropbox import Dropbox
 from dropbox.exceptions import ( ApiError, AuthError )
 from sregistry.logger import bot
 from sregistry.main import ApiConnection
-import json
 import sys
-import os
 
 from .pull import pull
 from .push import push
