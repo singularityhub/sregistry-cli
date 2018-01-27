@@ -15,13 +15,13 @@ Dropbox has one dependency to install it's python sdk. You can do this via sregi
 
 
 ```
-pip install sregistry[dropbox[
+pip install sregistry[dropbox]
 ```
 
 or on your own:
 
 ```
-pip install Dropbox
+pip install dropbox
 ```
 
 or read [instructions here](https://github.com/dropbox/dropbox-sdk-python).
@@ -43,9 +43,10 @@ Singularity Registry Global Client works by way of obtaining information from th
 
 | Variable                    |        Default |          Description |
 |-----------------------------|----------------|----------------------|
-|SREGISTRY_DROPBOX_TOKEN  | None (required)        | Your API token associated with your account, generated [here]()|
+|SREGISTRY_DROPBOX_TOKEN  | None (required)        | Your API token associated with your account, generated [here](https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account)|
 
-The following variables are *shared* between different `sregistry` clients that have a Docker registry backend. The following variables are relevant for clients that use multiprocessing:
+
+The access token is for your account only, and so it is essential that you don't share it with anyone. The following variables are *shared* between different `sregistry` clients that have a Docker registry backend. The following variables are relevant for clients that use multiprocessing:
 
 
 | Variable                    |        Default |          Description |
@@ -65,16 +66,14 @@ The following variables are specific to Singularity (not the Singularity Registr
 You should first export your secret token for the api:
 
 ```
-SREGISTRY_NVIDIA_TOKEN = "xxxxxx"
-export SREGISTRY_NVIDIA_TOKEN
+SREGISTRY_DROPBOX_TOKEN = "xxxxxx"
+export SREGISTRY_DROPBOX_TOKEN
 ```
 
 If you don't, you won't get very far!
 
 
 ```
-SREGISTRY_CLIENT=nvidia sregistry shell
-ERROR You must have an Nvidia GPU cloud token to use it.
 ```
 
 Once you export your token (and increase the message level) you can see that there is an Authentication header added to the client:

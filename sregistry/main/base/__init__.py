@@ -37,6 +37,7 @@ from sregistry.main.base.http import (
     post, put, stream, verify
 )
 
+from sregistry.main.base.inspect import get_metadata
 from sregistry.main.base.settings import (
     get_setting,
     get_storage_name,
@@ -111,6 +112,9 @@ ApiConnection.require_secrets = require_secrets
 ApiConnection._get_setting = get_setting
 ApiConnection._get_and_update_setting = get_and_update_setting
 ApiConnection._get_storage_name = get_storage_name
+
+# Metadata
+ApiConnection.get_metadata = get_metadata
 
 # Auth
 ApiConnection.require_secrets = require_secrets

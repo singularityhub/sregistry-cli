@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.client import Singularity
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     get_image_hash,
@@ -49,18 +48,16 @@ def push(self, path, name, tag=None):
         bot.error('%s does not exist.' %path)
         sys.exit(1)
 
-    # here is an exampole of getting metadata for a container
-    cli = Singularity()
-    metadata = cli.inspect(image_path=path, quiet=True)
-    metadata = json.loads(metadata)
 
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(name),tag=tag)
+
     if names['version'] is None:
         version = get_image_hash(path)
         names = parse_image_name(remove_uri(name), tag=tag, version=version)    
 
     # Update metadata with names
+    metadata = self.get_metadata(path, names=names)
     metadata = metadata['data']
     metadata.update(names)
 

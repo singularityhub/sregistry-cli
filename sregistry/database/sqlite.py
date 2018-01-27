@@ -246,15 +246,7 @@ def add(self, image_path=None,
     bot.debug('Adding %s to registry' % names['uri'])    
 
     # If Singularity is installed, inspect image for metadata
-    if check_install() is True and metadata is None and image_path is not None:
-        from singularity.cli import Singularity
-        cli = Singularity()
-        metadata = cli.inspect(image_path, quiet=True)
-
-    # Fall back to just include the manifest
-    if metadata is None:
-        metadata = names
-
+    metadata = self.get_metadata(path, names=names)
     collection = self.get_or_create_collection(names['collection'])
 
     # If save, move to registry storage first
@@ -305,10 +297,10 @@ def add(self, image_path=None,
 
     # The container existed, update it.
     else:
-        action = "update"
-        metrics = json.loads(container.metrics)
+        action="update"
+        metrics=json.loads(container.metrics)
         metrics.update(metadata)
-        container.url=url
+        container.url= url
         container.client=self.client_name
         if image_path is not None:
             container.image=image_path

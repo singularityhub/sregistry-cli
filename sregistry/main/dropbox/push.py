@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -19,10 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-# If you need to get metadata (or otherwise interact with an image) use
-# the Singularity client (cli = Singularity() --> cli.inspect(..))
-from sregistry.client import Singularity
-from sregistry.logger import bot, ProgressBar
+from sregistry.logger import bot
 from sregistry.utils import (
     parse_image_name,
     parse_header,
@@ -40,20 +37,11 @@ import json
 import sys
 import os
 
-# These functions might be important to decode/encode secrets.
-# see the registry push for an example
-from sregistry.auth import (
-    generate_signature,
-    generate_credential,
-    generate_timestamp
-)
-
-
 
 def push(self, path, name, tag=None):
-    '''push an image to Singularity Registry
-    
-    path: should correspond to an absolte image path (or derive it)
+    '''push an image to your Dropbox
+   
+    path: should correspond to an absolute image path (or derive it)
     name: should be the complete uri that the user has requested to push.
     tag: should correspond with an image tag. This is provided to mirror Docker
     '''
@@ -65,11 +53,8 @@ def push(self, path, name, tag=None):
         sys.exit(1)
 
     # here is an exampole of getting metadata for a container
-    cli = Singularity()
-    metadata = cli.inspect(image_path=path, quiet=True)
-
-    # This returns a data structure with collection, container, based on uri
-    names = parse_image_name(remove_uri(name),tag=tag)
+    names = parse_image_name(remove_uri(name), tag=tag)
+    metadata = self.get_metadata(path, names=names)
 
     # If you want a spinner
     bot.spinner.start()

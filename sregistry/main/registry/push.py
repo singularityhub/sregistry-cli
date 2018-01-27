@@ -21,7 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.client import Singularity
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     parse_image_name,
@@ -39,7 +38,7 @@ import sys
 import os
 
 
-def push(self, path, name, tag=None, compress=False):
+def push(self, path, name, tag=None):
     '''push an image to Singularity Registry'''
 
     path = os.path.abspath(path)
@@ -53,9 +52,9 @@ def push(self, path, name, tag=None, compress=False):
     # Interaction with a registry requires secrets
     self.require_secrets()
 
-    cli = Singularity()
-    metadata = cli.inspect(image_path=path, quiet=True)
-    metadata = json.loads(metadata)
+    # Extract the metadata
+    names = parse_image_name(remove_uri(name), tag=tag)
+    metadata = self.get_metadata(path, names=names)
 
     # Try to add the size
     try:
@@ -78,29 +77,9 @@ def push(self, path, name, tag=None, compress=False):
             metadata['data']['attributes']['labels']['SREGISTRY_FROM'] = fromimage
             bot.debug("%s was built from a definition file." % image)
 
-    if compress is True:
-        ext = 'img.gz'  # ext3 format
-    else:
-        ext = 'simg'  # ext3 format
 
-    metadata = json.dumps(metadata)
-    names = parse_image_name(remove_uri(name),tag=tag, ext=ext)
+    # Prepare push request with multipart encoder
     url = '%s/push/' % self.base
-
-    if compress is True:
-        try:
-            sys.stdout.write('Compressing image ')
-            bot.spinner.start()
-            upload_from = cli.compress(path)
-            bot.spinner.stop()
-        except KeyboardInterrupt:
-            print('Upload cancelled')
-            if os.path.exists("%s.gz" %path):
-                os.remove("%s.gz" %path)
-            sys.exit(1)
-    else:
-        upload_from = path
-
     upload_to = os.path.basename(names['storage'])
 
     SREGISTRY_EVENT = self.authorize(request_type="push",
@@ -108,9 +87,9 @@ def push(self, path, name, tag=None, compress=False):
 
     encoder = MultipartEncoder(fields={'collection': names['collection'],
                                        'name':names['image'],
-                                       'metadata':metadata,
+                                       'metadata': json.dumps(metadata),
                                        'tag': names['tag'],
-                                       'datafile': (upload_to, open(upload_from, 'rb'), 'text/plain')})
+                                       'datafile': (upload_to, open(path, 'rb'), 'text/plain')})
 
     progress_callback = create_callback(encoder)
     monitor = MultipartEncoderMonitor(encoder, progress_callback)
@@ -126,10 +105,6 @@ def push(self, path, name, tag=None, compress=False):
     except KeyboardInterrupt:
         print('\nUpload cancelled.')
 
-    # Clean up
-    if compress is True:
-        if os.path.exists("%s.gz" %path):
-            os.remove("%s.gz" %path)
 
 
 def create_callback(encoder):
