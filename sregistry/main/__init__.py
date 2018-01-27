@@ -61,6 +61,7 @@ def get_client(image=None):
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
     if   SREGISTRY_CLIENT == 'docker': from .docker import Client
+    elif SREGISTRY_CLIENT == 'dropbox': from .dropbox import Client
     elif SREGISTRY_CLIENT == 'nvidia': from .nvidia import Client
     elif SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
