@@ -15,7 +15,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
-## [development](https://github.com/singularityware/singularity-python/tree/development) (development)
+## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
  - added Dropbox backend with push, pull, record, search, share (0.0.65) (development)
  - added ability for shell to take backend as argument (e.g., `sregistry shell dropbox`)
  - added `--quiet` argument to client for option to suppression of client announcing itself.
