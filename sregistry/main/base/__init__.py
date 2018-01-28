@@ -34,10 +34,13 @@ from sregistry.main.base.headers import (
 
 from sregistry.main.base.http import ( 
     call, delete, download, get, paginate_get, 
-    post, put, stream, verify
+    post, put, stream, stream_response, verify
 )
 
-from sregistry.main.base.inspect import get_metadata
+from sregistry.main.base.inspect import (
+    get_metadata
+)
+
 from sregistry.main.base.settings import (
     get_setting,
     get_storage_name,
@@ -67,22 +70,17 @@ class ApiConnection(object):
 # Metadata
 
     def speak(self):
-        '''a function for the client to announce him or herself, depending
-           on the level specified.
+        '''
+           a function for the client to announce him or herself, depending
+           on the level specified. If you want your client to have additional
+           announced things here, then implement the class `_speak` for your
+           client.
+
         '''
         bot.info('[client|%s] [database|%s]' %(self.client_name,
                                                self.database))
 
         self._speak()
-
-    def announce(self, command=None):
-        '''the client will announce itself given that a command is not in a
-           particular predefined list.
-        '''
-        if command is not None:
-            if command not in ['get']:
-                self.speak()
-
 
     def _speak(self):
         '''this function should be subclassed if the client has additional
@@ -92,6 +90,15 @@ class ApiConnection(object):
            download url (and nothing else)
         '''
         pass
+
+    def announce(self, command=None):
+        '''the client will announce itself given that a command is not in a
+           particular predefined list.
+        '''
+        if command is not None:
+            if command not in ['get']:
+                self.speak()
+
 
     def __repr__(self):
         return "[client][%s]" %self.client_name
@@ -128,5 +135,6 @@ ApiConnection._get = get
 ApiConnection._paginate_get = paginate_get
 ApiConnection._post = post
 ApiConnection._put = put
-ApiConnection._stream = stream
+ApiConnection.stream = stream
+ApiConnection._stream = stream_response
 ApiConnection._verify = verify

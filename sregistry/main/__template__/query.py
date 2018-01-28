@@ -41,7 +41,7 @@ def search(self, query=None, args=None):
 
         # Here you might do a function that is a general list
         # Note that this means adding the function Client in __init__
-        return self._container_query()
+        return self._container_query(query)
 
 
     # or default to listing (searching) all things.

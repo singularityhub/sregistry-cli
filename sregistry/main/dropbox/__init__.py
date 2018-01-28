@@ -24,11 +24,13 @@ from dropbox.exceptions import ( ApiError, AuthError )
 from sregistry.logger import bot
 from sregistry.main import ApiConnection
 import sys
+import datetime.datetime
 
 from .pull import pull
 from .push import push
 from .record import record
-from .query import search
+from .query import ( search, search_all, container_query )
+from .share import share
 
 class Client(ApiConnection):
 
@@ -44,6 +46,28 @@ class Client(ApiConnection):
            bot.info('[setting] value')
         '''
         pass
+
+
+    def _get_metadata(self, image_file, dbx_metadata):
+        '''this is a wrapper around the main client.get_metadata to first parse
+           a Dropbox FileMetadata into a dicionary, then pass it on to the 
+           primary get_metadata function.
+
+           Parameters
+           ==========
+           image_file: the full path to the image file that had metadata
+                       extracted
+           metadata: the Dropbox FileMetadata to parse.
+
+        '''
+        metadata = dict()
+        for key in dbx_metadata.__dir__():
+            value = getattr(dbx_metadata, key)
+            if type(value) in [str, datetime.datetime, bool]:
+                metadata[key] = value
+
+        return self.get_metadata(image_file, names=metadata)
+
 
     def _update_secrets(self):
         '''update secrets will look for a dropbox token in the environment at
@@ -64,7 +88,8 @@ class Client(ApiConnection):
 
         # Verify that the account is valid
         try:
-            self.dbx.users_get_current_account()
+            account = self.dbx.users_get_current_account()
+            bot.info('Connected to Dropbox %s' % account.name.display_name)
         except AuthError as err:
             bot.error('Account invalid. Exiting.')
             sys.exit(1)
@@ -74,8 +99,22 @@ class Client(ApiConnection):
         return type(self)
 
 
+    def exists(self, path):
+        '''determine if a path exists, return False if not.'''
+        try:
+            self.dbx.files_get_metadata(path)
+            return True
+        except:
+            return False
+
+
 # Add your different functions imported at the top to the client here
 Client.pull = pull
 Client.push = push
 Client.record = record
+Client.share = share
+
+# Query functions
 Client.search = search
+Client._search_all = search_all
+Client._container_query = container_query

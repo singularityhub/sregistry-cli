@@ -33,6 +33,7 @@ import json
 
 # Metadata
 
+
 def get_metadata(self, image_file, names={}):
     '''extract metadata using Singularity inspect, if the executable is found.
        If not, return a reasonable default (the parsed image name)
@@ -44,6 +45,7 @@ def get_metadata(self, image_file, names={}):
               variables for the image, likely from utils.parse_image_name
 
     '''
+
     metadata = dict()
 
     # We can't return anything without image_file or names

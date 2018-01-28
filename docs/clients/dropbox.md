@@ -7,7 +7,6 @@ permalink: /client-dropbox
 
 
 # SRegistry Client: Dropbox
-
 These sections will detail use of the Dropbox client for `sregistry`, meaning that you can push, pull, and otherwise interact with containers on your personal Dropbox. 
 
 ## Getting Started
@@ -37,17 +36,25 @@ cd sregistry-cli
 python setup.py install
 ```
 
+To make the Dropbox client default, you **must** set `SREGISTRY_CLIENT` to `dropbox`, either for individual commands or exported globally:
+
+```
+# Globally
+SREGISTRY_CLIENT=dropbox
+export SREGISTRY_CLIENT
+
+# Single Command
+SREGISTRY_CLIENT=dropbox sregistry shell
+```
+
 ### Environment
 Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Dropbox, we have defined the following environment variables (and defaults).
-
 
 | Variable                    |        Default |          Description |
 |-----------------------------|----------------|----------------------|
 |SREGISTRY_DROPBOX_TOKEN  | None (required)        | Your API token associated with your account, generated [here](https://blogs.dropbox.com/developers/2014/05/generate-an-access-token-for-your-own-account)|
 
-
-The access token is for your account only, and so it is essential that you don't share it with anyone. The following variables are *shared* between different `sregistry` clients that have a Docker registry backend. The following variables are relevant for clients that use multiprocessing:
-
+The following variables are *shared* between different `sregistry` clients that have a Docker registry backend. The following variables are relevant for clients that use multiprocessing:
 
 | Variable                    |        Default |          Description |
 |-----------------------------|----------------|----------------------|
@@ -61,58 +68,61 @@ The following variables are specific to Singularity (not the Singularity Registr
 |SINGULARITY_CACHEDIR  | `$HOME/.singularity`           | Set the root of the cache for layer downloads |
 |SINGULARITY_DISABLE_CACHE  | not set               | Disable the Singularity cache entirely (uses temporary directory) |
 
+More details about how to generate and export the token are discussed in the next section.
 
 #### Authentication
-You should first export your secret token for the api:
+
+To use the Dropbox client, you must have an access token exported in the environment. The access token is personal and for your account only, and so it is essential that you don't share it with anyone. When you go to your [apps page](https://www.dropbox.com/developers/apps/) and create an application, make sure that you click the button to reveal a code under "Generated access token." Then export your secret token for the api:
 
 ```
 SREGISTRY_DROPBOX_TOKEN = "xxxxxx"
 export SREGISTRY_DROPBOX_TOKEN
 ```
 
-If you don't, you won't get very far!
+After you connect, you will receive a notification (or see in your Dropbox) a new folder created. For the development and testing, I used a folder that wasn't mapped to my machine, so I received a notification in my browser, and saw the folder in the web interface:
 
+![/sregistry-cli/img/dropbox-folder.png](/sregistry-cli/img/dropbox-folder.png)
 
-```
-```
-
-Once you export your token (and increase the message level) you can see that there is an Authentication header added to the client:
-
-```
-MESSAGELEVEL=5 SREGISTRY_CLIENT=nvidia sregistry shell
-DEBUG credentials cache
-DEBUG Headers found: Content-Type,Accept,Authorization
-DEBUG Database located at sqlite:////home/vanessa/.singularity/sregistry.db
-[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-ePython 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
-...
-```
+Notice how it's under the "Apps" folder? This is good to know - because it means that the application permission is scoped to be within that folder. The client cannot touch the rest of your Dropbox.
 
 ## Commands
-For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](../getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are specific to the Nvidia Container Registry client:
+For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](sregistry-cli/getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](/sregistry-cli/commands) documentation. Here we will review the set of commands that are specific to the Docker client:
 
  - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
+ - [share](#share): `[remote]`: share a remote container.
  - [record](#record): `[remote->local]` obtain Docker Hub manifests and metadata to save to the database, but don't pull layers to build a container.
 
-For all of the examples below, we will export our client preference to be `nvidia`
+For all of the examples below, we will export our client preference to be `dropbox`
 
 ```
-SREGISTRY_CLIENT=nvidia
+SREGISTRY_CLIENT=dropbox
 export SREGISTRY_CLIENT
 ```
 
 but note that you could just as easily define the variable for one command (as we did above):
 
 ```
-SREGISTRY_CLIENT=nvidia sregistry shell
+SREGISTRY_CLIENT=dropbox sregistry shell
+```
+
+If you run a shell and **don't** see that dropbox is the active client, it's not active.
+
+```
+sregistry shell
+[client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+```
+
+And finally, for commands that are relevant for an image, you can just use the dropbox uri:
+
+```
+sregistry pull dropbox://vanessa/pancakes
 ```
 
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the Nvidia Container Registry `sregistry` client, just ask for it:
 
 ```
-sregistry shell
-[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
 
@@ -122,8 +132,11 @@ IPython 5.1.0 -- An enhanced Interactive Python.
 help      -> Python's own help system.
 object?   -> Details about 'object', use 'object??' for extra details.
 
-In [1]: 
+In [1]:
 ```
+
+If you **don't** see dropbox as the client, stop, go back, and make sure to export the environment variable.
+
 
 ## Pull
 The most likely action you want to do is to pull. Pull in this context is different than a pull from Singularity Registry, because we aren't pulling an entire, pre-built image - we are assembling layers at pull time and building an image with them. Specifically we:

@@ -26,7 +26,6 @@ import os
 
 
 def main(args,parser,subparser):
-
     from sregistry.main import get_client, Client as cli
     
     # Does the user want to save the image?

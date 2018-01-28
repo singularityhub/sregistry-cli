@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -25,27 +25,26 @@ import os
 import sys
 
 def pull(self, images, file_name=None, save=True, **kwargs):
-    '''pull an image from a singularity registry
+    '''pull an image from a dropbox. The image is found based on the storage 
+       uri
  
-    Parameters
-    ==========
-    images: refers to the uri given by the user to pull in the format
-    <collection>/<namespace>. You should have an API that is able to 
-    retrieve a container based on parsing this uri.
-    file_name: the user's requested name for the file. It can 
-               optionally be None if the user wants a default.
-    save: if True, you should save the container to the database
-          using self.add()
+       Parameters
+       ==========
+       images: refers to the uri given by the user to pull in the format
+       <collection>/<namespace>. You should have an API that is able to 
+       retrieve a container based on parsing this uri.
+       file_name: the user's requested name for the file. It can 
+                  optionally be None if the user wants a default.
+       save: if True, you should save the container to the database
+             using self.add()
     
-    Returns
-    =======
-    finished: a single container path, or list of paths
+       Returns
+       =======
+       finished: a single container path, or list of paths
+
     '''
 
-    # Here we take an entire list or a single image by ensuring we have a list
-    # This makes the client flexible to command line or internal function use,
-    # for one or more images.
-    if not isinstance(images,list):
+    if not isinstance(images, list):
         images = [images]
 
     bot.debug('Execution of PULL for %s images' %len(images))
@@ -54,55 +53,58 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
-        q = parse_image_name(remove_uri(image))
+        names = parse_image_name(remove_uri(image))
 
-        # Verify image existence, and obtain id
-        url = "..." # write your custom endpoint URL here 
-        bot.debug('Retrieving manifest at %s' %url)
-
-        # You can use the client get function to retrieve a url manifest
-        manifest = self._get(url)
-
-        # it's good practice to add the url as a `selfLink`
-        manifest['selfLink'] = url
-
-        # Make sure to parse the response (manifest) in case it's not what
-        # you expect!
-
+        # Dropbox path is the path in storage with a slash
+        dropbox_path = '/%s' % names['storage']
+        
         # If the user didn't provide a file, make one based on the names
         if file_name is None:
-            file_name = q['storage'].replace('/','-')
+            file_name = self._get_storage_name(names)
 
-        # You can then use the client download function to get the url
-        # for some image in your manifest. In this example, it's in the `image`
-        # field and we want to show the progress bar.    
-        image_file = self.download(url=manifest['image'],
-                                   file_name=file_name,
-                                   show_progress=True)
+        # If the file already exists and force is False
+        if os.path.exists(file_name) and force is False:
+            bot.error('Image exists! Remove first, or use --force to overwrite')
+            sys.exit(1) 
 
-        # If the user is saving to local storage, you need to assumble the uri
-        # here in the expected format <collection>/<namespace>:<tag>@<version>
-        if save is True:
-            image_uri = "%s/%s:%s" %(manifest['collection'], 
-                                     manifest['name'],
-                                     manifest['tag'])
+        # First ensure that exists
+        if self.exists(dropbox_path) is True:
 
-            # Importantly, the client add function will take the image file, the
-            # uri, the download link, and any relevant metadata (dictionary)
-            # for the database
-            container = self.add(image_path = image_file,
-                                 image_name = image_uri,
-                                 metadata = manifest,
-                                 url = manifest['image'])
+            # _stream is a function to stream using the response to start
+            metadata, response = self.dbx.files_download(dropbox_path)
+            image_file = self._stream(response, stream_to=file_name)
 
-            # When the container is created, this is the path to the image
-            image_file = container.image
+            # parse the metadata (and add inspected image)
+            metadata = self._get_metadata(image_file, metadata)
 
-        if os.path.exists(image_file):
-            bot.debug('Retrieved image file %s' %image_file)
-            bot.custom(prefix="Success!", message=image_file)
-            finished.append(image_file)
+            # If we save to storage, the uri is the dropbox_path
+            if save is True:
+                container = self.add(image_path = image_file,
+                                     image_name = dropbox_path,
+                                     metadata = metadata,
+                                     url = response.url)
+
+                # When the container is created, this is the path to the image
+                image_file = container.image
+
+            if os.path.exists(image_file):
+                bot.debug('Retrieved image file %s' %image_file)
+                bot.custom(prefix="Success!", message=image_file)
+                finished.append(image_file)
+
+        else:
+            bot.error('%s does not exist. Try sregistry search to see images.' %path)
 
     if len(finished) == 1:
         finished = finished[0]
     return finished
+
+'''
+            with open(storage_path, 'wb') as output:
+                output.write(F.content)
+
+#TODO: this is "batch/big? way to do it
+metadata, res = dbx.files_download(path)
+for data in res.iter_content(10):
+ print(data)
+'''
