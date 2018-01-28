@@ -24,7 +24,7 @@ from dropbox.exceptions import ( ApiError, AuthError )
 from sregistry.logger import bot
 from sregistry.main import ApiConnection
 import sys
-import datetime.datetime
+import datetime
 
 from .pull import pull
 from .push import push
@@ -89,7 +89,7 @@ class Client(ApiConnection):
         # Verify that the account is valid
         try:
             account = self.dbx.users_get_current_account()
-            bot.info('Connected to Dropbox %s' % account.name.display_name)
+            bot.info('connected to dropbox %s' % account.name.display_name)
         except AuthError as err:
             bot.error('Account invalid. Exiting.')
             sys.exit(1)
