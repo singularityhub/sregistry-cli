@@ -21,10 +21,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 def main(args,parser,subparser):
 
-    from sregistry.main import Client as cli  
+    from sregistry.main import get_client
     images = args.query
     if not isinstance(images, list):
         images = [images]
 
+    cli = get_client(quiet=args.quiet)
     for image in images:
         cli.inspect(image)

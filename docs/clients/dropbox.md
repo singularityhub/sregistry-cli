@@ -151,7 +151,7 @@ Apps
 ```
 
 ## Search
-Once you've pushed a few images, we can search! Without a query, your search is akin to a listing of remote images.
+Once you've pushed a few images, we can search! Without a query, your search is akin to a listing of remote images. Remember that we have `SREGISTRY_CLIENT=dropbox` exported.
 
 ```
 sregistry search
@@ -163,6 +163,28 @@ Collections
 3  pusheen/asaurus:red
 4  pusheen/asaurus:blue
 ```
+
+If you don't want to export the `SREGISTRY_CLIENT` you can also do this:
+
+```
+sregistry search dropbox://
+```
+
+If you want to search for a particular phrase using the Dropbox endpoint, you can do it like this:
+
+```
+sregistry search dropbox://pusheen
+sregistry search dropbox://green
+```
+
+or remove the uri and just search for the term.
+
+```
+export SREGISTRY_CLIENT=dropbox
+sregistry search pusheen
+sregistry search green
+```
+
 
 ## Pull
 After you have some images remotely, you might want to pull them (for example, if you build on your local machine, and then want to pull the images to your cluster).  You can use sregistry with the dropbox:// uri to do this.
@@ -239,71 +261,62 @@ We can see the record as a "remote" in our images list:
 ```
 
 ## Inspect
-And we can inspect it!
+And we can inspect our pusheen images!
 
 ```
-sregistry inspect pusheen/asaurus:green
-[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-nvidia/caffe2:17.10
-https://nvcr.io/v2/nvidia/caffe2/manifests/17.10
+sregistry inspect pusheen/asaurus:red
+pusheen/asaurus:red
+/home/vanessa/.singularity/shub/pusheen-asaurus:red.simg
 {
-    "client": "nvidia",
-    "collection": "nvidia",
-    "collection_id": 6,
-    "created_at": "2018-01-15 15:33:30",
-    "id": 16,
-    "image": null,
+    "client": "dropbox",
+    "collection": "pusheen",
+    "collection_id": 12,
+    "created_at": "2018-01-28 18:42:13",
+    "id": 33,
+    "image": "/home/vanessa/.singularity/shub/pusheen-asaurus:red.simg",
     "metrics": {
-        "1": {
-            "architecture": "amd64",
-            "fsLayers": [
-                {
-                    "blobSum": "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4"
-                },
-               ...
-
-                {
-                    "digest": "sha256:7afe52ea9cb6a8875fc3c865ad45869cbed901580aa530b64031badf99e4c645",
-                    "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
-                    "size": 954
-                }
-            ],
-            "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
-            "schemaVersion": 2,
-            "selfLink": "https://nvcr.io/v2/nvidia/caffe2/manifests/17.10"
+        "collection": "pusheen",
+        "data": {
+            "attributes": {
+                "deffile": null,
+                "environment": "# Custom environment shell code should follow\n\n",
+                "help": null,
+                "labels": null,
+                "runscript": "#!/bin/sh\n\nexec \"sh\" \"$@\"\n",
+                "test": null
+            },
+            "type": "container"
         },
-        "selfLink": "https://nvcr.io/v2/nvidia/caffe2/manifests"
+        "image": "asaurus",
+        "storage": "pusheen/asaurus:red.simg",
+        "tag": "red",
+        "uri": "pusheen/asaurus:red",
+        "url": "pusheen/asaurus",
+        "version": null
     },
-    "name": "caffe2",
-    "tag": "17.10",
-    "uri": "nvidia/caffe2:17.10",
-    "url": "https://nvcr.io/v2/nvidia/caffe2/manifests/17.10",
-    "version": ""
+    "name": "asaurus",
+    "tag": "red",
+    "uri": "pusheen/asaurus:red",
+    "url": "https://content.dropboxapi.com/2/files/download",
+    "version": "02c08a25c8f4697e16e896239e549a2b"
 }
 ```
-
-the above is truncated in the middle, but what you should know is that the middle chunk contains both versions of the manifest, if available.
 
 ## Get
 And then to use (or otherwise interact with the image via it's path in your local database) you can use get. Notice the different between performing a get for a remote image (returns the url):
 
 ```
-sregistry get nvidia/caffe2:17.10
-https://nvcr.io/v2/nvidia/caffe2/manifests/17.10
+sregistry get pusheen/asaurus:red
+/home/vanessa/.singularity/shub/pusheen-asaurus:red.simg
 ```
 
-and one that we have in our local storage (returns a full path to it)
-
-```
-sregistry get nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
-/home/vanessa/.singularity/shub/nvidia-tensorflow:17.11.simg
-```
-
+## Shell
 All of these functions are also available to interact with via the python client, if you are a developer.
 
 ```
-sregistry shell
-[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+sregistry shell dropbox
+[client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+connected to Vanessa S
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
 
@@ -313,23 +326,14 @@ IPython 5.1.0 -- An enhanced Interactive Python.
 help      -> Python's own help system.
 object?   -> Details about 'object', use 'object??' for extra details.
 
-In [1]: client.get('nvidia/caffe2:17.10')
-https://nvcr.io/v2/nvidia/caffe2/manifests/17.10
-Out[1]: <Container 'nvidia/caffe2:17.10'>
+In [1]: 
 ```
 
-
- It will give you an interactive shell with the Dropbox client active. If you run a shell and **don't** see that dropbox is the active client, it's not active.
-And finally, for commands that are relevant for an image, you can just use the dropbox uri:
+You can also just export `SREGISTRY_CLIENT` as `dropbox` to make it your default shell.
 
 ```
-sregistry pull dropbox://vanessa/pancakes
-```
-
-## Shell
-After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for interacting with your Dropbox client `sregistry` client, just ask for it:
-
-```
+export SREGISTRY_CLIENT=dropbox
+sregistry shell
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
@@ -343,9 +347,24 @@ object?   -> Details about 'object', use 'object??' for extra details.
 In [1]:
 ```
 
-If you **don't** see dropbox as the client, stop, go back, and make sure to export the environment variable.
+## Share
+You can get or create a shared link for an image in your dropbox with the share command!
+
+```
+SREGISTRY_CLIENT=dropbox sregistry share pusheen/asaurus:green
+pusheen/asaurus:green
+[client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+connected to Vanessa S
+https://www.dropbox.com/s/t8hxq0fa9dq9dt8/asaurus%3Agreen.simg?dl=0
+```
+
+If you want to suppress the verbosity, add `--quiet`
 
 
+```
+SREGISTRY_CLIENT=dropbox sregistry --quiet share pusheen/asaurus:green
+https://www.dropbox.com/s/t8hxq0fa9dq9dt8/asaurus%3Agreen.simg?dl=0
+```
 
 <div>
     <a href="/sregistry-cli/client-docker"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>

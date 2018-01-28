@@ -77,10 +77,12 @@ class ApiConnection(object):
            client.
 
         '''
-        bot.info('[client|%s] [database|%s]' %(self.client_name,
-                                               self.database))
+        if self.quiet is False:
+            bot.info('[client|%s] [database|%s]' %(self.client_name,
+                                                   self.database))
 
-        self._speak()
+            self._speak()
+
 
     def _speak(self):
         '''this function should be subclassed if the client has additional
@@ -96,7 +98,7 @@ class ApiConnection(object):
            particular predefined list.
         '''
         if command is not None:
-            if command not in ['get']:
+            if command not in ['get'] and self.quiet is False:
                 self.speak()
 
 

@@ -45,7 +45,7 @@ def main(args,parser,subparser):
     for image in images:
 
         # Customize client based on uri
-        cli = get_client(image)
+        cli = get_client(image, quiet=args.quiet)
         cli.announce(args.command)
         response = cli.pull(images=image,
                             file_name=name,

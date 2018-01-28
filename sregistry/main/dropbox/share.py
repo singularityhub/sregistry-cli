@@ -19,6 +19,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from dropbox.exceptions import ApiError
+from sregistry.utils import ( parse_image_name, remove_uri )
 from sregistry.logger import bot
 
 
@@ -34,6 +36,14 @@ def share(self, query, share_to=None):
 
     # First ensure that exists
     if self.exists(dropbox_path) is True:
-        share = self.dbx.sharing_create_shared_link_with_settings(dropbox_path)
+
+        # Create new shared link
+        try:
+            share = self.dbx.sharing_create_shared_link_with_settings(dropbox_path)
+
+        # Already exists!
+        except ApiError as err:
+            share = self.dbx.sharing_create_shared_link(dropbox_path)
+
         bot.info(share.url)
     return share.url

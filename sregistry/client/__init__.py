@@ -39,6 +39,9 @@ def get_parser():
                         help="use verbose logging to debug.", 
                         default=False, action='store_true')
 
+    parser.add_argument('--quiet', dest="quiet", 
+                        help="suppress additional output.", 
+                        default=False, action='store_true')
 
     description = 'actions for Singularity Registry Global Client'
     subparsers = parser.add_subparsers(help='sregistry actions',

@@ -22,13 +22,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( parse_image_name, remove_uri )
+from sregistry.utils import remove_uri
 from dateutil import parser
 
 import json
 import sys
 import os
-
 
 def search(self, query=None, args=None):
     '''query a Singularity registry for a list of images. 
@@ -76,9 +75,9 @@ def container_query(self, query):
     filter criteria from the user (based on the query)
     '''
 
-    names = parse_image_name(remove_uri(query))
-
     results = []
+
+    query = remove_uri(query)
 
     # Parse through folders (collections):
     for entry in self.dbx.files_list_folder('').entries:
@@ -86,8 +85,9 @@ def container_query(self, query):
         # Parse through containers
         for item in self.dbx.files_list_folder(entry.path_lower).entries:
             name = item.name.replace('.simg','')
-            if name in names['uri']:
-                results.append([ entry.name, name ])
+            name = "%s/%s" % (entry.name, name)
+            if query in name:
+                results.append([ name ])
    
     if len(results) == 0:
         bot.info("No container collections found.")

@@ -25,7 +25,8 @@ def main(args,parser,subparser):
        resource. This is different from listing images that are local to the
        database, which should be done with "images"
     '''
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
+    cli = get_client(quiet=args.quiet)
     
     for query in args.query:
         if query in ['','*']:

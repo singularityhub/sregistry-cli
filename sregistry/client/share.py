@@ -34,6 +34,6 @@ def main(args, parser, subparser):
         print(image)
         
         # Detect any uri, and refresh client if necessary
-        cli = get_client(image)
+        cli = get_client(image, quiet=args.quiet)
         cli.announce(args.command)
         cli.share(image, share_to=args.share_to)
