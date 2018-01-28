@@ -37,7 +37,7 @@ class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
  
         # update token from the environment
-        self._update_secrets()
+        name = self._update_secrets()
         super(ApiConnection, self).__init__(**kwargs)
 
     def _speak(self):
@@ -45,7 +45,8 @@ class Client(ApiConnection):
            for the user when the client initalizes, write it here, eg:
            bot.info('[setting] value')
         '''
-        pass
+        if hasattr(self, 'account'):
+            bot.info('connected to %s' %self.account.name.display_name)
 
 
     def _get_metadata(self, image_file, dbx_metadata):
@@ -88,8 +89,7 @@ class Client(ApiConnection):
 
         # Verify that the account is valid
         try:
-            account = self.dbx.users_get_current_account()
-            bot.info('connected to dropbox %s' % account.name.display_name)
+            self.account = self.dbx.users_get_current_account()
         except AuthError as err:
             bot.error('Account invalid. Exiting.')
             sys.exit(1)
