@@ -6,7 +6,7 @@ permalink: /client-nvidia
 toc: false
 ---
 
-# SRegistry Client: Nvidia Container Registry
+# Singularity Global Client: Nvidia Container Registry
 
 These sections will detail use of the Nvidia Container Cloud client for `sregistry`, which is a connection to the Docker registry served y Nvidia. Implementation wise, this means that we start with the basic [docker](/sregistry-cli/client-docker) client, and tweak it.
 

@@ -6,7 +6,7 @@ permalink: /client-google-storage
 toc: false
 ---
 
-# SRegistry Client: Google Storage
+# Singularity Global Client: Google Storage
 
 These sections will detail use of the Google Storage client for `sregistry`, which is a connection to a Google Storage
 cloud bucket. 

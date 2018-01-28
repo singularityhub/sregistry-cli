@@ -6,7 +6,7 @@ permalink: /client-docker
 toc: false
 ---
 
-# SRegistry Client: Docker Hub
+# Singularity Global Client: Docker Hub
 
 These sections will detail use of the Docker Hub client for `sregistry`, which is a connection to the default Docker Hub API. This Docker client is also used (and extended) by other clients (e.g., Nvidia Container Cloud).
 

@@ -6,7 +6,7 @@ permalink: /client-google-drive
 toc: false
 ---
 
-# SRegistry Client: Google Drive
+# Singularity Global Client: Google Drive
 
 These sections will detail use of the Google Drive client for `sregistry`, which is a connection to your Google Drive. 
 

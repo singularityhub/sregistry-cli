@@ -6,7 +6,7 @@ permalink: /client-dropbox
 ---
 
 
-# SRegistry Client: Dropbox
+# Singularity Global Client: Dropbox
 These sections will detail use of the Dropbox client for `sregistry`, meaning that you can push, pull, share, and otherwise interact with containers on your personal Dropbox. 
 
 [![asciicast](https://asciinema.org/a/159735.png)](https://asciinema.org/a/159735?speed=2)
