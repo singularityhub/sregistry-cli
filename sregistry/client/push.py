@@ -35,7 +35,7 @@ def main(args,parser,subparser):
         sys.exit(1)
 
     # Authenticate
-    cli = get_client(args.name)
+    cli = get_client(args.name, quiet=args.quiet)
     cli.announce(args.command)
     response = cli.push(path=image,
                         name=args.name,

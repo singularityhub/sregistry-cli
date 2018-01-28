@@ -139,6 +139,7 @@ def get_uri(image):
                           .replace('://',''))
  
         accepted_uris = ['docker', 
+                         'dropbox',
                          'hub',
                          'globus',
                          'registry', 

@@ -279,6 +279,77 @@ If you have any settings or parameters that you need to obtain from the user, th
 
 Notice that it starts with `SREGISTRY_`, the client name comes next, and then finally the variable name. Also note that we are using all caps. How should you decide how to name things? If you are using an environment variable that is defined from another service or application (for example, Google has the user export credentials to `GOOGLE_APPLICATION_CREDENTIALS` you should honor that name and not add the `SREGISTRY_` prefix so the user only has to define it once. 
 
+#### Metadata
+Before adding an image to your storage or pushing to an external endpoint, it's good to extract metadata to pair with the request. To do this, the Singularity Global clients take a simple approach to use the Singularity "inspect" command to output json. To make this flexible and easy for developers to use, this is provided as a function in the base client. Let's open a shell to test:
+
+
+```
+sregistry shell
+client.speak()
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+```
+
+Grab a random file
+```
+image_file = 'vsoch-hello-world.simg'
+image_name = "vsoch/hello-world"
+```
+
+If you want to do customization of the tag, or uri otherwise, do this first. There are functions to parse the image name and uri.
+
+```
+from sregistry.utils import ( parse_image_name, remove_uri )
+$ names = parse_image_name(remove_uri(image_name))
+$ names
+{'collection': 'vsoch',
+ 'image': 'hello-world',
+ 'storage': 'vsoch/hello-world:latest.simg',
+ 'tag': 'latest',
+ 'uri': 'vsoch/hello-world:latest',
+ 'url': 'vsoch/hello-world',
+ 'version': None}
+```
+Notice that if we just parse the image based on a name, we have very little metadata about it. 
+Finally, use the client's function to get metadata to extract the full data structure.
+
+```
+metadata = client.get_metadata(image_file, names=names)
+```
+Now notice that we have a much richer body of metadata.
+
+```
+{'collection': 'vsoch',
+ 'data': {'attributes': {'deffile': 'Bootstrap: docker\nFrom: ubuntu:14.04\n\n%labels\nMAINTAINER vanessasaur\nWHATAMI dinosaur\n\n%environment\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n%files\nrawr.sh /rawr.sh\n\n%runscript\nexec /bin/bash /rawr.sh\n',
+   'environment': '# Custom environment shell code should follow\n\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n',
+   'help': None,
+   'labels': {'MAINTAINER': 'vanessasaur',
+    'WHATAMI': 'dinosaur',
+    'org.label-schema.build-date': '2017-10-15T12:52:56+00:00',
+    'org.label-schema.build-size': '333MB',
+    'org.label-schema.schema-version': '1.0',
+    'org.label-schema.usage.singularity.deffile': 'Singularity',
+    'org.label-schema.usage.singularity.deffile.bootstrap': 'docker',
+    'org.label-schema.usage.singularity.deffile.from': 'ubuntu:14.04',
+    'org.label-schema.usage.singularity.version': '2.4-feature-squashbuild-secbuild.g780c84d'},
+   'runscript': '#!/bin/sh \n\nexec /bin/bash /rawr.sh\n',
+   'test': None},
+  'type': 'container'},
+ 'image': 'hello-world',
+ 'storage': 'vsoch/hello-world:latest.simg',
+ 'tag': 'latest',
+ 'uri': 'vsoch/hello-world:latest',
+ 'url': 'vsoch/hello-world',
+ 'version': None}
+```
+
+The reason that we provide this function is that it could be the case that the user doesn't have Singularity installed. The functions should work the same, so this client function handles doing these checks. If you don't need to customize the names data structure (or generally provide your own dictionary with some custom metadata) then you can skip the first portion and just call the metadata function:
+
+```
+metadata = client.get_metadata(image_file, names=names)
+```
+
+and the `parse_image_name` function will be called internally when names is found to be None.
+
 
 #### Storage
 It might be the case that you need more than a shared json file (the `sregistry` settings file shared by all clients) for your secrets or client. Toward this aim, each client is configured to automatically generate a credentials cache path. The path is found with the client at `client._credential_cache` and the following applies:

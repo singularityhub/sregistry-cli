@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017-2018 Vanessa Sochat.
+Copyright (C) 2017 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
+
+import requests
+import shutil
+import sys
 import os
+
 
 def record(self, images, action='add'):
     '''record an image from an endpoint. This function is akin to a pull,
@@ -46,21 +51,21 @@ def record(self, images, action='add'):
 
     bot.debug('Execution of RECORD[%s] for %s images' %(action, len(images)))
 
-    # If used internally we want to return a list to the user.
     for image in images:
 
-        q = parse_image_name(remove_uri(image))
-        digest = q['version'] or q['tag']
+        names = parse_image_name(remove_uri(image))
 
-        # This is the Docker Hub namespace and repository
-        manifests = self._get_manifests(q['url'], digest)
+        # Dropbox path is the path in storage with a slash
+        dropbox_path = '/%s' % names['storage']
+        
+        # First ensure that exists
+        if self.exists(dropbox_path) is True:
 
-        # This is the url where the manifests were obtained
-        url = self._get_manifest_selfLink(q['url'], digest)
+            # Get metadata from dropbox, and then update with sregistry
+            metadata = self.dbx.files_get_metadata(dropbox_path)
+            metadata = self._get_metadata(dbx_metadata=metadata)
 
-        # We again use the "add" function, but we don't give an image path
-        # so it's just added as a record
-        container = self.add(image_name=q['uri'],
-                             metadata=manifests,
-                             url=url)
-
+            # Add image as a record
+            container = self.add(image_name=dropbox_path.strip('/'),
+                                 metadata=metadata,
+                                 url=metadata['path_lower'])

@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.client import Singularity
 from sregistry.logger import bot
 from sregistry.utils import (
     get_image_hash,
@@ -60,12 +59,8 @@ def push(self, path, name, tag=None):
         version = get_image_hash(path)
         names = parse_image_name(remove_uri(name), tag=tag, version=version)
 
-    # get container metadata
-    cli = Singularity()
-    metadata = cli.inspect(image_path=path, quiet=True)
-    metadata = json.loads(metadata)
-
     # Update metadata with names, flatten to only include labels
+    metadata = self.get_metadata(path, names=names)
     metadata = metadata['data']
     metadata.update(names)
     metadata.update(metadata['attributes']['labels'])

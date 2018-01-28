@@ -36,6 +36,6 @@ def main(args, parser, subparser):
         images = [images]
 
     for image in images:
-        cli = get_client(image)
+        cli = get_client(image, quiet=args.quiet)
         cli.announce(args.command)
         cli.record(image, action=args.action)

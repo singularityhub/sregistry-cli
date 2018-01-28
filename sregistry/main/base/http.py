@@ -131,7 +131,7 @@ def download(self, url, file_name, headers=None, show_progress=True):
 
     # Check here if exists
     if requests.head(url, verify=verify).status_code in [200, 401]:
-        response = self._stream(url,headers=headers,stream_to=tmp_file)
+        response = self.stream(url, headers=headers, stream_to=tmp_file)
 
         if isinstance(response, HTTPError):
             bot.error("Error downloading %s, exiting." %url)
@@ -143,12 +143,23 @@ def download(self, url, file_name, headers=None, show_progress=True):
 
 
 def stream(self, url, headers=None, stream_to=None, retry=True):
-    '''stream is a get that will stream to file_name
+    '''
+
+       stream is a get that will stream to file_name. This stream is intended
+       to take a url and (optionally) a set of headers and file to stream to,
+       and will generate a response with requests.get.
+
+       Parameters
+       ==========
+       url: the url to do a requests.get to
+       headers: any updated headers to use for the requets
+       stream_to: the file to stream to
+       retry: should the client retry? (intended for use after token refresh)
+              by default we retry once after token refresh, then fail.
+
     '''
 
     bot.debug("GET %s" %url)
-
-
 
     # Ensure headers are present, update if not
     if headers == None:
@@ -165,7 +176,31 @@ def stream(self, url, headers=None, stream_to=None, retry=True):
     if response.status_code == 401 and retry is True:
         if hasattr(self,'_update_token'):
             self._update_token(response)
-            return self._stream(url, headers, stream_to, retry=False)
+            return self.stream(url, headers, stream_to, retry=False)
+
+    if response.status_code == 200: 
+        return self._stream(response, stream_to=stream_to)
+
+    bot.error("Problem with stream, response %s" %(response.status_code))
+    sys.exit(1)
+
+
+
+def stream_response(self, response, stream_to=None):
+    '''
+       stream response is one level higher up than stream, starting with a 
+       response object and then performing the stream without making the
+       requests.get. The expectation is that the request was successful 
+       (status code 20*).
+
+       Parameters
+       ==========
+       response: a response that is ready to be iterated over to download in
+                 streamed chunks
+       stream_to: the file to stream to
+
+
+    '''
 
     if response.status_code == 200:
 
@@ -174,10 +209,10 @@ def stream(self, url, headers=None, stream_to=None, retry=True):
         if 'Content-Length' in response.headers:
             progress = 0
             content_size = int(response.headers['Content-Length'])
-            bot.show_progress(progress,content_size,length=35)
+            bot.show_progress(progress, content_size, length=35)
 
         chunk_size = 1 << 20
-        with open(stream_to,'wb') as filey:
+        with open(stream_to, 'wb') as filey:
             for chunk in response.iter_content(chunk_size=chunk_size):
                 filey.write(chunk)
                 if content_size is not None:
@@ -194,7 +229,6 @@ def stream(self, url, headers=None, stream_to=None, retry=True):
 
     bot.error("Problem with stream, response %s" %(response.status_code))
     sys.exit(1)
-
 
 
 def call(self, url, func, data=None, headers=None, 

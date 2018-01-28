@@ -23,7 +23,7 @@ def main(args,parser,subparser):
 
     from sregistry.main import get_client
     for image in args.image:
-        cli = get_client(image)
+        cli = get_client(image, quiet=args.quiet)
         cli.announce(args.command)
         response = cli.remove(image=image,
                               force=args.force)

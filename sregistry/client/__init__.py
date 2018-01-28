@@ -39,6 +39,9 @@ def get_parser():
                         help="use verbose logging to debug.", 
                         default=False, action='store_true')
 
+    parser.add_argument('--quiet', dest="quiet", 
+                        help="suppress additional output.", 
+                        default=False, action='store_true')
 
     description = 'actions for Singularity Registry Global Client'
     subparsers = parser.add_subparsers(help='sregistry actions',
@@ -53,6 +56,10 @@ def get_parser():
     # Local shell with client loaded
     shell = subparsers.add_parser("shell",
                                   help="shell into a session a client.")
+
+    shell.add_argument("endpoint", nargs='?',
+                       help="the endpoint to use (eg. docker)", 
+                       type=str, default=None)
 
     # List local containers and collections
     images = subparsers.add_parser("images",
@@ -313,13 +320,14 @@ def main():
 
     # Pass on to the correct parser
     return_code = 0
-    try:
+    #try:
+    if 1==1:
         main(args=args,
              parser=parser,
              subparser=subparsers[args.command])
         sys.exit(return_code)
-    except UnboundLocalError:
-        return_code = 1
+    #except UnboundLocalError:
+    #    return_code = 1
 
     help(return_code)
 

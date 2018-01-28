@@ -19,9 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-# If you need to get metadata (or otherwise interact with an image) use
-# the Singularity client (cli = Singularity() --> cli.inspect(..))
-from sregistry.client import Singularity
 from sregistry.logger import bot
 from sregistry.utils import (
     parse_image_name,
@@ -53,12 +50,11 @@ def push(self, path, name, tag=None):
         bot.error('%s does not exist.' %path)
         sys.exit(1)
 
-    # here is an exampole of getting metadata for a container
-    cli = Singularity()
-    metadata = cli.inspect(image_path=path, quiet=True)
-
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(name),tag=tag)
+
+    # use Singularity client, if exists, to inspect to extract metadata
+    metadata = self.get_metadata(path, names=names)
 
     # If you want a spinner
     bot.spinner.start()

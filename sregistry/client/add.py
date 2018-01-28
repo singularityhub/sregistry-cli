@@ -28,7 +28,7 @@ def main(args, parser, subparser):
         images = [images]
 
     for image in images:
-        cli = get_client(image)
+        cli = get_client(image, quiet=args.quiet)
         cli.add(image_path=image,
                 image_name=args.name,
                 copy=args.copy)

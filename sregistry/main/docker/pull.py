@@ -65,8 +65,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         digest = q['version'] or q['tag']
 
-        bot.debug(self.base)
-
         # This is the Docker Hub namespace and repository
         layers = self._download_layers(q['url'], digest)
 

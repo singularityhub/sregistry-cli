@@ -34,7 +34,7 @@ from sregistry.logger import bot
 import os
 
 
-def get_client(image=None):
+def get_client(image=None, quiet=False):
     '''
        get the correct client depending on the driver of interest. The
        selected client can be chosen based on the environment variable
@@ -46,6 +46,7 @@ def get_client(image=None):
        ==========
        image: if provided, we derive the correct client based on the uri
        of an image. If not provided, we default to environment, then hub.
+       quiet: if True, suppress most output about the client (e.g. speak)
 
     '''
     from sregistry.defaults import SREGISTRY_CLIENT
@@ -61,6 +62,7 @@ def get_client(image=None):
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
     if   SREGISTRY_CLIENT == 'docker': from .docker import Client
+    elif SREGISTRY_CLIENT == 'dropbox': from .dropbox import Client
     elif SREGISTRY_CLIENT == 'nvidia': from .nvidia import Client
     elif SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
@@ -70,6 +72,7 @@ def get_client(image=None):
     else: from .hub import Client
 
     Client.client_name = SREGISTRY_CLIENT
+    Client.quiet = quiet
 
     # Create credentials cache, if it doesn't exist
     Client._credential_cache = get_credential_cache()

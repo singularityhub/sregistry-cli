@@ -24,7 +24,8 @@ def main(args,parser,subparser):
        database, optionally taking one or more query string to subset the 
        search
     '''
-    from sregistry.main import Client as cli  
+    from sregistry.main import get_client
+    cli = get_client(quiet=args.quiet)
 
     for query in args.query:
         if query in ['','*']:

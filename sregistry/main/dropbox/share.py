@@ -19,19 +19,31 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from dropbox.exceptions import ApiError
+from sregistry.utils import ( parse_image_name, remove_uri )
 from sregistry.logger import bot
 
-def main(args,parser,subparser):
 
-    from sregistry.main import get_client
+def share(self, query, share_to=None):
+    '''share will use the client to get a shareable link for an image of choice.
+       the functions returns a url of choice to send to a recipient.
+    '''
 
-    for query in args.query:
-        if query in ['','*']:
-            query = None
+    names = parse_image_name(remove_uri(query))
 
+    # Dropbox path is the path in storage with a slash
+    dropbox_path = '/%s' % names['storage']        
+
+    # First ensure that exists
+    if self.exists(dropbox_path) is True:
+
+        # Create new shared link
         try:
-            cli = get_client(query, args.quiet)
-            cli.announce(args.command)
-            cli.search(query=query, args=args)
-        except NotImplementedError:
-            bot.info('Search is not available for this endpoint.')
+            share = self.dbx.sharing_create_shared_link_with_settings(dropbox_path)
+
+        # Already exists!
+        except ApiError as err:
+            share = self.dbx.sharing_create_shared_link(dropbox_path)
+
+        bot.info(share.url)
+    return share.url

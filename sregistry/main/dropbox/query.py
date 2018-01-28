@@ -1,10 +1,10 @@
 '''
 
-search and query functions for client
+ls: search and query functions for client
 
-Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2017-2018 Vanessa Sochat.
+Copyright (C) 2017 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -22,20 +22,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( parse_image_name, remove_uri )
-import sys
+from sregistry.utils import remove_uri
+from dateutil import parser
 
+import json
+import sys
+import os
 
 def search(self, query=None, args=None):
     '''query a Singularity registry for a list of images. 
      If query is None, collections are listed. 
 
-    EXAMPLE QUERIES:    
     '''
-
-    # You can optionally better parse the image uri (query), but not
-    # necessary
-    # names = parse_image_name(remove_uri(query))
 
     if query is not None:
 
@@ -43,46 +41,32 @@ def search(self, query=None, args=None):
         # Note that this means adding the function Client in __init__
         return self._container_query(query)
 
-
     # or default to listing (searching) all things.
     return self._search_all()
 
-
-# These functions are added in __init__.py like so:
-# from .query import search_all, container_query
-# Client._search_all = search_all
-# Client._container_query = container_query
 
 
 def search_all(self):
     '''a "show all" search that doesn't require a query'''
 
-    # This should be your apis url for a search
-    url = '...'
+    results = []
 
-    # paginte get is what it sounds like, and what you want for multiple
-    # pages of results
-    results = self._paginate_get(url)
+    # Parse through folders (collections):
+    for entry in self.dbx.files_list_folder('').entries:
+
+        # Parse through containers
+        for item in self.dbx.files_list_folder(entry.path_lower).entries:
+            name = item.name.replace('.simg','')
+            results.append([ "%s/%s" % (entry.name, name) ])
    
+
     if len(results) == 0:
         bot.info("No container collections found.")
         sys.exit(1)
 
     bot.info("Collections")
-
-    # Here is how to create a simple table. You of course must parse your
-    # custom result and form the fields in the table to be what you think
-    # are important!
-    rows = []
-    for result in results:
-        if "containers" in result:
-            for c in result['containers']:
-                rows.append([ c['uri'],
-                              c['detail'] ])
-
-    bot.table(rows)
-    return rows
-
+    bot.table(results)
+    return results
 
 
 def container_query(self, query):
@@ -90,9 +74,25 @@ def container_query(self, query):
     This function would likely be similar to the above, but have different
     filter criteria from the user (based on the query)
     '''
-    # Write your functions here (likely a derivation of search_all) to do
-    # a more specific search. The entrypoint to both these last functions
-    # is via the main search function.
-    rows = ['','','']
-    bot.table(rows)
-    return rows
+
+    results = []
+
+    query = remove_uri(query)
+
+    # Parse through folders (collections):
+    for entry in self.dbx.files_list_folder('').entries:
+
+        # Parse through containers
+        for item in self.dbx.files_list_folder(entry.path_lower).entries:
+            name = item.name.replace('.simg','')
+            name = "%s/%s" % (entry.name, name)
+            if query in name:
+                results.append([ name ])
+   
+    if len(results) == 0:
+        bot.info("No container collections found.")
+        sys.exit(1)
+
+    bot.info("Collections")
+    bot.table(results)
+    return results
