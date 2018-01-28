@@ -179,7 +179,7 @@ def stream(self, url, headers=None, stream_to=None, retry=True):
             return self.stream(url, headers, stream_to, retry=False)
 
     if response.status_code == 200: 
-        return self._stream(response, stream_to=None)
+        return self._stream(response, stream_to=stream_to)
 
     bot.error("Problem with stream, response %s" %(response.status_code))
     sys.exit(1)
