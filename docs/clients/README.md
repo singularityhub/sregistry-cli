@@ -11,7 +11,7 @@ Singularity Registry Global client has tutorials and walkthroughs for the follow
 
  - [Global Commands](/sregistry-cli/commands): commands for all clients.
  - [Docker Hub](/sregistry-cli/client-docker): interact with layers to build images from Docker Hub
- - [Dropbox](/sregistry-cli/client-docker): interact with images stored in Dropbox
+ - [Dropbox](/sregistry-cli/client-dropbox): interact with images stored in Dropbox
  - [Google Storage](/sregistry-cli/client-google-storage): interact with images from Google Storage
  - [Google Drive](/sregistry-cli/client-google-drive): interact with images from Google Drive
  - [Nvidia Container Registry](/sregistry-cli/client-nvidia): Nvidia Container registry serves Docker images
