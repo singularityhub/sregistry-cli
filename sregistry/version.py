@@ -19,13 +19,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.0.64"
+__version__ = "0.0.65"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
-PACKAGE_URL = "http://www.github.com/singularityhub/sregistry"
+PACKAGE_URL = "http://www.github.com/singularityhub/sregistry-cli"
 KEYWORDS = 'singularity containers registry hub'
-DESCRIPTION = "Command line tool for working with singularity-hub and registry."
+DESCRIPTION = "Command line tool for working with container storage"
 LICENSE = "LICENSE"
 
 ################################################################################
