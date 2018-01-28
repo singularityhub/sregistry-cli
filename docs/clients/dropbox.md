@@ -7,7 +7,9 @@ permalink: /client-dropbox
 
 
 # SRegistry Client: Dropbox
-These sections will detail use of the Dropbox client for `sregistry`, meaning that you can push, pull, and otherwise interact with containers on your personal Dropbox. 
+These sections will detail use of the Dropbox client for `sregistry`, meaning that you can push, pull, share, and otherwise interact with containers on your personal Dropbox. 
+
+[![asciicast](https://asciinema.org/a/159735.png)](https://asciinema.org/a/159735?speed=2)
 
 ## Getting Started
 Dropbox has one dependency to install it's python sdk. You can do this via sregistry:
