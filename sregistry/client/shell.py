@@ -31,8 +31,10 @@ def main(args,parser,subparser):
 
     shells = ['ipython', 'python', 'bpython']
 
-    # The client will announce itself (backend/database) unless it's get
-    cli.announce(args.command)
+    # If the user supplies a client choice, make into a uri
+    if args.endpoint is not None:
+        if not args.endpoint.endswith('://'):
+            args.endpoint = '%s://' %args.endpoint
 
     # If the user asked for a specific shell via environment
     shell = cli._get_and_update_setting('SREGISTRY_SHELL')
@@ -40,39 +42,48 @@ def main(args,parser,subparser):
         shell = shell.lower()
         if shell in lookup:
             try:    
-                return lookup[shell]()
+                return lookup[shell](args)
             except ImportError:
                 pass
 
     # Otherwise present order of liklihood to have on system
     for shell in shells:
         try:
-            return lookup[shell]()
+            return lookup[shell](args)
         except ImportError:
             pass
     
 
-def ipython():
-    '''Not sure how to add the client to the working environment, so
-      disabled for now.
+def ipython(args):
+    '''give the user an ipython shell, optionally with an endpoint of choice.
     '''
+
+    # The client will announce itself (backend/database) unless it's get
+    from sregistry.main import get_client
+    client = get_client(args.endpoint)
+    client.announce(args.command)
+
     from sregistry.main import Client as client
     from IPython import embed
     embed()
 
 
-def bpython():
+def bpython(args):
     import bpython
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
+    client = get_client(args.endpoint)
+    client.announce(args.command)
     from sregistry.database.models import Container, Collection
     bpython.embed(locals_={'client': cli,
                            'Container': Container,
                            'Collection': Collection})
 
-def python():
+def python(args):
     import code
+    from sregistry.main import get_client
+    client = get_client(args.endpoint)
+    client.announce(args.command)
     from sregistry.database.models import Container, Collection
-    from sregistry.main import Client as cli
     code.interact(local={"client":cli,
                          'Container': Container,
                          'Collection': Collection})

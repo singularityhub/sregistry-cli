@@ -189,12 +189,44 @@ sregistry shell
 'hub'
 >>> 
 ```
-Notice how the client is already loaded into the space! If you want to specify the shell to use, export SREGISTRY_SHELL first:
+Notice how the client is already loaded into the space!
+
+### Shell Active Client
+By deafult, a `sregistry shell` will give you a Singularity Hub client. If you want to specify a different shell **client** to use, you can ask for it:
+
+```
+sregistry shell dropbox
+```
+
+or a more global set shell by exporting it first.
+
+```
+SREGISTRY_CLIENT=dropbox
+export SREGISTRY_CLIENT
+```
+
+or define a one time environment set shell:
+
+```
+SREGISTRY_CLIENT=dropbox sregistry shell
+```
+
+### Shell Software
+
+By default, `sregistry` will go through a quick check of the python interpreters that you have, and return ipython, python, then bypython. If you want to set a specific shell, you can also do this with environment variables.
 
 ```
 SREGISTRY_SHELL=ipython sregistry shell
 ```
 
+or more globally
+
+
+```
+SREGISTRY_SHELL=ipython 
+export SREGISTRY_SHELL
+sregistry shell
+```
 
 ## Remove
 The client can either remove an image from the database record (rm) but **not** the container

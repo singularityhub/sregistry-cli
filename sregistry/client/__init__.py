@@ -54,6 +54,10 @@ def get_parser():
     shell = subparsers.add_parser("shell",
                                   help="shell into a session a client.")
 
+    shell.add_argument("endpoint", nargs='?',
+                       help="the endpoint to use (eg. docker)", 
+                       type=str, default=None)
+
     # List local containers and collections
     images = subparsers.add_parser("images",
                                    help="list local images, optionally with query")
@@ -313,13 +317,14 @@ def main():
 
     # Pass on to the correct parser
     return_code = 0
-    try:
+    #try:
+    if 1==1:
         main(args=args,
              parser=parser,
              subparser=subparsers[args.command])
         sys.exit(return_code)
-    except UnboundLocalError:
-        return_code = 1
+    #except UnboundLocalError:
+    #    return_code = 1
 
     help(return_code)
 

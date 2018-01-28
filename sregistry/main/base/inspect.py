@@ -49,9 +49,10 @@ def get_metadata(self, image_file, names={}):
     metadata = dict()
 
     # We can't return anything without image_file or names
-    if not os.path.exists(image_file):
-        bot.error('Cannot find %s.' %image_file)
-        return names
+    if image_file is not None:
+        if not os.path.exists(image_file):
+            bot.error('Cannot find %s.' %image_file)
+            return names
 
     # The user provided a file, but no names
     if not names:
@@ -61,7 +62,7 @@ def get_metadata(self, image_file, names={}):
     singularity = which('singularity')['message']
 
     # Inspect the image, or return names only
-    if os.path.exists(singularity):
+    if os.path.exists(singularity) and image_file is not None:
         from sregistry.client import Singularity
         cli = Singularity()
         updates = cli.inspect(image_path=image_file, quiet=True)

@@ -70,7 +70,7 @@ def push(self, path, name, tag=None):
     # If image is smaller than 150MB, use standard upload
     with open(path, 'rb') as F:
         if file_size <= chunk_size:
-            print(self.dbx.files_upload(F, storage_path))
+            self.dbx.files_upload(F.read(), storage_path)
 
         # otherwise upload in chunks
         else:
@@ -90,21 +90,25 @@ def push(self, path, name, tag=None):
                                                          cursor,
                                                          commit)
 
-                    carriage_return = True
-
                 # Finishing up the file, less than chunk_size to go
                 else:
                     self.dbx.files_upload_session_append(F.read(chunk_size),
                                                          cursor.session_id,
                                                          cursor.offset)
                     cursor.offset = F.tell()
-                    carriage_return = False
 
                 # Update the progress bar
                 bot.show_progress(iteration=progress,
                                   total=file_size,
                                   length=35,
-                                  carriage_return=carriage_return)
+                                  carriage_return=False)
 
-        # Newline to finish download
-        sys.stdout.write('\n')
+
+    # Finish up
+    bot.show_progress(iteration=file_size,
+                      total=file_size,
+                      length=35,
+                      carriage_return=True)
+
+    # Newline to finish download
+    sys.stdout.write('\n')

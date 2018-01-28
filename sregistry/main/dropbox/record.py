@@ -53,32 +53,19 @@ def record(self, images, action='add'):
 
     for image in images:
 
-        q = parse_image_name(remove_uri(image))
+        names = parse_image_name(remove_uri(image))
 
-        # Verify image existence, and obtain id
-        url = "..." # This should be some url for your endpoint to get metadata
-        bot.debug('Retrieving manifest at %s' %url)
+        # Dropbox path is the path in storage with a slash
+        dropbox_path = '/%s' % names['storage']
+        
+        # First ensure that exists
+        if self.exists(dropbox_path) is True:
 
-        # Get the manifest, add a selfLink to it (good practice)
-        manifest = self._get(url)
-        manifest['selfLink'] = url
+            # Get metadata from dropbox, and then update with sregistry
+            metadata = self.dbx.files_get_metadata(dropbox_path)
+            metadata = self._get_metadata(dbx_metadata=metadata)
 
-        # versions are very important! Since we aren't downloading the file,
-        # If you don't have a version in your manifest, don't add it to the uri.
-        # you will likely need to customize this string formation to make the 
-        # expected uri as in <collection>/<namespace>:<tag>@<version>
-        if manifest['version'] is not None:
-            image_uri = "%s/%s:%s@%s" %(manifest['collection'],
-                                        manifest['name'],
-                                        manifest['tag'],
-                                        manifest['version'])
-        else:
-            image_uri = "%s/%s:%s" %(manifest['collection'],
-                                     manifest['name'],
-                                     manifest['tag'])
-
-        # We again use the "add" function, but we don't give an image path
-        # so it's just added as a record
-        container = self.add(image_name=image_uri,
-                             metadata=manifest,
-                             url=manifest['image'])
+            # Add image as a record
+            container = self.add(image_name=dropbox_path.strip('/'),
+                                 metadata=metadata,
+                                 url=metadata['path_lower'])

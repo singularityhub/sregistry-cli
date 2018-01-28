@@ -43,6 +43,9 @@ def pull(self, images, file_name=None, save=True, **kwargs):
        finished: a single container path, or list of paths
 
     '''
+    force = False
+    if "force" in kwargs:
+        force = kwargs['force']
 
     if not isinstance(images, list):
         images = [images]
@@ -80,7 +83,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             # If we save to storage, the uri is the dropbox_path
             if save is True:
                 container = self.add(image_path = image_file,
-                                     image_name = dropbox_path,
+                                     image_name = dropbox_path.strip('/'),
                                      metadata = metadata,
                                      url = response.url)
 

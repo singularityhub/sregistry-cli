@@ -331,6 +331,6 @@ Out[1]: <Container 'nvidia/caffe2:17.10'>
 ```
 
 <div>
-    <a href="/sregistry-cli/google-drive"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/client-google-drive"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
     <a href="/sregistry-cli/client-hub"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

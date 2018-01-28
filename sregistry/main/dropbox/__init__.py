@@ -49,7 +49,7 @@ class Client(ApiConnection):
             bot.info('connected to %s' %self.account.name.display_name)
 
 
-    def _get_metadata(self, image_file, dbx_metadata):
+    def _get_metadata(self, image_file=None, dbx_metadata=None):
         '''this is a wrapper around the main client.get_metadata to first parse
            a Dropbox FileMetadata into a dicionary, then pass it on to the 
            primary get_metadata function.
@@ -62,11 +62,13 @@ class Client(ApiConnection):
 
         '''
         metadata = dict()
-        for key in dbx_metadata.__dir__():
-            value = getattr(dbx_metadata, key)
-            if type(value) in [str, datetime.datetime, bool]:
-                metadata[key] = value
 
+        if dbx_metadata is not None:
+            for key in dbx_metadata.__dir__():
+                value = getattr(dbx_metadata, key)
+                if type(value) in [str, datetime.datetime, bool, int, float]:
+                    metadata[key.strip('_')] = value
+        
         return self.get_metadata(image_file, names=metadata)
 
 

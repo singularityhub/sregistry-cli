@@ -246,7 +246,7 @@ def add(self, image_path=None,
     bot.debug('Adding %s to registry' % names['uri'])    
 
     # If Singularity is installed, inspect image for metadata
-    metadata = self.get_metadata(path, names=names)
+    metadata = self.get_metadata(image_path, names=names)
     collection = self.get_or_create_collection(names['collection'])
 
     # If save, move to registry storage first

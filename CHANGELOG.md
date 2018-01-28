@@ -16,7 +16,10 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [development](https://github.com/singularityware/singularity-python/tree/development) (development)
- - removing sqlalchemy dependency, so user can optionally install database with client (0.0.64) (development)
+ - added Dropbox backend with push, pull, record, search, share (0.0.65) (development)
+ - added ability for shell to take backend as argument (e.g., `sregistry shell dropbox`)
+ - shared function to get metadata from an image, checking for Singularity and inspecting if installed
+ - removing sqlalchemy dependency, so user can optionally install database with client (0.0.64)
  - fixing bug with pull that not available to client for registry (0.0.63)
  - changed os.rename to shutil.move to support moving files between different filesystems (0.0.62)
  - better consolidated dependencies, most just required for singularity registry client

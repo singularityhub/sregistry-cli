@@ -58,7 +58,7 @@ def search_all(self):
         # Parse through containers
         for item in self.dbx.files_list_folder(entry.path_lower).entries:
             name = item.name.replace('.simg','')
-            results.append([ entry.name, name ])
+            results.append([ "%s/%s" % (entry.name, name) ])
    
 
     if len(results) == 0:
