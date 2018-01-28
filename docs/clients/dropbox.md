@@ -19,24 +19,13 @@ Dropbox has one dependency to install it's python sdk. You can do this via sregi
 pip install sregistry[dropbox]
 ```
 
-or on your own:
+or if you already have sregistry and want to add the dropbox module on your own:
 
 ```
 pip install dropbox
 ```
 
 or read [instructions here](https://github.com/dropbox/dropbox-sdk-python).
-
-And if you haven't, you should install the `sregistry` client either from pypi or source:
-
-```
-pip install sregistry
-
-# or from source
-git clone https://www.github.com/singularityhub/sregistry-cli.git
-cd sregistry-cli 
-python setup.py install
-```
 
 To make the Dropbox client default, you **must** set `SREGISTRY_CLIENT` to `dropbox`, either for individual commands or exported globally:
 
@@ -47,7 +36,13 @@ export SREGISTRY_CLIENT
 
 # Single Command
 SREGISTRY_CLIENT=dropbox sregistry shell
+
+# Examples of setting via uri://
+sregistry shell dropbox
+sregistry search dropbox://
+sregistry pull dropbox://vanessa/tacos
 ```
+
 
 ### Environment
 Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Dropbox, we have defined the following environment variables (and defaults).
