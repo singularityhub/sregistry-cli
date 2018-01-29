@@ -38,5 +38,3 @@ RUN ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 WORKDIR /code
 
 RUN /opt/conda/bin/pip install -e .
-RUN /opt/conda/bin/pip install -e .[google-drive]
-RUN /opt/conda/bin/pip install -e .[google-storage]
