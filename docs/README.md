@@ -31,7 +31,7 @@ Importantly, the Singularity Global Client does not have any dependency on Docke
  - [Global Commands](commands): While most clients support the same functions (e.g., `pull`) there are a few global commands that, given that they interact with the local user environment consistently across remote resources, are found regardless of the endpoint you connect to. This getting started guide will go through the basic usage for the local client, meaning functions that you can use to manage, inspect, and otherwise interact with images and metadata locally.
 
 ## Available Clients
-The Singularity Global Client provides interfaces to [Singularity Hub](/sregistry-cli/client-hub), your self-hosted [Singularity Registry](/sregistry-cli/client-registry), [Google Storage](/sregistry-cli/client-google-storage), [Google Drive](/sregistry-cli/client-google-drive), [NVidia Container Cloud](/sregistry-cli/client-nvidia), [Docker](/sregistry-cli/client-docker), and [Dropbox](/sregistry-cli/client-dropbox). You can also start with the [client list here](/sregistry-cli/clients).
+The Singularity Global Client provides interfaces to [Singularity Hub](/sregistry-cli/client-hub), your self-hosted [Singularity Registry](/sregistry-cli/client-registry), [Google Storage](/sregistry-cli/client-google-storage), [Google Drive](/sregistry-cli/client-google-drive), [NVidia Container Cloud](/sregistry-cli/client-nvidia), [Docker Hub](/sregistry-cli/client-docker), and [Dropbox](/sregistry-cli/client-dropbox). An updated listing is [here](/sregistry-cli/clients).
 
 ## Getting Help
 This is an open source project. Please contribute to the package, or post feedback and questions as <a href="https://github.com/singularityhub/sregistry-cli" target="_blank">issues</a>.
