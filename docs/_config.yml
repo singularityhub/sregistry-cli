@@ -1,5 +1,5 @@
 # Setup
-title:        Singularity Registry Global Client
+title:        Singularity Global Client
 tagline:      ""
 baseurl:      "/sregistry-cli"
 github:       "https://www.github.com/singularityhub/sregistry-cli"
