@@ -16,7 +16,8 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
- - added Dropbox backend with push, pull, record, search, share (0.0.65) (development)
+ - fixing bug with Singularity Hub search (0.0.66)
+ - added Dropbox backend with push, pull, record, search, share (0.0.65)
  - added ability for shell to take backend as argument (e.g., `sregistry shell dropbox`)
  - added `--quiet` argument to client for option to suppression of client announcing itself.
  - shared function to get metadata from an image, checking for Singularity and inspecting if installed

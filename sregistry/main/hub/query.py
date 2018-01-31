@@ -56,6 +56,10 @@ def search(self, query=None, **kwargs):
 def list_all(self, **kwargs):
     '''a "show all" search that doesn't require a query'''
 
+    quiet=False
+    if "quiet" in kwargs:
+        quiet = kwargs['quiet']
+
     bot.spinner.start()
     url = '%s/collections/' %self.base
     results = self._paginate_get(url)
@@ -65,8 +69,6 @@ def list_all(self, **kwargs):
         bot.info("No container collections found.")
         sys.exit(1)
 
-    bot.info("Collections")
-
     rows = []
     for result in results:
         if "containers" in result:
@@ -74,7 +76,10 @@ def list_all(self, **kwargs):
                 for c in result['containers']:
                     rows.append([c['detail'],"%s:%s" %(c['name'],c['tag'])])
 
-    bot.table(rows)
+    if quiet is False:
+        bot.info("Collections")
+        bot.table(rows)
+
     return rows
 
 
@@ -83,28 +88,19 @@ def search_collection(self, query):
     collection. We assume query is the name of a collection'''
 
     query = query.lower().strip('/')
-
     q = parse_image_name(remove_uri(query), defaults=False)
-    url = '%s/collection/%s' % (self.base, q['uri'])
-    rows = []
-
-    try:
-        result = self._get(url)
-    except SystemExit:
-        bot.info("No containers found.")
-        sys.exit(1)
-
-    if len(result['containers']) == 0:
-        bot.info("No containers found.")
-    else:
-        bot.info("Containers %s" %query)
-
-        rows.append(["[name]","%s" %result['name']])
-        rows.append(["[date]","%s" %result['modify_date']])
-
-        for c in result['containers']: 
-            rows.append([ '%s:%s' %(c['name'], c['tag'])])
-
-        bot.table(rows)
     
+    # Workaround for now - the Singularity Hub search endpoind needs fixing
+    containers = self.list(quiet=True)
+
+    rows = []
+    for result in containers:
+        if q['uri'] in result[1]:
+            rows.append(result)
+
+    if len(rows) > 0:
+        bot.table(rows)
+    else:
+        bot.info('No containers found.')    
+
     return rows
