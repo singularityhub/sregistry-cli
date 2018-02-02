@@ -21,6 +21,7 @@ Singularity image. For these same functions for within python (for developers) [
  - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
+ - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
  - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
  - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
@@ -228,7 +229,7 @@ export SREGISTRY_SHELL
 sregistry shell
 ```
 
-## Move
+## Move (mv)
 While it's not recommended practice to move your containers outside of an organized storage, you may have a use case where you want to obtain images using the Singularity Global client, and then move them elsewhere with your own organization. If you were to just use the system `mv` command, the database wouldn't be updated with your new path, and this is a problem. For this use case, we provide an `sregistry mv` command that will allow you to move an image and also update the database. Here we have an image that is local, meaning in our database and storage:
 
 ```

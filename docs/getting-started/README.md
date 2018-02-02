@@ -48,17 +48,19 @@ natively on your host **or** via a Singularity container, a client for an endpoi
 let you do any or a subset of the following:
 
 ### Local
-The following commands are considered "local" in that they come with every client, and are specifically created to interact with your local registry (the database and storage).
+The following commands are considered "local" in that they come with every client, and are specifically created to interact with your local registry (the database and storage). If you disable the database and storage, then you will logically not have these commands.
 
  - *add*: `[local]`: corresponds with adding an image file on your host directly to your registry. Not everything is downloaded from the cloud!
  - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
+ - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
  - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
  - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
 These specific commands are [demonstrated with more examples](/sregistry-cli/commands).
+
 
 ### Client (remote)
 This next set of commands, while they interact with local resources, are primarily implemented by the specific clients. For example, a pull from Singularity Hub is going to have particular commands using the Singularity Hub API.
