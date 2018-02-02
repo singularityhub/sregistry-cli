@@ -123,6 +123,11 @@ def get(self, name, quiet=False):
 
 def images(self, query=None):
     '''List local images in the database, optionally with a query.
+
+       Paramters
+       =========
+       query: a string to search for in the container or collection name|tag|uri
+
     '''
     from sregistry.database.models import Collection, Container
 
@@ -142,10 +147,7 @@ def images(self, query=None):
         for c in containers:
             uri = c.get_uri()
             created_at = c.created_at.strftime('%B %d, %Y')
-            location = 'local '
-            if c.image is None:
-               location = 'remote'
-            rows.append([created_at, location, "   [%s]" %c.client, uri])
+            rows.append([created_at, c.location(), "   [%s]" %c.client, uri])
         bot.table(rows) 
     return containers
 
@@ -153,6 +155,7 @@ def images(self, query=None):
 def inspect(self, name):
     '''Inspect a local image in the database, which typically includes the
        basic fields in the model.
+
     '''
     print(name)
     container = self.get(name)
@@ -164,6 +167,55 @@ def inspect(self, name):
         del fields['_sa_instance_state']
         fields['created_at'] = str(fields['created_at'])
         print(json.dumps(fields, indent=4, sort_keys=True))
+
+
+def mv(self, image_name, path):
+    '''Move an image from it's current location to a new path.
+       Removing the image from organized storage is not the recommended approach
+       however is still a function wanted by some.
+
+       Parameters
+       ==========
+       image_name: the parsed image name.
+       path: the location to move the image to
+
+    '''
+
+    container = self.get(image_name, quiet=True)
+
+    if container is not None:
+        name = container.uri or container.get_uri()
+        image = container.image or ''
+
+        # Only continue if image file exists
+        if os.path.exists(image):
+
+            # Default assume directory, use image name and path fully
+            filename = os.path.basename(image)
+            filedir = os.path.abspath(path)
+
+            # If it's a file, use filename provided
+            if not os.path.isdir(path):
+                filename = os.path.basename(path)
+                filedir = os.path.dirname(path)
+        
+            # Ensure directory exists
+            if not os.path.exists(filedir):
+                bot.error('%s does not exist. Ensure exists before moving.' %filedir)
+
+            updated_path = "%s/%s" %(filedir, filename)
+
+            try:
+                shutil.move(image, updated_path)
+                container.image = updated_path
+                self.session.commit()
+                bot.info('[mv] %s => %s' %(image_name, updated_path))
+                return container
+            except:
+                bot.error('Cannot move %s to %s' %(image, updated_path))
+                sys.exit(1)
+
+        bot.warning('%s is a remote image.' %image_name)
 
 
 def rmi(self, image_name):

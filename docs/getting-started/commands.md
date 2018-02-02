@@ -228,6 +228,52 @@ export SREGISTRY_SHELL
 sregistry shell
 ```
 
+## Move
+While it's not recommended practice to move your containers outside of an organized storage, you may have a use case where you want to obtain images using the Singularity Global client, and then move them elsewhere with your own organization. If you were to just use the system `mv` command, the database wouldn't be updated with your new path, and this is a problem. For this use case, we provide an `sregistry mv` command that will allow you to move an image and also update the database. Here we have an image that is local, meaning in our database and storage:
+
+```
+1  December 29, 2017	local 	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+```
+
+If we `get` the image, the path is in our default storage, where we pulled it.
+
+```
+sregistry get vsoch/hello-world:latest
+/home/vanessa/.singularity/shub/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+We can ask to move it somewhere else, such as a different directory.
+
+```
+sregistry mv vsoch/hello-world:latest /home/vanessa/Desktop
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[mv] vsoch/hello-world:latest => /home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+and confirm that the file has been moved successfully!
+
+```
+$ sregistry get vsoch/hello-world:latest
+/home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+If you want to remove the sregistry naming schema (not recommended, but of course reasonable) then just specify the name of the image instead of directory:
+
+
+```
+sregistry mv peanut-butter/jelly:time /home/vanessa/Desktop/pusheen.simg
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[mv] peanut-butter/jelly:time => /home/vanessa/Desktop/pusheen.simg
+```
+
+If you try to move a remote (record), you will get an error, of course.
+
+```
+sregistry mv pusheen/asaurus:green /home/vanessa/Desktop/pusheen.simg
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+WARNING pusheen/asaurus:green is a remote image.
+```
+
 ## Remove
 The client can either remove an image from the database record (rm) but **not** the container
 in storage (`rm`) or delete the database record **and** theimage (`rmi`). You **must** be specific about versions, if you want to target a particular version. Otherwise, the first returned in the query is removed, which may not be what you want. Thus we recommend this sort of remove command:

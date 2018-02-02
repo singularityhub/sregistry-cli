@@ -123,6 +123,19 @@ def get_parser():
                          help="copy the container instead of moving it.", 
                          default=False, action='store_true')
 
+
+        mv = subparsers.add_parser("mv",
+                                   help="move a container and update database")
+
+        mv.add_argument("name", nargs=1, 
+                         help="container name or uri to move from database", 
+                         type=str)
+
+        mv.add_argument("path", nargs=1, 
+                         help="directory or image file to move image.", 
+                         type=str)
+
+
         rm = subparsers.add_parser("rm",
                                    help="remove a container from the database")
 
@@ -309,6 +322,7 @@ def main():
     if args.command == "inspect": from .inspect import main
     if args.command == "images": from .images import main
     if args.command == "labels": from .labels import main
+    if args.command == "mv": from .mv import main
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
     if args.command == "record": from .record import main
@@ -326,8 +340,8 @@ def main():
              parser=parser,
              subparser=subparsers[args.command])
         sys.exit(return_code)
-    #except UnboundLocalError:
-    #    return_code = 1
+#    except UnboundLocalError:
+#        return_code = 1
 
     help(return_code)
 

@@ -6,7 +6,7 @@ else:
     from .models import *
     from .sqlite import ( 
         add, get, rm, rmi, images, 
-        inspect,
+        inspect, mv,
         get_container,
         get_collection,
         get_or_create_collection 
