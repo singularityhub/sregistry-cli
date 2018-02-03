@@ -23,6 +23,7 @@ from sregistry.logger import bot
 from sregistry.client import Singularity
 from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
+import shutil
 import os
 import sys
 
@@ -114,6 +115,10 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
             # When the container is created, this is the path to the image
             image_file = container.image
+
+        # If the image_file is different from sandbox, remove sandbox
+        if image_file != sandbox:
+            shutil.rmtree(sandbox)
 
         if os.path.exists(image_file):
             bot.debug('Retrieved image file %s' %image_file)
