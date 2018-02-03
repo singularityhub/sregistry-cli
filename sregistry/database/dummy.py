@@ -55,7 +55,7 @@ def add(self, image_path=None,
     class DummyContainer:
         def __init__(self, image_path, client_name, url, names)
             self.image=image_path
-            self.client=self.client_name
+            self.client=client_name
             self.url=url
             self.name=names['image']
             self.tag=names['tag']
