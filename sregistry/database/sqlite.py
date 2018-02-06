@@ -199,6 +199,10 @@ def mv(self, image_name, path):
                 filename = os.path.basename(path)
                 filedir = os.path.dirname(path)
         
+            # If directory is empty, assume $PWD
+            if filedir == '':
+                filedir = os.getcwd()
+
             # Ensure directory exists
             if not os.path.exists(filedir):
                 bot.error('%s does not exist. Ensure exists before moving.' %filedir)
