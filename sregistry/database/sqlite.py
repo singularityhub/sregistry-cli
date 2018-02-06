@@ -273,13 +273,13 @@ def add(self, image_path=None,
     Parameters
     ==========
     image_path: full path to image file
-    image_uri: the full image uri for extracting tag, version, etc.
-    image_name: if defined, the user wants a custom name (and save path)
+    image_name: if defined, the user wants a custom name (and not based on uri)
     metadata: any extra metadata to keep for the image (dict)
     save: if True, move the image to the cache if it's not there
     copy: If True, copy the image instead of moving it.
 
     image_name: a uri that gets parsed into a names object that looks like:
+
     {'collection': 'vsoch',
      'image': 'hello-world',
      'storage': 'vsoch/hello-world-latest.img',
@@ -306,11 +306,12 @@ def add(self, image_path=None,
             bot.error('Cannot find %s' %image_path)
             sys.exit(1)
 
-    if image_name is None:
+    # An image uri is required for version, tag, etc.
+    if image_uri is None:
         bot.error('You must provide an image uri <collection>/<namespace>')
         sys.exit(1)
 
-    names = parse_image_name( remove_uri(image_name) )
+    names = parse_image_name( remove_uri(image_uri) )
     bot.debug('Adding %s to registry' % names['uri'])    
 
     # If Singularity is installed, inspect image for metadata
@@ -319,14 +320,17 @@ def add(self, image_path=None,
 
     # If save, move to registry storage first
     if save is True and image_path is not None:
-        storage_path = self._get_storage_name(names)
+
+        # If the user hasn't defined a custom name
+        if image_name is None:      
+            image_name = self._get_storage_name(names)
 
         if copy is True:
-            copyfile(image_path, storage_path)
+            copyfile(image_path, image_name)
         else:
-            shutil.move(image_path, storage_path)
-            
-        image_path = storage_path
+            shutil.move(image_path, image_name)
+         
+        image_path = image_name
 
     # Get a hash of the file for the version, or use provided
     version = names.get('version')

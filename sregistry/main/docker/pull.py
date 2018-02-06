@@ -107,10 +107,10 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # Save to local storage
         if save is True:
 
-            container = self.add(image_path = image_file,
-                                 image_uri = q['uri'],
-                                 metadata = self.manifests,
-                                 url = url)
+            container = self.add(image_path=image_file,
+                                 image_uri=q['uri'],
+                                 metadata=self.manifests,
+                                 url=url)
 
             # When the container is created, this is the path to the image
             image_file = container.image
