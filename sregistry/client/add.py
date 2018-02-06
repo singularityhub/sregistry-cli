@@ -30,5 +30,5 @@ def main(args, parser, subparser):
     for image in images:
         cli = get_client(image, quiet=args.quiet)
         cli.add(image_path=image,
-                image_name=args.name,
+                image_uri=args.name,
                 copy=args.copy)

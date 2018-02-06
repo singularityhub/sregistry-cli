@@ -70,6 +70,6 @@ def record(self, images, action='add'):
         metadata['selfLink'] = image.self_link
 
         # Use add without image path so added as a record
-        container = self.add(image_name=image_uri,
+        container = self.add(image_uri=image_uri,
                              metadata=metadata,
                              url=image.media_link)

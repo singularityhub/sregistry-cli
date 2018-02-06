@@ -257,6 +257,7 @@ def rm(self, image_name, delete=False):
 
 
 def add(self, image_path=None,
+              image_uri=None,
               image_name=None,
               url=None,
               metadata=None,
@@ -272,6 +273,8 @@ def add(self, image_path=None,
     Parameters
     ==========
     image_path: full path to image file
+    image_uri: the full image uri for extracting tag, version, etc.
+    image_name: if defined, the user wants a custom name (and save path)
     metadata: any extra metadata to keep for the image (dict)
     save: if True, move the image to the cache if it's not there
     copy: If True, copy the image instead of moving it.
@@ -306,6 +309,7 @@ def add(self, image_path=None,
     if image_name is None:
         bot.error('You must provide an image uri <collection>/<namespace>')
         sys.exit(1)
+
     names = parse_image_name( remove_uri(image_name) )
     bot.debug('Adding %s to registry' % names['uri'])    
 

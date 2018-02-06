@@ -108,7 +108,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         if save is True:
 
             container = self.add(image_path = image_file,
-                                 image_name = q['uri'],
+                                 image_uri = q['uri'],
                                  metadata = self.manifests,
                                  url = url)
 

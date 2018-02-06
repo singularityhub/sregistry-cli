@@ -29,6 +29,7 @@ import sys
 
 
 def add(self, image_path=None,
+              image_uri=None,
               image_name=None,
               url=None,
               metadata=None,
@@ -45,10 +46,10 @@ def add(self, image_path=None,
             bot.error('Cannot find %s' %image_path)
             sys.exit(1)
 
-    if image_name is None:
+    if image_uri is None:
         bot.error('You must provide an image uri <collection>/<namespace>')
         sys.exit(1)
-    names = parse_image_name( remove_uri(image_name) )
+    names = parse_image_name( remove_uri(image_uri) )
     bot.debug('Added %s to filesystem' % names['uri'])    
 
     # Create a dummy container on the fly

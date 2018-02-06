@@ -66,6 +66,6 @@ def record(self, images, action='add'):
                                      manifest['name'],
                                      manifest['tag'])
 
-        container = self.add(image_name=image_uri,
+        container = self.add(image_uri=image_uri,
                              metadata=manifest,
                              url=manifest['image'])

@@ -63,6 +63,6 @@ def record(self, images, action='add'):
 
         # We again use the "add" function, but we don't give an image path
         # so it's just added as a record
-        container = self.add(image_name=q['uri'],
+        container = self.add(image_uri=q['uri'],
                              metadata=manifests,
                              url=url)

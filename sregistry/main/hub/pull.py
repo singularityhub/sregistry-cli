@@ -68,6 +68,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         if file_name is None:
             file_name = self._get_storage_name(q)
+        file_name = os.path.abspath(file_name)
 
         # Determine if the user already has the image
         if os.path.exists(file_name) and force is False:
@@ -82,7 +83,8 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         if save is True:
             image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
             container = self.add(image_path=image_file,
-                                 image_name=image_uri,
+                                 image_uri=image_uri,
+                                 image_name=file_name,
                                  metadata=manifest,
                                  url=manifest['image'])
             image_file = container.image

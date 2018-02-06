@@ -133,9 +133,9 @@ that I want to add when I first start using `sregistry`. This operation will loo
 from sregistry.main import Client as cli
 
 image_path='example:latest.simg'
-image_name='vsoch/sregistry-example:v1.0'
+image_uri='vsoch/sregistry-example:v1.0'
 
-container = cli.add(image_path=image_path, image_name=image_name)
+container = cli.add(image_path=image_path, image_uri=image_uri)
 [container] vsoch/sregistry-example:v1.0
 ```
 
@@ -189,11 +189,11 @@ image_path = cli.download(...)
 
 # Retrieve metadata and some custom image name from a manifest, or a user
 metadata = ...
-image_name = ...
+image_uri = ...
 
 # Then create the container, providing all of the above
 container = cli.add(image_path=image_path, 
-                    image_name=image_name,
+                    image_uri=image_uri,
                     metadata=metadata,
                     url=url)
 ```
@@ -254,7 +254,7 @@ image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
 At this point, we could download the image, get a file, and call the Client "add" function to add the entry and file to storage. But since we just want to keep a record of this file, we will call add without any image file.
 
 ```
-container = Client.add(image_name=image_uri,
+container = Client.add(image_uri=image_uri,
                        metadata=manifest,
                        url=manifest['image'])
 ```
@@ -263,7 +263,7 @@ Note that if you put the url to the image download in the manifest (given to var
 
 ```
 manifest['url'] = url
-container = Client.add(image_name=image_uri,
+container = Client.add(image_uri=image_uri,
                        metadata=manifest)
 ```
 

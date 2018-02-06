@@ -101,7 +101,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             image['selfLink'] = downloader._uri
 
             container = self.add(image_path = image_file,
-                                 image_name = image_uri,
+                                 image_uri = image_uri,
                                  metadata = image,
                                  url=downloader._uri)
 
