@@ -202,6 +202,7 @@ def mv(self, image_name, path):
             # Ensure directory exists
             if not os.path.exists(filedir):
                 bot.error('%s does not exist. Ensure exists before moving.' %filedir)
+                sys.exit(1)
 
             updated_path = "%s/%s" %(filedir, filename)
 
@@ -216,7 +217,7 @@ def mv(self, image_name, path):
                 sys.exit(1)
 
         bot.warning('''This operation is not permitted on a remote image. 
-                       Please pull %s and then move image to the appropriate
+                       Please pull %s and then move to the appropriate
                        location.''' % image_name)
 
 
