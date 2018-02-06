@@ -204,6 +204,11 @@ def mv(self, image_name, path):
                 bot.error('%s does not exist. Ensure exists before moving.' %filedir)
                 sys.exit(1)
 
+            # Ensure writable for user
+            if not os.access(filedir, os.W_OK):
+                bot.error('%s is not writable' %filedir)
+                sys.exit(1)
+
             updated_path = "%s/%s" %(filedir, filename)
 
             try:
