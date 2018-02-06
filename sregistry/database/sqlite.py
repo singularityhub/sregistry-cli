@@ -215,7 +215,9 @@ def mv(self, image_name, path):
                 bot.error('Cannot move %s to %s' %(image, updated_path))
                 sys.exit(1)
 
-        bot.warning('%s is a remote image.' %image_name)
+        bot.warning('''This operation is not permitted on a remote image. 
+                       Please pull %s and then move image to the appropriate
+                       location.''' % image_name)
 
 
 def rmi(self, image_name):
