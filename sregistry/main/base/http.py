@@ -38,7 +38,7 @@ def delete(self,url,return_json=True):
     '''
     bot.debug('DELETE %s' %url)
     return self._call(url,
-                      headers=headers,
+                      headers=self.headers,
                       func=requests.delete,
                       return_json=return_json)
 
@@ -48,7 +48,7 @@ def put(self,url,data=None,return_json=True):
     '''
     bot.debug("PUT %s" %url)
     return self._call(url,
-                      headers=headers,
+                      headers=self.headers,
                       func=requests.put,
                       data=data,
                       return_json=return_json)
@@ -60,7 +60,7 @@ def post(self,url,data=None,return_json=True):
     '''
     bot.debug("POST %s" %url)
     return self._call(url,
-                      headers=headers,
+                      headers=self.headers,
                       func=requests.post,
                       data=data,
                       return_json=return_json)
