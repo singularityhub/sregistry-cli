@@ -29,6 +29,8 @@ def parse_header(recipe, header="from", remove_header=True):
     '''
     parsed_header = None
     fromline = [x for x in recipe.split('\n') if "%s:" %header in x.lower()]
+    if len(fromline) == 0:
+        return ""
     if len(fromline) > 0:
         fromline = fromline[0]
         parsed_header = fromline.strip()
