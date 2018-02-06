@@ -66,15 +66,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         digest = q['version'] or q['tag']
 
-        # This is the Docker Hub namespace and repository
-        layers = self._download_layers(q['url'], digest)
-
-        # This is the url where the manifests were obtained
-        url = self._get_manifest_selfLink(q['url'], digest)
-
-        # Create client to build from sandbox
-        cli = Singularity()
-
         # Use Singularity to build the image, based on user preference
         if file_name is None:
             file_name = self._get_storage_name(q)
@@ -83,6 +74,15 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         if os.path.exists(file_name) and force is False:
             bot.error('Image exists! Remove first, or use --force to overwrite')
             sys.exit(1)
+
+        # This is the url where the manifests are obtained
+        url = self._get_manifest_selfLink(q['url'], digest)
+
+        # This is the Docker Hub namespace and repository
+        layers = self._download_layers(q['url'], digest)
+
+        # Create client to build from sandbox
+        cli = Singularity()
 
         # Build from sandbox
         sandbox = tempfile.mkdtemp()

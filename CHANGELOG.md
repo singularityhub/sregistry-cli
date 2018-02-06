@@ -19,6 +19,7 @@ The versions coincide with releases on pip. Only major versions will be released
  - adding move (mv) command so client can update database with new path (0.0.67)
  - fixing bug with Docker and Nvidia pull to clean up temporary sandbox build folders
  - if fromline is not defined in Singularity Recipe returns empty string (for registry pull)
+ - fixing bug with client not being maintained in shell (was doing import twice)
  - fixing bug with Singularity Hub search (0.0.66)
  - added Dropbox backend with push, pull, record, search, share (0.0.65)
  - added ability for shell to take backend as argument (e.g., `sregistry shell dropbox`)

@@ -65,6 +65,15 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         q = parse_image_name( remove_uri(image), 
                               default_collection='nvidia' )
 
+        # Use Singularity to build the image, based on user preference
+        if file_name is None:
+            file_name = self._get_storage_name(q)
+
+        # Determine if the user already has the image
+        if os.path.exists(file_name) and force is False:
+            bot.error('Image exists! Remove first, or use --force to overwrite')
+            sys.exit(1)
+
         digest = q['version'] or q['tag']
 
         # This is the Docker Hub namespace and repository
@@ -75,15 +84,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         # Create client to build from sandbox
         cli = Singularity()
-
-        # Use Singularity to build the image, based on user preference
-        if file_name is None:
-            file_name = self._get_storage_name(q)
-
-        # Determine if the user already has the image
-        if os.path.exists(file_name) and force is False:
-            bot.error('Image exists! Remove first, or use --force to overwrite')
-            sys.exit(1)
 
         # Build from sandbox 
         sandbox = tempfile.mkdtemp()
