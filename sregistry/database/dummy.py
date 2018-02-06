@@ -53,7 +53,7 @@ def add(self, image_path=None,
 
     # Create a dummy container on the fly
     class DummyContainer:
-        def __init__(self, image_path, client_name, url, names)
+        def __init__(self, image_path, client_name, url, names):
             self.image=image_path
             self.client=client_name
             self.url=url
