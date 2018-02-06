@@ -314,7 +314,7 @@ def main():
     if args.command == "version":
         print(sregistry.__version__)
         sys.exit(0)
-    
+
     # Does the user want a shell?
     if args.command == "add": from .add import main
     if args.command == "get": from .get import main

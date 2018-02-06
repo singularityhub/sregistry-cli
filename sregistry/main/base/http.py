@@ -121,6 +121,8 @@ def download(self, url, file_name, headers=None, show_progress=True):
         file_name: the file name to stream to
         url: the url to stream from
         headers: additional headers to add
+        force: If the final image exists, don't overwrite
+
     '''
 
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
