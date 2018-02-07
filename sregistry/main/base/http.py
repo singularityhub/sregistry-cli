@@ -235,7 +235,7 @@ def stream_response(self, response, stream_to=None):
 
 def call(self, url, func, data=None, headers=None, 
                           return_json=True, stream=False, 
-                          retry=True):
+                          retry=True, default_headers=True):
 
     '''call will issue the call, and issue a refresh token
     given a 401 response, and if the client has a _update_token function
@@ -247,13 +247,18 @@ def call(self, url, func, data=None, headers=None,
     headers: if not None, update the client self.headers with dictionary
     data: additional data to add to the request
     return_json: return json if successful
+    default_headers: use the client's self.headers (default True)
+
     '''
  
     if data is not None:
         if not isinstance(data,dict):
             data = json.dumps(data)
 
-    heads = self.headers.copy()
+    heads = dict()
+    if default_headers is True:
+        heads = self.headers.copy()
+    
     if headers is not None:
         if isinstance(headers,dict):
             heads.update(headers)
