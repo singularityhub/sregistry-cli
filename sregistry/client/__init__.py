@@ -136,6 +136,17 @@ def get_parser():
                          type=str)
 
 
+        rename = subparsers.add_parser("rename",
+                                        help="rename a container in storage")
+
+        rename.add_argument("name", nargs=1, 
+                            help="container name or uri to rename in database", 
+                            type=str)
+
+        rename.add_argument("path", nargs=1, 
+                             help="path to rename image (will use basename)", 
+                             type=str)
+
         rm = subparsers.add_parser("rm",
                                    help="remove a container from the database")
 
@@ -326,6 +337,7 @@ def main():
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
     if args.command == "record": from .record import main
+    if args.command == "rename": from .rename import main
     if args.command == "rm": from .rm import main
     if args.command == "rmi": from .rmi import main
     if args.command == "search": from .search import main

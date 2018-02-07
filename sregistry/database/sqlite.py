@@ -169,6 +169,30 @@ def inspect(self, name):
         print(json.dumps(fields, indent=4, sort_keys=True))
 
 
+def rename(self, image_name, path):
+    '''rename performs a move, but ensures the path is maintained in storage
+
+       Parameters
+       ==========
+       image_name: the parsed image name.
+       path: the name to rename (basename is taken)
+
+    '''
+    container = self.get(image_name, quiet=True)
+
+    if container is not None:
+        if container.image is not None:
+            dirname = os.path.dirname(container.image)
+            filename = os.path.basename(path)
+            fullpath = os.path.abspath(os.path.join(dirname,filename))
+            return self.cp(move_to=fullpath, 
+                           container=container,
+                           command="rename")
+
+    bot.warning('%s not found' %(image_name))
+
+
+
 def mv(self, image_name, path):
     '''Move an image from it's current location to a new path.
        Removing the image from organized storage is not the recommended approach
@@ -184,6 +208,7 @@ def mv(self, image_name, path):
     container = self.get(image_name, quiet=True)
 
     if container is not None:
+
         name = container.uri or container.get_uri()
         image = container.image or ''
 
@@ -202,32 +227,71 @@ def mv(self, image_name, path):
             # If directory is empty, assume $PWD
             if filedir == '':
                 filedir = os.getcwd()
+       
+            # Copy to the fullpath from the storage
+            fullpath = os.path.abspath(os.path.join(filedir,filename))
+            return self.cp(move_to=fullpath, 
+                           container=container,
+                           command="move")
+    
+    bot.warning('%s not found' %(image_name))
 
-            # Ensure directory exists
-            if not os.path.exists(filedir):
-                bot.error('%s does not exist. Ensure exists before moving.' %filedir)
-                sys.exit(1)
 
-            # Ensure writable for user
-            if not os.access(filedir, os.W_OK):
-                bot.error('%s is not writable' %filedir)
-                sys.exit(1)
+def cp(self, move_to, image_uri=None, container=None, command="copy"):
+    '''_cp is the shared function between mv (move) and rename, and performs
+       the move, and returns the updated container
+    
+       Parameters
+       ==========
+       image_uri: an image_uri to look up a container in the database
+       container: the container object to move (must have a container.image
+       move_to: the full path to move it to
 
-            updated_path = "%s/%s" %(filedir, filename)
+    '''
+    if container is None and image_name is None:
+        bot.error('A container or image_name must be provided to %s' %command)
+        sys.exit(1)
 
-            try:
-                shutil.move(image, updated_path)
-                container.image = updated_path
-                self.session.commit()
-                bot.info('[mv] %s => %s' %(image_name, updated_path))
-                return container
-            except:
-                bot.error('Cannot move %s to %s' %(image, updated_path))
-                sys.exit(1)
+    # If a container isn't provided, look for it from image_uri
+    if container is None:
+        container = self.get(image_name, quiet=True)
 
-        bot.warning('''This operation is not permitted on a remote image. 
-                       Please pull %s and then move to the appropriate
-                       location.''' % image_name)
+    image = container.image or ''
+
+    if os.path.exists(image):
+
+        filedir = os.path.dirname(move_to)
+
+        # If the two are the same, doesn't make sense
+        if move_to == image:
+            bot.warning('%s is already the name.' %image)
+            sys.exit(1)
+       
+        # Ensure directory exists
+        if not os.path.exists(filedir):
+            bot.error('%s does not exist. Ensure exists first.' %filedir)
+            sys.exit(1)
+
+        # Ensure writable for user
+        if not os.access(filedir, os.W_OK):
+            bot.error('%s is not writable' %filedir)
+            sys.exit(1)
+
+        original = os.path.basename(image)
+
+        try:
+            shutil.move(image, move_to)
+            container.image = move_to
+            self.session.commit()
+            bot.info('[%s] %s => %s' %(command, original, move_to))
+            return container
+        except:
+            bot.error('Cannot %s %s to %s' %(command, original, move_to))
+            sys.exit(1)
+
+    bot.warning('''This operation is not permitted on a remote image. 
+                   Please pull %s and then %s to the appropriate
+                   location.''' %(container.uri, command))
 
 
 def rmi(self, image_name):
