@@ -33,34 +33,34 @@ import re
 import os
 
 
-def delete(self,url,return_json=True):
+def delete(self,url,headers=None,return_json=True):
     '''delete request, use with caution
     '''
     bot.debug('DELETE %s' %url)
     return self._call(url,
-                      headers=self.headers,
+                      headers=headers,
                       func=requests.delete,
                       return_json=return_json)
 
 
-def put(self,url,data=None,return_json=True):
+def put(self,url,headers=None,data=None,return_json=True):
     '''put request
     '''
     bot.debug("PUT %s" %url)
     return self._call(url,
-                      headers=self.headers,
+                      headers=headers,
                       func=requests.put,
                       data=data,
                       return_json=return_json)
 
 
 
-def post(self,url,data=None,return_json=True):
+def post(self,url,headers=None,data=None,return_json=True):
     '''post will use requests to get a particular url
     '''
     bot.debug("POST %s" %url)
     return self._call(url,
-                      headers=self.headers,
+                      headers=headers,
                       func=requests.post,
                       data=data,
                       return_json=return_json)
