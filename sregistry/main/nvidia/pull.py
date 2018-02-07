@@ -23,6 +23,7 @@ from sregistry.logger import bot
 from sregistry.client import Singularity
 from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
+import shutil
 import os
 import sys
 
@@ -64,6 +65,15 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         q = parse_image_name( remove_uri(image), 
                               default_collection='nvidia' )
 
+        # Use Singularity to build the image, based on user preference
+        if file_name is None:
+            file_name = self._get_storage_name(q)
+
+        # Determine if the user already has the image
+        if os.path.exists(file_name) and force is False:
+            bot.error('Image exists! Remove first, or use --force to overwrite')
+            sys.exit(1)
+
         digest = q['version'] or q['tag']
 
         # This is the Docker Hub namespace and repository
@@ -74,15 +84,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         # Create client to build from sandbox
         cli = Singularity()
-
-        # Use Singularity to build the image, based on user preference
-        if file_name is None:
-            file_name = self._get_storage_name(q)
-
-        # Determine if the user already has the image
-        if os.path.exists(file_name) and force is False:
-            bot.error('Image exists! Remove first, or use --force to overwrite')
-            sys.exit(1)
 
         # Build from sandbox 
         sandbox = tempfile.mkdtemp()
@@ -108,12 +109,16 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         if save is True:
 
             container = self.add(image_path = image_file,
-                                 image_name = q['uri'],
+                                 image_uri = q['uri'],
                                  metadata = self.manifests,
                                  url = url)
 
             # When the container is created, this is the path to the image
             image_file = container.image
+
+        # If the image_file is different from sandbox, remove sandbox
+        if image_file != sandbox:
+            shutil.rmtree(sandbox)
 
         if os.path.exists(image_file):
             bot.debug('Retrieved image file %s' %image_file)

@@ -90,8 +90,9 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             # Importantly, the client add function will take the image file, the
             # uri, the download link, and any relevant metadata (dictionary)
             # for the database
-            container = self.add(image_path = image_file,
-                                 image_name = image_uri,
+            container = self.add(image_path = image_file, # the file path
+                                 image_uri = image_uri,   # the full uri
+                                 image_name = file_name, # a custom name?
                                  metadata = manifest,
                                  url = manifest['image'])
 

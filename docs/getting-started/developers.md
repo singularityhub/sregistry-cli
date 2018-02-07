@@ -104,6 +104,7 @@ We've reviewed these commands before, and will do it again. The following comman
  - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
+ - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
  - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
  - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
@@ -127,13 +128,14 @@ an image path and image uri (like `vsoch/hello-world`) with a complete tag/versi
 save the image file to storage. For example, I might have a ton of images saved on my computer
 that I want to add when I first start using `sregistry`. This operation will look something like this:
 
+
 ```
 from sregistry.main import Client as cli
 
 image_path='example:latest.simg'
-image_name='vsoch/sregistry-example:v1.0'
+image_uri='vsoch/sregistry-example:v1.0'
 
-container = cli.add(image_path=image_path, image_name=image_name)
+container = cli.add(image_path=image_path, image_uri=image_uri)
 [container] vsoch/sregistry-example:v1.0
 ```
 
@@ -187,11 +189,11 @@ image_path = cli.download(...)
 
 # Retrieve metadata and some custom image name from a manifest, or a user
 metadata = ...
-image_name = ...
+image_uri = ...
 
 # Then create the container, providing all of the above
 container = cli.add(image_path=image_path, 
-                    image_name=image_name,
+                    image_uri=image_uri,
                     metadata=metadata,
                     url=url)
 ```
@@ -252,7 +254,7 @@ image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
 At this point, we could download the image, get a file, and call the Client "add" function to add the entry and file to storage. But since we just want to keep a record of this file, we will call add without any image file.
 
 ```
-container = Client.add(image_name=image_uri,
+container = Client.add(image_uri=image_uri,
                        metadata=manifest,
                        url=manifest['image'])
 ```
@@ -261,7 +263,7 @@ Note that if you put the url to the image download in the manifest (given to var
 
 ```
 manifest['url'] = url
-container = Client.add(image_name=image_uri,
+container = Client.add(image_uri=image_uri,
                        metadata=manifest)
 ```
 
@@ -350,6 +352,26 @@ https://www.singularity-hub.org/api/container/vsoch/hello-world:latest
 ```
 
 Since this is a Singularity Hub image, we have stored with it the metadata from Singularity Hub, along with the output from the Singularity inspect.
+
+## Move
+You can access the move (`mv`) command from within Python to move an image from a standard storage location to some other path on the system.
+
+```
+from sregistry.main import Client as client
+
+# Grab a container
+container = client.images()[0] # grab the first
+
+# The container is local (we have a file)
+container.location()
+$ 'local '
+
+# Move it from storage to the Desktop
+container = client.mv(container.uri, '/home/vanessa/Desktop')
+[mv] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f => /home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+$ container.image
+$'/home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg'
+```
 
 
 ## Remove

@@ -123,6 +123,30 @@ def get_parser():
                          help="copy the container instead of moving it.", 
                          default=False, action='store_true')
 
+
+        mv = subparsers.add_parser("mv",
+                                   help="move a container and update database")
+
+        mv.add_argument("name", nargs=1, 
+                         help="container name or uri to move from database", 
+                         type=str)
+
+        mv.add_argument("path", nargs=1, 
+                         help="directory or image file to move image.", 
+                         type=str)
+
+
+        rename = subparsers.add_parser("rename",
+                                        help="rename a container in storage")
+
+        rename.add_argument("name", nargs=1, 
+                            help="container name or uri to rename in database", 
+                            type=str)
+
+        rename.add_argument("path", nargs=1, 
+                             help="path to rename image (will use basename)", 
+                             type=str)
+
         rm = subparsers.add_parser("rm",
                                    help="remove a container from the database")
 
@@ -301,7 +325,7 @@ def main():
     if args.command == "version":
         print(sregistry.__version__)
         sys.exit(0)
-    
+
     # Does the user want a shell?
     if args.command == "add": from .add import main
     if args.command == "get": from .get import main
@@ -309,9 +333,11 @@ def main():
     if args.command == "inspect": from .inspect import main
     if args.command == "images": from .images import main
     if args.command == "labels": from .labels import main
+    if args.command == "mv": from .mv import main
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
     if args.command == "record": from .record import main
+    if args.command == "rename": from .rename import main
     if args.command == "rm": from .rm import main
     if args.command == "rmi": from .rmi import main
     if args.command == "search": from .search import main
@@ -320,14 +346,13 @@ def main():
 
     # Pass on to the correct parser
     return_code = 0
-    #try:
-    if 1==1:
+    try:
         main(args=args,
              parser=parser,
              subparser=subparsers[args.command])
         sys.exit(return_code)
-    #except UnboundLocalError:
-    #    return_code = 1
+    except UnboundLocalError:
+        return_code = 1
 
     help(return_code)
 

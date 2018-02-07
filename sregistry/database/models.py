@@ -133,6 +133,17 @@ class Container(Base):
             return '<Container %r>' % (self.name)
         return '<Container %r>' % (self.uri)
 
+
+    def location(self):
+        ''' return "local" or "remote" depending on the existence of the 
+            container image.
+        '''
+        location = 'local '
+        if self.image is None:
+            location = 'remote'
+        return location
+
+
     def get_uri(self):
         '''generate a uri on the fly from database parameters if one is not
         saved with the initial model (it should be, but might not be possible)

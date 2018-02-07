@@ -59,6 +59,6 @@ def record(self, images, action='add'):
         manifest['selfLink'] = url
 
         image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
-        container = self.add(image_name=image_uri,
+        container = self.add(image_uri=image_uri,
                              metadata=manifest,
                              url=manifest['image'])

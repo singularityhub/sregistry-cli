@@ -67,6 +67,6 @@ def record(self, images, action='add'):
         names = parse_image_name( remove_uri(image_uri) )
         
         # Use add without image path so added as a record
-        container = self.add(image_name=image_uri,
+        container = self.add(image_uri=image_uri,
                              metadata=image,
                              url=request.uri)

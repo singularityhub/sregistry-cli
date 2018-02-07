@@ -22,9 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
 import os
+import sys
 
-
-def pull(self, images, file_name=None, save=True, **kwargs):
+def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     '''pull an image from an endpoint
  
     Parameters
@@ -53,24 +53,38 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         q = parse_image_name(remove_uri(image))
 
         # Verify image existence, and obtain id
-        url = "%s/container/%s/%s:%s" %(self.base, q['collection'], q['image'], q['tag'])
+        url = "%s/container/%s/%s:%s" %(self.base, q['collection'], 
+                                                   q['image'],
+                                                   q['tag'])
+
         bot.debug('Retrieving manifest at %s' %url)
 
         manifest = self._get(url)
         manifest['selfLink'] = url        
 
+        # If the manifest reveals a version, update names 
+        if "version" in manifest:
+            q = parse_image_name('%s@%s' %(q['uri'], manifest['version']))
+
         if file_name is None:
-            file_name = q['storage'].replace('/','-')
+            file_name = self._get_storage_name(q)
+        file_name = os.path.abspath(file_name)
+
+        # Determine if the user already has the image
+        if os.path.exists(file_name) and force is False:
+            bot.error('Image exists! Remove first, or use --force to overwrite')
+            sys.exit(1)
 
         image_file = self.download(url=manifest['image'],
-                                   file_name=file_name,
+                                   file_name=os.path.basename(file_name),
                                    show_progress=True)
 
         # If the user is saving to local storage
         if save is True:
             image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
             container = self.add(image_path=image_file,
-                                 image_name=image_uri,
+                                 image_uri=image_uri,
+                                 image_name=file_name,
                                  metadata=manifest,
                                  url=manifest['image'])
             image_file = container.image

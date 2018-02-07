@@ -66,6 +66,6 @@ def record(self, images, action='add'):
             metadata = self._get_metadata(dbx_metadata=metadata)
 
             # Add image as a record
-            container = self.add(image_name=dropbox_path.strip('/'),
+            container = self.add(image_uri=dropbox_path.strip('/'),
                                  metadata=metadata,
                                  url=metadata['path_lower'])

@@ -29,6 +29,7 @@ import sys
 
 
 def add(self, image_path=None,
+              image_uri=None,
               image_name=None,
               url=None,
               metadata=None,
@@ -45,20 +46,23 @@ def add(self, image_path=None,
             bot.error('Cannot find %s' %image_path)
             sys.exit(1)
 
-    if image_name is None:
+    if image_uri is None:
         bot.error('You must provide an image uri <collection>/<namespace>')
         sys.exit(1)
-    names = parse_image_name( remove_uri(image_name) )
+    names = parse_image_name( remove_uri(image_uri) )
     bot.debug('Added %s to filesystem' % names['uri'])    
 
-    # First check that we don't have one already!
-    class container:
-        name=names['image']
-        tag=names['tag']
-        image=image_path
-        client=self.client_name
-        url=url
-        uri=names['uri']
+    # Create a dummy container on the fly
+    class DummyContainer:
+        def __init__(self, image_path, client_name, url, names):
+            self.image=image_path
+            self.client=client_name
+            self.url=url
+            self.name=names['image']
+            self.tag=names['tag']
+            self.uri=names['uri']
+
+    container = DummyContainer(image_path, self.client_name, url, names)
 
     bot.info("[container][%s] %s" % (action,names['uri']))
     return container

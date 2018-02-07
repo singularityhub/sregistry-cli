@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
+Copyright (C) 2018 The Board of Trustees of the Leland Stanford Junior
 University.
-Copyright (C) 2016-2017 Vanessa Sochat.
+Copyright (C) 2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -21,14 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 def main(args, parser, subparser):
 
-    from sregistry.main import get_client
-
-    images = args.image
-    if not isinstance(images, list):
-        images = [images]
-
-    for image in images:
-        cli = get_client(image, quiet=args.quiet)
-        cli.add(image_path=image,
-                image_uri=args.name,
-                copy=args.copy)
+    from sregistry.main import Client as cli
+    cli.announce(args.command)
+    cli.rename(image_name=args.name[0],
+               path=args.path[0])

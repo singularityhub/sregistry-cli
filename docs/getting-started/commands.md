@@ -21,6 +21,7 @@ Singularity image. For these same functions for within python (for developers) [
  - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
+ - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
  - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
  - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
@@ -226,6 +227,61 @@ or more globally
 SREGISTRY_SHELL=ipython 
 export SREGISTRY_SHELL
 sregistry shell
+```
+
+
+## Move (mv)
+While it's not recommended practice to move your containers outside of an organized storage, you may have a use case where you want to obtain images using the Singularity Global client, and then move them elsewhere with your own organization. If you were to just use the system `mv` command, the database wouldn't be updated with your new path, and this is a problem. For this use case, we provide an `sregistry mv` command that will allow you to move an image and also update the database. Here we have an image that is local, meaning in our database and storage:
+
+```
+1  December 29, 2017	local 	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+```
+
+If we `get` the image, the path is in our default storage, where we pulled it.
+
+```
+sregistry get vsoch/hello-world:latest
+/home/vanessa/.singularity/shub/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+We can ask to move it somewhere else, such as a different directory.
+
+```
+sregistry mv vsoch/hello-world:latest /home/vanessa/Desktop
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[move] vsoch/hello-world:latest => /home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+and confirm that the file has been moved successfully!
+
+```
+$ sregistry get vsoch/hello-world:latest
+/home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+If you want to remove the sregistry naming schema (not recommended, but of course reasonable) then just specify the name of the image instead of directory:
+
+
+```
+sregistry mv peanut-butter/jelly:time /home/vanessa/Desktop/pusheen.simg
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[move] peanut-butter/jelly:time => /home/vanessa/Desktop/pusheen.simg
+```
+
+If you try to move a remote (record), you will get an error, of course.
+
+```
+sregistry mv pusheen/asaurus:green /home/vanessa/Desktop/pusheen.simg
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+WARNING pusheen/asaurus:green is a remote image.
+```
+
+If you want to just rename it, wherever it might be, you can also use rename (an alias for move that keeps the current directory the container is in.)
+
+```
+sregistry rename vsoch/hello-world tacos.simg
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[rename] vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg => /home/vanessa/.singularity/shub/tacos.simg
 ```
 
 ## Remove

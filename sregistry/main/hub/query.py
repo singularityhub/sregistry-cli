@@ -23,8 +23,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
-import sys
 import os
+import re
+import sys
 
 
 def search(self, query=None, **kwargs):
@@ -95,7 +96,7 @@ def search_collection(self, query):
 
     rows = []
     for result in containers:
-        if q['uri'] in result[1]:
+        if re.search(query, result[1]):
             rows.append(result)
 
     if len(rows) > 0:

@@ -101,6 +101,7 @@ SREGISTRY_BASE = None
 try:
     from sqlalchemy import or_
 except ImportError:
+    bot.warning('Database disabled. Install sqlalchemy for full functionality')
     DISABLE_DATABASE = True
 
 

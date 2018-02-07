@@ -82,8 +82,9 @@ def get_client(image=None, quiet=False):
 
         # These are global functions used across modules
         from sregistry.database import (
-            init_db, add, get, rm, rmi, 
+            init_db, add, cp, get, mv, rm, rmi, 
             images, inspect,
+            rename,
             get_container,
             get_collection, 
             get_or_create_collection 
@@ -92,8 +93,11 @@ def get_client(image=None, quiet=False):
         # Actions
         Client._init_db = init_db
         Client.add = add
+        Client.cp = cp
         Client.get = get
         Client.inspect = inspect
+        Client.mv = mv
+        Client.rename = rename
         Client.rm = rm
         Client.rmi = rmi
         Client.images = images

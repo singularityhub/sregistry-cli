@@ -123,6 +123,11 @@ def get(self, name, quiet=False):
 
 def images(self, query=None):
     '''List local images in the database, optionally with a query.
+
+       Paramters
+       =========
+       query: a string to search for in the container or collection name|tag|uri
+
     '''
     from sregistry.database.models import Collection, Container
 
@@ -142,10 +147,7 @@ def images(self, query=None):
         for c in containers:
             uri = c.get_uri()
             created_at = c.created_at.strftime('%B %d, %Y')
-            location = 'local '
-            if c.image is None:
-               location = 'remote'
-            rows.append([created_at, location, "   [%s]" %c.client, uri])
+            rows.append([created_at, c.location(), "   [%s]" %c.client, uri])
         bot.table(rows) 
     return containers
 
@@ -153,6 +155,7 @@ def images(self, query=None):
 def inspect(self, name):
     '''Inspect a local image in the database, which typically includes the
        basic fields in the model.
+
     '''
     print(name)
     container = self.get(name)
@@ -164,6 +167,131 @@ def inspect(self, name):
         del fields['_sa_instance_state']
         fields['created_at'] = str(fields['created_at'])
         print(json.dumps(fields, indent=4, sort_keys=True))
+
+
+def rename(self, image_name, path):
+    '''rename performs a move, but ensures the path is maintained in storage
+
+       Parameters
+       ==========
+       image_name: the parsed image name.
+       path: the name to rename (basename is taken)
+
+    '''
+    container = self.get(image_name, quiet=True)
+
+    if container is not None:
+        if container.image is not None:
+            dirname = os.path.dirname(container.image)
+            filename = os.path.basename(path)
+            fullpath = os.path.abspath(os.path.join(dirname,filename))
+            return self.cp(move_to=fullpath, 
+                           container=container,
+                           command="rename")
+
+    bot.warning('%s not found' %(image_name))
+
+
+
+def mv(self, image_name, path):
+    '''Move an image from it's current location to a new path.
+       Removing the image from organized storage is not the recommended approach
+       however is still a function wanted by some.
+
+       Parameters
+       ==========
+       image_name: the parsed image name.
+       path: the location to move the image to
+
+    '''
+
+    container = self.get(image_name, quiet=True)
+
+    if container is not None:
+
+        name = container.uri or container.get_uri()
+        image = container.image or ''
+
+        # Only continue if image file exists
+        if os.path.exists(image):
+
+            # Default assume directory, use image name and path fully
+            filename = os.path.basename(image)
+            filedir = os.path.abspath(path)
+
+            # If it's a file, use filename provided
+            if not os.path.isdir(path):
+                filename = os.path.basename(path)
+                filedir = os.path.dirname(path)
+        
+            # If directory is empty, assume $PWD
+            if filedir == '':
+                filedir = os.getcwd()
+       
+            # Copy to the fullpath from the storage
+            fullpath = os.path.abspath(os.path.join(filedir,filename))
+            return self.cp(move_to=fullpath, 
+                           container=container,
+                           command="move")
+    
+    bot.warning('%s not found' %(image_name))
+
+
+def cp(self, move_to, image_uri=None, container=None, command="copy"):
+    '''_cp is the shared function between mv (move) and rename, and performs
+       the move, and returns the updated container
+    
+       Parameters
+       ==========
+       image_uri: an image_uri to look up a container in the database
+       container: the container object to move (must have a container.image
+       move_to: the full path to move it to
+
+    '''
+    if container is None and image_name is None:
+        bot.error('A container or image_name must be provided to %s' %command)
+        sys.exit(1)
+
+    # If a container isn't provided, look for it from image_uri
+    if container is None:
+        container = self.get(image_name, quiet=True)
+
+    image = container.image or ''
+
+    if os.path.exists(image):
+
+        filedir = os.path.dirname(move_to)
+
+        # If the two are the same, doesn't make sense
+        if move_to == image:
+            bot.warning('%s is already the name.' %image)
+            sys.exit(1)
+       
+        # Ensure directory exists
+        if not os.path.exists(filedir):
+            bot.error('%s does not exist. Ensure exists first.' %filedir)
+            sys.exit(1)
+
+        # Ensure writable for user
+        if not os.access(filedir, os.W_OK):
+            bot.error('%s is not writable' %filedir)
+            sys.exit(1)
+
+        original = os.path.basename(image)
+
+        try:
+            shutil.move(image, move_to)
+            container.image = move_to
+            self.session.commit()
+            bot.info('[%s] %s => %s' %(command, original, move_to))
+            return container
+        except:
+            bot.error('Cannot %s %s to %s' %(command, original, move_to))
+            sys.exit(1)
+
+    bot.warning('''This operation is not permitted on a remote image. 
+                   Please pull %s and then %s to the appropriate
+                   location.''' %(container.uri, command))
 
 
 def rmi(self, image_name):
@@ -193,6 +321,7 @@ def rm(self, image_name, delete=False):
 
 
 def add(self, image_path=None,
+              image_uri=None,
               image_name=None,
               url=None,
               metadata=None,
@@ -208,11 +337,13 @@ def add(self, image_path=None,
     Parameters
     ==========
     image_path: full path to image file
+    image_name: if defined, the user wants a custom name (and not based on uri)
     metadata: any extra metadata to keep for the image (dict)
     save: if True, move the image to the cache if it's not there
     copy: If True, copy the image instead of moving it.
 
     image_name: a uri that gets parsed into a names object that looks like:
+
     {'collection': 'vsoch',
      'image': 'hello-world',
      'storage': 'vsoch/hello-world-latest.img',
@@ -239,10 +370,12 @@ def add(self, image_path=None,
             bot.error('Cannot find %s' %image_path)
             sys.exit(1)
 
-    if image_name is None:
+    # An image uri is required for version, tag, etc.
+    if image_uri is None:
         bot.error('You must provide an image uri <collection>/<namespace>')
         sys.exit(1)
-    names = parse_image_name( remove_uri(image_name) )
+
+    names = parse_image_name( remove_uri(image_uri) )
     bot.debug('Adding %s to registry' % names['uri'])    
 
     # If Singularity is installed, inspect image for metadata
@@ -251,14 +384,17 @@ def add(self, image_path=None,
 
     # If save, move to registry storage first
     if save is True and image_path is not None:
-        storage_path = self._get_storage_name(names)
+
+        # If the user hasn't defined a custom name
+        if image_name is None:      
+            image_name = self._get_storage_name(names)
 
         if copy is True:
-            copyfile(image_path, storage_path)
+            copyfile(image_path, image_name)
         else:
-            shutil.move(image_path, storage_path)
-            
-        image_path = storage_path
+            shutil.move(image_path, image_name)
+         
+        image_path = image_name
 
     # Get a hash of the file for the version, or use provided
     version = names.get('version')

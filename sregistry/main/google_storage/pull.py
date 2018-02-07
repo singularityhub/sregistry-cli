@@ -85,7 +85,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             metadata['selfLink'] = image.self_link
 
             container = self.add(image_path = image_file,
-                                 image_name = image_uri,
+                                 image_uri = image_uri,
                                  metadata = metadata,
                                  url = image.media_link)
 

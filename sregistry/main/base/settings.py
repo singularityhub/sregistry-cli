@@ -87,7 +87,7 @@ def get_and_update_setting(self, name, default=None):
     return setting
 
 
-def get_storage_name(self, names):
+def get_storage_name(self, names, remove_dir=False):
     '''use a parsed names dictionary from get_image_name (above) to return
        the path in storage based on the user's preferences
 
@@ -100,4 +100,6 @@ def get_storage_name(self, names):
     mkdir_p(storage_folder)
     file_name = names['storage'].replace('/','-')
     storage_path = "%s/%s" %(self.storage, file_name)
+    if remove_dir is True:
+        return file_name
     return storage_path

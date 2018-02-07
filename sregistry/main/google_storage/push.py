@@ -69,7 +69,7 @@ def push(self, path, name, tag=None):
     # If result is successful, save container record
     if manifest is not None:
         metadata.update(manifest)
-        container = self.add(image_name=names['uri'],
+        container = self.add(image_uri=names['uri'],
                              metadata=metadata,
                              url=manifest['mediaLink'])
     print(manifest['mediaLink'])
