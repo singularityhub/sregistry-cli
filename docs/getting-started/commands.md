@@ -229,47 +229,6 @@ export SREGISTRY_SHELL
 sregistry shell
 ```
 
-## Rename
-If you want to rename a container in storage (or where you have it on your filesystem) you can use the rename command. Note that if you want to specify a different directory entirely, you should use the `mv` command. The subtle difference is that if you give a name without folder to rename:
-
-```
-sregistry rename vsoch/hello-world tacos.simg
-```
-
-it assumes renaming the image `vsoch/hello-world` **in storage**. Whereas if you issue this to the `mv` command:
-
-```
-sregistry mv vsoch/hello-world tacos.simg
-```
-
-It would assume that you want to move it to the present working directory. Let's give this a try, here we have an image in our database:
-
-```
-sregistry get vsoch/hello-world
-/home/vanessa/.singularity/shub/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
-```
-
-We can now rename the image to something else.
-
-```
-sregistry rename vsoch/hello-world tacos.simg
-[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[rename] vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg => /home/vanessa/.singularity/shub/tacos.simg
-```
-
-you can do it multiple times!
-
-```
-sregistry rename vsoch/hello-world meatballs.simg
-[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[rename] tacos.simg => /home/vanessa/.singularity/shub/meatballs.simg
-
-$ sregistry rename vsoch/hello-world pasta.simg
-[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[rename] meatballs.simg => /home/vanessa/.singularity/shub/pasta.simg
-```
-
-If you want to move it outside of storage (or it's current directory) then use move, discussed next.
 
 ## Move (mv)
 While it's not recommended practice to move your containers outside of an organized storage, you may have a use case where you want to obtain images using the Singularity Global client, and then move them elsewhere with your own organization. If you were to just use the system `mv` command, the database wouldn't be updated with your new path, and this is a problem. For this use case, we provide an `sregistry mv` command that will allow you to move an image and also update the database. Here we have an image that is local, meaning in our database and storage:
@@ -315,6 +274,14 @@ If you try to move a remote (record), you will get an error, of course.
 sregistry mv pusheen/asaurus:green /home/vanessa/Desktop/pusheen.simg
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 WARNING pusheen/asaurus:green is a remote image.
+```
+
+If you want to just rename it, wherever it might be, you can also use rename (an alias for move that keeps the current directory the container is in.)
+
+```
+sregistry rename vsoch/hello-world tacos.simg
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[rename] vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg => /home/vanessa/.singularity/shub/tacos.simg
 ```
 
 ## Remove
