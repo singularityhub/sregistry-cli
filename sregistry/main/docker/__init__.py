@@ -78,7 +78,23 @@ class Client(ApiConnection):
         self.headers = {"Accept": accept,
                         'Content-Type': 'application/json; charset=utf-8'}
 
-    def _set_base(self):
+    def _update_base(self, image):
+        ''' update a base based on an image name, meaning detecting a particular
+            registry and if necessary, updating the self.base. When the image
+            name is parsed, the base will be given to remove the registry.
+        '''
+        base = None
+
+        # Google Container Cloud
+        if "gcr.io" in image:
+            base = 'gcr.io'
+            self._set_base(default_base=base)
+            self._update_secrets()
+
+        return base
+
+
+    def _set_base(self, default_base=None):
         '''set the API base or default to use Docker Hub. The user is able
            to set the base, api version, and protocol via a settings file
            of environment variables:
@@ -88,10 +104,17 @@ class Client(ApiConnection):
            SREGISTRY_DOCKERHUB_NO_HTTPS: defaults to not set (so https)
 
         '''
+
         base = self._get_setting('SREGISTRY_DOCKERHUB_BASE')
         version = self._get_setting('SREGISTRY_DOCKERHUB_VERSION')
+
+        # If we re-set the base after reading the image
         if base is None:
-            base = "index.docker.io"
+            if default_base is None:
+                base = "index.docker.io"
+            else:
+                base = default_base
+
         if version is None:
             version = "v2"
 
@@ -103,6 +126,8 @@ class Client(ApiConnection):
 
         # <protocol>://<base>/<version>
 
+        self._base = "%s%s" %(nohttps, base)
+        self._version = version
         self.base = "%s%s/%s" %(nohttps, base.strip('/'), version)
 
 
@@ -114,6 +139,7 @@ class Client(ApiConnection):
            using Docker Hub, if we find a .docker secrets file, we update
            from there.
         '''
+
         # If the user has defined secrets, use them
         credentials = self._get_setting('SREGISTRY_DOCKERHUB_SECRETS')
         username = self._get_setting('SREGISTRY_DOCKERHUB_USERNAME')
@@ -132,7 +158,7 @@ class Client(ApiConnection):
                 # Find a matching auth in .docker config
                 if "auths" in credentials:
                     for auths, params in credentials['auths'].items():
-                        if self.base in auths:
+                        if self._base in auths:
                             if 'auth' in params:
                                 auth = "Basic %s" % params['auth']
                                 self.headers['Authorization'] = auth

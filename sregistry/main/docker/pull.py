@@ -28,7 +28,13 @@ import os
 import sys
 
 
-def pull(self, images, file_name=None, save=True, force=False, **kwargs):
+def pull(self, images, 
+               file_name=None, 
+               save=True, 
+               force=False, 
+               base=None, 
+               **kwargs):
+
     '''pull an image from a docker hub. This is a (less than ideal) workaround
        that actually does the following:
 
@@ -47,10 +53,12 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
                optionally be None if the user wants a default.
     save: if True, you should save the container to the database
           using self.add()
+    base: the registry base, in case the client doesn't want to set in env.
     
     Returns
     =======
     finished: a single container path, or list of paths
+
     '''
 
     if not isinstance(images,list):
@@ -62,7 +70,9 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     finished = []
     for image in images:
 
-        q = parse_image_name(remove_uri(image))
+        # 0. Update the base in case we aren't working with default
+        base = self._update_base(image)
+        q = parse_image_name(remove_uri(image), base=base)
 
         digest = q['version'] or q['tag']
 

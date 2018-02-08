@@ -33,17 +33,18 @@ import re
 import os
 
 
-def delete(self,url,headers=None,return_json=True):
+def delete(self,url,headers=None,return_json=True, default_headers=True):
     '''delete request, use with caution
     '''
     bot.debug('DELETE %s' %url)
     return self._call(url,
                       headers=headers,
                       func=requests.delete,
-                      return_json=return_json)
+                      return_json=return_json,
+                      default_headers=default_headers)
 
 
-def put(self,url,headers=None,data=None,return_json=True):
+def put(self,url,headers=None,data=None,return_json=True,default_headers=True):
     '''put request
     '''
     bot.debug("PUT %s" %url)
@@ -51,22 +52,35 @@ def put(self,url,headers=None,data=None,return_json=True):
                       headers=headers,
                       func=requests.put,
                       data=data,
-                      return_json=return_json)
+                      return_json=return_json,
+                      default_headers=default_headers)
 
 
+def post(self,url,
+              headers=None,
+              data=None,
+              return_json=True,
+              default_headers=True):
 
-def post(self,url,headers=None,data=None,return_json=True):
     '''post will use requests to get a particular url
     '''
+
     bot.debug("POST %s" %url)
     return self._call(url,
                       headers=headers,
                       func=requests.post,
                       data=data,
-                      return_json=return_json)
+                      return_json=return_json,
+                      default_headers=default_headers)
 
 
-def get(self,url,headers=None,token=None,data=None,return_json=True):
+def get(self,url,
+             headers=None,
+             token=None,
+             data=None,
+             return_json=True,
+             default_headers=True):
+
     '''get will use requests to get a particular url
     '''
     bot.debug("GET %s" %url)
@@ -74,8 +88,8 @@ def get(self,url,headers=None,token=None,data=None,return_json=True):
                       headers=headers,
                       func=requests.get,
                       data=data,
-                      return_json=return_json)
-
+                      return_json=return_json,
+                      default_headers=default_headers)
 
 def paginate_get(self, url, headers=None, return_json=True, start_page=None):
     '''paginate_call is a wrapper for get to paginate results
@@ -144,7 +158,11 @@ def download(self, url, file_name, headers=None, show_progress=True):
     return file_name
 
 
-def stream(self, url, headers=None, stream_to=None, retry=True):
+def stream(self, url, 
+                 headers=None, 
+                 stream_to=None,
+                 retry=True, 
+                 default_headers=True):
     '''
 
        stream is a get that will stream to file_name. This stream is intended
@@ -235,7 +253,7 @@ def stream_response(self, response, stream_to=None):
 
 def call(self, url, func, data=None, headers=None, 
                           return_json=True, stream=False, 
-                          retry=True):
+                          retry=True, default_headers=True):
 
     '''call will issue the call, and issue a refresh token
     given a 401 response, and if the client has a _update_token function
@@ -247,15 +265,20 @@ def call(self, url, func, data=None, headers=None,
     headers: if not None, update the client self.headers with dictionary
     data: additional data to add to the request
     return_json: return json if successful
+    default_headers: use the client's self.headers (default True)
+
     '''
  
     if data is not None:
-        if not isinstance(data,dict):
+        if not isinstance(data, dict):
             data = json.dumps(data)
 
-    heads = self.headers.copy()
+    heads = dict()
+    if default_headers is True:
+        heads = self.headers.copy()
+    
     if headers is not None:
-        if isinstance(headers,dict):
+        if isinstance(headers, dict):
             heads.update(headers)
 
     response = func(url=url,
@@ -265,7 +288,7 @@ def call(self, url, func, data=None, headers=None,
                     stream=stream)
 
     # Errored response, try again with refresh
-    if response.status_code in [500,502]:
+    if response.status_code in [500, 502]:
         bot.error("Beep boop! %s: %s" %(response.reason,
                                         response.status_code))
         sys.exit(1)
