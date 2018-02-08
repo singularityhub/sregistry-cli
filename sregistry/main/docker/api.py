@@ -65,6 +65,7 @@ def update_token(self, response):
 
     token_url = realm + '?service=' + service + '&expires_in=900&scope=' + scope
 
+    # Default headers must be False so that client's current headers not used
     response = self._get(token_url)
 
     try:
@@ -160,15 +161,16 @@ def get_manifest(self, repo_name, digest=None, schema_version="v1"):
     '''
 
     url = self._get_manifest_selfLink(repo_name, digest)
-
+    print(url)
     bot.verbose("Obtaining manifest: %s" % url)
 
-    headers = None
-    if schema_version == "v1":
-        headers = {'Accept':'application/json'}
+    #headers = self.headers.copy()
+    #if schema_version == "v1":
+    #    headers.update({'Accept':'application/json'})
 
     # Manifest should always have link to itself
-    manifest = self._get(url, headers=headers)
+    manifest = self._get(url)#, headers=headers)
+    print(manifest)
     manifest['selfLink'] = url
     return manifest
  

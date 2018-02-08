@@ -40,7 +40,7 @@ def get_image_hash(image_path):
 def parse_image_name(image_name, tag=None, version=None, 
                                  defaults=True, ext="simg",
                                  default_collection="library",
-                                 default_tag="latest"):
+                                 default_tag="latest", base=None):
 
     '''return a collection and repo name and tag
     for an image file.
@@ -53,7 +53,13 @@ def parse_image_name(image_name, tag=None, version=None,
          over-rides parsed image tag
     defaults: use defaults "latest" for tag and "library"
               for collection. 
+    base: if defined, remove from image_name, appropriate if the
+          user gave a registry url base that isn't part of namespace.
+
     '''
+    if base is not None:
+        image_name = image_name.replace(base,'').strip('/')
+
     result = dict()
     image_name = re.sub('[.](img|simg)','',image_name).lower()
     image_name = re.split('/', image_name, 1)
