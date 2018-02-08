@@ -74,7 +74,6 @@ def pull(self, images,
         base = self._update_base(image)
         q = parse_image_name(remove_uri(image), base=base)
 
-        print(q)
         digest = q['version'] or q['tag']
 
         # Use Singularity to build the image, based on user preference

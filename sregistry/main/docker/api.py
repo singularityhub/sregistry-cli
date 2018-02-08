@@ -161,7 +161,6 @@ def get_manifest(self, repo_name, digest=None, schema_version="v1"):
     '''
 
     url = self._get_manifest_selfLink(repo_name, digest)
-    print(url)
     bot.verbose("Obtaining manifest: %s" % url)
 
     #headers = self.headers.copy()
@@ -170,7 +169,6 @@ def get_manifest(self, repo_name, digest=None, schema_version="v1"):
 
     # Manifest should always have link to itself
     manifest = self._get(url)#, headers=headers)
-    print(manifest)
     manifest['selfLink'] = url
     return manifest
  
