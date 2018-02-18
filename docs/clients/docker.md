@@ -67,8 +67,6 @@ The following variables are *shared* between different `sregistry` clients that 
 
 | Variable                    |        Default |          Description |
 |-----------------------------|----------------|----------------------|
-|SREGISTRY_DOCKER_OS       | linux          | The choice of operating system to use from the schema version 2 image manifest |
-|SREGISTRY_DOCKER_ARCHITECTURE| amd64       | the system architecture to use from the schema verison 2 image manifest
 |SREGISTRY_DOCKER_CMD |     not set         | If found as yes/t/true/y or some derivation, use "CMD" instead of "EntryPoint" for container runscript|
 
 
@@ -129,7 +127,7 @@ In [1]: client.speak()
 ## Pull
 The most likely action you want to do with a Docker Hub endpoint is to pull. Pull in this context is different than a pull from Singularity Registry, because we aren't pulling an entire, pre-built image - we are assembling layers at pull time and building an image with them. Specifically we:
 
- 1. **obtain image manifests from Docker Hub** based on an image unique resource identifier (uri) e.g., `ubuntu:latest`. Currently, the image manifests we look for are schemaVersion 1 and 2. Version 1 has important metadata relevant to environment, labels, and the EntryPoint and Cmd (what Singularity will use as the runscript). Version 2 has sizes for layers, and in some cases returns a list of manifests that the user (you!) can choose based on selecting an operating system and system architecture. If you do a simple record (and not pull) it's these manifests that will be obtained and stored in your database.
+ 1. **obtain image manifests from Docker Hub** based on an image unique resource identifier (uri) e.g., `ubuntu:latest`. Currently, the image manifests we look for are schemaVersion 1 and 2, and the image config.
  2. **download layers into a sandbox** and build a squashfs image from the sandbox (per usual with Singularity, build is recommended to do using sudo). The client will detect if you are running the command as sudo (user id 0) and adjust the command to singularity appropriately.
  3. **add the image** to your local storage and sregistry manager so you can find it later.
 
