@@ -13,7 +13,7 @@ These sections will detail use of the Nvidia Container Cloud client for `sregist
 ## Why would I want to use this?
 Singularity proper will be the best solution if you want to pull and otherwise interact with Docker images. However, the Nvidia Container Cloud uses a slightly different authentication protocol (use of `$oauthtoken` as a username, and password as an API token, and so this client helps to support those customizations.
 
-As with [Docker Hub](/sregistry-cli/client-docker) The images are built from layers, and the layers that you obtain depend on the uri that you ask for, along with the host architecture and operating system. See the [environment](#environment). setting for more details.
+As with [Docker Hub](/sregistry-cli/client-docker) The images are built from layers, and the layers that you obtain depend on the uri that you ask for. See the [environment](#environment). setting for more details.
 
 ## Getting Started
 The Nvidia Container Registry module does not require any extra dependencies other than having Singularity on the host.
@@ -47,8 +47,6 @@ The following variables are *shared* between different `sregistry` clients that 
 
 | Variable                    |        Default |          Description |
 |-----------------------------|----------------|----------------------|
-|SREGISTRY_DOCKER_OS       | linux          | The choice of operating system to use from the schema version 2 image manifest |
-|SREGISTRY_DOCKER_ARCHITECTURE| amd64       | the system architecture to use from the schema verison 2 image manifest
 |SREGISTRY_DOCKER_CMD |     not set         | If found as yes/t/true/y or some derivation, use "CMD" instead of "EntryPoint" for container runscript|
 
 

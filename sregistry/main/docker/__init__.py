@@ -65,17 +65,14 @@ class Client(ApiConnection):
 
     def _reset_headers(self):
         '''reset headers is called from update_headers, and will update the
-           headers based on what is found with the client secrets
-        '''
+           headers based on what is found with the client secrets.
 
-        # specify wanting version 2 schema
-        # meaning the correct order of digests
-        # returned (base to child)
-        accept = 'application/vnd.docker.distribution.manifest.v2+json,'
-        accept += 'application/vnd.docker.distribution.manifest.list.v2+json,'
-        accept += 'application/json'
+           Note: that Docker expects different headers depending on the 
+                 manifest desired. See:
+                 https://docs.docker.com/registry/spec/manifest-v2-2/
 
-        self.headers = {"Accept": accept,
+        '''        
+        self.headers = {"Accept": 'application/json',
                         'Content-Type': 'application/json; charset=utf-8'}
 
     def _update_base(self, image):
@@ -142,8 +139,12 @@ class Client(ApiConnection):
 
         # If the user has defined secrets, use them
         credentials = self._get_setting('SREGISTRY_DOCKERHUB_SECRETS')
-        username = self._get_setting('SREGISTRY_DOCKERHUB_USERNAME')
-        password = self._get_setting('SREGISTRY_DOCKERHUB_PASSWORD')
+
+        # First try for SINGULARITY exported, then try sregistry
+        username = self._get_setting('SINGULARITY_DOCKER_USERNAME')
+        password = self._get_setting('SINGULARITY_DOCKER_PASSWORD')
+        username = self._get_setting('SREGISTRY_DOCKERHUB_USERNAME', username)
+        password = self._get_setting('SREGISTRY_DOCKERHUB_PASSWORD', password)
 
         # Option 1: the user exports username and password
         if username is not None and password is not None:

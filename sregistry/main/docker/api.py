@@ -93,38 +93,14 @@ def get_manifests(self, repo_name, digest=None):
 
     '''
 
-    # Obtain schema version 1 (metadata) and 2
-    v1 = self._get_manifest(repo_name, digest, schema_version="v1")
-    v2 = self._get_manifest(repo_name, digest, schema_version="v2")
-
-    # The user can select a default architecture and OS
-    arch = "SREGISTRY_DOCKER_ARCHITECTURE"
-    DOCKER_OS = self._get_and_update_setting("SREGISTRY_DOCKER_OS", "linux")
-    DOCKER_ARCHITECTURE = self._get_and_update_setting(arch, "amd64")
-
-    # A version 2 manifest will be a list of manifests
-    if "manifests" in v2:
-        for entry in v2['manifests']:
-            if entry['platform']['architecture'] == DOCKER_ARCHITECTURE:
-                if entry['platform']['os'] == DOCKER_OS:
-                    digest = entry['digest']
-                    bot.debug('Image manifest version 2.2 list found.')
-                    bot.debug('Obtaining architecture: %s, OS: %s'
-                              % (DOCKER_ARCHITECTURE, DOCKER_OS))
-
-                    v2 = self._get_manifest(repo_name, 
-                                            digest=digest, 
-                                            schema_version="v2")
-                    break
-
-
     if not hasattr(self, 'manifests'):
         self.manifests = {}
 
-    self.manifests[v2['schemaVersion']] = v2
-    self.manifests[v1['schemaVersion']] = v1
-    self.manifests['selfLink'] = "%s/%s/manifests" % (self.base, repo_name)
-
+    # Obtain schema version 1 (metadata) and 2, and image config
+    self.manifests['v1'] = self._get_manifest(repo_name, digest, 'v1')
+    self.manifests['v2'] = self._get_manifest(repo_name, digest, 'v2')
+    self.manifests['config'] = self._get_manifest(repo_name, digest, 'config')
+    
     return self.manifests
 
 
@@ -146,7 +122,7 @@ def get_manifest_selfLink(self, repo_name, digest=None):
     return "%s/%s" % (url, digest)
 
 
-def get_manifest(self, repo_name, digest=None, schema_version="v1"):
+def get_manifest(self, repo_name, digest=None, version="v1"):
     '''
        get_manifest should return an image manifest
        for a particular repo and tag.  The image details
@@ -156,19 +132,23 @@ def get_manifest(self, repo_name, digest=None, schema_version="v1"):
        ==========
        repo_name: reference to the <username>/<repository>:<tag> to obtain
        digest: a tag or shasum version
-       schema_version: the schema version to return, defaults to v1 (older)
+       version: one of v1, v2, and config (for image config)
 
     '''
 
-    url = self._get_manifest_selfLink(repo_name, digest)
-    bot.verbose("Obtaining manifest: %s" % url)
+    accepts = {'config': "application/vnd.docker.container.image.v1+json",
+               'v1': "application/vnd.docker.distribution.manifest.v1+json",
+               'v2': "application/vnd.docker.distribution.manifest.v2+json" }
 
-    #headers = self.headers.copy()
-    #if schema_version == "v1":
-    #    headers.update({'Accept':'application/json'})
+
+    url = self._get_manifest_selfLink(repo_name, digest)
+
+    bot.verbose("Obtaining manifest: %s %s" % (url,version))
+
+    headers = {'Accept': accepts[version] }
+    manifest = self._get(url, headers=headers)
 
     # Manifest should always have link to itself
-    manifest = self._get(url)#, headers=headers)
     manifest['selfLink'] = url
     return manifest
  
@@ -273,14 +253,10 @@ def get_digests(self):
     # Select the manifest to use
     for schemaVersion in schemaVersions:
 
-        # Skip over metadata about schemas included
-        if not isinstance(schemaVersion,int):
-            continue 
-
-        if schemaVersion == 1:
-            reverseLayers = True
-
         manifest = self.manifests[schemaVersion]
+
+        if manifest['schemaVersion'] == 1:
+            reverseLayers = True
 
         # version 2 indices used by default
         layer_key = 'layers'
@@ -415,22 +391,17 @@ def get_config(self, key="Entrypoint", delim=None):
     # First try to parse version 2
     cmd = None
 
-    if 2 in self.manifests:
-        manifest = self.manifests[2]
-        if "config" in manifest:
-            if key in manifest['config']:
-                cmd = manifest['config'][spec]
-
     # If we didn't find the config value in version 2
-    if cmd is None and 1 in self.manifests:
-        manifest = self.manifests[1]
-        if "history" in manifest:
-            for entry in manifest['history']:
-                if 'v1Compatibility' in entry:
-                    entry = json.loads(entry['v1Compatibility'])
-                    if "config" in entry:
-                        if key in entry["config"]:
-                            cmd = entry["config"][key]
+    for version in ['config', 'v1']:
+        if cmd is None and 'config' in self.manifests:
+            manifest = self.manifests['config']
+            if "history" in manifest:
+                for entry in manifest['history']:
+                    if 'v1Compatibility' in entry:
+                        entry = json.loads(entry['v1Compatibility'])
+                        if "config" in entry:
+                            if key in entry["config"]:
+                                cmd = entry["config"][key]
 
     # Standard is to include commands like ['/bin/sh']
     if isinstance(cmd, list):
