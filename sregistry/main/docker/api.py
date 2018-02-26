@@ -429,13 +429,16 @@ def get_environment_tar(self):
         return envtar
 
     # Second attempt, debian distribution will identify folder
-    res = which('dpkg-architecture')['message']
-    if res is not None:
-        cmd = ['dpkg-architecture', '-qDEB_HOST_MULTIARCH']
-        triplet = run_command(cmd)['message'].strip('\n')
-        envtar = '/usr/lib/%s/singularity/bootstrap-scripts/environment.tar' %triplet
-        if os.path.exists(envtar):
-            return envtar
+    try:
+        res = which('dpkg-architecture')['message']
+        if res is not None:
+            cmd = ['dpkg-architecture', '-qDEB_HOST_MULTIARCH']
+            triplet = run_command(cmd)['message'].strip('\n')
+            envtar = '/usr/lib/%s/singularity/bootstrap-scripts/environment.tar' %triplet
+            if os.path.exists(envtar):
+                return envtar
+    except:
+        pass
 
     # Final, return environment.tar provided in package
     return "%s/environment.tar" %os.path.abspath(os.path.dirname(__file__))

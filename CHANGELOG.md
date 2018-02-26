@@ -16,6 +16,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - adding fix to allow for os that don't have `dpkg-architecture` (0.0.70)
  - fixing [bug with environment](https://github.com/singularityhub/sregistry-cli/issues/79) variable export (0.0.69)
  - support for gcr.io, and future "special" token names (0.0.68)
  - adding move (mv) command so client can update database with new path (0.0.67)
