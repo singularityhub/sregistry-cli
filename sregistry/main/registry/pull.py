@@ -64,15 +64,8 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         bot.debug('Retrieving manifest at %s' %url)
         manifest = self._get(url)
 
-        if isinstance(manifest, int):
-            if manifest == 400:
-                bot.error('Bad request (400). Is this a private container?')
-            elif manifest == 404:
-                bot.error('Container not found (404)')
-            sys.exit(1)
-
         # Private container collection
-        elif isinstance(manifest, Response):
+        if isinstance(manifest, Response):
 
             # Requires token
             if manifest.status_code == 403:
@@ -82,6 +75,13 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 headers = {'Authorization': SREGISTRY_EVENT }
                 self._update_headers(headers)
                 manifest = self._get(url)
+
+        if isinstance(manifest, int):
+            if manifest == 400:
+                bot.error('Bad request (400). Is this a private container?')
+            elif manifest == 404:
+                bot.error('Container not found (404)')
+            sys.exit(1)
 
 
         # Successful pull

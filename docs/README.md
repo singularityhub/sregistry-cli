@@ -34,7 +34,10 @@ Importantly, the Singularity Global Client does not have any dependency on Docke
 The Singularity Global Client provides interfaces to [Singularity Hub](/sregistry-cli/client-hub), your self-hosted [Singularity Registry](/sregistry-cli/client-registry), [Google Storage](/sregistry-cli/client-google-storage), [Google Drive](/sregistry-cli/client-google-drive), [NVidia Container Cloud](/sregistry-cli/client-nvidia), [Docker Hub](/sregistry-cli/client-docker), and [Dropbox](/sregistry-cli/client-dropbox). An updated listing is [here](/sregistry-cli/clients).
 
 ## Getting Help
-This is an open source project. Please contribute to the package, or post feedback and questions as <a href="https://github.com/singularityhub/sregistry-cli" target="_blank">issues</a>.
+This is an open source project. Please contribute to the package, or post feedback and questions as <a href="https://github.com/singularityhub/sregistry-cli" target="_blank">issues</a>. You'll notice a little eliipsis (<i class="fa fa-ellipsis-h"></i>) next to each header section. If you click this, you can open an issue relevant to the section, grab a permalink, or suggest a change. You can also talk to us directly on Gitter.
+
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/singularityhub/lobby)
+
 
 ## Contributing
  - [Add a Client](/sregistry-cli/contribute-client): How to contribute a new client, meaning a storage or other endpoint for Singularity images.
