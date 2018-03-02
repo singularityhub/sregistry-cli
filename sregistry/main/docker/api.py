@@ -97,9 +97,11 @@ def get_manifests(self, repo_name, digest=None):
         self.manifests = {}
 
     # Obtain schema version 1 (metadata) and 2, and image config
-    self.manifests['v1'] = self._get_manifest(repo_name, digest, 'v1')
-    self.manifests['v2'] = self._get_manifest(repo_name, digest, 'v2')
-    self.manifests['config'] = self._get_manifest(repo_name, digest, 'config')
+    schemaVersions = ['v1', 'v2', 'config']
+    for schemaVersion in schemaVersions:
+        manifest = self._get_manifest(repo_name, digest, schemaVersion)
+        if manifest is not None:
+            self.manifests[schemaVersion] = manifest
     
     return self.manifests
 
@@ -140,16 +142,17 @@ def get_manifest(self, repo_name, digest=None, version="v1"):
                'v1': "application/vnd.docker.distribution.manifest.v1+json",
                'v2': "application/vnd.docker.distribution.manifest.v2+json" }
 
-
     url = self._get_manifest_selfLink(repo_name, digest)
 
     bot.verbose("Obtaining manifest: %s %s" % (url,version))
-
     headers = {'Accept': accepts[version] }
-    manifest = self._get(url, headers=headers)
 
-    # Manifest should always have link to itself
-    manifest['selfLink'] = url
+    try:
+        manifest = self._get(url, headers=headers, quiet=True)
+        manifest['selfLink'] = url
+    except:
+        manifest = None
+
     return manifest
  
 

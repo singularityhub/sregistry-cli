@@ -79,7 +79,8 @@ def get(self,url,
              token=None,
              data=None,
              return_json=True,
-             default_headers=True):
+             default_headers=True,
+             quiet=False):
 
     '''get will use requests to get a particular url
     '''
@@ -89,11 +90,16 @@ def get(self,url,
                       func=requests.get,
                       data=data,
                       return_json=return_json,
-                      default_headers=default_headers)
+                      default_headers=default_headers,
+                      quiet=quiet)
 
-def paginate_get(self, url, headers=None, return_json=True, start_page=None):
+def paginate_get(self, url, 
+                 headers=None, 
+                 return_json=True,
+                 start_page=None):
     '''paginate_call is a wrapper for get to paginate results
     '''
+
     geturl = '%s&page=1' %(url)
     if start_page is not None:
         geturl = '%s&page=%s' %(url,start_page)
@@ -253,7 +259,8 @@ def stream_response(self, response, stream_to=None):
 
 def call(self, url, func, data=None, headers=None, 
                           return_json=True, stream=False, 
-                          retry=True, default_headers=True):
+                          retry=True, default_headers=True,
+                          quiet=False):
 
     '''call will issue the call, and issue a refresh token
     given a 401 response, and if the client has a _update_token function
@@ -295,8 +302,11 @@ def call(self, url, func, data=None, headers=None,
 
     # Errored response, try again with refresh
     if response.status_code == 404:
-        bot.error("Beep boop! %s: %s" %(response.reason,
-                                        response.status_code))
+
+        # Not found, we might want to continue on
+        if quiet is False:
+            bot.error("Beep boop! %s: %s" %(response.reason,
+                                            response.status_code))
         sys.exit(1)
 
 

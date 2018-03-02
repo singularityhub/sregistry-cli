@@ -76,11 +76,17 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 self._update_headers(headers)
                 manifest = self._get(url)
 
+                # Still denied
+                if manifest.status_code == 403:
+                    manifest = 403
+
         if isinstance(manifest, int):
             if manifest == 400:
                 bot.error('Bad request (400). Is this a private container?')
             elif manifest == 404:
                 bot.error('Container not found (404)')
+            elif manifest == 403:
+                bot.error('Unauthorized (403)')
             sys.exit(1)
 
 
