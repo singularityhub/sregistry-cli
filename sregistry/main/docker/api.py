@@ -101,8 +101,17 @@ def get_manifests(self, repo_name, digest=None):
     for schemaVersion in schemaVersions:
         manifest = self._get_manifest(repo_name, digest, schemaVersion)
         if manifest is not None:
+
+            # If we don't have a config yet, try to get from version 2 manifest
+            if schemaVersion == "v2" and "config" in manifest:
+                bot.debug('Attempting to get config as blob in verison 2 manifest')
+                url = self._get_layerLink(repo_name, manifest['config']['digest'])        
+                headers = {'Accept': manifest['config']['mediaType']}
+                self.manifests['config'] = self._get(url, headers=headers)
+
             self.manifests[schemaVersion] = manifest
-    
+
+
     return self.manifests
 
 
@@ -297,6 +306,20 @@ def get_digests(self):
     return digests
 
 
+def get_layerLink(self, repo_name, digest):
+    '''get the url for a layer based on a digest and repo name
+
+       Parameters
+       ==========
+       digest: The image digest to obtain
+       repo_name: the image name (library/ubuntu) to retrieve
+
+    '''
+    return "%s/%s/blobs/%s" % (self.base,
+                               repo_name,
+                               digest)
+
+
 def get_layer(self, image_id, repo_name, download_folder=None):
     '''download an image layer (.tar.gz) to a specified download folder.
 
@@ -306,9 +329,7 @@ def get_layer(self, image_id, repo_name, download_folder=None):
        repo_name: the image name (library/ubuntu) to retrieve
 
     '''
-    url = "%s/%s/blobs/%s" % (self.base,
-                              repo_name,
-                              image_id)
+    url = self._get_layerLink(repo_name, image_id)
 
     bot.verbose("Downloading layers from %s" % url)
 
@@ -391,14 +412,21 @@ def get_config(self, key="Entrypoint", delim=None):
         bot.error('Please retrieve manifests for an image first.')
         sys.exit(1)
 
-    # First try to parse version 2
     cmd = None
 
     # If we didn't find the config value in version 2
     for version in ['config', 'v1']:
         if cmd is None and 'config' in self.manifests:
+            
+            # First try, version 2.0 manifest config has upper level config
             manifest = self.manifests['config']
-            if "history" in manifest:
+            if "config" in manifest:
+                if key in manifest['config']:
+                    cmd = manifest['config'][key]
+
+            # Second try, config manifest (not from verison 2.0 schema blob)
+
+            if cmd is None and "history" in manifest:
                 for entry in manifest['history']:
                     if 'v1Compatibility' in entry:
                         entry = json.loads(entry['v1Compatibility'])

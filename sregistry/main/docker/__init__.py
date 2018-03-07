@@ -29,8 +29,8 @@ import os
 # here you should import the functions from the files in this
 # folder that you add to your client (at the bottom)
 from .api import ( create_metadata_tar, download_layers, get_manifest_selfLink,
-                   get_config, get_digests, get_layer, get_manifest,
-                   get_manifests, get_download_cache, get_size,
+                   get_config, get_digests, get_layer, get_layerLink, 
+                   get_manifest, get_manifests, get_download_cache, get_size,
                    extract_env, extract_labels, extract_runscript,
                    update_token, get_environment_tar )
 from .pull import pull
@@ -193,6 +193,7 @@ Client._get_config = get_config
 Client._get_digests = get_digests
 Client._get_download_cache = get_download_cache
 Client._get_layer = get_layer
+Client._get_layerLink = get_layerLink
 Client._get_manifest = get_manifest
 Client._get_manifests = get_manifests
 Client._get_size = get_size
