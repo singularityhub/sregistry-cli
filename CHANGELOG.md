@@ -16,6 +16,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - fixed issue with missing registry version 2.0 manifest! (0.0.72)
  - print of "Unauthorized(403)" when client asks to pull private collection (0.0.71)
  - adding fix to allow for os that don't have `dpkg-architecture` (0.0.70)
  - adding help and support links to docs (doesn't alter functionality)
