@@ -76,6 +76,10 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 self._update_headers(headers)
                 manifest = self._get(url)
 
+                # Still denied
+                if isinstance(manifest, Response):
+                    if manifest.status_code == 403:
+                        manifest = 403
 
         if isinstance(manifest, int):
             if manifest == 400:
@@ -119,27 +123,3 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         if len(finished) == 1:
             finished = finished[0]
         return finished
-
-
-    upload_to = os.path.basename(names['storage'])
-
-    encoder = MultipartEncoder(fields={'collection': names['collection'],
-                                       'name':names['image'],
-                                       'metadata':metadata,
-                                       'tag': names['tag'],
-                                       'datafile': (upload_to, open(upload_from, 'rb'), 'text/plain')})
-
-    progress_callback = create_callback(encoder)
-    monitor = MultipartEncoderMonitor(encoder, progress_callback)
-    headers = {'Content-Type': monitor.content_type,
-               'Authorization': SREGISTRY_EVENT }
-
-    try:
-        r = requests.post(url, data=monitor, headers=headers)
-        message = self._read_response(r)
-
-        print('\n[Return status {0} {1}]'.format(r.status_code, message))
-
-    except KeyboardInterrupt:
-        print('\nUpload cancelled.')
-
