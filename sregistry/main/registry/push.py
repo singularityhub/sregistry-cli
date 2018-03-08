@@ -57,6 +57,7 @@ def push(self, path, name, tag=None):
     metadata = self.get_metadata(path, names=names)
 
     # Try to add the size
+
     try:
         image_size = os.path.getsize(path) >> 20
         if metadata['data']['attributes']['labels'] is None:
@@ -69,13 +70,21 @@ def push(self, path, name, tag=None):
         pass
 
 
-    if "deffile" in metadata['data']['attributes']:
-        if metadata['data']['attributes']['deffile'] is not None:
-            fromimage = parse_header(metadata['data']['attributes']['deffile'],
-                                     header="from",
-                                     remove_header=True) 
-            metadata['data']['attributes']['labels']['SREGISTRY_FROM'] = fromimage
-            bot.debug("%s was built from a definition file." % image)
+    # Try to add the from
+
+    if "data" in metadata:
+        if 'attributes' in metadata['data']:
+            if metadata['data']['attributes'].get('deffile') is not None:
+                fromimage = parse_header(metadata['data']['attributes']['deffile'],
+                                         header="from",
+                                         remove_header=True) 
+
+                # Add label for from
+                if 'labels' not in metadata['data']['attributes']:
+                    metadata['data']['attributes']['labels'] = dict()
+
+                metadata['data']['attributes']['labels']['SREGISTRY_FROM'] = fromimage
+                bot.debug("%s was built from a definition file." % image)
 
 
     # Prepare push request with multipart encoder
