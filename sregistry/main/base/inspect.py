@@ -71,7 +71,7 @@ def get_metadata(self, image_file, names={}):
             cli = Singularity()
             updates = cli.inspect(image_path=image_file, quiet=True)
         except:
-            bot.warning('Inspect command not supported, no included.')
+            bot.warning('Inspect command not supported, metadata not included.')
             updates = None
 
         # Try loading the metadata
