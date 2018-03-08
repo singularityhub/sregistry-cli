@@ -27,6 +27,7 @@ from sregistry.utils import (
     which 
 )
 
+from sregistry.logger import bot
 from sregistry.auth import ( read_client_secrets, update_client_secrets )
 import os
 import json
@@ -64,8 +65,14 @@ def get_metadata(self, image_file, names={}):
     # Inspect the image, or return names only
     if os.path.exists(singularity) and image_file is not None:
         from sregistry.client import Singularity
-        cli = Singularity()
-        updates = cli.inspect(image_path=image_file, quiet=True)
+
+        # We try and inspect, but not required (wont work within Docker)
+        try:
+            cli = Singularity()
+            updates = cli.inspect(image_path=image_file, quiet=True)
+        except:
+            bot.warning('Inspect command not supported, metadata not included.')
+            updates = None
 
         # Try loading the metadata
         if updates is not None:
