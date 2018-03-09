@@ -16,6 +16,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - get_layerLink missing for nvidia client, added (0.0.74)
  - making "inspect" optional on pull so that we don't error out running in Docker (0.0.73)
  - fixed issue with missing registry version 2.0 manifest! (0.0.72)
  - print of "Unauthorized(403)" when client asks to pull private collection (0.0.71)

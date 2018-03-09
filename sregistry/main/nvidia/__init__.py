@@ -35,6 +35,7 @@ from sregistry.main.docker.api import (
     get_digests,
     get_environment_tar, 
     get_layer,
+    get_layerLink,
     get_manifest,
     get_manifests,
     get_download_cache,
@@ -162,6 +163,7 @@ Client._get_config = get_config
 Client._get_digests = get_digests
 Client._get_download_cache = get_download_cache
 Client._get_layer = get_layer
+Client._get_layerLink = get_layerLink
 Client._get_manifest = get_manifest
 Client._get_manifests = get_manifests
 Client._get_size = get_size
