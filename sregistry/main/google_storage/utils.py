@@ -19,6 +19,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
+from sregistry.utils import read_file
+
 def prepare_metadata(metadata):
     '''prepare a key/value list of metadata for the request. The metadata
        object that comes in is only parsed one level.
@@ -41,3 +43,25 @@ def prepare_metadata(metadata):
                     pairs['metadata']['items'].append({'key':k,'value':v})
 
     return pairs
+
+
+def get_build_template(name=None, manager='apt'):
+    '''get a particular build template, by default we return templates
+       that are based on package managers.
+
+       Parameters
+       ==========
+       name: the full path of the template file to use.
+       manager: the package manager to use in the template (yum or apt)
+
+    '''
+    base = get_installdir()
+    if name is None:
+        name = "%s/main/templates/build/singularity-builder-%s.sh" %(base,
+                                                                     manager)
+
+    if os.path.exists(name):  
+        bot.debug("Found template %s" %name)
+        return ''.join(read_file(name)) 
+
+    bot.warning("Template %s not found." %name)

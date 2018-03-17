@@ -99,9 +99,9 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
     keep_private = self._get_and_update_setting(env)
 
     media = MediaFileUpload(source, chunksize=chunk_size, resumable=True)
-    request = self._service.objects().insert(bucket=self._bucket_name, 
-                                             name=destination,
-                                             media_body=media)
+    request = self._storage_service.objects().insert(bucket=self._bucket_name, 
+                                                     name=destination,
+                                                     media_body=media)
 
     response = None
     total = request.resumable._size / (1024*1024.0)

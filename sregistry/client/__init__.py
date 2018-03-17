@@ -172,6 +172,33 @@ def get_parser():
                          help="container search query, don't specify for all", 
                          type=str, default="*")
 
+    # Build an image
+    if hasattr(cli,'build'):
+
+        build = subparsers.add_parser("build",
+                                     help="build a container using a remote.")
+
+        build.add_argument('--list','--ls', dest="ls", 
+                           help="list builder instances.", 
+                           default=False, action='store_true')
+
+        build.add_argument('--preview','-p', dest="preview", 
+                           help="preview the parsed configuration file only.", 
+                           default=False, action='store_true')
+
+        build.add_argument("repo", nargs='?',
+                           help="Github repository with build recipes", 
+                           type=str)
+
+        build.add_argument("--name", dest='name', 
+                           help='name of image, in format "library/image"', 
+                           type=str, default=None)
+
+        build.add_argument("--recipe", dest='recipe', 
+                           help='specify a particular recipe to build', 
+                           type=str, default=None)
+
+
 
     # Push an image
     if hasattr(cli,'push'):
@@ -328,6 +355,7 @@ def main():
 
     # Does the user want a shell?
     if args.command == "add": from .add import main
+    if args.command == "build": from .build import main
     if args.command == "get": from .get import main
     if args.command == "delete": from .delete import main
     if args.command == "inspect": from .inspect import main

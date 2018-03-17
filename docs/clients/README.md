@@ -19,6 +19,14 @@ Singularity Registry Global client has tutorials and walkthroughs for the follow
  - [Singularity Hub](/sregistry-cli/client-hub): the default endpoint will work (search and pull) images from Singularity Hub.
  - [Singularity Registry](/sregistry-cli/client-registry): to interact with an institution or personally hosted Singularity Registry.
 
+## Builders
+For a subset of the clients above, we have developed remote builders, meaning that
+you can issue a command locally to use your remote credential to deploy a remote builder.
+We provide details for builders here.
+
+ - [Google Compute](/sregistry-cli/client-google-compute): Build an image on Google Compute and upload to Google Storage.
+
+
 <div>
     <a href="/sregistry-cli/getting-started"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
     <a href="/sregistry-cli/commands"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>

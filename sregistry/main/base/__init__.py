@@ -33,8 +33,9 @@ from sregistry.main.base.headers import (
 )
 
 from sregistry.main.base.http import ( 
-    call, delete, download, get, paginate_get, 
-    post, put, stream, stream_response, verify
+    call, delete, download, get, head, healthy, 
+    paginate_get, post, put, stream, 
+    stream_response, verify
 )
 
 from sregistry.main.base.inspect import (
@@ -43,6 +44,7 @@ from sregistry.main.base.inspect import (
 
 from sregistry.main.base.settings import (
     get_setting,
+    get_settings,
     get_storage_name,
     get_and_update_setting
 )
@@ -119,6 +121,7 @@ ApiConnection._update_headers = update_headers
 # Settings
 ApiConnection.require_secrets = require_secrets
 ApiConnection._get_setting = get_setting
+ApiConnection._get_settings = get_settings
 ApiConnection._get_and_update_setting = get_and_update_setting
 ApiConnection._get_storage_name = get_storage_name
 
@@ -134,6 +137,8 @@ ApiConnection._call = call
 ApiConnection._delete = delete
 ApiConnection.download = download
 ApiConnection._get = get
+ApiConnection._head = head
+ApiConnection._healthy = healthy
 ApiConnection._paginate_get = paginate_get
 ApiConnection._post = post
 ApiConnection._put = put

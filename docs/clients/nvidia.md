@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Docker Hub Client
+title: Singularity Global Client, Nvidia Cloud Client
 pdf: true
 permalink: /client-nvidia
 toc: false

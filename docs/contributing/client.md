@@ -436,7 +436,21 @@ First, you might decide for your client (let's call it `myclient`) that your use
 
 setting = self._get_setting('SREGISTRY_MYCLIENT_ID')
 ```
-Note that the above function looks first in the environment, and then in the secrets file. If it's not found in either place, `None` is returned.
+Note that the above function looks first in the environment, and then in the secrets file. If it's not found in either place, `None` is returned. You can also return all settings for a particular client:
+
+```
+# This is the active client
+active_settings = self._get_settings(self.client_name)
+
+# This is another client (not necessarily active)
+more_settings = self._get_settings('google-storage')
+```
+
+or for all clients (including those not active.
+
+```
+settings = self._get_settings()
+```
 
 
 ##### GET and UPDATE

@@ -29,7 +29,21 @@ import os
 
 # Secrets and Settings
 
-        
+
+def get_settings(self, client_name=None):
+    '''get all settings, either for a particular client if a name is provided,
+       or across clients.
+
+       Parameters
+       ==========
+       client_name: the client name to return settings for (optional)
+
+    '''
+    settings = read_client_secrets()
+    if client_name is not Nont and client_name in settings:
+        return settings[client_name]           
+    return settings
+
 
 def get_setting(self, name, default=None):
     '''return a setting from the environment (first priority) and then

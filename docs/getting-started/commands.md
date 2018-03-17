@@ -34,10 +34,11 @@ A quick rundown of basic commands is shown in this asciicast.
 ## Remote Commands
 Recommended (but not required) commands for *remote* endpoints can be read about pertaining to [specific clients](/sregistry-cli/clients), and are listed briefly here:
 
- - [pull](#pull): `[remote->local]` pull an image from a remote endpoint to the local database and storage.
- - [search](#search): `[remote]` list all image collections in a remote endpoint
- - [record](#record): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
- - [share](share): Share a container! For Google Drive, this correponds to sharing a link by email. For other endpoints, it may mean something else.
+ - [build](#): issues a local command to build a remote Github repository.
+ - [pull](#): `[remote->local]` pull an image from a remote endpoint to the local database and storage.
+ - [search](#): `[remote]` list all image collections in a remote endpoint
+ - [record](#): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
+ - [share](#): Share a container! For Google Drive, this correponds to sharing a link by email. For other endpoints, it may mean something else.
 
 For each of these remote commands that are client specific, you can select the client via export of an environment variable:
 

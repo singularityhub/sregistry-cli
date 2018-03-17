@@ -44,4 +44,3 @@ def get_template(name):
         return templates[name]
     else:
         bot.warning("Cannot find template %s" % (name))
-

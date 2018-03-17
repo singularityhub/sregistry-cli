@@ -67,6 +67,7 @@ def get_client(image=None, quiet=False):
     elif SREGISTRY_CLIENT == 'hub': from .hub import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
     elif SREGISTRY_CLIENT == 'google-drive': from .google_drive import Client
+    elif SREGISTRY_CLIENT == 'google-compute': from .google_storage import Client
     elif SREGISTRY_CLIENT == 'google-storage': from .google_storage import Client
     elif SREGISTRY_CLIENT == 'registry': from .registry import Client
     else: from .hub import Client

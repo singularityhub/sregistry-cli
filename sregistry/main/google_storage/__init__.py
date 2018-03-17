@@ -31,10 +31,16 @@ from google.cloud import storage
 from googleapiclient.discovery import build
 from oauth2client.client import GoogleCredentials
 
+from .build import ( 
+    build, get_build_config, setup_build, run_build,
+    load_templates, get_templates,
+    list_builders, list_templates, get_instances )
+from .delete import ( delete, destroy )
 from .pull import pull
 from .push import ( push, upload )
 from .record import record
 from .query import ( container_query, list_containers, search, search_all )
+
 
 class Client(ApiConnection):
 
@@ -67,40 +73,105 @@ class Client(ApiConnection):
            differs from the default, use the application credentials to 
            get the bucket, and then instantiate the client.
         '''
+
+        # Get storage and compute services
+        self._get_services()
+
         env = 'SREGISTRY_GOOGLE_STORAGE_BUCKET'
         self._bucket_name = self._get_and_update_setting(env)
-        self._service = self._get_service()
+
+        # If the user didn't set in environment, use default
         if self._bucket_name is None:
             self._bucket_name = 'sregistry-%s' %os.environ['USER']
+
         self._get_bucket()
 
 
-    def _get_service(self, version='v1'):
-        '''get version 1 of the google storage API
-        :param version: version to use (default is v1)
+    def _get_services(self, version='v1'):
+        '''get version 1 of the google compute and storage service
+
+        Parameters
+        ==========
+        version: version to use (default is v1)
         '''
         self._bucket_service = storage.Client()
-        credentials = GoogleCredentials.get_application_default()
-        return build('storage', version, credentials=credentials) 
+        creds = GoogleCredentials.get_application_default()
+        self._storage_service = build('storage', version, credentials=creds)
+        self._compute_service = build('compute', version, credentials=creds) 
 
 
     @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
     def _get_bucket(self):
         '''get a bucket based on a bucket name. If it doesn't exist, create it.
         '''
+
+        # Case 1: The bucket already exists
         try:
             self._bucket = self._bucket_service.get_bucket(self._bucket_name)
+
+        # Case 2: The bucket needs to be created
         except google.cloud.exceptions.NotFound:
             self._bucket = self._bucket_service.create_bucket(self._bucket_name)
+
+        # Case 3: The bucket name is already taken
+        except:
+            bot.error('Cannot get or create %s' %self.bucket_name)
+            bot.error('Try exporting SREGISTRY_GOOGLE_STORAGE_BUCKET')
+            sys.exit(1)
+
         return self._bucket
 
 
+    def _get_project(self, project=None):
+        '''get project returns the active project, and exists if not found.
+         
+           Parameters
+           ==========
+           project: a project to default to, if not found in the environment
+           zone: a default zone, will be us-west1-a by default
 
-# Add your different functions imported at the top to the client here
+        '''
+        project = self._get_and_update_setting('SREGISTRY_GOOGLE_PROJECT', project)
+        
+        if not project:
+            bot.error('Export your SREGISTRY_GOOGLE_PROJECT to build.')
+            sys.exit(1)
+
+        return project
+
+
+    def _get_zone(self, zone='us-west1-a'):
+        '''get zone returns the zone set in the environment, or the default
+         
+           Parameters
+           ==========
+           zone: a default zone, will be us-west1-a by default
+
+        '''
+        return self._get_and_update_setting('SREGISTRY_GOOGLE_ZONE', zone)
+
+
+    if not project:
+        bot.error('Export your SREGISTRY_GOOGLE_PROJECT to build.')
+        sys.exit(1)
+
+
+
 Client.pull = pull
 Client.push = push
 Client._upload = upload
 Client.record = record
+
+# Build functions
+Client.build = build
+Client._setup_build = setup_build
+Client._run_build = run_build
+Client._get_instances = get_instances
+Client._get_templates = get_templates
+Client._get_build_config = get_build_config
+Client._load_templates = load_templates
+Client.list_builders = list_builders
+Client.list_templates = list_templates
 
 Client.search = search
 Client._search_all = search_all
