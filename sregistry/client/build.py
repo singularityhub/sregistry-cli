@@ -29,17 +29,35 @@ def main(args,parser,subparser):
     from sregistry.main import get_client, Client as cli
     
     # Does the user want to save the image?    
-    repo = args.repo.pop(0)
+    command = args.commands.pop(0)
 
-    # Actions include kill, templates
-    if len(args.repo) > 0:
-        action = args.repo.pop(0)       
+    # Option 1: The user wants to kill an instance
+    if command == "kill":
+        cli.destroy(args.name)
+        sys.exit(0) 
+
+    # Option 2: The user wants to list templates
+    if 'template' in command:
+        template_name = None
+        if len(args.commands) > 0:
+            template_name = args.commands.pop(0)
+        cli.list_templates(template_name)
+        sys.exit(0)
+
+    # Option 3: The user is providing a Github repo!
+    recipe = "Singularity"
+
+    if "github" in command:
+
+        # One argument indicates a recipe
+        if len(args.commands == 1):
+            recipe = args.commands.pop(0)       
 
     # Does the user want to specify a name for the collection?
     name = args.name
 
-    # Does the user want to specify a specific recipe?
-    recipe = args.recipe
+    # Does the user want to specify a specific config?
+    config = args.config
 
     # No image is needed, we are creating in the cloud
     cli = get_client(quiet=args.quiet)
@@ -50,20 +68,8 @@ def main(args,parser,subparser):
         cli.list_builders()
         sys.exit(0)
 
-    # Does the user want to kill an instance?
-    if action == 'kill':
-        cli.destroy(args.name)
-        sys.exit(0) 
-
-    # Does the user want to see builder template options?
-    template_name = None
-    if 'template' in action:
-        if len(args.repo) > 0:
-            template_name = args.repo.pop(0)
-        cli.list_templates(template_name)
-        sys.exit(0)
-
     response = cli.build(repo=repo, 
                          name=name,
-                         recipe=recipe, 
+                         recipe=recipe,
+                         config=config,
                          preview=args.preview)

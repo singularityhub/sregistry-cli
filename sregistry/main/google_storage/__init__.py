@@ -28,11 +28,11 @@ import os
 
 from retrying import retry
 from google.cloud import storage
-from googleapiclient.discovery import build
+from googleapiclient.discovery import build as discovery_build
 from oauth2client.client import GoogleCredentials
 
 from .build import ( 
-    build, get_build_config, setup_build, run_build,
+    build, load_build_config, setup_build, run_build,
     load_templates, get_templates,
     list_builders, list_templates, get_instances )
 from .delete import ( delete, destroy )
@@ -96,8 +96,8 @@ class Client(ApiConnection):
         '''
         self._bucket_service = storage.Client()
         creds = GoogleCredentials.get_application_default()
-        self._storage_service = build('storage', version, credentials=creds)
-        self._compute_service = build('compute', version, credentials=creds) 
+        self._storage_service = discovery_build('storage', version, credentials=creds)
+        self._compute_service = discovery_build('compute', version, credentials=creds) 
 
 
     @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
@@ -151,12 +151,6 @@ class Client(ApiConnection):
         return self._get_and_update_setting('SREGISTRY_GOOGLE_ZONE', zone)
 
 
-    if not project:
-        bot.error('Export your SREGISTRY_GOOGLE_PROJECT to build.')
-        sys.exit(1)
-
-
-
 Client.pull = pull
 Client.push = push
 Client._upload = upload
@@ -168,7 +162,7 @@ Client._setup_build = setup_build
 Client._run_build = run_build
 Client._get_instances = get_instances
 Client._get_templates = get_templates
-Client._get_build_config = get_build_config
+Client._load_build_config = load_build_config
 Client._load_templates = load_templates
 Client.list_builders = list_builders
 Client.list_templates = list_templates

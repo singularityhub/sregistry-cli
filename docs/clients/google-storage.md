@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Singularity Global Client: Google Storage
+title: Singularity Global Client, Google Storage
 pdf: true
 permalink: /client-google-storage
 toc: false
@@ -28,15 +28,6 @@ pip install -e .[google-storage]
 The next steps we will take are to first set up authentication, and then define your Storage Bucket (and other settings) via environment variables. 
 
 ### Environment
-
-TODO: make table of these!
-
-- There are USER defaults that MUST be set in the environment at runtime, including your account credentials from the host and specification of a Google Storage Bucket.
-- There are builder configuratoin details that are also used before you launch the builder, but you can generate a template to see and edit the options before launching anything.
-- There are run time building variables that the builder will use to do the build, and these are also set in the configuration, but not used until the instance is deployed.
-
-Generally, the minimum requirements are what is captured in the first group - your cloud credentials. Even the bucket to send things to has a reasonable default that is used if it isn't set by you in the environment or build file.
-
 Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Google Storage, you will first need to [set up authentication](https://cloud.google.com/docs/authentication/getting-started) by following those steps. It comes down to creating a file and saving it on your system with the variable name `GOOGLE_APPLICATION_CREDENTIALS`. This variable will be found and used every time you use the storage Client, without needing to save anything to the secrets.
 
 Thus, the complete list of this required variable (and other options, with defaults shown) are the following:

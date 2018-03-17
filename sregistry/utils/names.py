@@ -37,10 +37,15 @@ def get_image_hash(image_path):
     return hasher.hexdigest()
 
 
-def parse_image_name(image_name, tag=None, version=None, 
-                                 defaults=True, ext="simg",
-                                 default_collection="library",
-                                 default_tag="latest", base=None):
+
+def parse_image_name(image_name,
+                     tag=None,
+                     version=None, 
+                     defaults=True, 
+                     ext="simg",
+                     default_collection="library",
+                     default_tag="latest",
+                     base=None):
 
     '''return a collection and repo name and tag
     for an image file.

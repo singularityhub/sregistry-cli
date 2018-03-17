@@ -23,16 +23,13 @@ from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     get_image_hash,
     get_installdir,
+    get_recipe_tag,
     parse_image_name,
     remove_uri
 )
 
-from sregistry.main.google_storage.utils import (
-    get_build_template,
-    prepare_metadata
-)
+from sregistry.main.google_storage.utils import get_build_template
 
-from googleapiclient.http import MediaFileUpload
 from retrying import retry
 import json
 import sys
@@ -40,9 +37,14 @@ import os
 
     
 
-def build(self, repo, config=None, name=None, recipe=None, preview=False):
+def build(self, repo, 
+                config=None,
+                name=None, 
+                recipe='Singularity',
+                preview=False):
+
     '''trigger a build on Google Cloud (storage then compute) given a name
-       and Github URI 
+       recipe, and Github URI where the recipe can be found.
     
        Parameters
        ==========
@@ -69,15 +71,18 @@ def build(self, repo, config=None, name=None, recipe=None, preview=False):
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(name))
 
+    # If the user hasn't provided a tag with the name, check recipe
+    if names['tag'] == "latest" and recipe != "Singularity":
+        tag = get_recipe_tag(recipe)
+        names = parse_image_name(remove_uri(name), tag=tag)
+
     # Setup the build
     config = self.setup_build(names['url'], config)
 
-    # If the user has provided a recipe, add as metadata
-    if recipe is not None:
-        bot.info('Adding recipe %s to config %s' %recipe)
-        entry = {'key': 'SINGULARITY_RECIPE', 'value': recipe}
-
-        config['metadata']['items'].append(entry)
+    # Add the chosen recipe as metadata
+    bot.info('Adding recipe %s to config %s' %recipe)
+    entry = {'key': 'SINGULARITY_RECIPE', 'value': recipe}
+    config['metadata']['items'].append(entry)
 
     # The user only wants to preview the configuration
     if preview is True:
@@ -119,7 +124,7 @@ def list_templates(self, name=None):
        ==========
        name: the name of a template to look up
     '''
-    configs = self._get_templates(name)
+    configs = self._get_templates()
     rows = []
 
     # DETAIL: The user wants to retrieve a particular configuration
@@ -172,7 +177,7 @@ def load_templates(self, name):
     bot.info('No matches found for %s' %name)
 
 
-def get_instances(self, project=None, zone='us-west1-a')
+def get_instances(self, project=None, zone='us-west1-a'):
     '''get instances will return the (unparsed) list of instances, for
        functions for the user. This is primarily used by get_builders
        to print a list of builder instances.

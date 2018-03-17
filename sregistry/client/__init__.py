@@ -186,16 +186,19 @@ def get_parser():
                            help="preview the parsed configuration file only.", 
                            default=False, action='store_true')
 
-        build.add_argument("repo", nargs='?',
-                           help="Github repository with build recipes", 
+        build.add_argument("commands", nargs='*',
+                           help='''RUN:            build [repo] [recipe] [config]
+                                   ALL  templates: build templates
+                                   GET  template:  build templates [template]
+                                   ''', 
                            type=str)
 
         build.add_argument("--name", dest='name', 
                            help='name of image, in format "library/image"', 
                            type=str, default=None)
 
-        build.add_argument("--recipe", dest='recipe', 
-                           help='specify a particular recipe to build', 
+        build.add_argument("--config", dest='config', 
+                           help='specify a config file or uri', 
                            type=str, default=None)
 
 
@@ -374,15 +377,16 @@ def main():
 
     # Pass on to the correct parser
     return_code = 0
-    try:
+    if 1==1:
+    #try:
         main(args=args,
              parser=parser,
              subparser=subparsers[args.command])
         sys.exit(return_code)
-    except UnboundLocalError:
-        return_code = 1
+    #except UnboundLocalError:
+    #    return_code = 1
 
-    help(return_code)
+    #help(return_code)
 
 if __name__ == '__main__':
     main()
