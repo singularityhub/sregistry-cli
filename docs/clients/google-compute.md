@@ -97,16 +97,71 @@ the commands and actions you would want to do.
 ### Templates
 
 ```
-$ sregistry build template
+$ sregistry build templates
+1  /cloud/google/compute/ubuntu/securebuild-2.4.3.json
 ```
 
+Specifically, the id of the templates listed above refers to the path in the
+[builder bundle Github repository](https://www.github.com/singularityhub/builders) 
+We could then retrieve that particular template,  and pipe it into a file:
 
+```
+$ sregistry build templates cloud/google/compute/ubuntu/securebuild-2.4.3.json >> config.json
+```
 
+### Build
+You want to build! The commands argument to build can look like any of the following. The
+only requirement is a Github repository. You are **required** to have your work in version
+control. 
 
+#### Provide Github Repo
+If you want to use a default recipe `Singularity` in the base of the Github repository,
+and are also happy with the repository name as the container's uri (e.g., `vsoch/singularity-images`
+and are happy using the default configuration for Google Compute, then you only need to give
+the builder the name of the Github repository:
 
+```
+$ sregistry build https://www.github.com/vsoch/singularity-images
+```
+
+The above will build a container `vsoch/singularity-images:latest` from the file 
+`Singularity` in the repository.
+
+#### Github Repo and Recipe
+If you provide two arguments, the second refers to the path (relative to the repository base)
+of the Singularity recipe:
+
+```
+$ sregistry build https://www.github.com/singularityhub/hello-registry os/ubuntu/Singularity.14.04 
+```
+
+This will build the image `singularityhub/hello-world` with tag `14.04` from the recipe file
+`os/ubuntu/Singularity.14.04` in the repository. It's useful to type out this path from the
+repo on your local machine so by the time it gets to the builder and clones, we know where to find it!
+
+#### Custom Name
+If you want to customize the name of the final image, you can set it with `--name`. If you
+set a tag here, this takes preference over the file extension.
+
+```
+$ sregistry build --name vanessa/tacos:avocado https://www.github.com/vsoch/singularity-images
+```
+
+#### Custom Config
+You most likely will want to generate a custom configuration (as instructed with build templates commands
+above) to control your build. You can provide it to the build command as follows:
+
+```
+$ sregistry build https://www.github.com/vsoch/singularity-images --config config.json
+```
+
+### Instances
+
+**TBA**
 
 If you are interested to read more about the local commands for the Google Storage client,
 continue reading about the [Google Storage](/sregistry-cli/client-google-storage) client.
+
 
 ## Optional Environment
 

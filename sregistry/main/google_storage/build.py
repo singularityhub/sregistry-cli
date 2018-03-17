@@ -130,7 +130,7 @@ def list_templates(self, name=None):
     # DETAIL: The user wants to retrieve a particular configuration
     if name:
         matches = self._load_templates(name)
-        bot.info('Found %s matches for %s' %(len(matches), name))
+        bot.debug('Found %s matches for %s' %(len(matches), name))
         for match in matches:
             print(json.dumps(match, indent=4, sort_keys=True))
 
