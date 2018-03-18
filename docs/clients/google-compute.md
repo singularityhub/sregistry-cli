@@ -360,8 +360,33 @@ $ client.build(repo='https://www.github.com/tacos/i-dont-exist',
 ERROR https://www.github.com/tacos/i-dont-exist, response status code 404.
 ```
 
-### 4. Setup the build!
+### 4. Run the build!
+Now we can launch the build!
 
+```
+$ client._run_build(config)
+{'id': '1397962134226444746',
+ 'insertTime': '2018-03-18T01:11:17.701-07:00',
+ 'kind': 'compute#operation',
+ 'name': 'operation-1521360676388-567ab62b0fca0-fe5f787b-2381e436',
+ 'operationType': 'insert',
+ 'progress': 0,
+ 'selfLink': 'https://www.googleapis.com/compute/v1/projects/srcc-gcp-ruth-will-phs-testing/zones/us-west1-a/operations/operation-1521360676388-567ab62b0fca0-fe5f787b-2381e436',
+ 'status': 'PENDING',
+ 'targetId': '8438793552607289803',
+ 'targetLink': 'https://www.googleapis.com/compute/v1/projects/srcc-gcp-ruth-will-phs-testing/zones/us-west1-a/instances/vsoch-hello-world-builder',
+ 'user': 'vanessasaur@srcc-gcp-ruth-will-phs-testing.iam.gserviceaccount.com',
+ 'zone': 'https://www.googleapis.com/compute/v1/projects/srcc-gcp-ruth-will-phs-testing/zones/us-west1-a'}
+```
+
+And after launch, you can always get a list of instances:
+
+```
+$ client._get_instances()
+```
+If you wanted to destroy a particular instance and stop the build, you can do that too.
+
+**still writing! Need sleep!**
 
 <div>
     <a href="/sregistry-cli/clients"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
