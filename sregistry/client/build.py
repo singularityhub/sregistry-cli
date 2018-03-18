@@ -73,3 +73,8 @@ def main(args,parser,subparser):
                          recipe=recipe,
                          config=config,
                          preview=args.preview)
+
+    # If the client wants to preview, the config is returned
+    if args.preview is True:
+        print(json.dumps(response, indent=4, sort_keys=True))
+        

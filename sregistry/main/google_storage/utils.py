@@ -19,7 +19,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.utils import read_file
+from sregistry.logger import bot
+from sregistry.utils import ( read_file, get_installdir )
+import sys
+import os
 
 def prepare_metadata(metadata):
     '''prepare a key/value list of metadata for the request. The metadata
@@ -60,7 +63,7 @@ def get_build_template(name=None, manager='apt'):
         name = "%s/main/templates/build/singularity-builder-%s.sh" %(base,
                                                                      manager)
 
-    if os.path.exists(name):  
+    if os.path.exists(name):
         bot.debug("Found template %s" %name)
         return ''.join(read_file(name)) 
 

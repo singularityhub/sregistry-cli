@@ -24,6 +24,7 @@ from sregistry.utils import (
     get_image_hash,
     get_installdir,
     get_recipe_tag,
+    read_json,
     parse_image_name,
     remove_uri
 )
@@ -77,7 +78,7 @@ def build(self, repo,
         names = parse_image_name(remove_uri(name), tag=tag)
 
     # Setup the build
-    config = self.setup_build(names['url'], config)
+    config = self._setup_build(names['url'], config)
 
     # Add the chosen recipe as metadata
     bot.info('Adding recipe %s to config %s' %recipe)
@@ -86,11 +87,10 @@ def build(self, repo,
 
     # The user only wants to preview the configuration
     if preview is True:
-        print(json.dumps(config, indent=4, sort_keys=True))
-        sys.exit(0)
+        return config
 
     # Otherwise, run the build!
-    self.run_build(config)
+    self._run_build(config)
 
 
 
@@ -208,15 +208,18 @@ def load_build_config(self, config=None):
        config: the config file the user has provided, or the library URI
 
     '''
+    # If the config is already a dictionary, it's loaded
+    if isinstance(config, dict):
+        bot.debug('Config is already loaded.')
+        return config
 
     # if the config is not defined, look in environment, then choose a default
-
     if config is None:
         config = self._get_and_update_setting('SREGISTRY_COMPUTE_CONFIG',
                                      'google/compute/ubuntu/securebuild-2.4.3')
 
     # If the config is a file, we read it
-    if os.path.exists(config):
+    elif os.path.exists(config):
         return read_json(config)
 
     # otherwise, try to look it up in library
@@ -248,11 +251,10 @@ def setup_build(self, name, config, startup_script=None):
     startup_script = get_build_template(startup_script, manager)
 
     # Read in the config to know what we can edit
-    if not os.path.exists(config):
-        bot.error('Cannot find %s' %config)
+    config = self._load_build_config(config)
+    if not config:
+        bot.error('Cannot find config, check path or URI.')
         sys.exit(1)
-
-    config = read_json(config)
 
     # Compute settings that are parsed into runscript via metadata
     defaults = config['data']['metadata']

@@ -57,6 +57,7 @@ def head(self, url):
 
 def healthy(self, url):
     '''determine if a resource is healthy based on an accepted response (200)
+       or redirect (301)
 
        Parameters
        ==========
@@ -65,7 +66,7 @@ def healthy(self, url):
     '''
     response = self._head(url)
     status_code = response.status_code
-    if status_code != 200:
+    if status_code not in [200, 301]:
         bot.error('%s, response status code %s.' %(url, status_code))  
         return False
     return True

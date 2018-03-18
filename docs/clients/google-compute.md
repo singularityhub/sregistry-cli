@@ -109,6 +109,8 @@ We could then retrieve that particular template,  and pipe it into a file:
 $ sregistry build templates cloud/google/compute/ubuntu/securebuild-2.4.3.json >> config.json
 ```
 
+At this point you would likely open up the config.json file, and edit to your needs.
+
 ### Build
 You want to build! The commands argument to build can look like any of the following. The
 only requirement is a Github repository. You are **required** to have your work in version
@@ -228,7 +230,15 @@ from sregistry.main import get_client
 client = get_client('google-compute')
 ```
 
-Let's start by defining a repository with Singularity build recipes, and using the default
+You will also want to export your `SREGISTRY_GOOGLE_PROJECT` to be found in the environment.
+If you don't, you'll run a command and see this error:
+
+```
+ERROR Export your SREGISTRY_GOOGLE_PROJECT to build.
+```
+
+After exporting and opening a shell with one of the methods above, let's start 
+by defining a repository with Singularity build recipes, and using the default
 provided by the client, `Singularity`.
 
 ```
@@ -236,7 +246,94 @@ repo = 'https://www.github.com/vsoch/singularity-images'
 recipe = "Singularity"
 ```
 
+The client "build" command can accept the following arguments:
 
+ - `repo`: (required) the Github url to the repository with Singularity recipe files to build!
+ - `config` an actual json format file OR an id associated with the path in the [builders repo](https://www.github.com/singularityhub/builders). Given that we are using Google Compute, the configuration file must match the format to deploy an instance, with the primary start_script corresponding to what the instance does at start up.
+ - `recipe` the Singularity recipe file **within the Github repository**
+ - `preview`: if True, will return the config without launching a build.
+
+We will use preview to get the config and walk through what (would happen) if done automatically.
+First, the way that we retrieved our config file can also be done from within Python:
+
+```
+$ configs = client._get_templates()
+{'data': [{'author': 'Vanessa Sochat',
+   'id': 'https://singularityhub.github.io/builders/cloud/google/compute/ubuntu/securebuild-2.4.3.json',
+   'name': '/cloud/google/compute/ubuntu/securebuild-2.4.3.json',
+   'tags': ['ubuntu', 'singularity']}],
+ 'links': {'self': 'https://singularityhub.github.io/builders/configs.json'}}
+```
+
+There is only one right now, since this is under development! To load it (if
+this were run on the command line) we use the function `_load_build_config` with the name:
+
+```
+$ config = client._load_build_config('cloud/google/compute/ubuntu/securebuild-2.4.3.json')
+```
+
+and the config is loaded:
+
+```
+[{'data': {'author': 'Vanessa Sochat',
+   'config': {'disks': [{'autoDelete': True,
+      'boot': True,
+      'initializeParams': {}}],
+    'networkInterfaces': [{'accessConfigs': [{'name': 'External NAT',
+        'type': 'ONE_TO_ONE_NAT'}],
+      'network': 'global/networks/default'}],
+    'serviceAccounts': [{'email': 'default',
+      'scopes': ['https://www.googleapis.com/auth/compute',
+       'https://www.googleapis.com/auth/devstorage.read_write',
+       'https://www.googleapis.com/auth/logging.write']}]},
+   'id': '/cloud/google/compute/ubuntu/securebuild-2.4.3',
+   'metadata': {'BUILDER_KILLHOURS': '10',
+    'BUILDER_LOGFILE': '/tmp/.shub-log',
+    'BUILDER_TAG': '',
+    'CONTACT': '',
+    'GOOGLE_COMPUTE_IMAGE_FAMILY': 'debian-8',
+    'GOOGLE_COMPUTE_PROJECT': 'debian-project',
+    'SINGULARITY_BRANCH': 'feature-squashbuild-secbuild-2.4.3',
+    'SINGULARITY_COMMIT': '',
+    'SINGULARITY_RECIPE': '',
+    'SINGULARITY_REPO': 'https://github.com/cclerget/singularity.git',
+    'SINGULARITY_RUNSCRIPT': 'run.sh',
+    'SREGISTRY_BUILDER_machine_type': 'n1-standard-1'},
+   'tags': ['ubuntu', 'singularity']},
+  'links': {'self': 'https://singularityhub.github.io/builders/cloud/google/compute/ubuntu/securebuild-2.4.3.json'}}]
+```
+
+The subtle distinction is that this function will load a URI OR a file. This means 
+that we could have done following:
+
+```
+$ client._load_build_config('config.json')
+```
+
+Now let's say we want to preview the Google Instance Configuration that would be generated
+from our config? We can run build, and specify preview to be True. Note that when run from
+the client, the config goes in as a string (either a URI or a file) and in this case we 
+are going to try and break that by giving it a dictionary. This will actually turn out ok,
+all three of these cases work. You might want to load a config and edit it programatically
+before use, or loop over a set of config files instead.
+
+```
+$ config = client._load_build_config('config.json')
+$ client.build(repo='https://www.github.com/vsoch/singularity-images',
+               recipe="Singularity",
+               config=config,
+               preview=True)
+```
+
+Note that if the repository isn't found (indicated by a 200 or 301, redirect response) you will
+get an error that it isn't healthy. It's better to figure this out before launching a builder!
+
+```
+$ client.build(repo='https://www.github.com/tacos/i-dont-exist',
+               recipe="Singularity",
+               config='config.json',
+               preview=True)
+```
 
 <div>
     <a href="/sregistry-cli/clients"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
