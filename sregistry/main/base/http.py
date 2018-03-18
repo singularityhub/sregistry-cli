@@ -64,9 +64,9 @@ def healthy(self, url):
        url: the URL to check status for, based on the status_code of HEAD
 
     '''
-    response = self._head(url)
+    response = requests.get(url)
     status_code = response.status_code
-    if status_code not in [200, 301]:
+    if status_code != 200:
         bot.error('%s, response status code %s.' %(url, status_code))  
         return False
     return True

@@ -62,7 +62,7 @@ class Client(ApiConnection):
            file, but the client exists with error if the variable isn't found.
         '''
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
-        self._secrets = self._get_setting(env)
+        self._secrets = self._get_and_update_setting(env)
         if self._secrets is None:
             bot.error('You must export %s to use Google Storage client' %env)
             sys.exit(1)
@@ -100,7 +100,10 @@ class Client(ApiConnection):
         self._compute_service = discovery_build('compute', version, credentials=creds) 
 
 
-    @retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
+    @retry(wait_exponential_multiplier=1000, 
+           wait_exponential_max=10000,
+           stop_max_attempt_number=3)
+
     def _get_bucket(self):
         '''get a bucket based on a bucket name. If it doesn't exist, create it.
         '''

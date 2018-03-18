@@ -81,7 +81,7 @@ def build(self, repo,
     config = self._setup_build(names['url'], config)
 
     # Add the chosen recipe as metadata
-    bot.info('Adding recipe %s to config %s' %recipe)
+    bot.info('Adding recipe %s to config.' %recipe)
     entry = {'key': 'SINGULARITY_RECIPE', 'value': recipe}
     config['metadata']['items'].append(entry)
 
@@ -281,8 +281,12 @@ def setup_build(self, name, config, startup_script=None):
 
     # Add the machine parameters to the config
     config['name'] = instance_name
-    config['machine_type'] = machine_type
-    config['disks']['initializeParams']['sourceImage'] = source_disk_image
+    config['machineType'] = machine_type
+    config['disks'].append({
+                    "autoDelete": True,
+                    "boot": True,
+                    "initializeParams": { 'sourceImage': source_disk_image }
+                   })
 
     # Parse through adding metadata values
     metadata = {'items': 
@@ -290,19 +294,19 @@ def setup_build(self, name, config, startup_script=None):
                        'value': startup_script }] }
 
     # Storage Settings from Host
-    metadata['BUILDER_STORAGE_BUCKET'] = self._bucket_name
+    metadata['items'].append({'key':'BUILDER_STORAGE_BUCKET',
+                              'value':self._bucket_name})
 
+    seen = ['BUILDER_STORAGE_BUCKET', None, '']
+
+    # Don't append duplicates!
     for key, value in defaults.items():
-        if value not in ['', None]:
+        if value not in seen:
             entry = { "key": key, 'value': value }
             metadata['items'].append(entry)
+            seen.append(key)
 
     config['metadata'] = metadata
-
-    for key,value in metadata.items():
-        entry = {"key":key,'value':value}
-        config['metadata']['items'].append(entry)
-
     return config
 
 

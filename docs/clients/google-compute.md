@@ -215,6 +215,8 @@ Any other remaining variables that you might find in a config.json are specific 
 
 ## Developer Tutorial
 You might want to integrate the global client into your software to run custom builds. You can do this!
+
+### 1. Start the Client
 We will be using the interactive shell, started as follows, to do this:
 
 ```
@@ -246,6 +248,8 @@ repo = 'https://www.github.com/vsoch/singularity-images'
 recipe = "Singularity"
 ```
 
+### 2. Familiarize with Build
+
 The client "build" command can accept the following arguments:
 
  - `repo`: (required) the Github url to the repository with Singularity recipe files to build!
@@ -253,6 +257,8 @@ The client "build" command can accept the following arguments:
  - `recipe` the Singularity recipe file **within the Github repository**
  - `preview`: if True, will return the config without launching a build.
 
+
+### 3. Create a config template
 We will use preview to get the config and walk through what (would happen) if done automatically.
 First, the way that we retrieved our config file can also be done from within Python:
 
@@ -310,6 +316,16 @@ that we could have done following:
 $ client._load_build_config('config.json')
 ```
 
+You can check the zone and project enabled:
+
+```
+$ client._get_zone()
+'us-west1-a'
+
+$ client._get_project()
+...
+```
+
 Now let's say we want to preview the Google Instance Configuration that would be generated
 from our config? We can run build, and specify preview to be True. Note that when run from
 the client, the config goes in as a string (either a URI or a file) and in this case we 
@@ -319,10 +335,18 @@ before use, or loop over a set of config files instead.
 
 ```
 $ config = client._load_build_config('config.json')
-$ client.build(repo='https://www.github.com/vsoch/singularity-images',
+$ client.build(repo='https://www.github.com/vsoch/hello-world',
                recipe="Singularity",
                config=config,
                preview=True)
+
+Adding recipe Singularity to config.
+
+{'disks': [{'autoDelete': True,
+   'boot': True,
+   'initializeParams': {'sourceImage': 'https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-8-jessie-v20180307'}}],
+ 'machine_type': 'zones/us-west1-a/machineTypes/n1-standard-1',
+...
 ```
 
 Note that if the repository isn't found (indicated by a 200 or 301, redirect response) you will
@@ -333,7 +357,11 @@ $ client.build(repo='https://www.github.com/tacos/i-dont-exist',
                recipe="Singularity",
                config='config.json',
                preview=True)
+ERROR https://www.github.com/tacos/i-dont-exist, response status code 404.
 ```
+
+### 4. Setup the build!
+
 
 <div>
     <a href="/sregistry-cli/clients"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
