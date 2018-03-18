@@ -384,9 +384,12 @@ And after launch, you can always get a list of instances:
 ```
 $ client._get_instances()
 ```
-If you wanted to destroy a particular instance and stop the build, you can do that too.
+If you wanted to destroy a particular instance and stop the build, you can do that too. In the
+case above, we had an instance called "vsoch-hello-world-builder"
 
-**still writing! Need sleep!**
+```
+$ client.destroy('vsoch-hello-world-builder')
+```
 
 <div>
     <a href="/sregistry-cli/clients"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>

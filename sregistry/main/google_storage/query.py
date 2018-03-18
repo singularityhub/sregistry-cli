@@ -59,7 +59,6 @@ def list_containers(self):
 
     if len(results) == 0:
         bot.info("No containers found, based on metadata type:container")
-        sys.exit(1)
 
     return results
 

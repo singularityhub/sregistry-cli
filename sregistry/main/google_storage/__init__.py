@@ -158,6 +158,8 @@ Client.pull = pull
 Client.push = push
 Client._upload = upload
 Client.record = record
+Client.delete = delete
+Client.destroy = destroy
 
 # Build functions
 Client.build = build

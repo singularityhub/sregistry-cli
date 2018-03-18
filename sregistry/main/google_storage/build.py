@@ -20,6 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot, ProgressBar
+from googleapiclient.errors import HttpError
 from sregistry.utils import (
     get_image_hash,
     get_installdir,
@@ -31,6 +32,7 @@ from sregistry.utils import (
 
 from sregistry.main.google_storage.utils import get_build_template
 
+from sregistry.logger import RobotNamer
 from retrying import retry
 import json
 import sys
@@ -230,6 +232,7 @@ def load_build_config(self, config=None):
 
     bot.info('Found config %s in library!' %config)
     config = configs[0]
+
     return config
                 
 
@@ -258,12 +261,22 @@ def setup_build(self, name, config, startup_script=None):
 
     # Compute settings that are parsed into runscript via metadata
     defaults = config['data']['metadata']
+    selfLink = config['links']['self']
     config = config['data']['config']
+
+    # Make sure the builder repository and folder is passed forward
+    builder_repo = config['data']['repo']
+    builder_bundle = config['data']['path']
+    builder_id = config['data']['id']
 
     # Config settings from the environment, fall back to defaults
     image_project = defaults.get('GOOGLE_COMPUTE_PROJECT', 'debian-cloud')
     image_family = defaults.get('GOOGLE_COMPUTE_IMAGE_FAMILY', 'debian-8')
-    instance_name = "%s-builder" %name.replace('/','-')
+
+    # Generate names, description is for repo, name is random
+    instance_name = "%s-builder %s" %(name.replace('/','-'), selfLink)
+    robot_name = RobotNamer().generate()
+
     project = self._get_project()
     zone = self._get_zone()
 
@@ -280,7 +293,8 @@ def setup_build(self, name, config, startup_script=None):
 
 
     # Add the machine parameters to the config
-    config['name'] = instance_name
+    config['name'] = robot_name
+    config['description'] = instance_name
     config['machineType'] = machine_type
     config['disks'].append({
                     "autoDelete": True,
@@ -291,16 +305,34 @@ def setup_build(self, name, config, startup_script=None):
     # Parse through adding metadata values
     metadata = {'items': 
                     [{ 'key': 'startup-script',
-                       'value': startup_script }] }
+                       'value': startup_script },
 
-    # Storage Settings from Host
-    metadata['items'].append({'key':'BUILDER_STORAGE_BUCKET',
-                              'value':self._bucket_name})
+                    # Storage Settings from Host
 
-    seen = ['BUILDER_STORAGE_BUCKET', None, '']
+                     { 'key':'BUILDER_STORAGE_BUCKET',
+                       'value':self._bucket_name },
+
+                    # Builder repository url
+
+                     { 'key':'SREGISTRY_BUILDER_REPO',
+                       'value': builder_repo },
+
+                    # Builder id in repository
+
+                     { 'key':'SREGISTRY_BUILDER_ID',
+                       'value': builder_id },
+
+                    # Builder repository relative folder path
+
+                     { 'key':'SREGSTRY_BUILDER_BUNDLE',
+                       'value': builder_bundle } ]}
+
+    seen = ['BUILDER_STORAGE_BUCKET', 'startup-script']
 
     # Don't append duplicates!
     for key, value in defaults.items():
+
+        # This also appends empty values, they are meaningful
         if value not in seen:
             entry = { "key": key, 'value': value }
             metadata['items'].append(entry)
@@ -315,6 +347,7 @@ def setup_build(self, name, config, startup_script=None):
        wait_exponential_max=10000,
        stop_max_attempt_number=3)
 
+
 def run_build(self, config):
     '''run a build, meaning inserting an instance. Retry if there is failure
 
@@ -326,7 +359,9 @@ def run_build(self, config):
     project = self._get_project()
     zone = self._get_zone()
 
-    return self._compute_service.instances().insert(
-        project=project,
-        zone=zone,
-        body=config).execute()
+    bot.info('Inserting %s to build %s' %(config['name'], 
+                                          config['description']))
+
+    return self._compute_service.instances().insert(project=project,
+                                                    zone=zone,
+                                                    body=config).execute()

@@ -26,9 +26,11 @@
 #
 ################################################################################
 
-echo "Step 1: Installing Git Dependency"
 sudo apt-get update && apt-get install -y git curl
 
+# Not available in interface, but with interactive shell debugging
+LOGFILE=/tmp/.shub-log
+echo "Step 1: Installing Git Dependency" | tee $LOGFILE
 
 ################################################################################
 # Google Metadata
@@ -36,7 +38,7 @@ sudo apt-get update && apt-get install -y git curl
 # Maintain build routine in builders repository, so minimal changes needed to
 # sregistry client.
 
-echo "Step 2: Preparing Metadata"
+echo "Step 2: Preparing Metadata"  | tee $LOGFILE
 
 # Installation of Singularity, and custom build routines maintained separately
 # to maximize community involvement & minimize needing change sregistry client
@@ -59,36 +61,76 @@ function suicide() {
 
 # Builder then kills self :)
 
-# TODO: We should parse this into a logfile
-
 METADATA="http://metadata/computeMetadata/v1/instance/attributes"
 HEAD="Metadata-Flavor: Google"
 
 SREGISTRY_BUILDER_KILLHOURS=$(curl ${METADATA}/SREGISTRY_BUILDER_KILLHOURS -H "${HEAD}")
 SREGISTRY_BUILDER_REPO=$(curl ${METADATA}/SREGISTRY_BUILDER_REPO -H "${HEAD}")
+SREGISTRY_BUILDER_ID=$(curl ${METADATA}/SREGISTRY_BUILDER_ID -H "${HEAD}")
+SREGISTRY_BUILDER_BUNDLE=$(curl ${METADATA}/SREGISTRY_BUILDER_BUNDLE -H "${HEAD}")
 SREGISTRY_BUILDER_BRANCH=$(curl ${METADATA}/SREGISTRY_BUILDER_BRANCH -H "${HEAD}")
 SREGISTRY_BUILDER_RUNSCRIPT=$(curl ${METADATA}/SREGISTRY_BUILDER_RUNSCRIPT -H "${HEAD}")
 SREGISTRY_BUILDER_COMMIT=$(curl ${METADATA}/SREGISTRY_BUILDER_COMMIT -H "${HEAD}")
-FOLDER=$(basename $REPO)
+BUILDER_BUNDLE=$(dirname $SREGISTRY_BUILDER_BUNDLE)
+FOLDER=$(basename $SREGISTRY_BUILDER_REPO)
 
-# Commit
+echo "Metadata found:" | tee $LOGFILE
+echo | tee $LOGFILE
+echo "SREGISTRY_BUILDER_KILLHOURS: is ${SREGISTRY_BUILDER_KILLHOURS}
+            The number of hours when the builder is automatically terminated.
 
-echo "Step 3: Cloning Repository"
-git clone -b "${SREGISTRY_BUILDER_BRANCH}" "${SREGISTRY_BUILDER_REPO}" && cd "${FOLDER}"
+        SREGISTRY_BUILDER_ID: ${SREGISTRY_BUILDER_ID}
+            The id of the builder bundle, corresponding to the relative path.
+       
+        SREGISTRY_BUILDER_REPO: ${SREGISTRY_BUILDER_REPO}
+            The repository where the builder bundle is obtained.
 
-if [ -x "${SREGISTRY_BUILDER_COMMIT}" ]; then
-    git checkout "${SREGISTRY_BUILDER_COMMIT}" .
+        SREGISTRY_BUILDER_FILE: ${SREGISTRY_BUILDER_BUNDLE}
+            The configuration file being used to drive the builder.
+
+        SREGISTRY_BUILDER_BRANCH:  ${SREGISTRY_BUILDER_BRANCH}
+            The branch checked out for the builder bundle repository.
+
+        SREGISTRY_BUILDER_RUNSCRIPT: ${SREGISTRY_BUILDER_RUNSCRIPT}
+            The entrypoint for the builder, or the script called to do the job.
+
+        SREGISTRY_BUILDER_COMMIT: ${SREGISTRY_BUILDER_COMMIT}
+            If defined, a commit to check out for the builder repository." | tee $LOGFILE
+
+
+# Branch, default to master if not set
+
+if [ -z "${SREGISTRY_BUILDER_BRANCH:-}" ]; then
+    SREGISTRY_BUILDER_BRANCH="master"    
+    echo "Setting builder repository branch to $SREGISTRY_BUILDER_BRANCH"
 else
-    SREGISTRY_BUILDER_COMMIT=$(git log -n 1 --pretty=format:"%H")
+    echo "Found builder repository branch $SREGISTRY_BUILDER_BRANCH"
 fi
 
+echo "Step 3: Cloning Repository" | tee $LOGFILE
+echo "git clone -b ${SREGISTRY_BUILDER_BRANCH} ${SREGISTRY_BUILDER_REPO}" | tee $LOGFILE
+git clone -b "${SREGISTRY_BUILDER_BRANCH}" "${SREGISTRY_BUILDER_REPO}" && cd "${FOLDER}"
+
+# Check out commit, if defined
+
+if [ -z "${SREGISTRY_BUILDER_COMMIT:-}" ]; then
+    SREGISTRY_BUILDER_COMMIT=$(git log -n 1 --pretty=format:"%H")
+else
+    git checkout "${SREGISTRY_BUILDER_COMMIT}" .
+fi
 echo "Using commit ${SREGISTRY_BUILDER_COMMIT}"
 
 # Run build
 
+if [ -d "${BUILDER_BUNDLE}" ]; then
+    echo "Found builder bundle folder ${BUILDER_BUNDLE}"
+    cd ${BUILDER_BUNDLE}
+    ls | tee $LOGFILE
+fi 
+
 if [ -f "${SREGISTRY_BUILDER_RUNSCRIPT}" ]; then
-    echo "Building ${SREGISTRY_BUILDER_RUNSCRIPT}... here we go!"
-    timeout -s KILL ${SREGISTRY_BUILDER_KILLHOURS}h exec "${SREGISTRY_BUILDER_RUNSCRIPT}"
+    echo "Found runscript for build ${SREGISTRY_BUILDER_RUNSCRIPT}... here we go!"
+    #timeout -s KILL ${SREGISTRY_BUILDER_KILLHOURS}h exec "${SREGISTRY_BUILDER_RUNSCRIPT}"
 else
     echo "Cannot find ${SREGISTRY_BUILDER_RUNSCRIPT}"
     ls
