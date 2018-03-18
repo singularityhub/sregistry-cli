@@ -30,7 +30,7 @@ sudo apt-get update && apt-get install -y git curl
 
 # Not available in interface, but with interactive shell debugging
 LOGFILE=/tmp/.shub-log
-echo "Step 1: Installing Git Dependency" | tee $LOGFILE
+echo "Step 1: Installing Git Dependency" | tee -a $LOGFILE
 
 ################################################################################
 # Google Metadata
@@ -38,7 +38,7 @@ echo "Step 1: Installing Git Dependency" | tee $LOGFILE
 # Maintain build routine in builders repository, so minimal changes needed to
 # sregistry client.
 
-echo "Step 2: Preparing Metadata"  | tee $LOGFILE
+echo "Step 2: Preparing Metadata"  | tee -a $LOGFILE
 
 # Installation of Singularity, and custom build routines maintained separately
 # to maximize community involvement & minimize needing change sregistry client
@@ -72,10 +72,9 @@ SREGISTRY_BUILDER_BRANCH=$(curl ${METADATA}/SREGISTRY_BUILDER_BRANCH -H "${HEAD}
 SREGISTRY_BUILDER_RUNSCRIPT=$(curl ${METADATA}/SREGISTRY_BUILDER_RUNSCRIPT -H "${HEAD}")
 SREGISTRY_BUILDER_COMMIT=$(curl ${METADATA}/SREGISTRY_BUILDER_COMMIT -H "${HEAD}")
 BUILDER_BUNDLE=$(dirname $SREGISTRY_BUILDER_BUNDLE)
-FOLDER=$(basename $SREGISTRY_BUILDER_REPO)
 
-echo "Metadata found:" | tee $LOGFILE
-echo | tee $LOGFILE
+echo "Metadata found:" | tee -a $LOGFILE
+echo | tee -a $LOGFILE
 echo "SREGISTRY_BUILDER_KILLHOURS: is ${SREGISTRY_BUILDER_KILLHOURS}
             The number of hours when the builder is automatically terminated.
 
@@ -95,7 +94,7 @@ echo "SREGISTRY_BUILDER_KILLHOURS: is ${SREGISTRY_BUILDER_KILLHOURS}
             The entrypoint for the builder, or the script called to do the job.
 
         SREGISTRY_BUILDER_COMMIT: ${SREGISTRY_BUILDER_COMMIT}
-            If defined, a commit to check out for the builder repository." | tee $LOGFILE
+            If defined, a commit to check out for the builder repository." | tee -a $LOGFILE
 
 
 # Branch, default to master if not set
@@ -107,9 +106,10 @@ else
     echo "Found builder repository branch $SREGISTRY_BUILDER_BRANCH"
 fi
 
-echo "Step 3: Cloning Repository" | tee $LOGFILE
-echo "git clone -b ${SREGISTRY_BUILDER_BRANCH} ${SREGISTRY_BUILDER_REPO}" | tee $LOGFILE
-git clone -b "${SREGISTRY_BUILDER_BRANCH}" "${SREGISTRY_BUILDER_REPO}" && cd "${FOLDER}"
+echo "Step 3: Cloning Repository" | tee -a $LOGFILE
+echo "git clone -b ${SREGISTRY_BUILDER_BRANCH} ${SREGISTRY_BUILDER_REPO}" | tee -a $LOGFILE
+git clone -b "${SREGISTRY_BUILDER_BRANCH}" "${SREGISTRY_BUILDER_REPO}" builders && cd builders
+
 
 # Check out commit, if defined
 
@@ -125,16 +125,16 @@ echo "Using commit ${SREGISTRY_BUILDER_COMMIT}"
 if [ -d "${BUILDER_BUNDLE}" ]; then
     echo "Found builder bundle folder ${BUILDER_BUNDLE}"
     cd ${BUILDER_BUNDLE}
-    ls | tee $LOGFILE
+    ls | tee -a $LOGFILE
 fi 
 
 if [ -f "${SREGISTRY_BUILDER_RUNSCRIPT}" ]; then
-    echo "Found runscript for build ${SREGISTRY_BUILDER_RUNSCRIPT}... here we go!"
-    #timeout -s KILL ${SREGISTRY_BUILDER_KILLHOURS}h exec "${SREGISTRY_BUILDER_RUNSCRIPT}"
+    echo "Found runscript for build ${SREGISTRY_BUILDER_RUNSCRIPT}... here we go!" | tee -a $LOGFILE
+    timeout -s KILL ${SREGISTRY_BUILDER_KILLHOURS}h exec "${SREGISTRY_BUILDER_RUNSCRIPT}" | tee -a $LOGFILE
 else
-    echo "Cannot find ${SREGISTRY_BUILDER_RUNSCRIPT}"
-    ls
+    echo "Cannot find ${SREGISTRY_BUILDER_RUNSCRIPT}" | tee -a $LOGFILE
+    ls | tee -a $LOGFILE
 fi
 
 # Builder must bring self down
-suicide()
+suicide() | tee -a $LOGFILE

@@ -43,6 +43,9 @@ import os
 def build(self, repo, 
                 config=None,
                 name=None, 
+                commit=None,
+                tag="latest",
+                branch="master",
                 recipe='Singularity',
                 preview=False):
 
@@ -52,7 +55,10 @@ def build(self, repo,
        Parameters
        ==========
        name: should be the complete uri that the user has requested to push.
+       commit: a commit to use, not required, and can be parsed from URI
        repo: should correspond to a Github URL or (if undefined) used local repo.
+       branch: the branch to clone (defaults to master)
+       tag: a user specified tag, to take preference over tag in name
        config: The local config file to use. If the file doesn't exist, then
                we attempt looking up the config based on the name.
        recipe: If defined, limit builder to build a single recipe
@@ -74,13 +80,21 @@ def build(self, repo,
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(name))
 
-    # If the user hasn't provided a tag with the name, check recipe
+    # First priority - user has provided a tag
+    names['tag'] = tag or names['tag']
+
+    # If we still don't have custom tag, check the recipe
     if names['tag'] == "latest" and recipe != "Singularity":
         tag = get_recipe_tag(recipe)
-        names = parse_image_name(remove_uri(name), tag=tag)
+    names = parse_image_name(remove_uri(name), tag=tag)
+
+    # The commit is the version (after the @)
+    commit = commit or names['version']
 
     # Setup the build
-    config = self._setup_build(names['url'], config)
+    config = self._setup_build(name=names['url'], 
+                               repo=repo, config=config,
+                               tag=tag, commit=commit)
 
     # Add the chosen recipe as metadata
     bot.info('Adding recipe %s to config.' %recipe)
@@ -237,7 +251,9 @@ def load_build_config(self, config=None):
                 
 
 
-def setup_build(self, name, config, startup_script=None):
+def setup_build(self, name, repo, config, branch=None, tag=None, 
+                      config, commit=None, startup_script=None):
+
     '''setup the build based on the selected configuration file, meaning
        producing the configuration file filled in based on the user's input
  
@@ -245,6 +261,8 @@ def setup_build(self, name, config, startup_script=None):
        ==========
        config: the complete configuration file provided by the client
        template: an optional custom start script to use
+       tag: a user specified tag for the build, derived from uri or manual
+       commit: a commit to check out, if needed
        start_script: the start script to use, if not defined 
                      defaults to apt (or manager) base in main/templates/build
 
@@ -311,6 +329,31 @@ def setup_build(self, name, config, startup_script=None):
 
                      { 'key':'BUILDER_STORAGE_BUCKET',
                        'value':self._bucket_name },
+
+                    # User Repository
+
+                     { 'key':'SREGISTRY_USER_REPO',
+                       'value': repo },
+
+                    # Container Namespace (without tag/version)
+
+                     { 'key':'SREGISTRY_CONTAINER_NAME',
+                       'value': name },
+
+                    # User Repository Commit
+
+                     { 'key':'SREGISTRY_USER_COMMIT',
+                       'value': commit },
+
+                    # User Repository Branch
+
+                     { 'key':'SREGISTRY_USER_BRANCH',
+                       'value': branch },
+
+                    # User Repository Tag
+
+                     { 'key':'SREGISTRY_USER_TAG',
+                       'value': tag },
 
                     # Builder repository url
 
