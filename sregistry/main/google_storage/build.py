@@ -252,7 +252,7 @@ def load_build_config(self, config=None):
 
 
 def setup_build(self, name, repo, config, branch=None, tag=None, 
-                      config, commit=None, startup_script=None):
+                      commit=None, startup_script=None):
 
     '''setup the build based on the selected configuration file, meaning
        producing the configuration file filled in based on the user's input
@@ -280,12 +280,12 @@ def setup_build(self, name, repo, config, branch=None, tag=None,
     # Compute settings that are parsed into runscript via metadata
     defaults = config['data']['metadata']
     selfLink = config['links']['self']
-    config = config['data']['config']
 
     # Make sure the builder repository and folder is passed forward
     builder_repo = config['data']['repo']
     builder_bundle = config['data']['path']
     builder_id = config['data']['id']
+    config = config['data']['config']
 
     # Config settings from the environment, fall back to defaults
     image_project = defaults.get('GOOGLE_COMPUTE_PROJECT', 'debian-cloud')

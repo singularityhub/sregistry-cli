@@ -14,7 +14,49 @@ in essence is a mini "Singularity Hub" that you have complete control over. For 
 reading the Getting Started below. For interaction within Python, see the [Developer Tutorial](#developer-tutorial) 
 below.
 
-## Getting Started
+## Quick Start
+For the quickstart you need your `GOOGLE_APPLICATION_CREDENTIALS` and `GOOGLE_CLOUD_PROJECT` export to the environment, and `sregistry` installed.
+
+```
+# Export credentials
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/google-secrets.json
+export GOOGLE_CLOUD_PROJECT=vanessasur-us
+export SREGISTRY_CLIENT=google-compute
+
+# Install
+$ pip install sregistry[google-compute]
+```
+```
+# View Templates
+$ sregistry build templates
+
+# Save default template
+$ sregistry build templates /cloud/google/compute/ubuntu/securebuild-2.4.3.json >> securebuild-2.4.3.json
+
+# Build with a repo with Singularity recipe in root
+$ sregistry build https://www.github.com/vsoch/hello-world 
+
+# Preview a Configuration for the same (don't launch builder)
+$ sregistry build --preview https://www.github.com/vsoch/hello-world
+
+# List instances
+$ sregistry build instances
+
+# List containers in storage
+$ sregistry search
+
+# Pull a container
+$ sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+
+# Look at metadata
+$ sregistry inspect vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+
+# Run it!
+$ singularity run $(sregistry get vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d)
+RaawwWWWWWRRRR!! Avocado!
+```
+
+## Detailed Start Started
 You will need to install some of the Google API Client libraries, and you can do that as follows:
 
 ```
@@ -157,9 +199,68 @@ above) to control your build. You can provide it to the build command as follows
 $ sregistry build https://www.github.com/vsoch/singularity-images --config config.json
 ```
 
-### Instances
+When you issue the command above, you will launch a builder and get back an ip addres
+that you can visit to track his progress.
 
-**TBA**
+
+### Instances
+Once we issue a build command, we likely want to interact with our instances! First,
+check on the status by listing instance for your project:
+
+```
+$ sregistry build instances
+[google-compute] Found 8 instances
+1  instance-1	RUNNING
+2  phs-ubuntu-1610	RUNNING
+3  singularity-hub-postgres	TERMINATED
+4  singularity-hub-postgres-hot	TERMINATED
+5  singularity-hub-test	TERMINATED
+6  vsoch-hello-world-builder	RUNNING
+7  wglurp-ldap-dev	TERMINATED
+8  wglurp-ldap-dev-2	RUNNING
+```
+
+### Storage
+What about when you have a container finished? You can use `search` to list the containers in your storage!
+
+```
+sregistry search
+[client|google-compute] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[bucket][sregistry-vanessa]
+[gs://sregistry-vanessa] Containers
+1       62 MB	vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+```
+
+This works by looking for the metadata of `type:container`. 
+
+
+### Pull
+Once you've built and see your container in storage, you can pull it.
+
+```
+$ sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+[client|google-compute] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[bucket][sregistry-vanessa]
+Searching for vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d in gs://sregistry-vanessa
+Progress |===================================| 100.0% 
+[container][new] vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+Success! /home/vanessa/.singularity/shub/vsoch-hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d.simg
+```
+
+And guess what? The metadata generated for your container during build is saved with it.
+
+```
+$ sregistry inspect vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+```
+
+And of course, run it :)
+
+```
+$ singularity run $(sregistry get vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d)
+RaawwWWWWWRRRR!! Avocado!
+```
+You have to watch out for these containers, they eat all the avocados!
 
 If you are interested to read more about the local commands for the Google Storage client,
 continue reading about the [Google Storage](/sregistry-cli/client-google-storage) client.

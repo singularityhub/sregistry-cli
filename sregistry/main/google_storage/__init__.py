@@ -118,7 +118,7 @@ class Client(ApiConnection):
 
         # Case 3: The bucket name is already taken
         except:
-            bot.error('Cannot get or create %s' %self.bucket_name)
+            bot.error('Cannot get or create %s' %self._bucket_name)
             bot.error('Try exporting SREGISTRY_GOOGLE_STORAGE_BUCKET')
             sys.exit(1)
 

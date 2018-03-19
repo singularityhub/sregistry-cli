@@ -178,18 +178,15 @@ def get_parser():
         build = subparsers.add_parser("build",
                                      help="build a container using a remote.")
 
-        build.add_argument('--list','--ls', dest="ls", 
-                           help="list builder instances.", 
-                           default=False, action='store_true')
-
         build.add_argument('--preview','-p', dest="preview", 
                            help="preview the parsed configuration file only.", 
                            default=False, action='store_true')
 
         build.add_argument("commands", nargs='*',
-                           help='''RUN:            build [repo] [recipe] [config]
-                                   ALL  templates: build templates
-                                   GET  template:  build templates [template]
+                           help='''RUN:            build [repo] [recipe] [config] ----------------------      
+                                   ALL  templates: build templates -------------------------------------
+                                   GET  template:  build templates [template] --------------------------
+                                   LIST instances: build instances -------------------------------------
                                    ''', 
                            type=str)
 

@@ -20,14 +20,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
+import json
 import sys
-import pwd
 import os
 
 
 def main(args,parser,subparser):
     from sregistry.main import get_client, Client as cli
     
+    # No commands provided, show help
+    if len(args.commands) == 0:
+        subparser.print_help()
+        sys.exit(0)
+
     # Does the user want to save the image?    
     command = args.commands.pop(0)
 
@@ -36,13 +41,19 @@ def main(args,parser,subparser):
         cli.destroy(args.name)
         sys.exit(0) 
 
-    # Option 2: The user wants to list templates
-    if 'template' in command:
+    # Option 2: Just list running instances
+    elif command == "instances":
+        cli.list_builders()
+        sys.exit(0)
+
+    # Option 3: The user wants to list templates
+    elif 'template' in command:
         template_name = None
         if len(args.commands) > 0:
             template_name = args.commands.pop(0)
         cli.list_templates(template_name)
         sys.exit(0)
+
 
     # Option 3: The user is providing a Github repo!
     recipe = "Singularity"
@@ -50,8 +61,16 @@ def main(args,parser,subparser):
     if "github" in command:
 
         # One argument indicates a recipe
-        if len(args.commands == 1):
+        if len(args.commands) == 1:
             recipe = args.commands.pop(0)       
+
+    else:
+
+        # If a command is provided, but not a Github repo
+        bot.error('%s is not a recognized option.' %command)
+        subparser.print_help()
+        sys.exit(1)
+
 
     # Does the user want to specify a name for the collection?
     name = args.name
@@ -63,12 +82,7 @@ def main(args,parser,subparser):
     cli = get_client(quiet=args.quiet)
     cli.announce(args.command)
 
-    # Does the user just want to list?
-    if args.ls is True:
-        cli.list_builders()
-        sys.exit(0)
-
-    response = cli.build(repo=repo, 
+    response = cli.build(repo=command, 
                          name=name,
                          recipe=recipe,
                          config=config,
@@ -78,3 +92,4 @@ def main(args,parser,subparser):
     if args.preview is True:
         print(json.dumps(response, indent=4, sort_keys=True))
         
+
