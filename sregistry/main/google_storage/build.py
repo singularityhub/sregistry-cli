@@ -207,7 +207,7 @@ def get_instances(self, project=None, zone='us-west1-a'):
                                                   zone=zone).execute()
 
 
-def get_ipaddress(self, name, retries=3, delay=2):
+def get_ipaddress(self, name, retries=3, delay=3):
     '''get the ip_address of an inserted instance. Will try three times with
        delay to give the instance time to start up.
 
@@ -235,7 +235,8 @@ def get_ipaddress(self, name, retries=3, delay=2):
                         # Access configurations
                         for subnet in network['accessConfigs']:
                             if subnet['name'] == 'External NAT':
-                                return subnet['natIP']
+                                if 'natIP' in subnet:
+                                    return subnet['natIP']
 
         sleep(delay) 
     bot.warning('Did not find IP address, check Cloud Console!')
@@ -451,8 +452,8 @@ def run_build(self, config):
     project = self._get_project()
     zone = self._get_zone()
 
-    bot.info('Inserting %s to build %s' %(config['name'], 
-                                          config['description']))
+    bot.custom(prefix='INSTANCE', message=config['name'], color="CYAN")
+    bot.info(config['description'])
 
     response = self._compute_service.instances().insert(project=project,
                                                         zone=zone,
@@ -461,4 +462,5 @@ def run_build(self, config):
     # Direct the user to the web portal with log
     ipaddress = self._get_ipaddress(config['name'])
     bot.info('Robot Logger: http://%s' %ipaddress)
+    bot.info('Allow a few minutes for web server install, beepboop!')
     return response
