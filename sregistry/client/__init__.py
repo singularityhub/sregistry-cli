@@ -184,9 +184,9 @@ def get_parser():
 
         build.add_argument("commands", nargs='*',
                            help='''RUN:            build [repo] [recipe] [config] ----------------------      
-                                   ALL  templates: build templates -------------------------------------
-                                   GET  template:  build templates [template] --------------------------
-                                   LIST instances: build instances -------------------------------------
+                                   ALL  templates: build templates -------------------------
+                                   GET  template:  build templates [template] ---------------
+                                   LIST instances: build instances --------------------------
                                    ''', 
                            type=str)
 
