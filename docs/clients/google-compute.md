@@ -45,6 +45,9 @@ $ sregistry build instances
 # List containers in storage
 $ sregistry search
 
+# Get detailed metadata
+$ sregistry search sregistry search vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+
 # Pull a container
 $ sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 
@@ -231,7 +234,21 @@ sregistry search
 1       62 MB	vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 ```
 
-This works by looking for the metadata of `type:container`. 
+This works by looking for the metadata of `type:container`. If you have a container of interest,
+you can further look at the (high level) metadata by just adding the uri:
+
+```
+sregistry search vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+[client|google-compute] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+[bucket][sregistry-vanessa]
+[gs://sregistry-vanessa] Found 1 containers
+github.com/vsoch/hello-world/master/3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d/36b34e5b8da824e271f09c691e9002518e355dd981d99e7de934cb0a5a6b7f6e:latest.simg 
+id:      sregistry-vanessa/github.com/vsoch/hello-world/master/3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d/36b34e5b8da824e271f09c691e9002518e355dd981d99e7de934cb0a5a6b7f6e:latest.simg/1521441991052885
+uri:     vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+updated: 2018-03-19 06:46:31.040000+00:00
+size:    62 MB
+md5:     eS1GnjAyo558EwtuLvHxVQ==
+```
 
 
 ### Pull

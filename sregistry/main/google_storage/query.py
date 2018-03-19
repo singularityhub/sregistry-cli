@@ -85,7 +85,6 @@ def search_all(self):
     return rows
 
 
-
 def container_query(self, query, quiet=False):
     '''search for a specific container.
     This function would likely be similar to the above, but have different
