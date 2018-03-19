@@ -51,8 +51,17 @@ $ sregistry search sregistry search vsoch/hello-world:latest@3bac21df631874e3cbb
 # Pull a container
 $ sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 
+# Look at images from compute locally
+$ sregistry images | grep google-compute
+
 # Look at metadata
 $ sregistry inspect vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+
+# Look at latest log
+$ sregistry build logs
+
+# Look at specific logs
+$ sregistry build logs vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 
 # Run it!
 $ singularity run $(sregistry get vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d)
@@ -81,9 +90,8 @@ For the Google Compute Builder, we are going to do the following:
  - Deploy a compute instance with your build settings of choice. The build will be based on a Github repository to ensure version control of the inputs.
  - The builder will perform the build, and upload to Google Storage
  - You can pull the final result.
-b
-We will do the above in two different ways - first with the minimum customization required (and using defaults) and then generating a full, custom configuration from a library of builder bundles that is worked on collaboratively by the community.
-We will first review environment variables, followed by our tutorial walk throughs noted above. You can skip down to [Build](#build) if you are impatient.
+
+We will do the above in two different ways - first with the minimum customization required (and using defaults) and then generating a full, custom configuration from a library of builder bundles that is worked on collaboratively by the community. We will first review environment variables, followed by our tutorial walk throughs noted above. You can skip down to [Build](#build) if you are impatient.
 
 
 ### Required Environment

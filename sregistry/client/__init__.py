@@ -187,6 +187,7 @@ def get_parser():
                                    ALL  templates: build templates -------------------------
                                    GET  template:  build templates [template] ---------------
                                    LIST instances: build instances --------------------------
+                                   GET  logs:      build logs [name] ---------------
                                    ''', 
                            type=str)
 

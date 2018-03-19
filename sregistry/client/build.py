@@ -54,6 +54,13 @@ def main(args,parser,subparser):
         cli.list_templates(template_name)
         sys.exit(0)
 
+    elif  command == 'logs':
+        container_name = None
+        if len(args.commands) > 0:
+            container_name = args.commands.pop(0)
+        cli.logs(container_name)
+        sys.exit(0)
+
 
     # Option 3: The user is providing a Github repo!
     recipe = "Singularity"

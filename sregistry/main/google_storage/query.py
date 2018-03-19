@@ -37,6 +37,7 @@ def search(self, query=None, args=None):
     return self._search_all()
 
 
+
 def list_containers(self):
     '''return a list of containers, determined by finding the metadata field
        "type" with value "container." We alert the user to no containers 
