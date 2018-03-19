@@ -99,7 +99,7 @@ echo "SREGISTRY_BUILDER_KILLHOURS: is ${SREGISTRY_BUILDER_KILLHOURS}
 
 # Branch, default to master if not set
 
-if [ -z "${SREGISTRY_BUILDER_BRANCH:-}" ]; then
+if [ ! -n "${SREGISTRY_BUILDER_BRANCH:-}" ]; then
     SREGISTRY_BUILDER_BRANCH="master"    
     echo "Setting builder repository branch to $SREGISTRY_BUILDER_BRANCH"
 else
@@ -113,7 +113,7 @@ git clone -b "${SREGISTRY_BUILDER_BRANCH}" "${SREGISTRY_BUILDER_REPO}" builders 
 
 # Check out commit, if defined
 
-if [ -z "${SREGISTRY_BUILDER_COMMIT:-}" ]; then
+if [ ! -n "${SREGISTRY_BUILDER_COMMIT:-}" ]; then
     SREGISTRY_BUILDER_COMMIT=$(git log -n 1 --pretty=format:"%H")
 else
     git checkout "${SREGISTRY_BUILDER_COMMIT}" .
