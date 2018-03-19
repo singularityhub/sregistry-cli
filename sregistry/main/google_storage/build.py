@@ -337,6 +337,9 @@ def setup_build(self, name, repo, config,
     machine_type = defaults.get('SREGISTRY_BUILDER_machine_type', 'n1-standard-1')
     machine_type = "zones/%s/machineTypes/%s" %(zone, machine_type)
 
+    # Disk Size
+    disk_size = defaults.get('SREGISTRY_BUILDER_disk_size', '100')
+
     # Get the image type
     image_response = self._compute_service.images().getFromFamily(
                               project=image_project, 
@@ -351,7 +354,8 @@ def setup_build(self, name, repo, config,
     config['disks'].append({
                     "autoDelete": True,
                     "boot": True,
-                    "initializeParams": { 'sourceImage': source_disk_image }
+                    "initializeParams": { 'sourceImage': source_disk_image,
+                                          'diskSizeGb': disk_size }
                    })
 
     # Metadata base
