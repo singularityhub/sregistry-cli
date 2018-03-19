@@ -73,12 +73,18 @@ SREGISTRY_BUILDER_BUNDLE=$(curl ${METADATA}/SREGISTRY_BUILDER_BUNDLE -H "${HEAD}
 SREGISTRY_BUILDER_BRANCH=$(curl ${METADATA}/SREGISTRY_BUILDER_BRANCH -H "${HEAD}")
 SREGISTRY_BUILDER_RUNSCRIPT=$(curl ${METADATA}/SREGISTRY_BUILDER_RUNSCRIPT -H "${HEAD}")
 SREGISTRY_BUILDER_COMMIT=$(curl ${METADATA}/SREGISTRY_BUILDER_COMMIT -H "${HEAD}")
+SREGISTRY_BUILDER_DEBUGHOURS=$(curl ${METADATA}/SREGISTRY_BUILDER_DEBUGHOURS -H "${HEAD}")
+
+# This is the folder that has the config file in it
 BUILDER_BUNDLE=$(dirname $SREGISTRY_BUILDER_BUNDLE)
 
 echo "Metadata found:" | tee -a $LOGFILE
 echo | tee -a $LOGFILE
 echo "SREGISTRY_BUILDER_KILLHOURS: is ${SREGISTRY_BUILDER_KILLHOURS}
             The number of hours when the builder is automatically terminated.
+
+        SREGISTRY_BUILDER_DEBUGHOURS: ${SREGISTRY_BUILDER_DEBUGHOURS}
+            Given a non-zero exit status, the additional hours for debugging.
 
         SREGISTRY_BUILDER_ID: ${SREGISTRY_BUILDER_ID}
             The id of the builder bundle, corresponding to the relative path.
@@ -111,7 +117,7 @@ fi
 # Work in $HOME
 
 cd /tmp
-echo "Step 3: Cloning Repository..." | tee -a $LOGFILEc
+echo "Step 3: Cloning Repository..." | tee -a $LOGFILE
 echo "git clone -b ${SREGISTRY_BUILDER_BRANCH} ${SREGISTRY_BUILDER_REPO}" | tee -a $LOGFILE
 git clone -b "${SREGISTRY_BUILDER_BRANCH}" "${SREGISTRY_BUILDER_REPO}" builders && cd builders
 
@@ -137,10 +143,21 @@ if [ -f "${SREGISTRY_BUILDER_RUNSCRIPT}" ]; then
     echo "Found runscript for build ${SREGISTRY_BUILDER_RUNSCRIPT}... here we go!" | tee -a $LOGFILE
     chmod 0755 ${SREGISTRY_BUILDER_RUNSCRIPT}
     timeout -s KILL ${SREGISTRY_BUILDER_KILLHOURS}h  ./"${SREGISTRY_BUILDER_RUNSCRIPT}" | tee -a $LOGFILE
+    ret=$?
+
+    # If return value is 0, shut down
+    if [ $ret -eq "0" ]; then
+        echo "Successful build! Terminating instance."
+        suicide
+
+    # If not, keep open for additional hours
+    else
+        echo "Unsuccessful build, will remain running for ${SREGISTRY_BUILDER_DEBUGHOURS}"
+        sleep "${SREGISTRY_BUILDER_DEBUGHOURS}h"
+    fi
 else
     echo "Cannot find ${SREGISTRY_BUILDER_RUNSCRIPT}" | tee -a $LOGFILE
     ls | tee -a $LOGFILE
 fi
 
-# Builder must bring self down
 suicide

@@ -46,7 +46,6 @@ def build(self, repo,
                 name=None, 
                 commit=None,
                 tag="latest",
-                branch="master",
                 recipe="Singularity",
                 preview=False):
 
@@ -58,7 +57,6 @@ def build(self, repo,
        name: should be the complete uri that the user has requested to push.
        commit: a commit to use, not required, and can be parsed from URI
        repo: should correspond to a Github URL or (if undefined) used local repo.
-       branch: the branch to clone (defaults to master)
        tag: a user specified tag, to take preference over tag in name
        config: The local config file to use. If the file doesn't exist, then
                we attempt looking up the config based on the name.
@@ -283,10 +281,8 @@ def load_build_config(self, config=None):
                 
 
 
-def setup_build(self, name, repo, config, 
-                      recipe="Singularity",
-                      branch=None, tag=None, 
-                      commit=None, startup_script=None):
+def setup_build(self, name, repo, config, tag=None, commit=None,
+                      recipe="Singularity", startup_script=None):
 
     '''setup the build based on the selected configuration file, meaning
        producing the configuration file filled in based on the user's input
@@ -372,43 +368,59 @@ def setup_build(self, name, repo, config,
 
     # Runtime variables take priority over defaults from config
     # and so here we update the defaults with runtime
+    # ([defaults], [config-key], [runtime-setting], required)
 
     # User Repository
-
     defaults = setconfig(defaults, 'SREGISTRY_USER_REPO', repo)
     
     # Container Namespace (without tag/version)
-
     defaults = setconfig(defaults, 'SREGISTRY_CONTAINER_NAME', name)
 
     # User Repository Commit
-
     defaults = setconfig(defaults, 'SREGISTRY_USER_COMMIT', commit)
 
     # User Repository Branch
-
-    defaults = setconfig(defaults, 'SREGISTRY_USER_BRANCH', branch)
+    defaults = setconfig(defaults, 'SREGISTRY_USER_BRANCH', "master")
 
     # User Repository Tag
-
     defaults = setconfig(defaults, 'SREGISTRY_USER_TAG', tag)
 
     # Builder repository url
-
     defaults = setconfig(defaults, 'SREGISTRY_BUILDER_REPO', builder_repo)
 
-    # Builder id in repository
+    # Builder commit
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_COMMIT', None)
 
+    # Builder default runscript
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_RUNSCRIPT', "run.sh")
+
+    # Builder repository url
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_BRANCH', "master")
+
+    # Builder id in repository
     defaults = setconfig(defaults, 'SREGISTRY_BUILDER_ID', builder_id)
 
     # Builder repository relative folder path
-
     defaults = setconfig(defaults, 'SREGISTRY_BUILDER_BUNDLE', builder_bundle)
 
-    # Recipe set at runtime
+    # Number of extra hours to debug
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_DEBUGHOURS', "4")
 
+    # Hours to kill running job
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_KILLHOURS', "10")
+
+    # Recipe set at runtime
     defaults = setconfig(defaults, 'SINGULARITY_RECIPE', recipe)
 
+    # Branch of Singularity to install
+    defaults = setconfig(defaults, 'SINGULARITY_BRANCH', None)
+
+    # Singularity commit to use (if needed)
+    defaults = setconfig(defaults, 'SINGULARITY_COMMIT', None)
+
+    # Singularity Repo to Use
+    defaults = setconfig(defaults,'SINGULARITY_REPO', 
+                                  'https://github.com/cclerget/singularity.git')
 
     # Update metadata config object
 
