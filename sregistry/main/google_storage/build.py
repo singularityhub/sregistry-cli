@@ -34,6 +34,7 @@ from sregistry.main.google_storage.utils import get_build_template
 
 from sregistry.logger import RobotNamer
 from retrying import retry
+from time import sleep
 import json
 import sys
 import os
@@ -46,7 +47,7 @@ def build(self, repo,
                 commit=None,
                 tag="latest",
                 branch="master",
-                recipe='Singularity',
+                recipe="Singularity",
                 preview=False):
 
     '''trigger a build on Google Cloud (storage then compute) given a name
@@ -92,21 +93,16 @@ def build(self, repo,
     commit = commit or names['version']
 
     # Setup the build
-    config = self._setup_build(name=names['url'], 
+    config = self._setup_build(name=names['url'], recipe=recipe,
                                repo=repo, config=config,
                                tag=tag, commit=commit)
-
-    # Add the chosen recipe as metadata
-    bot.info('Adding recipe %s to config.' %recipe)
-    entry = {'key': 'SINGULARITY_RECIPE', 'value': recipe}
-    config['metadata']['items'].append(entry)
 
     # The user only wants to preview the configuration
     if preview is True:
         return config
 
     # Otherwise, run the build!
-    self._run_build(config)
+    return self._run_build(config)
 
 
 
@@ -211,6 +207,41 @@ def get_instances(self, project=None, zone='us-west1-a'):
                                                   zone=zone).execute()
 
 
+def get_ipaddress(self, name, retries=3, delay=2):
+    '''get the ip_address of an inserted instance. Will try three times with
+       delay to give the instance time to start up.
+
+       Parameters
+       ==========
+       name: the name of the instance to get the ip address for.
+       retries: the number of retries before giving up
+       delay: the delay between retry
+
+       Note from @vsoch: this function is pretty nasty.
+
+    '''
+    for rr in range(retries):
+
+        # Retrieve list of instances
+        instances = self._get_instances()
+
+        for instance in instances['items']:
+            if instance['name'] == name:
+
+                # Iterate through network interfaces
+                for network in instance['networkInterfaces']:
+                    if network['name'] == 'nic0':
+
+                        # Access configurations
+                        for subnet in network['accessConfigs']:
+                            if subnet['name'] == 'External NAT':
+                                return subnet['natIP']
+
+        sleep(delay) 
+    bot.warning('Did not find IP address, check Cloud Console!')
+
+
+
 def load_build_config(self, config=None):
     '''load a google compute config, meaning that we have the following cases:
 
@@ -251,7 +282,9 @@ def load_build_config(self, config=None):
                 
 
 
-def setup_build(self, name, repo, config, branch=None, tag=None, 
+def setup_build(self, name, repo, config, 
+                      recipe="Singularity",
+                      branch=None, tag=None, 
                       commit=None, startup_script=None):
 
     '''setup the build based on the selected configuration file, meaning
@@ -262,6 +295,7 @@ def setup_build(self, name, repo, config, branch=None, tag=None,
        config: the complete configuration file provided by the client
        template: an optional custom start script to use
        tag: a user specified tag for the build, derived from uri or manual
+       recipe: a recipe, if defined, overrides recipe set in config.
        commit: a commit to check out, if needed
        start_script: the start script to use, if not defined 
                      defaults to apt (or manager) base in main/templates/build
@@ -309,7 +343,6 @@ def setup_build(self, name, repo, config, branch=None, tag=None,
     source_disk_image = image_response['selfLink']
     storage_bucket = self._bucket_name
 
-
     # Add the machine parameters to the config
     config['name'] = robot_name
     config['description'] = instance_name
@@ -320,59 +353,62 @@ def setup_build(self, name, repo, config, branch=None, tag=None,
                     "initializeParams": { 'sourceImage': source_disk_image }
                    })
 
-    # Parse through adding metadata values
+    # Metadata base
     metadata = {'items': 
+
                     [{ 'key': 'startup-script',
                        'value': startup_script },
 
                     # Storage Settings from Host
 
-                     { 'key':'BUILDER_STORAGE_BUCKET',
-                       'value':self._bucket_name },
+                     { 'key':'SREGISTRY_BUILDER_STORAGE_BUCKET',
+                       'value':self._bucket_name }]}
 
-                    # User Repository
 
-                     { 'key':'SREGISTRY_USER_REPO',
-                       'value': repo },
+    # Runtime variables take priority over defaults from config
+    # and so here we update the defaults with runtime
 
-                    # Container Namespace (without tag/version)
+    # User Repository
 
-                     { 'key':'SREGISTRY_CONTAINER_NAME',
-                       'value': name },
+    defaults = setconfig(defaults, 'SREGISTRY_USER_REPO', repo)
+    
+    # Container Namespace (without tag/version)
 
-                    # User Repository Commit
+    defaults = setconfig(defaults, 'SREGISTRY_CONTAINER_NAME', name)
 
-                     { 'key':'SREGISTRY_USER_COMMIT',
-                       'value': commit },
+    # User Repository Commit
 
-                    # User Repository Branch
+    defaults = setconfig(defaults, 'SREGISTRY_USER_COMMIT', commit)
 
-                     { 'key':'SREGISTRY_USER_BRANCH',
-                       'value': branch },
+    # User Repository Branch
 
-                    # User Repository Tag
+    defaults = setconfig(defaults, 'SREGISTRY_USER_BRANCH', branch)
 
-                     { 'key':'SREGISTRY_USER_TAG',
-                       'value': tag },
+    # User Repository Tag
 
-                    # Builder repository url
+    defaults = setconfig(defaults, 'SREGISTRY_USER_TAG', tag)
 
-                     { 'key':'SREGISTRY_BUILDER_REPO',
-                       'value': builder_repo },
+    # Builder repository url
 
-                    # Builder id in repository
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_REPO', builder_repo)
 
-                     { 'key':'SREGISTRY_BUILDER_ID',
-                       'value': builder_id },
+    # Builder id in repository
 
-                    # Builder repository relative folder path
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_ID', builder_id)
 
-                     { 'key':'SREGSTRY_BUILDER_BUNDLE',
-                       'value': builder_bundle } ]}
+    # Builder repository relative folder path
+
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_BUNDLE', builder_bundle)
+
+    # Recipe set at runtime
+
+    defaults = setconfig(defaults, 'SINGULARITY_RECIPE', recipe)
+
+
+    # Update metadata config object
 
     seen = ['BUILDER_STORAGE_BUCKET', 'startup-script']
 
-    # Don't append duplicates!
     for key, value in defaults.items():
 
         # This also appends empty values, they are meaningful
@@ -383,6 +419,19 @@ def setup_build(self, name, repo, config, branch=None, tag=None,
 
     config['metadata'] = metadata
     return config
+
+
+def setconfig(lookup, key, value):
+    '''setconfig will update a lookup to give priority based on the following:
+ 
+       1. If both values are None, we set the value to None
+       2. If the currently set (the config.json) is set but not runtime, use config
+       3. If the runtime is set but not config.json, we use runtime
+       4. If both are set, we use runtime
+
+    '''
+    lookup[key] = value or lookup.get(key)
+    return lookup
 
 
 
@@ -405,6 +454,11 @@ def run_build(self, config):
     bot.info('Inserting %s to build %s' %(config['name'], 
                                           config['description']))
 
-    return self._compute_service.instances().insert(project=project,
-                                                    zone=zone,
-                                                    body=config).execute()
+    response = self._compute_service.instances().insert(project=project,
+                                                        zone=zone,
+                                                        body=config).execute()
+
+    # Direct the user to the web portal with log
+    ipaddress = self._get_ipaddress(config['name'])
+    bot.info('Robot Logger: http://%s' %ipaddress)
+    return response

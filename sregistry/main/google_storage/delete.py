@@ -89,6 +89,7 @@ def destroy(self, name):
     instances = self._get_instances()
     project = self._get_project()
     zone = self._get_zone()
+    found = False
 
     if 'items' in instances:
         for instance in instances['items']:
@@ -96,8 +97,8 @@ def destroy(self, name):
                 found = True
                 break
 
-    if found:           
+    if found:        
         bot.info('Killing instance %s' %name)
-        self._compute_service.instances().delete(project=project, 
-                                                 zone=zone, 
-                                                 instance=name).execute()
+        return self._compute_service.instances().delete(project=project, 
+                                                        zone=zone, 
+                                                        instance=name).execute()

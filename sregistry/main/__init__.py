@@ -34,7 +34,7 @@ from sregistry.logger import bot
 import os
 
 
-def get_client(image=None, quiet=False):
+def get_client(image=None, quiet=False, **kwargs):
     '''
        get the correct client depending on the driver of interest. The
        selected client can be chosen based on the environment variable

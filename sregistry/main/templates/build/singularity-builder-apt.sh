@@ -26,11 +26,13 @@
 #
 ################################################################################
 
-sudo apt-get update && apt-get install -y git curl
 
 # Not available in interface, but with interactive shell debugging
 LOGFILE=/tmp/.shub-log
+
 echo "Step 1: Installing Git Dependency" | tee -a $LOGFILE
+sudo apt-get update && apt-get install -y git curl nginx | tee -a $LOGFILE
+sudo service nginx start
 
 ################################################################################
 # Google Metadata
@@ -106,7 +108,10 @@ else
     echo "Found builder repository branch $SREGISTRY_BUILDER_BRANCH"
 fi
 
-echo "Step 3: Cloning Repository" | tee -a $LOGFILE
+# Work in $HOME
+
+cd /tmp
+echo "Step 3: Cloning Repository..." | tee -a $LOGFILEc
 echo "git clone -b ${SREGISTRY_BUILDER_BRANCH} ${SREGISTRY_BUILDER_REPO}" | tee -a $LOGFILE
 git clone -b "${SREGISTRY_BUILDER_BRANCH}" "${SREGISTRY_BUILDER_REPO}" builders && cd builders
 
@@ -130,11 +135,12 @@ fi
 
 if [ -f "${SREGISTRY_BUILDER_RUNSCRIPT}" ]; then
     echo "Found runscript for build ${SREGISTRY_BUILDER_RUNSCRIPT}... here we go!" | tee -a $LOGFILE
-    timeout -s KILL ${SREGISTRY_BUILDER_KILLHOURS}h exec "${SREGISTRY_BUILDER_RUNSCRIPT}" | tee -a $LOGFILE
+    chmod 0755 ${SREGISTRY_BUILDER_RUNSCRIPT}
+    timeout -s KILL ${SREGISTRY_BUILDER_KILLHOURS}h  ./"${SREGISTRY_BUILDER_RUNSCRIPT}" | tee -a $LOGFILE
 else
     echo "Cannot find ${SREGISTRY_BUILDER_RUNSCRIPT}" | tee -a $LOGFILE
     ls | tee -a $LOGFILE
 fi
 
 # Builder must bring self down
-suicide() | tee -a $LOGFILE
+suicide

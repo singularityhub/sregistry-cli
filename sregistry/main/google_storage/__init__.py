@@ -32,9 +32,17 @@ from googleapiclient.discovery import build as discovery_build
 from oauth2client.client import GoogleCredentials
 
 from .build import ( 
-    build, load_build_config, setup_build, run_build,
-    load_templates, get_templates,
-    list_builders, list_templates, get_instances )
+    build, 
+    load_build_config,
+    setup_build, 
+    run_build,
+    load_templates,
+    get_templates,
+    list_builders,
+    list_templates,
+    get_ipaddress,
+    get_instances 
+)
 from .delete import ( delete, destroy )
 from .logs import ( logs, print_log )
 from .pull import pull
@@ -45,11 +53,15 @@ from .query import ( container_query, list_containers, search, search_all )
 
 class Client(ApiConnection):
 
-    def __init__(self, secrets=None, base=None, **kwargs):
+    def __init__(self, secrets=None, base=None, init=True, **kwargs):
  
         self._update_secrets()
         self._update_headers()
-        self._init_client()
+
+        # Do we need storage/compute client now?
+        if init is True:
+            self._init_client()
+
         super(ApiConnection, self).__init__(**kwargs)
 
     def _speak(self):
@@ -101,10 +113,6 @@ class Client(ApiConnection):
         self._compute_service = discovery_build('compute', version, credentials=creds) 
 
 
-    @retry(wait_exponential_multiplier=1000, 
-           wait_exponential_max=10000,
-           stop_max_attempt_number=3)
-
     def _get_bucket(self):
         '''get a bucket based on a bucket name. If it doesn't exist, create it.
         '''
@@ -120,7 +128,6 @@ class Client(ApiConnection):
         # Case 3: The bucket name is already taken
         except:
             bot.error('Cannot get or create %s' %self._bucket_name)
-            bot.error('Try exporting SREGISTRY_GOOGLE_STORAGE_BUCKET')
             sys.exit(1)
 
         return self._bucket
@@ -167,6 +174,7 @@ Client.build = build
 Client._setup_build = setup_build
 Client._run_build = run_build
 Client._get_instances = get_instances
+Client._get_ipaddress = get_ipaddress
 Client._get_templates = get_templates
 Client._load_build_config = load_build_config
 Client._load_templates = load_templates

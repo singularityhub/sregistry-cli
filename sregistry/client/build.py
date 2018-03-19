@@ -26,7 +26,7 @@ import os
 
 
 def main(args,parser,subparser):
-    from sregistry.main import get_client, Client as cli
+    from sregistry.main import get_client
     
     # No commands provided, show help
     if len(args.commands) == 0:
@@ -38,28 +38,19 @@ def main(args,parser,subparser):
 
     # Option 1: The user wants to kill an instance
     if command == "kill":
-        cli.destroy(args.name)
-        sys.exit(0) 
+        kill(args)    
 
     # Option 2: Just list running instances
     elif command == "instances":
-        cli.list_builders()
-        sys.exit(0)
+        instances()
 
     # Option 3: The user wants to list templates
     elif 'template' in command:
-        template_name = None
-        if len(args.commands) > 0:
-            template_name = args.commands.pop(0)
-        cli.list_templates(template_name)
-        sys.exit(0)
+        templates(args)
 
-    elif  command == 'logs':
-        container_name = None
-        if len(args.commands) > 0:
-            container_name = args.commands.pop(0)
-        cli.logs(container_name)
-        sys.exit(0)
+    # Option 4: View a specific or latest log
+    elif command == 'logs':
+        list_logs(args)
 
 
     # Option 3: The user is providing a Github repo!
@@ -100,3 +91,58 @@ def main(args,parser,subparser):
         print(json.dumps(response, indent=4, sort_keys=True))
         
 
+
+def kill(args):
+    '''kill is a helper function to call the "kill" function of the client,
+       meaning we bring down an instance.
+    '''
+    from sregistry.main import Client as cli
+    if len(args.commands) > 0:
+        for name in args.commands:
+            cli.destroy(name)
+
+
+def instances():
+    '''list running instances for a user, including all builders and report
+       instance names and statuses.
+    '''
+    from sregistry.main import Client as cli
+    cli.list_builders()
+    sys.exit(0)
+
+
+def templates(args, template_name=None):
+    '''list a specific template (if a name is provided) or all templates
+       available.
+
+       Parameters
+       ==========
+       args: the argparse object to look for a template name
+       template_name: if not set, show all
+
+    '''
+    from sregistry.main import get_client
+
+    # We don't need storage/compute connections
+    cli = get_client(init=False)
+
+    if len(args.commands) > 0:
+        template_name = args.commands.pop(0)
+    cli.list_templates(template_name)
+    sys.exit(0)
+
+
+def list_logs(args, container_name=None):
+    '''list a specific log for a builder, or the latest log if none provided
+
+       Parameters
+       ==========
+       args: the argparse object to look for a container name
+       container_name: a default container name set to be None (show latest log)
+
+    '''
+    from sregistry.main import Client as cli    
+    if len(args.commands) > 0:
+        container_name = args.commands.pop(0)
+    cli.logs(container_name)
+    sys.exit(0)

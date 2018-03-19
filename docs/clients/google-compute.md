@@ -383,7 +383,6 @@ The client "build" command can accept the following arguments:
  - `recipe` the Singularity recipe file **within the Github repository**
  - `preview`: if True, will return the config without launching a build.
 
-
 ### 3. Create a config template
 We will use preview to get the config and walk through what (would happen) if done automatically.
 First, the way that we retrieved our config file can also be done from within Python:
@@ -407,35 +406,39 @@ $ config = client._load_build_config('cloud/google/compute/ubuntu/securebuild-2.
 and the config is loaded:
 
 ```
-[{'data': {'author': 'Vanessa Sochat',
-   'config': {'disks': [{'autoDelete': True,
-      'boot': True,
-      'initializeParams': {}}],
-    'networkInterfaces': [{'accessConfigs': [{'name': 'External NAT',
-        'type': 'ONE_TO_ONE_NAT'}],
-      'network': 'global/networks/default'}],
-    'serviceAccounts': [{'email': 'default',
-      'scopes': ['https://www.googleapis.com/auth/compute',
-       'https://www.googleapis.com/auth/devstorage.read_write',
-       'https://www.googleapis.com/auth/logging.write']}]},
-   'id': '/cloud/google/compute/ubuntu/securebuild-2.4.3',
-   'metadata': {'BUILDER_KILLHOURS': '10',
-    'BUILDER_LOGFILE': '/tmp/.shub-log',
-    'BUILDER_TAG': '',
-    'CONTACT': '',
-    'GOOGLE_COMPUTE_IMAGE_FAMILY': 'debian-8',
-    'GOOGLE_COMPUTE_PROJECT': 'debian-project',
-    'SINGULARITY_BRANCH': 'feature-squashbuild-secbuild-2.4.3',
-    'SINGULARITY_COMMIT': '',
-    'SINGULARITY_RECIPE': '',
-    'SINGULARITY_REPO': 'https://github.com/cclerget/singularity.git',
-    'SINGULARITY_RUNSCRIPT': 'run.sh',
-    'SREGISTRY_BUILDER_machine_type': 'n1-standard-1'},
-   'tags': ['ubuntu', 'singularity']},
-  'links': {'self': 'https://singularityhub.github.io/builders/cloud/google/compute/ubuntu/securebuild-2.4.3.json'}}]
+{'data': {'author': 'Vanessa Sochat',
+  'config': {'disks': [],
+   'labels': [{'key': 'sregistry', 'value': 'builder'}],
+   'networkInterfaces': [{'accessConfigs': [{'name': 'External NAT',
+       'type': 'ONE_TO_ONE_NAT'}],
+     'network': 'global/networks/default'}],
+   'serviceAccounts': [{'email': 'default',
+     'scopes': ['https://www.googleapis.com/auth/compute',
+      'https://www.googleapis.com/auth/devstorage.read_write',
+      'https://www.googleapis.com/auth/logging.write']}],
+   'tags': {'items': ['http-server', 'https-server']}},
+  'id': '/cloud/google/compute/ubuntu/securebuild-2.4.3',
+  'metadata': {'GOOGLE_COMPUTE_IMAGE_FAMILY': 'debian-8',
+   'GOOGLE_COMPUTE_PROJECT': 'debian-cloud',
+   'SINGULARITY_BRANCH': 'feature-squashbuild-secbuild-2.4.3',
+   'SINGULARITY_COMMIT': '',
+   'SINGULARITY_RECIPE': '',
+   'SINGULARITY_REPO': 'https://github.com/cclerget/singularity.git',
+   'SREGISTRY_BUILDER_BRANCH': '',
+   'SREGISTRY_BUILDER_COMMIT': '',
+   'SREGISTRY_BUILDER_KILLHOURS': '10',
+   'SREGISTRY_BUILDER_RUNSCRIPT': 'run.sh',
+   'SREGISTRY_BUILDER_TAG': '',
+   'SREGISTRY_BUILDER_machine_type': 'n1-standard-1',
+   'SREGISTRY_CONTACT': '',
+   'SREGISTRY_GOOGLE_STORAGE_PRIVATE': 'false'},
+  'path': '_cloud/google/compute/ubuntu/securebuild-2.4.3.json',
+  'repo': 'https://www.github.com/singularityhub/builders',
+  'tags': ['ubuntu', 'singularity']},
+ 'links': {'self': 'https://singularityhub.github.io/builders_cloud/google/compute/ubuntu/securebuild-2.4.3.json'}}
 ```
 
-The subtle distinction is that this function will load a URI OR a file. This means 
+The subtle distinction is that this function will load a URI OR a file. This means
 that we could have done following:
 
 ```
@@ -481,16 +484,42 @@ get an error that it isn't healthy. It's better to figure this out before launch
 ```
 $ client.build(repo='https://www.github.com/tacos/i-dont-exist',
                recipe="Singularity",
-               config='config.json',
+               config=config,
                preview=True)
 ERROR https://www.github.com/tacos/i-dont-exist, response status code 404.
 ```
+
+If you get an error about not being able to create the bucket, if you have checked that
+your project and credentials file are exported, make sure that they matched! If you
+have several Google Cloud Project spaces it is easy to create a bucket in one, and then
+not be able to access it from a different project.
+
 
 ### 4. Run the build!
 Now we can launch the build!
 
 ```
-$ client._run_build(config)
+$ response = client.build(repo='https://www.github.com/vsoch/hello-world')
+Found config google/compute/ubuntu/securebuild-2.4.3 in library!
+Inserting carniverous-fork-0369 to build vsoch-hello-world-builder https://singularityhub.github.io/builders_cloud/google/compute/ubuntu/securebuild-2.4.3.json
+```
+
+In the above command, note that a lot of hidden argument defaults were used:
+
+```
+   # Optional Arguments ----------------
+   # config [default]config.json
+   # recipe [default]Singularity at repository root)
+   # branch [default]master
+   # name   e.g., vsoch/hello-world
+   # commit 
+   # tag    [default]latest unless provided in name
+```
+
+We can look at the response to see the status of the instance
+
+```
+$ response
 {'id': '1397962134226444746',
  'insertTime': '2018-03-18T01:11:17.701-07:00',
  'kind': 'compute#operation',
