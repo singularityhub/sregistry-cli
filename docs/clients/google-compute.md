@@ -306,9 +306,9 @@ These variables are relevant to deployment of the builder itself. While they are
 | `SREGISTRY_GOOGLE_STORAGE_PRIVATE` | not set (False) | build time | upload private images to Google Storage |
 | `SREGISTRY_COMPUTE_ZONE` | `us-west1-a` | The zone to deploy the instance to. [docs](https://cloud.google.com/compute/docs/regions-zones/) |
 | `SREGISTRY_COMPUTE_CONFIG` | `cloud/google/ubuntu/secbuild-2.4.1.json` | The build configuration for Google Compute Engine. This variable can refer to a file on the host, or a build configuration id associated with a path in the `SREGISTRY_BUILDER_REPO` | 
-| SREGISTRY_BUILDER_machine_type | `n1-standard-1`| The Google Compute Instance type, with [options described here](https://cloud.google.com/compute/docs/machine-types) |
-| GOOGLE_COMPUTE_PROJECT | `debian-project` |  The project that has a family of images to select your instance from |
-|GOOGLE_COMPUTE_IMAGE_FAMILY| `debian-8` | The default image to use for the builder |
+| `SREGISTRY_BUILDER_machine_type` | `n1-standard-1`| The Google Compute Instance type, with [options described here](https://cloud.google.com/compute/docs/machine-types) |
+| `GOOGLE_COMPUTE_PROJECT` | `debian-project` |  The project that has a family of images to select your instance from |
+|`GOOGLE_COMPUTE_IMAGE_FAMILY`| `debian-8` | The default image to use for the builder |
 
 Notice the last two images for the Google Compute Project and Family? If you want faster builds, or to further customize your instance, you can generate images in advance with things ready to go, and then specify them here. This is how we configure the Singularity Hub builders so building starts immediately without waiting to install and compile Singularity.
 
