@@ -1,7 +1,8 @@
 include README.md LICENSE
 recursive-include sregistry *.png
+recursive-include sregistry *.sh
 recursive-include sregistry *
-recursive-include *.png
+recursive-include * *.png
 global-exclude *.py[co]
 global-exclude *.img
 global-exclude *.simg
