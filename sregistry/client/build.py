@@ -99,7 +99,7 @@ def kill(args):
     if len(args.commands) > 0:
         for name in args.commands:
             cli.destroy(name)
-
+    sys.exit(0)
 
 def instances():
     '''list running instances for a user, including all builders and report
