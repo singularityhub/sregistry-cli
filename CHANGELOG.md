@@ -2,9 +2,7 @@
 
 This is a manually generated log to track changes to the repository for each release. 
 Each section should include general headers such as **Implemented enhancements** 
-and **Merged pull requests**. All closed issued and bug fixes should be 
-represented by the pull requests that fixed them. This log originated with Singularity 2.4
-and changes prior to that are (unfortunately) done retrospectively. Critical items to know are:
+and **Merged pull requests**. Critical items to know are:
 
  - renamed commands
  - deprecated / removed commands
@@ -16,6 +14,7 @@ and changes prior to that are (unfortunately) done retrospectively. Critical ite
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - support for the builders is added (0.0.75)
  - get_layerLink missing for nvidia client, added (0.0.74)
  - making "inspect" optional on pull so that we don't error out running in Docker (0.0.73)
  - fixed issue with missing registry version 2.0 manifest! (0.0.72)
