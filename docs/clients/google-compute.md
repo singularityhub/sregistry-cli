@@ -315,7 +315,7 @@ These variables are relevant to deployment of the builder itself. While they are
 | Variable | Default | Description |
 |----------|---------|------------|
 | [SREGISTRY_GOOGLE_STORAGE_BUCKET](https://cloud.google.com/storage/docs/json_api/v1/buckets) | `sregistry-$USER`| the Google Cloud Storage bucket in your project |
-| `SREGISTRY_GOOGLE_STORAGE_PRIVATE` | not set (False) | build time | upload private images to Google Storage |
+| `SREGISTRY_GOOGLE_STORAGE_PRIVATE` | not set (False) | upload private images to Google Storage |
 | `SREGISTRY_COMPUTE_ZONE` | `us-west1-a` | The zone to deploy the instance to. [docs](https://cloud.google.com/compute/docs/regions-zones/) |
 | `SREGISTRY_COMPUTE_CONFIG` | `cloud/google/ubuntu/secbuild-2.4.1.json` | The build configuration for Google Compute Engine. This variable can refer to a file on the host, or a build configuration id associated with a path in the `SREGISTRY_BUILDER_REPO` | 
 | `SREGISTRY_BUILDER_machine_type` | `n1-standard-1`| The Google Compute Instance type, with [options described here](https://cloud.google.com/compute/docs/machine-types) |
