@@ -52,7 +52,7 @@ from sregistry.main.base.settings import (
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_DATABASE
 import os
-
+import sys
 
 class ApiConnection(object):
 
