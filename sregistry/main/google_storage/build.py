@@ -371,7 +371,7 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
 
     # Runtime variables take priority over defaults from config
     # and so here we update the defaults with runtime
-    # ([defaults], [config-key], [runtime-setting], required)
+    # ([defaults], [config-key], [runtime-setting])
 
     # User Repository
     defaults = setconfig(defaults, 'SREGISTRY_USER_REPO', repo)
@@ -427,7 +427,7 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
 
     # Update metadata config object
 
-    seen = ['BUILDER_STORAGE_BUCKET', 'startup-script']
+    seen = ['SREGISTRY_BUILDER_STORAGE_BUCKET', 'startup-script']
 
     for key, value in defaults.items():
 
