@@ -71,6 +71,26 @@ class ApiConnection(object):
 
 # Metadata
 
+    def _client_tagged(self, tags):
+        '''ensure that the client name is included in a list of tags. This is
+           important for matching builders to the correct client. We exit
+           on fail.
+            
+           Parameters
+           ==========
+           tags: a list of tags to look for client name in
+
+        '''
+
+        # We must match the client to a tag
+        name = self._client_name.lower()
+        tags = [t.lower() for t in tags]
+
+        if name not in tags:
+            bot.error('%s not found in %s, must match!' %(name, tags)
+            sys.exit(1)
+
+
     def speak(self):
         '''
            a function for the client to announce him or herself, depending

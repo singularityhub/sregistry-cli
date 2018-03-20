@@ -308,6 +308,9 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
         bot.error('Cannot find config, check path or URI.')
         sys.exit(1)
 
+    # Ensure that the builder config is intended for the client
+    self._client_tagged(config['data']['tags'])
+
     # Compute settings that are parsed into runscript via metadata
     defaults = config['data']['metadata']
     selfLink = config['links']['self']
