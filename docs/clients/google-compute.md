@@ -30,8 +30,8 @@ $ pip install sregistry[google-compute]
 # View Templates
 $ sregistry build templates
 
-# Save default template
-$ sregistry build templates /cloud/google/compute/ubuntu/securebuild-2.4.3.json >> securebuild-2.4.3.json
+# Save a template to customize
+$ sregistry build templates /cloud/google/compute/ubuntu/securebuild-2.4.3.json > config.json
 
 # Build with a repo with Singularity recipe in root
 $ sregistry build https://www.github.com/vsoch/hello-world 
@@ -45,8 +45,8 @@ $ sregistry build instances
 # List containers in storage
 $ sregistry search
 
-# Get detailed metadata
-$ sregistry search sregistry search vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
+# Get detailed metadata for remote
+$ sregistry search vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 
 # Pull a container
 $ sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
@@ -54,7 +54,7 @@ $ sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc
 # Look at images from compute locally
 $ sregistry images | grep google-compute
 
-# Look at metadata
+# Look at metadata for local
 $ sregistry inspect vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 
 # Look at latest log
@@ -91,7 +91,8 @@ For the Google Compute Builder, we are going to do the following:
  - The builder will perform the build, and upload to Google Storage
  - You can pull the final result.
 
-We will do the above in two different ways - first with the minimum customization required (and using defaults) and then generating a full, custom configuration from a library of builder bundles that is worked on collaboratively by the community. We will first review environment variables, followed by our tutorial walk throughs noted above. You can skip down to [Build](#build) if you are impatient.
+The builder templates, called **builder bundles** are from a [community maintained library](https://singularityhub.github.io/builders/) that you can use as is, or customize with particulars about the build environment. 
+We will first review environment variables, followed by our tutorial walk throughs noted above. You can skip down to [Build](#build) if you are impatient.
 
 
 ### Required Environment
@@ -102,7 +103,7 @@ The tools served by `sregistry` work way of obtaining information from the envir
 | [GOOGLE_APPLICATION_CREDENTIALS](https://cloud.google.com/docs/authentication/getting-started) | Not set | When you issue commands to work with Google Cloud APIs | This is a json file on your host that authenticates you with Google Cloud |
 | SREGISTRY_COMPUTE_PROJECT | Not set | On the host and builder to specify your project | This is the name of your Google Cloud Project |
 
-Beyond the credentials, the builders use reasonable defaults for most things, but you might also want to change them. We will discuss optional variables for build setup and runtime [later in this document](#optional-environment).
+Beyond the credentials, the [builders use reasonable defaults](https://singularityhub.github.io/builders/environment) for most things, and you able to customize any or all of these by defining them in your config.json file. We will discuss these along with optional variables for build setup and runtime in more detail [later in this document](#optional-environment).
 
 
 ## Client
@@ -127,16 +128,18 @@ are going to build.
 
 ```
 $ sregistry build --help
-usage: sregistry build [-h] [--list] [--preview] [--name NAME]
-                       [--config CONFIG]
-                       [command]
+usage: sregistry build [-h] [--preview] [--name NAME] [--config CONFIG]
+                       [commands [commands ...]]
 
 positional arguments:
-  command          Github repository with templates, or command
+  commands         RUN: build [repo] [recipe] [config] ----------------------
+                   ALL templates: build templates -------------------------
+                   GET template: build templates [template] ---------------
+                   LIST instances: build instances --------------------------
+                   GET logs: build logs [name] ---------------
 
 optional arguments:
   -h, --help       show this help message and exit
-  --list, --ls     list builder instances.
   --preview, -p    preview the parsed configuration file only.
   --name NAME      name of image, in format "library/image"
   --config CONFIG  specify a config file or uri
@@ -155,19 +158,20 @@ $ sregistry build templates
 ```
 
 Specifically, the id of the templates listed above refers to the path in the
-[builder bundle Github repository](https://www.github.com/singularityhub/builders) 
-We could then retrieve that particular template,  and pipe it into a file:
+[builder bundle Github repository](https://www.github.com/singularityhub/builders) in the "_cloud" 
+folder. We could then retrieve that particular template,  and pipe it into a file:
 
 ```
-$ sregistry build templates cloud/google/compute/ubuntu/securebuild-2.4.3.json >> config.json
+$ sregistry build templates cloud/google/compute/ubuntu/securebuild-2.4.3.json > config.json
 ```
 
 At this point you would likely open up the config.json file, and edit to your needs.
 
+
 ### Build
-You want to build! The commands argument to build can look like any of the following. The
-only requirement is a Github repository. You are **required** to have your work in version
-control. 
+The only requirement for build is a Github repository, to ensure that you have your work in version
+control.
+
 
 #### Provide Github Repo
 If you want to use a default recipe `Singularity` in the base of the Github repository,
@@ -181,6 +185,7 @@ $ sregistry build https://www.github.com/vsoch/singularity-images
 
 The above will build a container `vsoch/singularity-images:latest` from the file 
 `Singularity` in the repository.
+
 
 #### Github Repo and Recipe
 If you provide two arguments, the second refers to the path (relative to the repository base)
@@ -210,7 +215,7 @@ above) to control your build. You can provide it to the build command as follows
 $ sregistry build https://www.github.com/vsoch/singularity-images --config config.json
 ```
 
-When you issue the command above, you will launch a builder and get back an ip addres
+When you issue the command above, you will launch a builder and get back an ip address
 that you can visit to track his progress.
 
 
@@ -292,9 +297,8 @@ continue reading about the [Google Storage](/sregistry-cli/client-google-storage
 
 
 ## Optional Environment
-
-### Build Setup Environment
 These variables are relevant to deployment of the builder itself. While they aren't required, it's recommended to look them over to see if you want to change any defaults. You can further customize your Singularity Builder by setting the following environment variables. Keep in mind that for a subset of these (e.g., the storage bucket name) that are unlikely to change, they will be cached in your secrets at `$HOME/.sregistry`. This is great because you would only need to specify it once, but not ideal if you have a different use case than the developers of the software anticipated.
+
 
 | Variable | Default | When is it used? | Description |
 |----------|---------|------------------|-------------|
@@ -308,35 +312,7 @@ These variables are relevant to deployment of the builder itself. While they are
 
 Notice the last two images for the Google Compute Project and Family? If you want faster builds, or to further customize your instance, you can generate images in advance with things ready to go, and then specify them here. This is how we configure the Singularity Hub builders so building starts immediately without waiting to install and compile Singularity.
 
-### Runtime (Before Builder Bundle) Environment
-
-These variables are relevant to actual build runtime, and defined and retrieved as metadata in the [start_script templates](https://github.com/singularityhub/sregistry-cli/tree/master/sregistry/main/templates) packaged with the
-`sregistry` client. This is the script that is called when the instance starts up, and its job is to clone the 
-builder bundle repository (with your selected builder scripts) and run it. At this point in time, we've deployed the
-instance but haven't yet cloned the builder bundle. We use a set of variables prefixed with `SREGISTRY_BUILDER_*` retrieved
-via instance metadata to identify the builder's repository (e.g., [https://www.github.com/singularityhub/builders](https://www.github.com/singularityhub/builders).
-
-
-| Variable | Default | When is it used? | Description |
-|----------|---------|------------------|-------------|
-| SREGISTRY_BUILDER_REPO | https://www.singularityhub.org/builders | Used to retrieve the builder bundle specified by the user. | The repository that serves the builder bundle API that is cloned to get the scripts to perform the build. Yes, you can create your own, or contribute to the community default! |
-| SREGISTRY_BUILDER_BRANCH | `master` | To clone the correct branch of the builder at runtime | The branch of the builder bundle to clone |
-| SREGISTRY_BUILDER_COMMIT | Not set | To clone the correct commit of the builder at runtime | The commit to use for the buider repository |
-| SREGISTRY_BUILDER_RUNSCRIPT | `run.sh` | This, with path relative to the build bundle, is called after cloning the build bundle repo and cd'ing into the folder. The path is relevant to its parent folder, so usually `run.sh` will suffice. | This is the script that is called after cd'ing into the folder. It should handle installing dependencies (including Singularity) along with running the build, uploading results to storage, and shutting down the instance. |
-| SREGISTRY_BUILDER_KILLHOURS | 10| During build, in case there is issue, kill the process at this time | After how many hours should the entire process be given up? If not, you need to manage your instances in your build console. |
-| SREGISTRY_BUILDER_MANAGER | `apt` | The package manager use in the `start_script.sh` to install git and clone the builder repo | The custom installation of dependencies is done by the builder bundle, but we need a starting base to clone this with git. This variable will determine if you will get an instance with git or yum. |
-
-### Runtime (During Builder Bundle) Environment
-Once the builder bundle is cloned and the `SREGISTRY_BUILDER_RUNSCRIPT` is called, we need to do simple things line install Singularity. Thus, variables prefixed with `SINGULARITY_*` refer to the installation of Singularity itself, and other Singulraity building environment variables that you want to set.
-
-| Variable | Default | When is it used? | Description |
-|----------|---------|------------------|-------------|
-| SINGULARITY_RECIPE | Singularity at base (root) of repository | The recipe is up to you to specify for the builder, and must be discovered to exist at buildtime. | The Singularity recipe to build from the repository, which also determines the image tag via its extension. No extension indicates tag `latest` |
-| SINGULARITY_REPO | `https://github.com/cclerget/singularity.git` | The Singularity repository to install from is cloned and built at runtime. |  This default is used as the source of secure builds maintained by [@cclerget](https://www.github.com/cclerget). |
-| SINGULARITY_BRANCH  | `feature-squashbuild-secbuild-2.4.3` | The branch is cloned from the getgo to install Singularity during build time |  This is the branch that you want to checkout for the Singularity software |
-| SINGULARITY_COMMIT  | Not set | The commit to use to install Singularity during build time |  This is the commit that would be checked out, if defined. |
-
-Any other remaining variables that you might find in a config.json are specific to that builder, for example, the default has a `CONTACT` variable that might be set to send notification to an email.  Remember that all of these variables are defined in your `config.json` file that you hand off to the `sregistry` client. You are free to add or subtract any variables that your custom config might need, and generally the config will provide an empty value if a metadata variable is optional.
+And don't forget to take a peek at the [builder's environment space](https://singularityhub.github.io/builders/environment) too. You can customize many things!
 
 
 ## Developer Tutorial
@@ -392,7 +368,7 @@ $ configs = client._get_templates()
 {'data': [{'author': 'Vanessa Sochat',
    'id': 'https://singularityhub.github.io/builders/cloud/google/compute/ubuntu/securebuild-2.4.3.json',
    'name': '/cloud/google/compute/ubuntu/securebuild-2.4.3.json',
-   'tags': ['ubuntu', 'singularity']}],
+   'tags': ['ubuntu', 'singularity', 'google-compute', 'google-storage']}],
  'links': {'self': 'https://singularityhub.github.io/builders/configs.json'}}
 ```
 
@@ -421,20 +397,12 @@ and the config is loaded:
   'metadata': {'GOOGLE_COMPUTE_IMAGE_FAMILY': 'debian-8',
    'GOOGLE_COMPUTE_PROJECT': 'debian-cloud',
    'SINGULARITY_BRANCH': 'feature-squashbuild-secbuild-2.4.3',
-   'SINGULARITY_COMMIT': '',
-   'SINGULARITY_RECIPE': '',
    'SINGULARITY_REPO': 'https://github.com/cclerget/singularity.git',
-   'SREGISTRY_BUILDER_BRANCH': '',
-   'SREGISTRY_BUILDER_COMMIT': '',
-   'SREGISTRY_BUILDER_KILLHOURS': '10',
-   'SREGISTRY_BUILDER_RUNSCRIPT': 'run.sh',
-   'SREGISTRY_BUILDER_TAG': '',
    'SREGISTRY_BUILDER_machine_type': 'n1-standard-1',
-   'SREGISTRY_CONTACT': '',
    'SREGISTRY_GOOGLE_STORAGE_PRIVATE': 'false'},
   'path': '_cloud/google/compute/ubuntu/securebuild-2.4.3.json',
   'repo': 'https://www.github.com/singularityhub/builders',
-  'tags': ['ubuntu', 'singularity']},
+  'tags': ['ubuntu', 'singularity', 'google-compute', 'google-storage']},
  'links': {'self': 'https://singularityhub.github.io/builders_cloud/google/compute/ubuntu/securebuild-2.4.3.json'}}
 ```
 
@@ -466,34 +434,43 @@ before use, or loop over a set of config files instead.
 $ config = client._load_build_config('config.json')
 $ client.build(repo='https://www.github.com/vsoch/hello-world',
                recipe="Singularity",
-               config=config,
                preview=True)
 
-Adding recipe Singularity to config.
+Found config google/compute/ubuntu/securebuild-2.4.3 in library!
 
-{'disks': [{'autoDelete': True,
+...
+{'description': 'vsoch-hello-world-builder https://singularityhub.github.io/builders_cloud/google/compute/ubuntu/securebuild-2.4.3.json',
+ 'disks': [{'autoDelete': True,
    'boot': True,
-   'initializeParams': {'sourceImage': 'https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-8-jessie-v20180307'}}],
- 'machine_type': 'zones/us-west1-a/machineTypes/n1-standard-1',
+   'initializeParams': {'diskSizeGb': '100',
 ...
 ```
 
-Note that if the repository isn't found (indicated by a 200 or 301, redirect response) you will
-get an error that it isn't healthy. It's better to figure this out before launching a builder!
+Notice how we **didn't** specify a config, and it gave us a good default? Note
+that if the repository isn't found (success for Github is indicated by a 200 or 301, redirect response) 
+you will get an error that it isn't healthy. It's better to figure this out before launching a builder!
 
 ```
 $ client.build(repo='https://www.github.com/tacos/i-dont-exist',
                recipe="Singularity",
-               config=config,
                preview=True)
 ERROR https://www.github.com/tacos/i-dont-exist, response status code 404.
 ```
 
-If you get an error about not being able to create the bucket, if you have checked that
-your project and credentials file are exported, make sure that they matched! If you
-have several Google Cloud Project spaces it is easy to create a bucket in one, and then
-not be able to access it from a different project.
+If you see this error:
 
+```
+ERROR Cannot get or create sregistry-vanessa
+```
+
+It means that we couldn't create or get the bucket. This usually means that:
+ - your project isn't exported as `GOOGLE_CLOUD_PROJECT`
+ - your credentials file is not exported as `GOOGLE_APPLICATION_CREDENTIALS` 
+ - the credentials exported aren't for that Google Project!
+ - the bucket name is already owned by someone else, try exporting `SREGISTRY_GOOGLE_STORAGE_BUCKET`
+
+If you have several Google Cloud Project spaces it is easy to create a bucket in one, and then
+not be able to access it from a different project.
 
 ### 4. Run the build!
 Now we can launch the build!
@@ -508,11 +485,11 @@ In the above command, note that a lot of hidden argument defaults were used:
 
 ```
    # Optional Arguments ----------------
-   # config [default]config.json
+   # config [default]google/compute/ubuntu/securebuild-2.4.3
    # recipe [default]Singularity at repository root)
    # branch [default]master
    # name   e.g., vsoch/hello-world
-   # commit 
+   # commit current
    # tag    [default]latest unless provided in name
 ```
 

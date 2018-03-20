@@ -44,7 +44,7 @@ from .build import (
     get_instances 
 )
 from .delete import ( delete, destroy )
-from .logs import ( logs, print_log )
+from .logs import ( logs, list_logs, print_log )
 from .pull import pull
 from .push import ( push, upload )
 from .record import record
@@ -181,6 +181,7 @@ Client._load_templates = load_templates
 Client.list_builders = list_builders
 Client.list_templates = list_templates
 Client.logs = logs
+Client._list_logs = list_logs
 Client._print_log = print_log
 
 Client.search = search

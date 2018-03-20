@@ -38,7 +38,7 @@ def logs(self, name=None):
 
     '''
     content = None
-    results = self._list_containers()
+    results = self._list_logs()
     print(results)
 
     # If we are searching for a name
@@ -57,8 +57,7 @@ def logs(self, name=None):
                     matches = True
 
             if matches is True:
-                logname = re.sub('[.]simg$','.log', result.name)
-                content = self._print_log(logname)                
+                content = self._print_log(result.name)  
 
     # Otherwise return the last
     else:
@@ -70,11 +69,25 @@ def logs(self, name=None):
             for result in results:
                 if result.time_created >= latest.time_created:
                     latest = result                   
-            logname = re.sub('[.]simg$','.log', latest.name)
-            content = self._print_log(logname)                
-
+            content = self._print_log(result.name)  
 
     return content
+
+
+
+def list_logs(self):
+    '''return a list of logs. We return any file that ends in .log
+    '''
+    results = []
+    for image in self._bucket.list_blobs():
+        if image.name.endswith('log'):
+            results.append(image)
+
+    if len(results) == 0:
+        bot.info("No containers found, based on extension .log")
+
+    return results
+
 
 
 def print_log(self, logname):
@@ -96,5 +109,3 @@ def print_log(self, logname):
         print(content)
 
     return content
-
-

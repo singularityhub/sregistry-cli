@@ -52,7 +52,6 @@ def main(args,parser,subparser):
     elif command == 'logs':
         list_logs(args)
 
-
     # Option 3: The user is providing a Github repo!
     recipe = "Singularity"
 
