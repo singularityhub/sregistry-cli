@@ -1,5 +1,4 @@
 sregistry.egg-info/
-build/
 _site
 dist/
 pypi.sh
