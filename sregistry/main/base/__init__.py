@@ -83,11 +83,11 @@ class ApiConnection(object):
         '''
 
         # We must match the client to a tag
-        name = self._client_name.lower()
+        name = self.client_name.lower()
         tags = [t.lower() for t in tags]
 
         if name not in tags:
-            bot.error('%s not found in %s, must match!' %(name, tags)
+            bot.error('%s not found in %s, must match!' %(name, tags))
             sys.exit(1)
 
 

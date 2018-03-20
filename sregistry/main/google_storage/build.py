@@ -392,7 +392,7 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
     defaults = setconfig(defaults, 'SREGISTRY_BUILDER_REPO', builder_repo)
 
     # Builder commit
-    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_COMMIT', None)
+    defaults = setconfig(defaults, 'SREGISTRY_BUILDER_COMMIT')
 
     # Builder default runscript
     defaults = setconfig(defaults, 'SREGISTRY_BUILDER_RUNSCRIPT', "run.sh")
@@ -416,10 +416,10 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
     defaults = setconfig(defaults, 'SINGULARITY_RECIPE', recipe)
 
     # Branch of Singularity to install
-    defaults = setconfig(defaults, 'SINGULARITY_BRANCH', None)
+    defaults = setconfig(defaults, 'SINGULARITY_BRANCH')
 
     # Singularity commit to use (if needed)
-    defaults = setconfig(defaults, 'SINGULARITY_COMMIT', None)
+    defaults = setconfig(defaults, 'SINGULARITY_COMMIT')
 
     # Singularity Repo to Use
     defaults = setconfig(defaults,'SINGULARITY_REPO', 
@@ -441,7 +441,7 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
     return config
 
 
-def setconfig(lookup, key, value):
+def setconfig(lookup, key, value=None):
     '''setconfig will update a lookup to give priority based on the following:
  
        1. If both values are None, we set the value to None
