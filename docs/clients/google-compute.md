@@ -300,15 +300,15 @@ continue reading about the [Google Storage](/sregistry-cli/client-google-storage
 These variables are relevant to deployment of the builder itself. While they aren't required, it's recommended to look them over to see if you want to change any defaults. You can further customize your Singularity Builder by setting the following environment variables. Keep in mind that for a subset of these (e.g., the storage bucket name) that are unlikely to change, they will be cached in your secrets at `$HOME/.sregistry`. This is great because you would only need to specify it once, but not ideal if you have a different use case than the developers of the software anticipated.
 
 
-| Variable | Default | When is it used? | Description |
-|----------|---------|------------------|-------------|
-| [SREGISTRY_GOOGLE_STORAGE_BUCKET](https://cloud.google.com/storage/docs/json_api/v1/buckets) | `sregistry-$USER` | on your machine to create and query containers, and by the builder to upload finished | the Google Cloud Storage bucket in your project |
-| `SREGISTRY_GOOGLE_STORAGE_PRIVATE` | not set (False) | build time | by default, images that you upload will be made public, meaning that a user that stumbles on the URL (or has permission to read your bucket otherwise) will be able to see and download them. If you want to make an image private (one time or globally with an export in your bash profile) you should export this variable as some derivative of yes/true. If no variable is found, images are made public by default. If you set the variable once, it will be saved in your configuration for all subsequent images. |
-| `SREGISTRY_COMPUTE_ZONE` | `us-west1-a` | At setup to choose a zone for your instance. | The zone to deploy the instance to. [docs](https://cloud.google.com/compute/docs/regions-zones/) |
-| `SREGISTRY_COMPUTE_CONFIG` | `cloud/google/ubuntu/secbuild-2.4.1.json` | The build configuration for Google Compute Engine | It is used when setting up the build on the user's machine | This variable can refer to a file on the host, or a build configuration id associated with a path in the `SREGISTRY_BUILDER_REPO`. In both cases, a json config.json is found and loaded to set up the builder. | 
-| SREGISTRY_BUILDER_machine_type | `n1-standard-1`| Sent to Google Cloud APIs to deploy the instance | The Google Compute Instance type, with [options described here](https://cloud.google.com/compute/docs/machine-types) |
-| GOOGLE_COMPUTE_PROJECT | `debian-project` |  To get the path to the actual image of your instance, you must provide a project and family. This is the project for debian. | The project that has a family of images to select your instance from |
-|GOOGLE_COMPUTE_IMAGE_FAMILY| `debian-8` | To find the instance image link from the family at setup time. | The default image to use for the builder |
+| Variable | Default | Description |
+|----------|---------|------------|
+| [SREGISTRY_GOOGLE_STORAGE_BUCKET](https://cloud.google.com/storage/docs/json_api/v1/buckets) | `sregistry-$USER`| the Google Cloud Storage bucket in your project |
+| `SREGISTRY_GOOGLE_STORAGE_PRIVATE` | not set (False) | build time | upload private images to Google Storage |
+| `SREGISTRY_COMPUTE_ZONE` | `us-west1-a` | The zone to deploy the instance to. [docs](https://cloud.google.com/compute/docs/regions-zones/) |
+| `SREGISTRY_COMPUTE_CONFIG` | `cloud/google/ubuntu/secbuild-2.4.1.json` | The build configuration for Google Compute Engine. This variable can refer to a file on the host, or a build configuration id associated with a path in the `SREGISTRY_BUILDER_REPO` | 
+| SREGISTRY_BUILDER_machine_type | `n1-standard-1`| The Google Compute Instance type, with [options described here](https://cloud.google.com/compute/docs/machine-types) |
+| GOOGLE_COMPUTE_PROJECT | `debian-project` |  The project that has a family of images to select your instance from |
+|GOOGLE_COMPUTE_IMAGE_FAMILY| `debian-8` | The default image to use for the builder |
 
 Notice the last two images for the Google Compute Project and Family? If you want faster builds, or to further customize your instance, you can generate images in advance with things ready to go, and then specify them here. This is how we configure the Singularity Hub builders so building starts immediately without waiting to install and compile Singularity.
 
