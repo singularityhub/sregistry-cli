@@ -1,5 +1,6 @@
 from .recipes import (
     find_recipes,
+    get_recipe_tag,
     parse_header
 )
 from .terminal import (

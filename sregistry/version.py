@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.0.74"
+__version__ = "0.0.75"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -65,10 +65,17 @@ INSTALL_BASIC_GOOGLE_DRIVE = (
     ('google-api-python-client', {'min_version': '1.6.4'})
 )
 
+INSTALL_BASIC_GOOGLE_COMPUTE = (
+    ('oauth2client', {'min_version': '3.0'}),
+    ('google-api-python-client', {'min_version': '1.6.4'}),
+    ('google-cloud-storage', {'min_version': '1.4.0'})
+)
+
 INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
                      INSTALL_BASIC_DROPBOX + 
                      INSTALL_BASIC_REGISTRY +
                      INSTALL_BASIC_GOOGLE_STORAGE +
+                     INSTALL_BASIC_GOOGLE_COMPUTE +
                      INSTALL_BASIC_GOOGLE_DRIVE)
 
 ################################################################################
@@ -104,8 +111,16 @@ INSTALL_REQUIRES_GOOGLE_DRIVE = (
     ('google-api-python-client', {'min_version': '1.6.4'})
 )
 
+INSTALL_REQUIRES_GOOGLE_COMPUTE = (
+    ('oauth2client', {'min_version': '3.0'}),
+    ('sqlalchemy', {'min_version': None}),
+    ('google-api-python-client', {'min_version': '1.6.4'}),
+    ('google-cloud-storage', {'min_version': '1.4.0'})
+)
+
 INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
                         INSTALL_REQUIRES_DROPBOX + 
                         INSTALL_REQUIRES_REGISTRY +
+                        INSTALL_REQUIRES_GOOGLE_COMPUTE +
                         INSTALL_REQUIRES_GOOGLE_STORAGE +
                         INSTALL_REQUIRES_GOOGLE_DRIVE)

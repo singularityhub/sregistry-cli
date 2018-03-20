@@ -33,7 +33,11 @@ import re
 import os
 
 
-def delete(self,url,headers=None,return_json=True, default_headers=True):
+def delete(self, url,
+                 headers=None,
+                 return_json=True,
+                 default_headers=True):
+
     '''delete request, use with caution
     '''
     bot.debug('DELETE %s' %url)
@@ -44,7 +48,36 @@ def delete(self,url,headers=None,return_json=True, default_headers=True):
                       default_headers=default_headers)
 
 
-def put(self,url,headers=None,data=None,return_json=True,default_headers=True):
+def head(self, url):
+    '''head request, typically used for status code retrieval, etc.
+    '''
+    bot.debug('HEAD %s' %url)
+    return self._call(url, func=requests.head)
+
+
+def healthy(self, url):
+    '''determine if a resource is healthy based on an accepted response (200)
+       or redirect (301)
+
+       Parameters
+       ==========
+       url: the URL to check status for, based on the status_code of HEAD
+
+    '''
+    response = requests.get(url)
+    status_code = response.status_code
+    if status_code != 200:
+        bot.error('%s, response status code %s.' %(url, status_code))  
+        return False
+    return True
+
+
+def put(self, url,
+              headers=None,
+              data=None,
+              return_json=True,
+              default_headers=True):
+
     '''put request
     '''
     bot.debug("PUT %s" %url)
@@ -133,7 +166,11 @@ def verify(self):
     return not DISABLE_SSL_CHECK
 
 
-def download(self, url, file_name, headers=None, show_progress=True):
+def download(self, url,
+                   file_name,
+                   headers=None,
+                   show_progress=True):
+
     '''stream to a temporary file, rename on successful completion
 
         Parameters
@@ -257,22 +294,25 @@ def stream_response(self, response, stream_to=None):
     sys.exit(1)
 
 
-def call(self, url, func, data=None, headers=None, 
-                          return_json=True, stream=False, 
-                          retry=True, default_headers=True,
+def call(self, url, func, data=None,
+                          headers=None, 
+                          return_json=True,
+                          stream=False, 
+                          retry=True,
+                          default_headers=True,
                           quiet=False):
 
     '''call will issue the call, and issue a refresh token
-    given a 401 response, and if the client has a _update_token function
+       given a 401 response, and if the client has a _update_token function
 
-    Parameters
-    ==========
-    func: the function (eg, post, get) to call
-    url: the url to send file to
-    headers: if not None, update the client self.headers with dictionary
-    data: additional data to add to the request
-    return_json: return json if successful
-    default_headers: use the client's self.headers (default True)
+       Parameters
+       ==========
+       func: the function (eg, post, get) to call
+       url: the url to send file to
+       headers: if not None, update the client self.headers with dictionary
+       data: additional data to add to the request
+       return_json: return json if successful
+       default_headers: use the client's self.headers (default True)
 
     '''
  

@@ -76,6 +76,7 @@ if __name__ == "__main__":
     GLOBUS_BASIC = get_reqs(lookup,'INSTALL_BASIC_GLOBUS')
     GOOGLE_STORAGE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_STORAGE')
     GOOGLE_DRIVE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_DRIVE')
+    GOOGLE_COMPUTE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_COMPUTE')
 
     # These requirement sets include sqlalchemy, for client+storage
 
@@ -85,6 +86,7 @@ if __name__ == "__main__":
     GLOBUS = get_reqs(lookup,'INSTALL_REQUIRES_GLOBUS')
     GOOGLE_STORAGE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
     GOOGLE_DRIVE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
+    GOOGLE_COMPUTE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_COMPUTE')
 
     setup(name=NAME,
           version=VERSION,
@@ -106,12 +108,14 @@ if __name__ == "__main__":
               'dropbox-basic': [DROPBOX_BASIC],
               'globus-basic': [GLOBUS_BASIC],
               'registry-basic': [REGISTRY_BASIC],
+              'google-compute-basic': [GOOGLE_COMPUTE_BASIC],
               'google-storage-basic': [GOOGLE_STORAGE_BASIC],
               'google-drive-basic': [GOOGLE_DRIVE_BASIC],
               'all-basic': [INSTALL_BASIC_ALL],
               'dropbox': [DROPBOX],
               'globus': [GLOBUS],
               'registry': [REGISTRY],
+              'google-compute': [GOOGLE_COMPUTE],
               'google-storage': [GOOGLE_STORAGE],
               'google-drive': [GOOGLE_DRIVE],
               'all': [INSTALL_REQUIRES_ALL]

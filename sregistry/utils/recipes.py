@@ -22,31 +22,65 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
 import fnmatch
+import re
+
+
+def get_recipe_tag(path):
+    '''get a recipe tag (the extension of a Singularity file). The extension
+       determines the tag. If no extension is found, latest is used.
+
+       Parameters
+       ==========
+       path: the path to the recipe file (e.g. /opt/Singularity.tag)
+
+    '''
+    tag = re.sub('.+Singularity[.]?','', path)
+    if tag in ['', None]:
+        tag = 'latest'
+    return tag
+
 
 def parse_header(recipe, header="from", remove_header=True):
     '''take a recipe, and return the complete header, line. If
-    remove_header is True, only return the value.
+       remove_header is True, only return the value.
+
+       Parameters
+       ==========
+       recipe: the recipe file
+       headers: the header key to find and parse
+       remove_header: if true, remove the key
+
     '''
     parsed_header = None
     fromline = [x for x in recipe.split('\n') if "%s:" %header in x.lower()]
+
+    # Case 1: We did not find the fromline
     if len(fromline) == 0:
         return ""
+
+    # Case 2: We found it!
     if len(fromline) > 0:
         fromline = fromline[0]
         parsed_header = fromline.strip()
+
+    # Does the user want to clean it up?
     if remove_header is True:
         parsed_header = fromline.split(':', 1)[-1].strip()
     return parsed_header               
 
 
 
-def find_recipes(folders,pattern=None, base=None):
+def find_recipes(folders, pattern=None, base=None):
     '''find recipes will use a list of base folders, files,
-    or patterns over a subset of content to find recipe files
-    (indicated by Starting with Singularity
-    :param base: if defined, consider collection folders below
-    this level.
+       or patterns over a subset of content to find recipe files
+       (indicated by Starting with Singularity
+    
+       Parameters
+       ==========
+        base: if defined, consider folders recursively below this level.
+
     '''    
+    # If the user doesn't provide a list of folders, use $PWD
     if folders is None:
         folders = os.getcwd()
 
@@ -56,8 +90,8 @@ def find_recipes(folders,pattern=None, base=None):
     manifest = dict()
     for base_folder in folders:
 
-        # For file, return the one file
-        custom_pattern=None
+        # If we find a file, return the one file
+        custom_pattern = None
         if os.path.isfile(base_folder):  # updates manifest
             manifest = find_single_recipe(filename=base_folder,
                                           pattern=pattern,
@@ -78,15 +112,25 @@ def find_recipes(folders,pattern=None, base=None):
     return manifest
 
 
-def find_folder_recipes(base_folder,pattern=None, manifest=None, base=None):
+def find_folder_recipes(base_folder,
+                        pattern="Singularity",
+                        manifest=None,
+                        base=None):
+
     '''find folder recipes will find recipes based on a particular pattern.
-    If base is defined, consider folders under this level as contrainer collections
+       
+       Parameters
+       ==========
+       base_folder: the base folder to recursively walk
+       pattern: a default pattern to search for
+       manifest: an already started manifest
+       base: if defined, consider folders under this level recursively.
+       
     '''
+
+    # The user is not appending to an existing manifest
     if manifest is None:
         manifest = dict()
-
-    if pattern is None:
-        pattern = "Singularity*"
 
     for root, dirnames, filenames in os.walk(base_folder):
 
@@ -115,19 +159,28 @@ def find_folder_recipes(base_folder,pattern=None, manifest=None, base=None):
     return manifest
 
 
-def find_single_recipe(filename,pattern=None,manifest=None):
+def find_single_recipe(filename, pattern="Singularity", manifest=None):
     '''find_single_recipe will parse a single file, and if valid,
-    return an updated manifest'''
+       return an updated manifest
+
+       Parameters
+       ==========
+       filename: the filename to assess for a recipe
+       pattern: a default pattern to search for
+       manifest: an already started manifest
+
+    '''
 
     if pattern is None:
         pattern = "Singularity*"
 
     recipe = None
     file_basename = os.path.basename(filename)
-    if fnmatch.fnmatch(file_basename,pattern):
+    if fnmatch.fnmatch(file_basename, pattern):
         recipe = {'path': os.path.abspath(filename),
                   'modified':os.path.getmtime(filename)}
 
+    # If we already have the recipe, only add if more recent
     if manifest is not None and recipe is not None:
         container_uri = '/'.join(filename.split('/')[-2:])
         if container_uri in manifest:
@@ -136,5 +189,5 @@ def find_single_recipe(filename,pattern=None,manifest=None):
         else:
             manifest[container_uri] = recipe
         return manifest
-        
+
     return recipe

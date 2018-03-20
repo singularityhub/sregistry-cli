@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Singularity Hub Client
+title: Singularity Global Client, Google Storage
 pdf: true
 permalink: /client-google-storage
 toc: false

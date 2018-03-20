@@ -37,6 +37,7 @@ def search(self, query=None, args=None):
     return self._search_all()
 
 
+
 def list_containers(self):
     '''return a list of containers, determined by finding the metadata field
        "type" with value "container." We alert the user to no containers 
@@ -59,7 +60,6 @@ def list_containers(self):
 
     if len(results) == 0:
         bot.info("No containers found, based on metadata type:container")
-        sys.exit(1)
 
     return results
 
@@ -84,7 +84,6 @@ def search_all(self):
 
     bot.table(rows)
     return rows
-
 
 
 def container_query(self, query, quiet=False):

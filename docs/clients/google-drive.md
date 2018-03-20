@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Singularity Hub Client
+title: Singularity Global Client, Google Drive
 pdf: true
 permalink: /client-google-drive
 toc: false
