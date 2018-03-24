@@ -307,14 +307,16 @@ class Singularity:
         return output
 
 
-    def pull(self,image_path,pull_folder='',
-                             name_by_hash=False,
-                             name_by_commit=False,
-                             image_name=None,
-                             size=None):
+    def pull(self,uri, 
+                  pull_folder='',
+                  name_by_hash=False,
+                  name_by_commit=False,
+                  image_name=None):
 
-        '''pull will pull a singularity hub image
-        :param image_path: full path to image / uris
+        '''
+        Parameters
+        ==========
+        :param uri: image unique resource identifier
         :param name_by: can be one of commit or hash, default is by image name
         ''' 
         self._check_install('[pull]')
@@ -325,7 +327,7 @@ class Singularity:
 
         final_image = None
 
-        if not image_path.startswith('shub://') and not image_path.startswith('docker://'):
+        if not uri.startswith('shub://') and not uri.startswith('docker://'):
             bot.error("pull is only valid for docker and shub, %s is invalid." %image_name)
             sys.exit(1)           
 
@@ -338,7 +340,7 @@ class Singularity:
             os.environ['SINGULARITY_PULLFOLDER'] = pull_folder
             pull_folder = "%s/" % pull_folder
 
-        if image_path.startswith('shub://'):
+        if uri.startswith('shub://'):
             if image_name is not None:
                 bot.debug("user specified naming pulled image %s" %image_name)
                 cmd = cmd +["--name",image_name]
@@ -350,15 +352,13 @@ class Singularity:
                 cmd.append("--hash")
             # otherwise let the Singularity client determine own name
            
-        elif image_path.startswith('docker://'):
-            if size is not None:
-                cmd = cmd + ["--size",size]
+        elif uri.startswith('docker://'):
             if image_name is None:
-                image_name = image_path.replace("docker://","").replace("/","-")
+                image_name = uri.replace("docker://","").replace("/","-")
             final_image = "%s%s.simg" %(pull_folder,image_name)
             cmd = cmd + ["--name", final_image]
  
-        cmd.append(image_path)
+        cmd.append(uri)
         bot.debug(' '.join(cmd))
         output = self.run_command(cmd)
         self.println(output)

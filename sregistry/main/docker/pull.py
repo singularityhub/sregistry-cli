@@ -88,31 +88,46 @@ def pull(self, images,
         # This is the url where the manifests are obtained
         url = self._get_manifest_selfLink(q['url'], digest)
 
-        # This is the Docker Hub namespace and repository
-        layers = self._download_layers(q['url'], digest)
-
-        # Create client to build from sandbox
+        # Create client to build from
         cli = Singularity()
-
-        # Build from sandbox
         sandbox = tempfile.mkdtemp()
 
-        # Add environment to the layers
-        envtar = self._get_environment_tar()
-        layers = [envtar] + layers
+        # First try client's native Singularity
 
-        # Create singularity image from an empty folder
-        for layer in layers:
-            bot.info('Exploding %s' %layer)
-            result = extract_tar(layer, sandbox)
-            if result['return_code'] != 0:
-                bot.error(result['message'])
-                sys.exit(1)        
+        try:
+            self._get_manifests(q['uri'])
+            bot.info('Downloading with native Singularity, please wait...')
+            bot.spinner.start()
+            image_file = cli.pull(image, pull_folder=sandbox)
+            bot.spinner.stop()
 
-        if os.geteuid() == 0:
-             image_file = cli.build(file_name, sandbox)
-        else:
-            image_file = cli.build(file_name, sandbox, sudo=False)
+        # Fall back to using APIs
+
+        except:
+
+            bot.debug('Falling back to sregistry pull...')
+
+            # This is the Docker Hub namespace and repository
+            layers = self._download_layers(q['url'], digest)
+
+
+            # Add environment to the layers
+            envtar = self._get_environment_tar()
+            layers = [envtar] + layers
+
+            # Create singularity image from an empty folder
+            for layer in layers:
+                bot.info('Exploding %s' %layer)
+                result = extract_tar(layer, sandbox)
+                if result['return_code'] != 0:
+                    bot.error(result['message'])
+                    sys.exit(1)        
+
+            if os.geteuid() == 0:
+                 image_file = cli.build(file_name, sandbox)
+            else:
+                image_file = cli.build(file_name, sandbox, sudo=False)
+
 
         # Save to local storage
         if save is True:
