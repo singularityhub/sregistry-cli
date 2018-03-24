@@ -64,7 +64,7 @@ def get_metadata(self, image_file, names={}):
 
     # Inspect the image, or return names only
     if os.path.exists(singularity) and image_file is not None:
-        from spython.main import Singularity
+        from spython.main import Client as Singularity
 
         # We try and inspect, but not required (wont work within Docker)
         try:

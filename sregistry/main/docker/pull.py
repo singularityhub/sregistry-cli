@@ -94,9 +94,7 @@ def pull(self, images,
         try:
             self._get_manifests(q['uri'])
             bot.info('Downloading with native Singularity, please wait...')
-            bot.spinner.start()
             image_file = Singularity.pull(image, pull_folder=sandbox)
-            bot.spinner.stop()
 
         # Fall back to using APIs
 

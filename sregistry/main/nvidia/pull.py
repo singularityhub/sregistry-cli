@@ -82,10 +82,8 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # First effort, get image via Singularity
 
         bot.info('Downloading with native Singularity, please wait...')
-        bot.spinner.start()
         image = image.replace('nvidia://','docker://')
         image_file = Singularity.pull(image, pull_folder=sandbox)
-        bot.spinner.stop()
 
         # Fall back to using APIs
 
