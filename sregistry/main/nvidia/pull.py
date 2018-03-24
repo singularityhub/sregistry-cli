@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.client import Singularity
+from spython.main import Client as Singularity
 from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
 import shutil
@@ -134,14 +134,14 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
             # When the container is created, this is the path to the image
             image_file = container.image
 
-        # If the image_file is different from sandbox, remove sandbox
-        if image_file != sandbox:
-            shutil.rmtree(sandbox)
-
         if os.path.exists(image_file):
             bot.debug('Retrieved image file %s' %image_file)
             bot.custom(prefix="Success!", message=image_file)
             finished.append(image_file)
+
+        # If the image_file is different from sandbox, remove sandbox
+        if image_file != sandbox:
+            shutil.rmtree(sandbox)
 
 
     if len(finished) == 1:
