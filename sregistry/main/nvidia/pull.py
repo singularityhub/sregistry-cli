@@ -83,7 +83,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         sandbox = tempfile.mkdtemp()
 
         # First effort, get image via Singularity
-        self._get_manifests(q['uri'])
+
         bot.info('Downloading with native Singularity, please wait...')
         bot.spinner.start()
         image = image.replace('nvidia://','docker://')
@@ -120,9 +120,15 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # Save to local storage
         if save is True:
 
+            # Did we get the manifests?
+
+            manifests = {}
+            if hasattr(self, 'manifests'):
+                manifests = self.manifests
+
             container = self.add(image_path = image_file,
                                  image_uri = q['uri'],
-                                 metadata = self.manifests,
+                                 metadata = manifests,
                                  url = url)
 
             # When the container is created, this is the path to the image
@@ -136,6 +142,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
             bot.debug('Retrieved image file %s' %image_file)
             bot.custom(prefix="Success!", message=image_file)
             finished.append(image_file)
+
 
     if len(finished) == 1:
         finished = finished[0]
