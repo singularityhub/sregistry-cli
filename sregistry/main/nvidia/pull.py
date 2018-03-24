@@ -82,16 +82,17 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # Build from sandbox 
         sandbox = tempfile.mkdtemp()
 
-        try:
-            self._get_manifests(q['uri'])
-            bot.info('Downloading with native Singularity, please wait...')
-            bot.spinner.start()
-            image_file = cli.pull(image, pull_folder=sandbox)
-            bot.spinner.stop()
+        # First effort, get image via Singularity
+        self._get_manifests(q['uri'])
+        bot.info('Downloading with native Singularity, please wait...')
+        bot.spinner.start()
+        image = image.replace('nvidia://','docker://')
+        image_file = cli.pull(image, pull_folder=sandbox)
+        bot.spinner.stop()
 
         # Fall back to using APIs
 
-        except:
+        if image_file is None:
 
             # This is the Docker Hub namespace and repository
             layers = self._download_layers(q['url'], digest)

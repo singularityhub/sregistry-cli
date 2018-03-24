@@ -51,12 +51,15 @@ class Singularity:
             bot.error('singularity is required for this action %s' %message)
             sys.exit(1)
 
-    def run_command(self, cmd, sudo=False, quiet=False):
+    def run_command(self, cmd, sudo=False, quiet=False, exit=True):
         '''run_command is a wrapper for the global run_command, checking first
         for sudo and exiting on error if needed
-        :param cmd: the command to run
-        :param sudo: does the command require sudo?
-        On success, returns result. Otherwise, exists on error
+
+        Parameters
+        ==========
+        exit on failed execution, exit (default True)
+        sudo: does the command require sudo?
+        
         '''
         result = run_command(cmd,sudo=sudo)
         message = result['message']
@@ -72,10 +75,12 @@ class Singularity:
                     except NameError:
                         message = str(message, errors='replace')
             return message
-        if quiet is False:
-            bot.error("Return Code %s: %s" %(return_code,
-                                             message))
-        sys.exit(1)
+
+        if exit is True:
+            if quiet is False:
+                bot.error("Return Code %s: %s" %(return_code,
+                                                 message))
+            sys.exit(1)
 
 
 
@@ -360,11 +365,16 @@ class Singularity:
  
         cmd.append(uri)
         bot.debug(' '.join(cmd))
-        output = self.run_command(cmd)
-        self.println(output)
-        if final_image is None: # shub
-            final_image = output.split('Container is at:')[-1].strip('\n').strip()
-        return final_image
+
+        output = self.run_command(cmd, exit=False)
+
+        # Only return successful pull
+
+        if output is not None:
+            self.println(output)
+            if final_image is None: # shub
+                final_image = output.split('Container is at:')[-1].strip('\n').strip()
+            return final_image
 
 
     def run(self,image_path,args=None,writable=False,contain=False):
