@@ -134,9 +134,8 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
             bot.custom(prefix="Success!", message=image_file)
             finished.append(image_file)
 
-        # If the image_file is different from sandbox, remove sandbox
-        if image_file != sandbox:
-            shutil.rmtree(sandbox)
+        # Clean up sandbox
+        shutil.rmtree(sandbox)
 
 
     if len(finished) == 1:

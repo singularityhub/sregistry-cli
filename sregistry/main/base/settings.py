@@ -40,7 +40,7 @@ def get_settings(self, client_name=None):
 
     '''
     settings = read_client_secrets()
-    if client_name is not Nont and client_name in settings:
+    if client_name is not None and client_name in settings:
         return settings[client_name]           
     return settings
 
