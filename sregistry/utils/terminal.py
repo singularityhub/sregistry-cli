@@ -133,7 +133,7 @@ def run_command(cmd, sudo=False):
     except FileNotFoundError:
         cmd.pop(0)
         output = Popen(cmd,stderr=STDOUT,stdout=PIPE)
-h
+
     t = output.communicate()[0],output.returncode
     output = {'message':t[0],
               'return_code':t[1]}
