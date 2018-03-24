@@ -87,9 +87,6 @@ def pull(self, images,
 
         # This is the url where the manifests are obtained
         url = self._get_manifest_selfLink(q['url'], digest)
-
-        # Create client to build from
-        cli = Singularity()
         sandbox = tempfile.mkdtemp()
 
         # First try client's native Singularity
@@ -98,7 +95,7 @@ def pull(self, images,
             self._get_manifests(q['uri'])
             bot.info('Downloading with native Singularity, please wait...')
             bot.spinner.start()
-            image_file = cli.pull(image, pull_folder=sandbox)
+            image_file = Singularity.pull(image, pull_folder=sandbox)
             bot.spinner.stop()
 
         # Fall back to using APIs
@@ -124,9 +121,9 @@ def pull(self, images,
                     sys.exit(1)        
 
             if os.geteuid() == 0:
-                 image_file = cli.build(file_name, sandbox)
+                 image_file = Singularity.build(file_name, sandbox)
             else:
-                image_file = cli.build(file_name, sandbox, sudo=False)
+                image_file = Singularity.build(file_name, sandbox, sudo=False)
 
 
         # Save to local storage

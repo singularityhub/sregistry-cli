@@ -76,9 +76,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         digest = q['version'] or q['tag']
 
-        # Create client to build from sandbox
-        cli = Singularity()
-
         # Build from sandbox 
         sandbox = tempfile.mkdtemp()
 
@@ -87,7 +84,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         bot.info('Downloading with native Singularity, please wait...')
         bot.spinner.start()
         image = image.replace('nvidia://','docker://')
-        image_file = cli.pull(image, pull_folder=sandbox)
+        image_file = Singularity.pull(image, pull_folder=sandbox)
         bot.spinner.stop()
 
         # Fall back to using APIs
@@ -113,9 +110,9 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
                     sys.exit(1)        
 
             if os.geteuid() == 0:
-                 image_file = cli.build(file_name, sandbox)
+                 image_file = Singularity.build(file_name, sandbox)
             else:
-                image_file = cli.build(file_name, sandbox, sudo=False)
+                image_file = Singularity.build(file_name, sandbox, sudo=False)
 
         # Save to local storage
         if save is True:
