@@ -87,12 +87,10 @@ explicit_whiteouts=$(echo -n "${whiteouts}" | xxd -p -r | grep -zve '\.wh\.\.wh\
 			# Ensure this is below our tree
 			case $(readlink -f "${to_be_deleted}") in
 				$(readlink -f .)/*)
-					rm -rf "${to_be_deleted}";;
+				    rm -rf "${to_be_deleted}";;
 				*)
-					echo "ERROR!";
-					echo "File ${to_be_deleted} is not below extracted tree!";
-					echo "This looks malicious, exiting now!";
-					exit 1;;
+				echo "WARNING!";
+				echo "File ${to_be_deleted} is not below extracted tree, skipping!";
 			esac
 		done < <(echo -n "${explicit_whiteouts}" | xxd -p -r)
 	fi

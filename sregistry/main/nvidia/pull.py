@@ -98,7 +98,11 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
                 sys.exit(1)        
 
         sudo = kwargs.get('sudo', False)
-        image_file = Singularity.build(file_name, sandbox, sudo=sudo)
+
+        # Build from a sandbox (recipe) into the image_file (squashfs)
+        image_file = Singularity.build(image=file_name,
+                                       recipe=sandbox,
+                                       sudo=sudo)
 
         # Fall back to using Singularity
         if image_file is None:
