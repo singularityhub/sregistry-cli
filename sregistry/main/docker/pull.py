@@ -113,7 +113,7 @@ def pull(self, images,
             # Create singularity image from an empty folder
             for layer in layers:
                 bot.info('Exploding %s' %layer)
-                result = extract_tar(layer, sandbox)
+                result = extract_tar(layer, sandbox, handle_whiteout=True)
                 if result['return_code'] != 0:
                     bot.error(result['message'])
                     sys.exit(1)        

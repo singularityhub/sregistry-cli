@@ -389,6 +389,10 @@ def add(self, image_path=None,
         if image_name is None:      
             image_name = self._get_storage_name(names)
 
+        # If the image exists, remove it
+        if os.path.exists(image_name):
+            shutil.rmtree(image_name)
+
         if copy is True:
             copyfile(image_path, image_name)
         else:
