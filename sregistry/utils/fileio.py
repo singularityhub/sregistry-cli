@@ -98,7 +98,7 @@ def _extract_tar(archive, output_folder):
        output_folder the output folder (sandbox) to extract to
 
     '''
-    from .terminal import run_command
+    from .terminal import ( run_command, which )
 
     result = which('blob2oci')
     if result['return_code'] != 0:
