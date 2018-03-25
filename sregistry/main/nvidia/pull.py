@@ -79,38 +79,35 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # Build from sandbox 
         sandbox = tempfile.mkdtemp()
 
-        # First effort, get image via Singularity
+        # First effort, get image via Sregistry
+        layers = self._download_layers(q['url'], digest)
 
-        bot.info('Downloading with native Singularity, please wait...')
-        image = image.replace('nvidia://','docker://')
-        image_file = Singularity.pull(image, pull_folder=sandbox)
+        # This is the url where the manifests were obtained
+        url = self._get_manifest_selfLink(q['url'], digest)
 
-        # Fall back to using APIs
+        # Add environment to the layers
+        envtar = self._get_environment_tar()
+        layers = [envtar] + layers
 
+        # Create singularity image from an empty folder
+        for layer in layers:
+            bot.info('Exploding %s' %layer)
+            result = extract_tar(layer, sandbox)
+            if result['return_code'] != 0:
+                bot.error(result['message'])
+                sys.exit(1)        
+
+        if os.geteuid() == 0:
+             image_file = Singularity.build(file_name, sandbox)
+        else:
+            image_file = Singularity.build(file_name, sandbox, sudo=False)
+
+
+        # Fall back to using Singularity
         if image_file is None:
-
-            # This is the Docker Hub namespace and repository
-            layers = self._download_layers(q['url'], digest)
-
-            # This is the url where the manifests were obtained
-            url = self._get_manifest_selfLink(q['url'], digest)
-
-            # Add environment to the layers
-            envtar = self._get_environment_tar()
-            layers = [envtar] + layers
-
-            # Create singularity image from an empty folder
-            for layer in layers:
-                bot.info('Exploding %s' %layer)
-                result = extract_tar(layer, sandbox)
-                if result['return_code'] != 0:
-                    bot.error(result['message'])
-                    sys.exit(1)        
-
-            if os.geteuid() == 0:
-                 image_file = Singularity.build(file_name, sandbox)
-            else:
-                image_file = Singularity.build(file_name, sandbox, sudo=False)
+            bot.info('Downloading with native Singularity, please wait...')
+            image = image.replace('nvidia://','docker://')
+            image_file = Singularity.pull(image, pull_folder=sandbox)
 
         # Save to local storage
         if save is True:
