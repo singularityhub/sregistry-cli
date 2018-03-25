@@ -71,8 +71,8 @@ def extract_tar(archive, output_folder, handle_whiteout=False):
     from .terminal import run_command
 
     # Do we want to remove whiteout files?
-    if remove_whiteout is True:
-        return extract_tar(archive, output_folder)
+    if handle_whiteout is True:
+        return _extract_tar(archive, output_folder)
 
     # If extension is .tar.gz, use -xzf
     args = '-xf'
@@ -100,12 +100,14 @@ def _extract_tar(archive, output_folder):
     '''
     from .terminal import run_command
 
-    script = os.path.join(get_installdir(),'main','docker','blob2oci')
-    if not os.path.exists(script):
-        bot.error('Cannot find blob2oci script, exiting.')
+    result = which('blob2oci')
+    if result['return_code'] != 0:
+        bot.error('Cannot find blob2oci script on path, exiting.')
         sys.exit(1)
-  
-    command = [script, '--layer', archive, '--extract', output_folder]
+ 
+    script = result['message'] 
+    command = ['exec' ,script, '--layer', archive, '--extract', output_folder]
+
     if not bot.is_quiet():
         print("Extracting %s" % archive)
 

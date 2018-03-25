@@ -121,6 +121,7 @@ if __name__ == "__main__":
               'all': [INSTALL_REQUIRES_ALL]
 
           },
+          scripts=['sregistry/main/docker/blob2oci'],
           classifiers=[
               'Intended Audience :: Science/Research',
               'Intended Audience :: Developers',
