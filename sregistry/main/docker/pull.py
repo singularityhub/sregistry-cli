@@ -118,10 +118,13 @@ def pull(self, images,
                     bot.error(result['message'])
                     sys.exit(1)        
 
-            if os.geteuid() == 0:
-                 image_file = Singularity.build(file_name, sandbox)
-            else:
-                image_file = Singularity.build(file_name, sandbox, sudo=False)
+
+            # Build from a sandbox (recipe) into the image_file (squashfs)
+            sudo = kwargs.get('sudo', False)
+            image_file = Singularity.build(image=file_name,
+                                           recipe=sandbox,
+                                           sudo=sudo)
+
 
 
         # Save to local storage
