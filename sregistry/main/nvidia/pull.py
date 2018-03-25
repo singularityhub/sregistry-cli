@@ -97,11 +97,8 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
                 bot.error(result['message'])
                 sys.exit(1)        
 
-        if os.geteuid() == 0:
-             image_file = Singularity.build(file_name, sandbox)
-        else:
-            image_file = Singularity.build(file_name, sandbox, sudo=False)
-
+        sudo = kwargs.get('sudo', False)
+        image_file = Singularity.build(file_name, sandbox, sudo=sudo)
 
         # Fall back to using Singularity
         if image_file is None:
@@ -113,7 +110,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         if save is True:
 
             # Did we get the manifests?
-
             manifests = {}
             if hasattr(self, 'manifests'):
                 manifests = self.manifests
