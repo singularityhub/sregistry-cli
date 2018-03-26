@@ -33,6 +33,7 @@ LICENSE = "LICENSE"
 
 
 INSTALL_REQUIRES = (
+    ('spython', {'min_version': '0.0.22'}),
     ('requests', {'exact_version': '2.18.4'}),
     ('pygments', {'min_version': '2.1.3'}),
 )
