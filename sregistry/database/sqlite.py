@@ -167,7 +167,7 @@ def inspect(self, name):
         del fields['_sa_instance_state']
         fields['created_at'] = str(fields['created_at'])
         print(json.dumps(fields, indent=4, sort_keys=True))
-
+        return fields
 
 def rename(self, image_name, path):
     '''rename performs a move, but ensures the path is maintained in storage
