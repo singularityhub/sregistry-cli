@@ -89,14 +89,14 @@ def get_and_update_setting(self, name, default=None):
 
     setting = self._get_setting(name)
 
+    if setting is None and default is not None:
+        setting = default
+
     # If the setting is found, update the client secrets
     if setting is not None:
         updates = {name : setting}
         update_client_secrets(backend=self.client_name, 
                               updates=updates)
-
-    if setting is None and default is not None:
-        setting = default
 
     return setting
 
