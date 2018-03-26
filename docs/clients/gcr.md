@@ -13,20 +13,20 @@ These sections will detail of how to connect with the Google Container Cloud usi
 ## Using GCloud
 If you are familiar with the gcloud client, you might know that when you are logged in, you can use a command like this to pull an image:
 
-```
-gcloud docker -- pull gcr.io/deepvariant-docker/deepvariant:0.5.0
+```bash
+$ gcloud docker -- pull gcr.io/deepvariant-docker/deepvariant:0.5.0
 ```
 
 The sregistry equivalent would then be:
 
-```
-sregistry pull docker://gcr.io/deepvariant-docker/deepvariant:0.5.0
+```bash
+$ sregistry pull docker://gcr.io/deepvariant-docker/deepvariant:0.5.0
 ```
 
 If you have a docker config.json on your computer, this command might be sufficient! If not, then you will want to try setting the following environment variables.
 
 
-```
+```bash
 SREGISTRY_DOCKERHUB_USERNAME='_token'
 SREGISTRY_DOCKERHUB_BASE="gcr.io"
 SREGISTRY_DOCKERHUB_PASSWORD='mysecretpass'

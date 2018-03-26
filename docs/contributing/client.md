@@ -24,7 +24,7 @@ I'll briefly outline the order of operations that I (@vsoch) have taken when add
 ### Order of Operations
 In a nutshell, do this:
 
-```
+```bash
 1.                    2.          3.         4.           5.         6.           7. 
 [skeleton client] --> [shell] --> [push] --> [search] --> [pull] --> [record] --> [share]
 ```
@@ -51,7 +51,7 @@ We are going to generally follow these steps. Note that these docs haven't been 
 
 If you haven't already, fork the repository, and then clone your fork, or clone our repository and add your remote fork later.
 
-```
+```bash
 git clone https://www.singularityhub.org/sregistry-cli
 cd sregistry-cli
 ```
@@ -59,7 +59,7 @@ cd sregistry-cli
 ### 1. Adding Dependencies
 The user doesn't have to install any or all custom clients, this is one advantage to Singularity Registry Global Client. For this reason, you must first define any additional (python) dependencies that are needed for the install. You can do that by first adding your client as a submodule in the [version.py](https://github.com/singularityhub/sregistry-cli/blob/master/sregistry/version.py#L42) file. For example, if I am adding globus, I might define a variable for it and put needed python dependencies:
 
-```
+```python
 INSTALL_REQUIRES_GLOBUS = (
 
     ('globus-sdk[jwt]', {'exact_version': '1.3.0'}),
@@ -68,7 +68,7 @@ INSTALL_REQUIRES_GLOBUS = (
 
 and then add the end of the file make sure to add your new variable to the `INSTALL_REQUIRES_ALL`
 
-```
+```python
 INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
                         ...
                         INSTALL_REQUIRES_GLOBUS)
@@ -76,7 +76,7 @@ INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
 
 Take careful note that this *must be a tuple*. If you only have one thing, don't forget the hanging comma at the end (otherwise it's a string!) Then in the [setup.py](https://github.com/singularityhub/sregistry-cli/blob/master/setup.py) make sure to add it as a submodule:
 
-```
+```python
 # Here I'm reading in the variable from lookup, which comes from version.py
 GLOBUS = get_requirements(lookup,'INSTALL_REQUIRES_GLOBUS')
 
@@ -94,14 +94,14 @@ GLOBUS = get_requirements(lookup,'INSTALL_REQUIRES_GLOBUS')
 
 The user would then install your client for his/her sregistry by doing:
 
-```
+```bash
 pip install sregistry[globus]
 ```
 
 #### Singularity Image
 And don't forget to add your client to the Singularity image! That is in the [Singularity file](https://github.com/singularityhub/sregistry-cli/blob/master/Singularity) at the root of the repository. 
 
-```
+```bash
 #######################################
 # Globus
 #######################################
@@ -113,7 +113,7 @@ And don't forget to add your client to the Singularity image! That is in the [Si
 
 This will ensure that if a user tries to run your client with:
 
-```
+```bash
 singularity run --app globus sregistry
 ```
 
@@ -122,7 +122,7 @@ it will set the environment variable `SREGISTRY_CLIENT` to globus to activate th
 ### 2. Start with the template
 First, let's look at where to find things. We've simplified this structure quite a bit.
 
-```
+```bash
 ├── LICENSE
 ├── MANIFEST.in
 ├── setup.py
@@ -150,7 +150,7 @@ First, let's look at where to find things. We've simplified this structure quite
 
 The first step is thus to create your client folder under `main`. We have provided a template folder that you can use to get started. You can copy it to your new client:
 
-```
+```bash
 cp -R sregistry/main/__template__ sregistry/main/myclient
 ```
 
@@ -160,7 +160,7 @@ To describe the above in more detail, the base of a client is the ApiConnection 
 #### Fun Customization
 If you have a service that needs a thumbnail, for a cute robot you can use a function provided:
 
-```
+```python
 from sregistry.utils import get_thumbnail
 thumbnail = get_thumbnail()
 # thumbnail
@@ -175,7 +175,7 @@ Note that if you (or your user) exports their own thumbnail, you can change this
 generally choose an image no greater than 2MB, and one that has a minimum width of 220px (these are the standards
 defined by [Google Drive](https://developers.google.com/drive/v3/web/file), they may differ for different services. here is how to export your thumbnail:
 
-```
+```python
 SREGISTRY_THUMBNAIL = /path/to/myrobot.png
 export SREGISTRY_THUMBNAIL
 ```
@@ -185,7 +185,7 @@ or of course you can set this for your client during the initialization, so the 
 #### Logging
 If you import the bot, you get with him a bunch of easy to use functions for different levels along with functions. For example, here are different levels of messages coinciding with what gets displayed depending on the user export of `MESSAGELEVEL`:
 
-```
+```python
 from sregistry.logger import bot
 
 bot.abort('Abort')
@@ -203,7 +203,7 @@ CRITICAL Critcal
 
 And here we see when the message level is set above a particular level, we don't see it.
 
-```
+```python
 bot.level
 # 1
 bot.debug('Debug')
@@ -215,7 +215,7 @@ bot.verbose3('Verbose 4')
 
 You can also turn a list of lists into a nice table with `bot.table()`
 
-```
+```python
 rows = [["Dunkin","Donuts","Coffee"],["Starbucks","Donuts","Coffee"],["KrispyKreme","Donuts","Coffee"]]
 bot.table(rows)
 
@@ -226,7 +226,7 @@ bot.table(rows)
 
 Finally, for things that might take a while, you can use a spinner (make sure to stop and start it)
 
-```
+```python
 from time import sleep
 bot.spinner.start()
 sleep(5)
@@ -238,13 +238,13 @@ At this point, you should implement the functions you need for your client, foll
 ### 3. Add any custom or hidden functions
 If you look at a client, it's common to want to add functions to the class that are hidden, or used internally. It also might be the case that you want to expose functions like "pull" and "push" to the command line user, but more interesting functions for the developer to use when interacting with the client in Python. To do this, we ask that you hide the functions with underscores to indicate private. E.g., a call to search might be done like this:
 
-```
+```python
 client.search(query="vsoch/hello-world")
 ```
 
 but then on the back end, your search entrypoint does some logical parsing of the input and then calls different functions internally:
 
-```
+```python
 self._container_search(...)
 self._collection_search(...)
 ```
@@ -254,7 +254,7 @@ If you have any questions please don't hesitate to ask.
 ### 4. Add the Client to sregistry
 This is a very simple (but easy to overlook) step of adding an if statement in the `main/__init__.py` file to just check the environment variable for your client name:
 
-```
+```python
     if SREGISTRY_CLIENT == 'myclient':
         from .myclient import Client
 ```
@@ -283,21 +283,21 @@ Notice that it starts with `SREGISTRY_`, the client name comes next, and then fi
 Before adding an image to your storage or pushing to an external endpoint, it's good to extract metadata to pair with the request. To do this, the Singularity Global clients take a simple approach to use the Singularity "inspect" command to output json. To make this flexible and easy for developers to use, this is provided as a function in the base client. Let's open a shell to test:
 
 
-```
+```bash
 sregistry shell
 client.speak()
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ```
 
 Grab a random file
-```
+```python
 image_file = 'vsoch-hello-world.simg'
 image_name = "vsoch/hello-world"
 ```
 
 If you want to do customization of the tag, or uri otherwise, do this first. There are functions to parse the image name and uri.
 
-```
+```python
 from sregistry.utils import ( parse_image_name, remove_uri )
 $ names = parse_image_name(remove_uri(image_name))
 $ names
@@ -312,12 +312,12 @@ $ names
 Notice that if we just parse the image based on a name, we have very little metadata about it. 
 Finally, use the client's function to get metadata to extract the full data structure.
 
-```
+```python
 metadata = client.get_metadata(image_file, names=names)
 ```
 Now notice that we have a much richer body of metadata.
 
-```
+```python
 {'collection': 'vsoch',
  'data': {'attributes': {'deffile': 'Bootstrap: docker\nFrom: ubuntu:14.04\n\n%labels\nMAINTAINER vanessasaur\nWHATAMI dinosaur\n\n%environment\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n%files\nrawr.sh /rawr.sh\n\n%runscript\nexec /bin/bash /rawr.sh\n',
    'environment': '# Custom environment shell code should follow\n\nDINOSAUR=vanessasaurus\nexport DINOSAUR\n\n',
@@ -344,7 +344,7 @@ Now notice that we have a much richer body of metadata.
 
 The reason that we provide this function is that it could be the case that the user doesn't have Singularity installed. The functions should work the same, so this client function handles doing these checks. If you don't need to customize the names data structure (or generally provide your own dictionary with some custom metadata) then you can skip the first portion and just call the metadata function:
 
-```
+```python
 metadata = client.get_metadata(image_file, names=names)
 ```
 
@@ -358,7 +358,7 @@ It might be the case that you need more than a shared json file (the `sregistry`
  - If the cache is enabled, `client._credential_cache` will return a path in the format `<SREGISTRY_DATABASE>/.sregistry/<CLIENT>`. For a default `SREGISTRY_DATABASE` and a client called `MYCLIENT` the path returned would be `$HOME/.sregistry/myclient`.
  - The `client._credential_cache`, if defined, will not exist. The reason for this is that you as the developer can choose to use it as a file, or a folder with some set of files inside. In both cases, you are required to write the file or create the folder, and we recommend the following functions:
 
-```
+```python
 # Make a directory (recursive)
 from sregistry.utils import mkdir_p
 
@@ -375,7 +375,7 @@ To make it easy for development, we have created a set of functions that live wi
 ##### Update Token
 If a call (e.g., get, post, etc.) ever returns a 401 response, the base client will automatically check if it has a function called `_update_token`. If so, it will call the function and then issue a retry of the failed request. This means that, if you have some functional logic for obtaining (or refreshing) a token (or updating a token otherwise) you should implement this function for your client. The function will pass the response object to `_update_token`. For example, here is the function in a submodule of your client:
 
-```
+```python
 def update_token(self, response):
     '''
     '''
@@ -383,7 +383,7 @@ def update_token(self, response):
 
 and then it's added to the client in the `__init__py`
 
-```
+```python
 from .submodule import update_token
 
 Client._update_token = update_token
@@ -401,7 +401,7 @@ It might be the case that you want to do a quick check that secrets exist for yo
 
 We provide an easy way to do these checks for a client, and we will walk through them in a shell:
 
-```
+```python
 sregistry shell
 client.client_name
 'hub'
@@ -409,7 +409,7 @@ client.client_name
 
 This first function will check for a secrets file, and specifically, that the client `hub` has an entry in it. If not defined, it would exit and tell the user.
 
-```
+```python
 # Do I have a secrets file, period?
 client.require_secrets()
 
@@ -424,21 +424,22 @@ client.require_secrets(params=p["name", "group"])
 
 and so, for example, in the push and pull functions, since we require secrets period, we can just call:
 
-```
+```python
 self.require_secrets()
 ```
 
 ##### GET
 First, you might decide for your client (let's call it `myclient`) that your user can optionally set `SREGISTRY_MYCLIENT_ID`. If you just want to get the variable from the user, and return `None` if it's not found, you can use the following function:
 
-```
+```python
 # self refers to the sregistry.main.Client
 
 setting = self._get_setting('SREGISTRY_MYCLIENT_ID')
 ```
+
 Note that the above function looks first in the environment, and then in the secrets file. If it's not found in either place, `None` is returned. You can also return all settings for a particular client:
 
-```
+```python
 # This is the active client
 active_settings = self._get_settings(self.client_name)
 
@@ -448,7 +449,7 @@ more_settings = self._get_settings('google-storage')
 
 or for all clients (including those not active.
 
-```
+```python
 settings = self._get_settings()
 ```
 
@@ -456,13 +457,13 @@ settings = self._get_settings()
 ##### GET and UPDATE
 For our next example, we want to do the same, but instead of just a get, we want to save the parameter that we find in the `sregistry` client settings file (so it's found next time without the user needing to set it). That would look like this:
 
-```
+```python
 setting = self._get_and_update_setting('SREGISTRY_MYCLIENT_ID')
 ```
 
 Given that something is found in the environment, it will also update the settings file, and importantly, save it indexed by your client name. For the above, in the client secrets file (default `$HOME/.sregistry`) we would see the following update:
 
-```
+```json
 {
   'myclient': {'SREGISTRY_MYCLIENT_ID': setting }
 }
@@ -474,7 +475,7 @@ where `setting` corresponds to whatever was found in the environment. The client
 ##### GET (entire settings file)
 If you would prefer to read the entire file (one level down from the above, and used by the functions above):
 
-```
+```python
 from sregistry.auth import read_client_secrets
 
 secrets=read_client_secrets()
@@ -488,7 +489,7 @@ secrets
 ##### UPDATE (entire settings file)
 Let's say we get the entire settings file, we make many changes, and then we want to update:
 
-```
+```python
 from sregistry.auth import update_client_secrets
 backend = "myclient"
 secrets = update_client_secrets(backend="myclient", 
@@ -498,7 +499,7 @@ secrets = update_client_secrets(backend="myclient",
 Then you will notice you have an entry for `myclient` in the secrets with your settings:
 
 
-```
+```python
 {'base': 'http://127.0.0.1',
  'myclient': {'pancakes':'latkes'},
  'token': '3c00ebba888c238a50820bb9a1f38518c9360b31',
@@ -507,7 +508,7 @@ Then you will notice you have an entry for `myclient` in the secrets with your s
 
 You can also call the update function and give it an already defined secrets to update:
 
-```
+```python
 secrets = update_client_secrets(backend="myclient", 
                                 updates={'pancakes':'latkes'},
                                 secrets=secrets)
@@ -517,15 +518,12 @@ secrets = update_client_secrets(backend="myclient",
 We generally don't advocate for this approach, because it's important to maintain the separation of client storage locations.
 
 
-
-
-
 It's also common practice to ask the user to download some credential file, and then
 authorize via a url. For this purpose, we provide a basic function that prompts the user
 to go to a url that you provide, accept something, and then enter a code (and return
 it to your client).
 
-```
+```python
 code = self._auth_flow(url)
 ```
 

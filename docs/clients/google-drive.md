@@ -15,7 +15,7 @@ These sections will detail use of the Google Drive client for `sregistry`, which
 ## Getting Started
 If you are using the [sregistry image](https://www.singularity-hub.org/collections/379), the client is likely already installed. If you want to install this natively (or build a custom container) the command to install the module extras is:
 
-```
+```bash
 pip install sregistry[google-drive]
 
 # or locally
@@ -29,7 +29,7 @@ You will also need to [create a Google Drive credential](https://console.develop
 ### Creating a Credential
 In the Google Cloud Developers console, select the blue button for "Create Credentials" and then "Oauth Client ID." You then can select "Other" and give it a name and it will create a client key and secret for you. At this point, you want to download the json file for it, put it somewhere secure on your computer, and export the path to it in your environment:
 
-```
+```bash
 SREGISTRY_GOOGLE_DRIVE_CREDENTIALS=/path/to/google-drive-secrets.json
 export SREGISTRY_GOOGLE_DRIVE_CREDENTIALS
 ```
@@ -49,7 +49,7 @@ By default, your Google Drive containers will have a robot icon. Here he is:
 
 But you can choose your own custom thumbnail! Simply export the `SREGISTRY_THUMBNAIL` variable. If you are sharing containers and want some kind of branding, this is a good way to do that.
 
-```
+```bash
 # Globally (or in bash profile)
 SREGISTRY_THUMBNAIL = /path/to/myrobot.png
 export SREGISTRY_THUMBNAIL
@@ -73,20 +73,20 @@ Here we will review the set of commands that are specific to the Google Drive cl
 
 For all of the examples below, we will export our client preference to be `google-drive`
 
-```
+```bash
 SREGISTRY_CLIENT=google-drive
 export SREGISTRY_CLIENT
 ```
 but note that you could just as easily define the variable for one command:
 
-```
+```bash
 SREGISTRY_CLIENT=google-drive sregistry shell
 ```
 
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the google-storage `sregistry` client, just ask for it. If you forgot to export your credentials file, you will be reminded:
 
-```
+```bash
 sregistry shell
 ERROR You must export SREGISTRY_GOOGLE_DRIVE_CREDENTIALS to use Google Drive client
 https://singularityhub.github.io/sregistry-cli/client-google-drive
@@ -94,7 +94,7 @@ https://singularityhub.github.io/sregistry-cli/client-google-drive
 
 Then when you export the path, it will load. If you don't have a credential store, your browser will open and ask you to authenticate first, e.g..
 
-```
+```bash
 sregistry shell
 
 Your browser has been opened to visit:
@@ -112,7 +112,7 @@ Authentication successful.
 
 If you already have a store (or disabled keeping one) it will open directly to the shell:
 
-```
+```bash
 sregistry shell
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
@@ -133,7 +133,7 @@ Here we see straight away that we are interacting with a folder at the root of o
 The most exciting new function added, thanks to Google Drive, is the ability to share! So let's show it first. First we can look at the containers available to us in our drive. This is what search is for, and we can be brief and then jump to share:
 
 
-```
+```bash
 sregistry search
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
@@ -147,7 +147,7 @@ sregistry search
 We don't have very many, so I can confidently search for "expfactory" and know that the first returned result is that third image. If I wanted to just search for this query, I could get a bunch more metadata about it:
 
 
-```
+```bash
 sregistry search expfactory
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
@@ -179,7 +179,7 @@ Old news! Let's get to the fun... the new "share" function!
 ## Share
 The most exciting new function added, thanks to Google Drive, is the ability to share! Let's use the share command to send to container we found above to my (or someone else's) email:
 
-```
+```bash
 sregistry share --email vsochat@stanford.edu expfactory
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
@@ -216,8 +216,8 @@ If you don't feel sheer joy and life completion from having robots in your Googl
 ## Push
 Here we have an image on my Desktop. let's push it to Google Drive.
 
-```
-sregistry push --name vsoch/hello-world:pancakes vsoch-hello-world-master-latest.simg
+```bash
+$ sregistry push --name vsoch/hello-world:pancakes vsoch-hello-world-master-latest.simg
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
 vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f.simg
@@ -227,8 +227,8 @@ This push is a little different - I opted to use the robot spinner instead of th
 
 Now let's search our remote to see the record that was added:
 
-```
-sregistry search
+```bash
+$ sregistry search
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
 [drive://sregistry] Containers
@@ -249,8 +249,8 @@ Note that if you try to manually upload images to your Google Drive, they won't 
 ## Get
 For a remote image record, if you do a "get" you will be given the remote url:
 
-```
-sregistry get expfactory/expfactory:master
+```bash
+$ sregistry get expfactory/expfactory:master
 https://www.googleapis.com/drive/v3/files/1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe?alt=media
 ```
 
@@ -259,8 +259,8 @@ If you don't want to get the url but you want to look at all metadata, then use 
 ## Inspect
 Of course you can inspect an image (here we will inspect the image we just pushed above), and you will see a ton of goodness:
 
-```
-sregistry inspect expfactory/expfactory:master
+```bash
+$ sregistry inspect expfactory/expfactory:master
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
 expfactory/expfactory:master
@@ -308,8 +308,8 @@ One thing I'm not happy about is the subtle differences between the metadata dat
 ### Record
 Finally, if you don't have a record locally but want to get one that already exists, then use record. Here I look at images on the remote:
 
-```
-sregistry search
+```bash
+$ sregistry search
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
 [drive://sregistry] Containers
@@ -320,8 +320,8 @@ sregistry search
 
 Then I ask for the record based on the Google Drive id:
 
-```
-vanessa@vanessa-ThinkPad-T460s:~/Desktop$ sregistry record 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt
+```bash
+$ sregistry record 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
 Searching for 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt in drive://sregistry
@@ -330,7 +330,7 @@ Searching for 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt in drive://sregistry
 
 The search is done and the record created, and I can see it (the last one with pancakes):
 
-```
+```bash
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
 Containers:   [date]   [location]  [client]	[uri]
@@ -347,8 +347,8 @@ If you had an image already, it won't be replaced, but the record will be update
 ### Pull
 With pull, we might have a record (or did a search to find a container that we liked, as shown above). In this case, instead of inspect or get, we just use pull.
 
-```
-sregistry pull vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+```bash
+$ sregistry pull vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
 [client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [folder][sregistry]
 Searching for vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f in drive://sregistry

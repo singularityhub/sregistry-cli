@@ -14,20 +14,20 @@ Workers that take advantage of multiprocessing.
 ## Download
 To download, you will need to import the Workers and `download_task`
 
-```
+```python
 from sregistry.main.base import ( Workers, download_task )
 ```
 
 Then instantiate the workers client:
 
-```
+```python
 # Create multiprocess download client
 workers = Workers()
 ```
 
 Then you basically need to make a list of tasks, where each is a tuple of the form
 
-```
+```python
 ( url, headers, destination )
 ```
 
@@ -37,7 +37,7 @@ Then you basically need to make a list of tasks, where each is a tuple of the fo
 
 Making the list might look like this (of course with extra logic to customize urls, headers, and destinations, and we also recommend checking that the final file doesn't exist first.
 
-```
+```python
 tasks = []
 for digest in digests:
     tasks.append((url, headers, destination))
@@ -47,7 +47,7 @@ workers "run" a function (download_task) and the list of tasks. The number of
 workers allocated is determined by the environment variable `SREGISTRY_PYTHON_THREADS` or can
 be set when you instantiate the Workers:
 
-```
+```python
 workers = Workers(9)
 ```
 

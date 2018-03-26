@@ -45,7 +45,7 @@ bundle install
 ```
 On Ubuntu I do a different method:
 
-```
+```bash
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
 exec $SHELL
@@ -79,7 +79,7 @@ bundle exec jekyll serve
 
 or sometimes this works.
 
-```
+```bash
 jekyll serve
 ```
 

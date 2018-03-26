@@ -23,11 +23,11 @@ The following commands are not yet developed or implemented, but can be (please 
 ## Install
 The Singularity Registry client for sregistry is recommended for use with Python 3, since it uses the datetime package to help with the credential header (if you have a workaround for this, please contribute since it causes issues for many). To install the dependencies:
 
-```
-pip install sregistry[registry]
+```bash
+$ pip install sregistry[registry]
 
 # Or locally
-pip install -e .[registry]
+$ pip install -e .[registry]
 ```
 
 And this will install the extra requirements
@@ -35,16 +35,16 @@ And this will install the extra requirements
 ## Sanity Checks
 You will want to make sure that when you interact with `sregistry` that the Singularity Registry client is loaded. Note how when you use the shell, the default is Singularity hub:
 
-```
-sregistry shell
-client.speak()
+```bash
+$ sregistry shell
+$ client.speak()
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ```
 
 Instead, export the environment variable for `SREGISTRY_CLIENT` as `registry` for Singularity Registry (this tutorial):
 
-```
-SREGISTRY_CLIENT=registry sregistry shell
+```bash
+$ SREGISTRY_CLIENT=registry sregistry shell
 client.speak()
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ```
@@ -52,7 +52,7 @@ client.speak()
 And of course you can set this as default by adding an export for `SREGISTRY_CLIENT=registry` in your bash profile, or simply exporting it
 for your terminal session:
 
-```
+```bash
 SREGISTRY_CLIENT=registry
 export SREGISTRY_CLIENT
 ```
@@ -60,8 +60,8 @@ export SREGISTRY_CLIENT
 Now when you run the client, it will be active for the registry. You can glance quickly at which client is detected just by running
 `sregistry` without any arguments, and note the top of the message:
 
-```
-sregistry
+```bash
+$ sregistry
 
 Singularity Registry Global Client v0.0.1 [registry]
 usage: sregistry [-h] [--debug]
@@ -80,8 +80,8 @@ that is used. The only difference between this pull and the Singularity pull is 
 this pull will be saved to your local database. This means you can easily find and
 manage images later. Here is how to pull:
 
-```
- sregistry pull vanessa/tacos:latest
+```bash
+$ sregistry pull vanessa/tacos:latest
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Progress |===================================| 100.0% 
 [container][new] vanessa/tacos:latest
@@ -90,8 +90,8 @@ Success! /home/vanessa/.singularity/shub/vanessa/tacos:latest.simg
 
 Notice that the container is flagged as "new" because we didn't have it (or metadata about it) before. If we were to pull again, the image would be found and updated, and we would be flagged as an update (see `[update]`):
 
-```
-sregistry pull vanessa/tacos:latest
+```bash
+$ sregistry pull vanessa/tacos:latest
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Progress |===================================| 100.0% 
 [container][update] vanessa/tacos:latest
@@ -104,24 +104,24 @@ Importantly, if you pull an image that is a different **version** it's going to 
 ## Record
 Creating a record is akin to doing a pull, but you don't save any image file. If there isn't an associated version with the endpoint, you will create a general record representation for the container and collection. For example:
 
-```
-sregistry record vanessa/tacos:latest
+```bash
+$ sregistry record vanessa/tacos:latest
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][new] vanessa/tacos:latest
 ```
 
 Notice that there isn't any download, and it tells us that a `[new]` container record was generated.  If we were to retrieve the record again, it would tell us it's an `[update]`
 
-```
-sregistry record vanessa/tacos:latest
+```bash
+$ sregistry record vanessa/tacos:latest
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][update] vanessa/tacos:latest
 ```
 
 We would need to remove the record and then create it again to have the "new" reappear.
 
-```
-sregistry rm vanessa/tacos:latest
+```bash
+$ sregistry rm vanessa/tacos:latest
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [rm] vanessa/tacos:latest
 vanessa@vanessa-ThinkPad-T460s:~/Documents/Dropbox/Code/sregistry/sregistry-cli$ sregistry record vanessa/tacos:latest
@@ -132,23 +132,23 @@ vanessa@vanessa-ThinkPad-T460s:~/Documents/Dropbox/Code/sregistry/sregistry-cli$
 ## Record and Pull
 Now that we understand how pull and record work, we can talk about how they interact. You can imagine doing something like this:
 
-```
+```bash
 get record --> go make a sandwich --> pull 
 ```
 
 The idea is that we can have a record for a container, and then later use the client to pull the record. That would look like this:
 
-```
+```bash
 # Only creates record
-sregistry record vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
+$ sregistry record vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
 
 # Retrieves file to update record
-sregistry pull vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
+$ sregistry pull vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
 ```
 
 Be careful with the case of pulling a record without a version, and then doing a pull. The pull, if a version isn't found, will generate a version, and two records will be maintained. Below we are searching for `vanessa/tacos` under our set of images:
 
-```
+```bash
 sregistry images vanessa/tacos
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
@@ -161,18 +161,18 @@ And we find a remote record and a local image in storage, both obtained from the
 Note that both of these commands are available from within python using the client:
 
 
-```
-sregistry shell
-client.client_name
+```bash
+$ sregistry shell
+$ client.client_name
 # 'registry'
-client.pull('vanessa/tacos:latest')
-client.record('vanessa/tacos:latest')
+$ client.pull('vanessa/tacos:latest')
+$ client.record('vanessa/tacos:latest')
 ```
 
 ## Inspect
 Inspect isn't a command specific to any client, but we can use it here to look at the differences between the local record (without an image file) and the versioned file. When we don't ask to inspect a version, we just see the record:
 
-```
+```python
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 vanessa/tacos:latest
 http://127.0.0.1/containers/1/download/ec7e5014-4949-4c08-9d0e-744a15ea47d1
@@ -212,8 +212,8 @@ http://127.0.0.1/containers/1/download/ec7e5014-4949-4c08-9d0e-744a15ea47d1
 
 and when we ask to see the specific versioned image, we see a modified inspection:
 
-```
-sregistry inspect vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
+```python
+$ sregistry inspect vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
 /home/vanessa/.singularity/shub/vanessa/tacos:latest.simg
@@ -253,7 +253,7 @@ vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
 
 The same works from within python:
 
-```
+```python
 $ sregistry shell
 client.inspect('vanessa/tacos:latest')
 ```
@@ -263,8 +263,8 @@ Singularity Registry is one of the few clients that has "push," meaning that we 
 
 You can export the `SREGISTRY_CLIENT=registry` one time (on the same line before the command)
 
-```
-SREGISTRY_CLIENT=registry sregistry push --name milkshakes/pudding:banana expfactory.simg
+```bash
+$ SREGISTRY_CLIENT=registry sregistry push --name milkshakes/pudding:banana expfactory.simg
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [================================] 173/173 MB - 00:00:00
 [Return status 201 Created]
@@ -272,9 +272,9 @@ SREGISTRY_CLIENT=registry sregistry push --name milkshakes/pudding:banana expfac
 ```
  or export it globally:
 
-```
-export SREGISTRY_CLIENT=registry
-sregistry push --name registry://milkshakes/pudding:banana expfactory.simg
+```bash
+$ export SREGISTRY_CLIENT=registry
+$ sregistry push --name registry://milkshakes/pudding:banana expfactory.simg
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [================================] 173/173 MB - 00:00:00
 [Return status 201 Created]
@@ -282,8 +282,8 @@ sregistry push --name registry://milkshakes/pudding:banana expfactory.simg
 
 Then you should see the image in a remote search:
 
-```
-sregistry search
+```bash
+$ sregistry search
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Collections
 1  mso4sc/sregistry-cli:latest	http://127.0.0.1/containers/4
@@ -292,21 +292,21 @@ Collections
 
 and then add it as a local record, or pull it to your local database.
 
-```
-sregistry record milkshakes/pudding:banana
+```bash
+$ sregistry record milkshakes/pudding:banana
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][new] milkshakes/pudding:banana
 sregistry images | grep banana
 27 January 24, 2018	remote	   [registry]	milkshakes/pudding:banana
 ```
-```
-sregistry pull milkshakes/pudding:banana
+```bash
+$ sregistry pull milkshakes/pudding:banana
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Progress |===================================| 100.0% 
 [container][new] milkshakes/pudding:banana
 Success! /home/vanessa/.singularity/shub/milkshakes-pudding:banana.simg
 ```
-```
+```python
 $ sregistry images | grep banana
 27 January 24, 2018	remote	   [registry]	milkshakes/pudding:banana
 28 January 24, 2018	local 	   [registry]	milkshakes/pudding:banana@846442ecd7487f99fce3b8fb68ae15af
@@ -317,8 +317,8 @@ vanessa@vanessa-ThinkPad-T460s:~/Desktop$
 ## Search
 Finally, search is the correct way to list or search a remote endpoint, distinguished from "images" which does the same for your local database. For Singularity Registry, as a general user you will be able to see public images. The images you can see correspond with the images you are able to pull. 
 
-```
-sregistry search
+```python
+$ sregistry search
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Collections
 1  vanessa/tacolicious:gobacktosleep	http://127.0.0.1/containers/3
@@ -330,16 +330,16 @@ Collections
 
 You can also search for a particular container or collection:
 
-```
-sregistry search vanessa/tacos
+```python
+$ sregistry search vanessa/tacos
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers vanessa/tacos
 1  vanessa/tacos	latest	Dec 28, 2017 02:56AM
 ```
 We can also do this same thing from within Python, and get back rows (lists of the result) to work with.
 
-```
-sregistry shell 
+```python
+$ sregistry shell 
 rows = client.search()
 
 # or search by collection

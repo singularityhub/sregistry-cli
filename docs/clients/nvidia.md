@@ -20,7 +20,7 @@ The Nvidia Container Registry module does not require any extra dependencies oth
 
 To get started, you simply need to install the `sregistry` client:
 
-```
+```bash
 pip install sregistry
 
 # or from source
@@ -68,7 +68,7 @@ The following variables are specific to Singularity (not the Singularity Registr
 #### Authentication
 You should first export your secret token for the api:
 
-```
+```bash
 SREGISTRY_NVIDIA_TOKEN = "xxxxxx"
 export SREGISTRY_NVIDIA_TOKEN
 ```
@@ -76,14 +76,14 @@ export SREGISTRY_NVIDIA_TOKEN
 If you don't, you won't get very far!
 
 
-```
+```bash
 SREGISTRY_CLIENT=nvidia sregistry shell
 ERROR You must have an Nvidia GPU cloud token to use it.
 ```
 
 Once you export your token (and increase the message level) you can see that there is an Authentication header added to the client:
 
-```
+```bash
 MESSAGELEVEL=5 SREGISTRY_CLIENT=nvidia sregistry shell
 DEBUG credentials cache
 DEBUG Headers found: Content-Type,Accept,Authorization
@@ -101,22 +101,22 @@ For a detailed list of other (default) environment variables and settings that y
 
 For all of the examples below, we will export our client preference to be `nvidia`
 
-```
+```bash
 SREGISTRY_CLIENT=nvidia
 export SREGISTRY_CLIENT
 ```
 
 but note that you could just as easily define the variable for one command (as we did above):
 
-```
+```bash
 SREGISTRY_CLIENT=nvidia sregistry shell
 ```
 
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the Nvidia Container Registry `sregistry` client, just ask for it:
 
-```
-sregistry shell
+```bash
+$ sregistry shell
 [client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
@@ -140,8 +140,8 @@ The most likely action you want to do is to pull. Pull in this context is differ
 
 If you are interested in seeing how to ask for a particular architecture or operating system (given that the image provides it) please see the [environment](#environment). setting for more details. Here is an example of using the Docker Hub `sregistry` client.
 
-```
-sregistry pull tensorflow:17.11
+```bash
+$ sregistry pull tensorflow:17.11
 [client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [1/6] ||----------------------------------|   0.0%
 Progress |===================================| 100.0% 
@@ -198,7 +198,7 @@ Success! /home/vanessa/.singularity/shub/nvidia-tensorflow:17.11.simg
 
 Notice that the first layer extracted is the standard environment metadata tar. The next set of layers come from the user's default cache (either set as the Singularity default or a user specified, we honor the Singularity envionment variable settings for this, and use a temporary directory if it's disabled. The final layer is a metadata tar that is specifically for the runscript, environment, and labels (if found in the manifest). After you do a pull, you can see the record in your local database (see the last record):
 
-```
+```bash
 sregistry images
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
@@ -215,8 +215,8 @@ Containers:   [date]   [location]  [client]	[uri]
 ## Record
 We can do the same action as above, but without the download! You might want to grab metadata for an image but not pull and download layers. You can use record for that. Let's first get the record for another version of caffe:
 
-```
-sregistry record caffe2:17.10
+```bash
+$ sregistry record caffe2:17.10
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][new] continuumio/anaconda3:latest
 ```
@@ -224,8 +224,8 @@ sregistry record caffe2:17.10
 It's a really quick action, because all we've done is obtained the manifests. If you do it a second time, you
 update the existing record:
 
-```
-sregistry record caffe2:17.10
+```bash
+$ sregistry record caffe2:17.10
 [client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][update] nvidia/caffe2:17.10
 ```
@@ -233,8 +233,8 @@ sregistry record caffe2:17.10
 ## Images
 We can see the record in our images list (last one):
 
-```
-sregistry images
+```bash
+$ sregistry images
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
 1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
@@ -251,8 +251,8 @@ Containers:   [date]   [location]  [client]	[uri]
 ## Inspect
 And we can inspect it!
 
-```
-sregistry inspect nvidia/caffe2:17.10
+```bash
+$ sregistry inspect nvidia/caffe2:17.10
 [client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 nvidia/caffe2:17.10
 https://nvcr.io/v2/nvidia/caffe2/manifests/17.10
@@ -297,22 +297,22 @@ the above is truncated in the middle, but what you should know is that the middl
 ## Get
 And then to use (or otherwise interact with the image via it's path in your local database) you can use get. Notice the different between performing a get for a remote image (returns the url):
 
-```
+```bash
 sregistry get nvidia/caffe2:17.10
 https://nvcr.io/v2/nvidia/caffe2/manifests/17.10
 ```
 
 and one that we have in our local storage (returns a full path to it)
 
-```
-sregistry get nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
+```bash
+$ sregistry get nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
 /home/vanessa/.singularity/shub/nvidia-tensorflow:17.11.simg
 ```
 
 All of these functions are also available to interact with via the python client, if you are a developer.
 
-```
-sregistry shell
+```bash
+$ sregistry shell
 [client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.

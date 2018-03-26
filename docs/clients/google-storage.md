@@ -16,7 +16,7 @@ cloud bucket.
 ## Getting Started
 If you are using the sregistry image, the client is likely already installed. If you want to install this natively (or build a custom container) the command to install the module extras is:
 
-```
+```bash
 pip install sregistry[google-storage]
 
 # or locally
@@ -46,20 +46,20 @@ For a detailed list of other (default) environment variables and settings that y
 
 For all of the examples below, we will export our client preference to be `google-storage`
 
-```
+```bash
 SREGISTRY_CLIENT=google-storage
 export SREGISTRY_CLIENT
 ```
 but note that you could just as easily define the variable for one command:
 
-```
+```bash
 SREGISTRY_CLIENT=google-storage sregistry shell
 ```
 
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the google-storage `sregistry` client, just ask for it:
 
-```
+```bash
 sregistry shell
 [bucket][sregistry-vanessa]
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -80,7 +80,7 @@ Here we see straight away that we are using the default bucket name (`sregistry-
 ## Push
 If you don't have any images in your bucket, that is probably a good start to add some. In this case we will add an image sitting in our present working directory.
 
-```
+```bash
 sregistry push --name vsoch/hello-world:latest vsoch-hello-world-master-latest.simg
 [bucket][sregistry-vanessa]
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -90,7 +90,7 @@ https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhel
 
 You will see again the connection to the bucket, and then a progress bar that shows the status of the upload, and the progress bar is replaced by the final container url. By default, this push command doesn't add a container to our local storage database, but just a record that it exists in Google. To see the record, you can list your images:
 
-```
+```bash
 sregistry images
 [bucket][sregistry-vanessa]
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -104,7 +104,7 @@ At this point you have remote records, but no images locally. You could do a "ge
 ## Get
 For a remote image record, if you do a "get" you will be given the remote url:
 
-```
+```bash
 sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
 ```
@@ -114,8 +114,8 @@ If you don't want to get the url but you want to look at all metadata, then use 
 ## Inspect
 Of course you can inspect an image (here we will inspect the image we just pushed above), and you will see a ton of goodness:
 
-```
-sregistry inspect vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+```bash
+$ sregistry inspect vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [bucket][sregistry-vanessa]
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
@@ -185,7 +185,7 @@ https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhel
 ### Record
 Finally, if you don't have a record locally but want to get one that already exists, then use record.
 
-```
+```bash
 sregistry record vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-vanessa]
@@ -206,8 +206,8 @@ A search without any parameters will essentially list all containers in the conf
 
 Thus, if you do some fancy operation outside of using the client to upload containers to storage, make sure that you add this metadata value, otherwise they will not be found. Let's do a quick search to get our list in Google Storage. This action has no dependency on a local storage or database.
 
-```
-sregistry search
+```bash
+$ sregistry search
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-vanessa]
 [gs://sregistry-vanessa] Containers
@@ -217,8 +217,8 @@ sregistry search
 
 Then to look at details for a more specific search, let's try searching for "vsoch"
 
-```
-sregistry search vsoch
+```bash
+$ sregistry search vsoch
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-vanessa]
 [gs://sregistry-vanessa] Found 1 containers
@@ -233,8 +233,8 @@ md5:     7ZdVoIcfBNs+FJcb7FajPw==
 ### Pull
 With pull, we might have a record (or did a search to find a container that we liked, as shown above). In this case, instead of inspect or get, we just use pull.
 
-```
-sregistry pull vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+```bash
+$ sregistry pull vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-vanessa]
 Searching for vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f in gs://sregistry-vanessa
@@ -245,9 +245,8 @@ Success! /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04
 
 Did you notice that this was an update? The reason is because we already had the record in our database from when we pushed it in the first place, and the record was updated to now be for a local file:
 
-```
-sregistry images
-sregistry images
+```bash
+$ sregistry images
 [client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-vanessa]
 Containers:   [date]   [location]  [client]	[uri]
@@ -257,8 +256,8 @@ Containers:   [date]   [location]  [client]	[uri]
 
 and if we do a get, instead of the url we get the path to the file:
 
-```
-sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+```bash
+$ sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
 ```
 

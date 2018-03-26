@@ -21,64 +21,64 @@ For the quickstart you need:
 
 The following sections demonstrate the most common usage for the build commands! We also provide a [static demo](https://vsoch.github.io/sherlock_vep/) of the current builder interface.
 
-```
+```bash
 # Export credentials
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/google-secrets.json
 export GOOGLE_CLOUD_PROJECT=vanessasur-us
 export SREGISTRY_CLIENT=google-compute
 ```
-```
+```bash
 # Install
 $ pip install sregistry[google-compute]
 ```
-```
+```bash
 # View Templates
 $ sregistry build templates
 ```
-```
+```bash
 # Save a template to customize
 $ sregistry build templates /cloud/google/compute/ubuntu/securebuild-2.4.3.json > config.json
 ```
-```
+```bash
 # Build with a repo with Singularity recipe in root
 $ sregistry build https://www.github.com/vsoch/hello-world 
 ```
-```
+```bash
 # Preview a Configuration for the same (don't launch builder)
 $ sregistry build --preview https://www.github.com/vsoch/hello-world
 ```
-```
+```bash
 # List instances
 $ sregistry build instances
 
 # List containers in storage
 $ sregistry search
 ```
-```
+```bash
 # Get detailed metadata for remote
 $ sregistry search vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 ```
-```
+```bash
 # Pull a container
 $ sregistry pull vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 ```
-```
+```bash
 # Look at images from compute locally
 $ sregistry images | grep google-compute
 ```
-```
+```bash
 # Look at metadata for local
 $ sregistry inspect vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 ```
-```
+```bash
 # Look at latest log
 $ sregistry build logs
 ```
-```
+```bash
 # Look at specific logs
 $ sregistry build logs vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d
 ```
-```
+```bash
 # Run it!
 $ singularity run $(sregistry get vsoch/hello-world:latest@3bac21df631874e3cbb3f0cf6fc9af1898f4cc3d)
 RaawwWWWWWRRRR!! Avocado!

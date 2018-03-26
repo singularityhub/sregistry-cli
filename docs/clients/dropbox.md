@@ -15,13 +15,13 @@ These sections will detail use of the Dropbox client for `sregistry`, meaning th
 Dropbox has one dependency to install it's python sdk. You can do this via sregistry:
 
 
-```
+```bash
 pip install sregistry[dropbox]
 ```
 
 or if you already have sregistry and want to add the dropbox module on your own:
 
-```
+```bash
 pip install dropbox
 ```
 
@@ -29,7 +29,7 @@ or read [instructions here](https://github.com/dropbox/dropbox-sdk-python).
 
 To make the Dropbox client default, you **must** set `SREGISTRY_CLIENT` to `dropbox`, either for individual commands or exported globally:
 
-```
+```bash
 # Globally
 SREGISTRY_CLIENT=dropbox
 export SREGISTRY_CLIENT
@@ -71,7 +71,7 @@ More details about how to generate and export the token are discussed in the nex
 
 To use the Dropbox client, you must have an access token exported in the environment. The access token is personal and for your account only, and so it is essential that you don't share it with anyone. When you go to your [apps page](https://www.dropbox.com/developers/apps/) and create an application, make sure that you click the button to reveal a code under "Generated access token." Then export your secret token for the api:
 
-```
+```bash
 SREGISTRY_DROPBOX_TOKEN = "xxxxxx"
 export SREGISTRY_DROPBOX_TOKEN
 ```
@@ -93,7 +93,7 @@ For a detailed list of other (default) environment variables and settings that y
 
 For all of the examples below, we will export our client preference to be `dropbox`
 
-```
+```bash
 SREGISTRY_CLIENT=dropbox
 export SREGISTRY_CLIENT
 ```
@@ -114,8 +114,8 @@ sregistry shell
 ## Push
 When you first use the client, you won't have any Singularity images in your personal Dropbox. You thus should push one there first! Push looks like this:
 
-```
-sregistry push --name dropbox://pusheen/asaurus:blue library-busybox-latest.simg 
+```bash
+$ sregistry push --name dropbox://pusheen/asaurus:blue library-busybox-latest.simg 
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 connected to Vanessa S
 Progress |===================================| 100.0% 
@@ -123,7 +123,7 @@ Progress |===================================| 100.0%
 
 The third line confirms the name of the dropbox that we are connecting to. Notice how we have the dropbox uri (`dropbox://`) to tell the client to use Dropbox? If you plan to use this for a session (or want to set it globally) you can also export `SREGISTRY_CLIENT` as `dropbox` to the environment, and then drop the uri entirely.
 
-```
+```bash
 export SREGISTRY_CLIENT=dropbox
 sregistry push --name pusheen/asaurus:pink library-busybox-latest.simg 
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -133,7 +133,7 @@ Progress |===================================| 100.0%
 
 What is actually going on, organization wise? Your dropbox folder has an "Apps" section, and within it are individual folders, one per application (and one for sregistry!). When you push an image in collection "pusheen," a collection folder is made under `sregistry/` and then within that folder, you will have your images. It would look like this:
 
-```
+```bash
 Apps
 
 ├── sregistry
@@ -150,8 +150,8 @@ Apps
 ## Search
 Once you've pushed a few images, we can search! Without a query, your search is akin to a listing of remote images. Remember that we have `SREGISTRY_CLIENT=dropbox` exported.
 
-```
-sregistry search
+```bash
+$ sregistry search
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 connected to Vanessa S
 Collections
@@ -163,20 +163,20 @@ Collections
 
 If you don't want to export the `SREGISTRY_CLIENT` you can also do this:
 
-```
-sregistry search dropbox://
+```bash
+$ sregistry search dropbox://
 ```
 
 If you want to search for a particular phrase using the Dropbox endpoint, you can do it like this:
 
-```
-sregistry search dropbox://pusheen
-sregistry search dropbox://green
+```bash
+$ sregistry search dropbox://pusheen
+$ sregistry search dropbox://green
 ```
 
 or remove the uri and just search for the term.
 
-```
+```bash
 export SREGISTRY_CLIENT=dropbox
 sregistry search pusheen
 sregistry search green
@@ -186,7 +186,7 @@ sregistry search green
 ## Pull
 After you have some images remotely, you might want to pull them (for example, if you build on your local machine, and then want to pull the images to your cluster).  You can use sregistry with the dropbox:// uri to do this.
 
-```
+```bash
 sregistry pull dropbox://pusheen/asaurus:red
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 connected to Vanessa S
@@ -196,13 +196,13 @@ Success! /home/vanessa/.singularity/shub/pusheen-asaurus:red.simg
 ```
 Note that the final path is in your storage registry. You can get it (and pipe into commands, variables, etc.)
 
-```
+```bash
 sregistry get pusheen/asaurus:red
 /home/vanessa/.singularity/shub/pusheen-asaurus:red.simg
 ```
 What if we try to pull the same image again?
 
-```
+```bash
 sregistry pull dropbox://pusheen/asaurus:red
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 connected to Vanessa S
@@ -211,7 +211,7 @@ ERROR Image exists! Remove first, or use --force to overwrite
 
 We need to use force to force overwrite.
 
-```
+```bash
 sregistry pull --force dropbox://pusheen/asaurus:red
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 connected to Vanessa S
@@ -222,7 +222,7 @@ Success! /home/vanessa/.singularity/shub/pusheen-asaurus:red.simg
 
 We can then see the images (tags red and blue) have been added to our local database:
 
-```
+```bash
 sregistry images | grep dropbox
 30 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:blue@02c08a25c8f4697e16e896239e549a2b
 31 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:red@02c08a25c8f4697e16e896239e549a2b
@@ -231,7 +231,7 @@ sregistry images | grep dropbox
 ## Record
 We can do the same action as above, but without the download! You might want to grab metadata for an image but not pull the file itself. You can use record for that. Let's first get the record for another version of the pusheen green image:
 
-```
+```bash
 sregistry record pusheen/asaurus:green
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 connected to Vanessa S
@@ -241,7 +241,7 @@ connected to Vanessa S
 It's a really quick action, because all we've done is obtained the file metadata. If you do it a second time, you
 update the existing record:
 
-```
+```bash
 sregistry record pusheen/asaurus:green
 [client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][update] pusheen/asaurus:green
@@ -250,7 +250,7 @@ sregistry record pusheen/asaurus:green
 ## Images
 We can see the record as a "remote" in our images list:
 
-```
+```bash
  sregistry images | grep dropbox
 30 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:blue@02c08a25c8f4697e16e896239e549a2b
 31 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:red@02c08a25c8f4697e16e896239e549a2b
@@ -260,7 +260,7 @@ We can see the record as a "remote" in our images list:
 ## Inspect
 And we can inspect our pusheen images!
 
-```
+```bash
 sregistry inspect pusheen/asaurus:red
 pusheen/asaurus:red
 /home/vanessa/.singularity/shub/pusheen-asaurus:red.simg
@@ -302,15 +302,15 @@ pusheen/asaurus:red
 ## Get
 And then to use (or otherwise interact with the image via it's path in your local database) you can use get. Notice the different between performing a get for a remote image (returns the url):
 
-```
-sregistry get pusheen/asaurus:red
+```bash
+$ sregistry get pusheen/asaurus:red
 /home/vanessa/.singularity/shub/pusheen-asaurus:red.simg
 ```
 
 ## Shell
 All of these functions are also available to interact with via the python client, if you are a developer.
 
-```
+```bash
 sregistry shell dropbox
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 connected to Vanessa S
@@ -328,7 +328,7 @@ In [1]:
 
 You can also just export `SREGISTRY_CLIENT` as `dropbox` to make it your default shell.
 
-```
+```bash
 export SREGISTRY_CLIENT=dropbox
 sregistry shell
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -347,7 +347,7 @@ In [1]:
 ## Share
 You can get or create a shared link for an image in your dropbox with the share command!
 
-```
+```bash
 SREGISTRY_CLIENT=dropbox sregistry share pusheen/asaurus:green
 pusheen/asaurus:green
 [client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -358,7 +358,7 @@ https://www.dropbox.com/s/t8hxq0fa9dq9dt8/asaurus%3Agreen.simg?dl=0
 If you want to suppress the verbosity, add `--quiet`
 
 
-```
+```bash
 SREGISTRY_CLIENT=dropbox sregistry --quiet share pusheen/asaurus:green
 https://www.dropbox.com/s/t8hxq0fa9dq9dt8/asaurus%3Agreen.simg?dl=0
 ```

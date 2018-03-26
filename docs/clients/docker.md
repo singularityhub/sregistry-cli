@@ -32,7 +32,7 @@ The Docker Hub module does not require any extra dependencies other than having 
 
 To get started, you simply need to install the `sregistry` client:
 
-```
+```bash
 pip install sregistry
 
 # or from source
@@ -94,7 +94,7 @@ For a detailed list of other (default) environment variables and settings that y
 
 For all of the examples below, we will export our client preference to be `docker`
 
-```
+```bash
 SREGISTRY_CLIENT=docker
 export SREGISTRY_CLIENT
 ```
@@ -107,8 +107,8 @@ SREGISTRY_CLIENT=docker sregistry shell
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the Docker Hub `sregistry` client, just ask for it:
 
-```
-sregistry shell
+```bash
+$ sregistry shell
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
 Type "copyright", "credits" or "license" for more information.
@@ -133,8 +133,8 @@ The most likely action you want to do with a Docker Hub endpoint is to pull. Pul
 
 If you are interested in seeing how to ask for a particular architecture or operating system (given that the image provides it) please see the [environment](#environment). setting for more details. Here is an example of using the Docker Hub `sregistry` client.
 
-```
-sregistry pull ubuntu:latest
+```bash
+$ sregistry pull ubuntu:latest
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Exploding /usr/local/libexec/singularity/bootstrap-scripts/environment.tar
 Exploding /home/vanessa/.singularity/docker/sha256:50aff78429b146489e8a6cb9334d93a6d81d5de2edc4fbf5e2d4d9253625753e.tar.gz
@@ -157,8 +157,8 @@ Success! /home/vanessa/.singularity/shub/library-ubuntu:latest.simg
 
 Notice that the first layer extracted is the standard environment metadata tar. The next set of layers come from the user's default cache (either set as the Singularity default or a user specified, we honor the Singularity envionment variable settings for this, and use a temporary directory if it's disabled. The final layer is a metadata tar that is specifically for the runscript, environment, and labels (if found in the manifest). After you do a pull, you can see the record in your local database (see the last record):
 
-```
-sregistry images
+```bash
+$ sregistry images
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
 1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
@@ -173,16 +173,16 @@ Containers:   [date]   [location]  [client]	[uri]
 ## Record
 You might want to grab metadata for an image but not pull and download layers. You can use record for that. Let's first get the record for an anaconda image:
 
-```
-sregistry record continuumio/anaconda3
+```bash
+$ sregistry record continuumio/anaconda3
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [container][new] continuumio/anaconda3:latest
 ```
 
 It's a really quick action, because all we've done is obtained the manifests. We can see the record in our images list:
 
-```
-sregistry images
+```bash
+$ sregistry images
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Containers:   [date]   [location]  [client]	[uri]
 1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
@@ -197,8 +197,8 @@ Containers:   [date]   [location]  [client]	[uri]
 
 Since we didn't ask for an image, the record just records the uri without a version. What did we get? let's inspect it.
 
-```
-sregistry inspect continuumio/anaconda3:latest
+```bash
+$ sregistry inspect continuumio/anaconda3:latest
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 continuumio/anaconda3:latest
 {
@@ -237,7 +237,7 @@ the above is truncated in the middle, but what you should know is that the middl
 ## Get
 Here is an example of a typical flow to download an image, and then use it. We will set the client at runtime to be Docker Hub (and not the default of Singularity Hub)
 
-```
+```bash
 SREGISTRY_CLIENT=docker sregistry pull centos:7
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 Progress |===================================| 100.0% 
@@ -259,11 +259,11 @@ Success! /home/vanessa/.singularity/shub/library-centos:7.simg
 
 Now we can use (or otherwise interact with the full path to it) with `get`
 
-```
+```bash
 sregistry get library/centos:7
 /home/vanessa/.singularity/shub/library-centos:7.simg
 ```
-```
+```bash
 singularity shell $(sregistry get library/centos:7)
 Singularity: Invoking an interactive shell within container...
 
