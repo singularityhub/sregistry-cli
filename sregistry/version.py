@@ -33,7 +33,7 @@ LICENSE = "LICENSE"
 
 
 INSTALL_REQUIRES = (
-    ('spython', {'min_version': '0.0.22'}),
+    ('spython', {'min_version': '0.0.23'}),
     ('requests', {'exact_version': '2.18.4'}),
     ('pygments', {'min_version': '2.1.3'}),
 )
@@ -41,10 +41,6 @@ INSTALL_REQUIRES = (
 ################################################################################
 # Submodule Requirements (no database, just client)
 
-
-INSTALL_BASIC_GLOBUS = (
-    ('globus-sdk[jwt]', {'exact_version': '1.3.0'}),
-)
 
 INSTALL_BASIC_REGISTRY = (
     ('requests-toolbelt', {'exact_version': '0.8.0'}),
@@ -82,11 +78,6 @@ INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
 ################################################################################
 # Submodule Requirements (versions that include database)
 
-
-INSTALL_REQUIRES_GLOBUS = (
-    ('sqlalchemy', {'min_version': None}),
-    ('globus-sdk[jwt]', {'exact_version': '1.3.0'})
-)
 
 INSTALL_REQUIRES_REGISTRY = (
     ('requests-toolbelt', {'exact_version': '0.8.0'}),
