@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# blob2oci - Simple shell tool to pull from DockerHub and create an OCI image.
+# Copyright (C) 2018 Oliver Freyermuth
+#
+# Contributors
+#  - Vanessa Sochat
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+function help() {
+cat <<EOF
+Tool to extract a layer to a folder of interest, handling whiteout files.
+
+Example usage:
+$0 --layer /path/to/file.tar.gz --extract /extract/here
+EOF
+exit 1
+}
+
+writable_dirs=false
+
+TEMP=$(getopt -o h --long layer:,extract:,help -n $0 -- "$@")
+if [ $? != 0 ] ; then printHelp; exit 1; fi
+eval set -- "$TEMP"
+while true ; do
+	case "$1" in
+		--layer)         layer=$2;           shift 2;;
+                --extract)       extract=$2;         shift 2;;
+		--writable-dirs) writable_dirs=true; shift 1;;
+		-h|--help)       help;               exit 0;;
+		--)              shift;              break;;
+		*) echo "Internal error!";           exit 1;;
+	esac
+done
+
+
+# Checks
+
+if [ ! -f "${layer}" ]; then
+    echo "Cannot find ${layer}"
+    exit 1
+fi
+
+if [ ! -d "${extract}" ]; then
+    echo "Cannot find directory ${extract} to extract."
+    exit 1
+
+else
+
+    # Whiteout handling.
+
+    whiteouts_unchecked=$(tar tf ${layer} --wildcards --wildcards-match-slash ".wh..wh..opq" "*/.wh..wh..opq" ".wh.*" "*/.wh.*" 2>/dev/null)
+
+    # Safety: Check for filenames with newline.
+    num_bad_whiteouts=$(echo -n "${whiteouts_unchecked}" | grep -v '.wh.' | wc -l)
+    if [ ! ${num_bad_whiteouts} -eq 0 ]; then
+        echo "There are ${num_bad_whiteouts} whiteout files with newline characters in the filename in layer ${layer}:"
+        echo "${whiteouts_unchecked}" | grep -v '.wh.'
+        echo "This is likely malicious content, exiting now!"
+        exit 1
+    fi
+
+    whiteouts=$(echo "${whiteouts_unchecked}" | tr '\n' '\0' | xxd -p)
+    opaque_whiteouts=$(echo -n "${whiteouts}" | xxd -p -r | grep -ze '\.wh\.\.wh\.\.opq$' | xxd -p)
+    explicit_whiteouts=$(echo -n "${whiteouts}" | xxd -p -r | grep -zve '\.wh\.\.wh\.\.opq$' | grep -ze '\.wh\.[^/]\+$' | xxd -p)
+
+    # Opaque Whiteouts
+    if [ ! -z "${opaque_whiteouts}" ]; then
+        echo "Warning: Layer ${layer} contains opaque whiteout files:"
+        while IFS= read -r -d '' whiteout_file; do
+	    echo "${whiteout_file}"
+	done < <(echo -n "${opaque_whiteouts}" | xxd -p -r)
+        echo "We do not handle these yet!"
+    fi
+
+    # Explicit Whiteouts
+    if [ ! -z "${explicit_whiteouts}" ]; then
+        while IFS= read -r -d '' whiteout_file; do
+            to_be_deleted=${extract}/$(echo "${whiteout_file}" | sed 's#\.wh\.\([^/]\+\)$#\1#')
+            # Ensure this is below our tree
+            case $(readlink -f "${to_be_deleted}") in $(readlink -f .)/*)
+                rm -rf "${to_be_deleted}";;
+            *)
+                echo "WARNING!";
+                echo "File ${to_be_deleted} is not below extracted tree, skipping!";
+             esac
+         done < <(echo -n "${explicit_whiteouts}" | xxd -p -r)
+    fi 
+    tar --overwrite --exclude=dev/* --exclude=*/.wh.* -C ${extract} -xf ${layer}
+
+    # Make directories owner-writable?
+    if ${writable_dirs}; then
+        find ${extract} -type d ! -perm -200 -print0|xargs -0 -r chmod u+w
+    fi
+fi

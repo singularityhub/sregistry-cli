@@ -30,6 +30,7 @@ import tarfile
 import requests
 
 import json
+from sregistry.utils import get_installdir
 from sregistry.logger import bot
 import io
 import sys
@@ -57,16 +58,21 @@ def mkdir_p(path):
 ## COMPRESSION #############################################################
 ############################################################################
 
-def extract_tar(archive, output_folder):
+def extract_tar(archive, output_folder, handle_whiteout=False):
     '''extract a tar archive to a specified output folder
 
     Parameters
     ==========
     archive: the archive file to extract
     output_folder: the output folder to extract to
+    handle_whiteout: use docker2oci variation to handle whiteout files
 
     '''
     from .terminal import run_command
+
+    # Do we want to remove whiteout files?
+    if handle_whiteout is True:
+        return _extract_tar(archive, output_folder)
 
     # If extension is .tar.gz, use -xzf
     args = '-xf'
@@ -75,6 +81,33 @@ def extract_tar(archive, output_folder):
 
     # Just use command line, more succinct.
     command = ["tar", args, archive, "-C", output_folder, "--exclude=dev/*"]
+    if not bot.is_quiet():
+        print("Extracting %s" % archive)
+
+    return run_command(command)
+
+
+def _extract_tar(archive, output_folder):
+    '''use blob2oci to handle whiteout files for extraction. Credit for this
+       script goes to docker2oci by Olivier Freyermouth, and see script
+       folder for license.
+
+       Parameters
+       ==========
+       archive: the archive to extract
+       output_folder the output folder (sandbox) to extract to
+
+    '''
+    from .terminal import ( run_command, which )
+
+    result = which('blob2oci')
+    if result['return_code'] != 0:
+        bot.error('Cannot find blob2oci script on path, exiting.')
+        sys.exit(1)
+ 
+    script = result['message'] 
+    command = ['exec' ,script, '--layer', archive, '--extract', output_folder]
+
     if not bot.is_quiet():
         print("Extracting %s" % archive)
 

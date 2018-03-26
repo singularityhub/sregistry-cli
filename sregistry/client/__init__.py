@@ -21,7 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.client.singularity import Singularity
 import sregistry
 import argparse
 import sys

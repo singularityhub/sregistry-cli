@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.client import Singularity
+from spython.main import Client as Singularity
 from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
 import shutil
@@ -76,17 +76,14 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         digest = q['version'] or q['tag']
 
-        # This is the Docker Hub namespace and repository
+        # Build from sandbox 
+        sandbox = tempfile.mkdtemp()
+
+        # First effort, get image via Sregistry
         layers = self._download_layers(q['url'], digest)
 
         # This is the url where the manifests were obtained
         url = self._get_manifest_selfLink(q['url'], digest)
-
-        # Create client to build from sandbox
-        cli = Singularity()
-
-        # Build from sandbox 
-        sandbox = tempfile.mkdtemp()
 
         # Add environment to the layers
         envtar = self._get_environment_tar()
@@ -95,35 +92,48 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         # Create singularity image from an empty folder
         for layer in layers:
             bot.info('Exploding %s' %layer)
-            result = extract_tar(layer, sandbox)
+            result = extract_tar(layer, sandbox, handle_whiteout=True)
             if result['return_code'] != 0:
                 bot.error(result['message'])
                 sys.exit(1)        
 
-        if os.geteuid() == 0:
-             image_file = cli.build(file_name, sandbox)
-        else:
-            image_file = cli.build(file_name, sandbox, sudo=False)
+        sudo = kwargs.get('sudo', False)
+
+        # Build from a sandbox (recipe) into the image_file (squashfs)
+        image_file = Singularity.build(image=file_name,
+                                       recipe=sandbox,
+                                       sudo=sudo)
+
+        # Fall back to using Singularity
+        if image_file is None:
+            bot.info('Downloading with native Singularity, please wait...')
+            image = image.replace('nvidia://','docker://')
+            image_file = Singularity.pull(image, pull_folder=sandbox)
 
         # Save to local storage
         if save is True:
 
+            # Did we get the manifests?
+            manifests = {}
+            if hasattr(self, 'manifests'):
+                manifests = self.manifests
+
             container = self.add(image_path = image_file,
                                  image_uri = q['uri'],
-                                 metadata = self.manifests,
+                                 metadata = manifests,
                                  url = url)
 
             # When the container is created, this is the path to the image
             image_file = container.image
 
-        # If the image_file is different from sandbox, remove sandbox
-        if image_file != sandbox:
-            shutil.rmtree(sandbox)
-
         if os.path.exists(image_file):
             bot.debug('Retrieved image file %s' %image_file)
             bot.custom(prefix="Success!", message=image_file)
             finished.append(image_file)
+
+        # Clean up sandbox
+        shutil.rmtree(sandbox)
+
 
     if len(finished) == 1:
         finished = finished[0]

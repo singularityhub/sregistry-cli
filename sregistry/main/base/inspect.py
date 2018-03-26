@@ -64,12 +64,11 @@ def get_metadata(self, image_file, names={}):
 
     # Inspect the image, or return names only
     if os.path.exists(singularity) and image_file is not None:
-        from sregistry.client import Singularity
+        from spython.main import Client as Singularity
 
         # We try and inspect, but not required (wont work within Docker)
         try:
-            cli = Singularity()
-            updates = cli.inspect(image_path=image_file, quiet=True)
+            updates = Singularity.inspect(image=image_file)
         except:
             bot.warning('Inspect command not supported, metadata not included.')
             updates = None

@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.client import Singularity
+from spython.main import Client as Singularity
 from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
 import shutil
@@ -87,32 +87,45 @@ def pull(self, images,
 
         # This is the url where the manifests are obtained
         url = self._get_manifest_selfLink(q['url'], digest)
-
-        # This is the Docker Hub namespace and repository
-        layers = self._download_layers(q['url'], digest)
-
-        # Create client to build from sandbox
-        cli = Singularity()
-
-        # Build from sandbox
         sandbox = tempfile.mkdtemp()
 
-        # Add environment to the layers
-        envtar = self._get_environment_tar()
-        layers = [envtar] + layers
+        # First try client's native Singularity
 
-        # Create singularity image from an empty folder
-        for layer in layers:
-            bot.info('Exploding %s' %layer)
-            result = extract_tar(layer, sandbox)
-            if result['return_code'] != 0:
-                bot.error(result['message'])
-                sys.exit(1)        
+        try:
+            self._get_manifests(q['uri'])
+            bot.info('Downloading with native Singularity, please wait...')
+            image_file = Singularity.pull(image, pull_folder=sandbox)
 
-        if os.geteuid() == 0:
-             image_file = cli.build(file_name, sandbox)
-        else:
-            image_file = cli.build(file_name, sandbox, sudo=False)
+        # Fall back to using APIs
+
+        except:
+
+            bot.debug('Falling back to sregistry pull...')
+
+            # This is the Docker Hub namespace and repository
+            layers = self._download_layers(q['url'], digest)
+
+
+            # Add environment to the layers
+            envtar = self._get_environment_tar()
+            layers = [envtar] + layers
+
+            # Create singularity image from an empty folder
+            for layer in layers:
+                bot.info('Exploding %s' %layer)
+                result = extract_tar(layer, sandbox, handle_whiteout=True)
+                if result['return_code'] != 0:
+                    bot.error(result['message'])
+                    sys.exit(1)        
+
+
+            # Build from a sandbox (recipe) into the image_file (squashfs)
+            sudo = kwargs.get('sudo', False)
+            image_file = Singularity.build(image=file_name,
+                                           recipe=sandbox,
+                                           sudo=sudo)
+
+
 
         # Save to local storage
         if save is True:
@@ -125,14 +138,13 @@ def pull(self, images,
             # When the container is created, this is the path to the image
             image_file = container.image
 
-        # If the image_file is different from sandbox, remove sandbox
-        if image_file != sandbox:
-            shutil.rmtree(sandbox)
-
         if os.path.exists(image_file):
             bot.debug('Retrieved image file %s' %image_file)
             bot.custom(prefix="Success!", message=image_file)
             finished.append(image_file)
+
+        # Clean up sandbox
+        shutil.rmtree(sandbox)
 
     if len(finished) == 1:
         finished = finished[0]

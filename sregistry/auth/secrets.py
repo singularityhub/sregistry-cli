@@ -95,8 +95,15 @@ def read_client_secrets():
     # If token file not provided, check environment
     secrets = _get_secrets_file()
 
+    # If exists, load
     if secrets is not None:
         client_secrets = read_json(secrets)
+
+    # Otherwise, initialize
+    else:
+        from sregistry.defaults import SREGISTRY_CLIENT_SECRETS
+        write_json(client_secrets, SREGISTRY_CLIENT_SECRETS)
+
     return client_secrets
 
 
