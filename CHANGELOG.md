@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - consolidating shared pull functionality between nvidia and docker (0.0.78)
  - updating pull to handle whiteout files, adding THIRD-PARTY-NOTICES (0.0.77)
  - version bump to add google-compute builder startup files (0.0.76)
  - support for the builders is added (0.0.75)
