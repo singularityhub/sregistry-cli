@@ -59,81 +59,21 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     bot.debug('Execution of PULL for %s images' %len(images))
 
     # If used internally we want to return a list to the user.
+
     finished = []
     for image in images:
 
         q = parse_image_name( remove_uri(image), 
                               default_collection='nvidia' )
 
-        # Use Singularity to build the image, based on user preference
-        if file_name is None:
-            file_name = self._get_storage_name(q)
+        image_file = self._pull(file_name=file_name, 
+                                uri='nvidia://',
+                                save=save, 
+                                force=force, 
+                                names=q,
+                                kwargs=kwargs)
 
-        # Determine if the user already has the image
-        if os.path.exists(file_name) and force is False:
-            bot.error('Image exists! Remove first, or use --force to overwrite')
-            sys.exit(1)
-
-        digest = q['version'] or q['tag']
-
-        # Build from sandbox 
-        sandbox = tempfile.mkdtemp()
-
-        # First effort, get image via Sregistry
-        layers = self._download_layers(q['url'], digest)
-
-        # This is the url where the manifests were obtained
-        url = self._get_manifest_selfLink(q['url'], digest)
-
-        # Add environment to the layers
-        envtar = self._get_environment_tar()
-        layers = [envtar] + layers
-
-        # Create singularity image from an empty folder
-        for layer in layers:
-            bot.info('Exploding %s' %layer)
-            result = extract_tar(layer, sandbox, handle_whiteout=True)
-            if result['return_code'] != 0:
-                bot.error(result['message'])
-                sys.exit(1)        
-
-        sudo = kwargs.get('sudo', False)
-
-        # Build from a sandbox (recipe) into the image_file (squashfs)
-        image_file = Singularity.build(image=file_name,
-                                       recipe=sandbox,
-                                       sudo=sudo)
-
-        # Fall back to using Singularity
-        if image_file is None:
-            bot.info('Downloading with native Singularity, please wait...')
-            image = image.replace('nvidia://','docker://')
-            image_file = Singularity.pull(image, pull_folder=sandbox)
-
-        # Save to local storage
-        if save is True:
-
-            # Did we get the manifests?
-            manifests = {}
-            if hasattr(self, 'manifests'):
-                manifests = self.manifests
-
-            container = self.add(image_path = image_file,
-                                 image_uri = q['uri'],
-                                 metadata = manifests,
-                                 url = url)
-
-            # When the container is created, this is the path to the image
-            image_file = container.image
-
-        if os.path.exists(image_file):
-            bot.debug('Retrieved image file %s' %image_file)
-            bot.custom(prefix="Success!", message=image_file)
-            finished.append(image_file)
-
-        # Clean up sandbox
-        shutil.rmtree(sandbox)
-
+        finished.append(image_file)
 
     if len(finished) == 1:
         finished = finished[0]

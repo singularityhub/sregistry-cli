@@ -46,6 +46,7 @@ from sregistry.main.docker.api import (
     update_token
 )
 
+from sregistry.main.docker.pull import _pull
 from .pull import pull
 from .record import record
 
@@ -151,6 +152,7 @@ class Client(ApiConnection):
 
 # Functions exposed to the client
 Client.pull = pull
+Client._pull = _pull
 Client.record = record
 
 # Api functions for image layers and manifests (hidden)

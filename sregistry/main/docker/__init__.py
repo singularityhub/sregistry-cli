@@ -33,7 +33,7 @@ from .api import ( create_metadata_tar, download_layers, get_manifest_selfLink,
                    get_manifest, get_manifests, get_download_cache, get_size,
                    extract_env, extract_labels, extract_runscript,
                    update_token, get_environment_tar )
-from .pull import pull
+from .pull import ( _pull, pull )
 from .record import record
 
 class Client(ApiConnection):
@@ -181,6 +181,7 @@ class Client(ApiConnection):
 
 # Functions exposed to the client
 Client.pull = pull
+Client._pull = _pull
 Client.record = record
 
 # Api functions for image layers and manifests (hidden)

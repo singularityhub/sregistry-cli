@@ -74,78 +74,118 @@ def pull(self, images,
         base = self._update_base(image)
         q = parse_image_name(remove_uri(image), base=base)
 
-        digest = q['version'] or q['tag']
-
-        # Use Singularity to build the image, based on user preference
-        if file_name is None:
-            file_name = self._get_storage_name(q)
-
-        # Determine if the user already has the image
-        if os.path.exists(file_name) and force is False:
-            bot.error('Image exists! Remove first, or use --force to overwrite')
-            sys.exit(1)
-
-        # This is the url where the manifests are obtained
-        url = self._get_manifest_selfLink(q['url'], digest)
-        sandbox = tempfile.mkdtemp()
-
-        # First try client's native Singularity
-
-        try:
-            self._get_manifests(q['uri'])
-            bot.info('Downloading with native Singularity, please wait...')
-            image_file = Singularity.pull(image, pull_folder=sandbox)
-
-        # Fall back to using APIs
-
-        except:
-
-            bot.debug('Falling back to sregistry pull...')
-
-            # This is the Docker Hub namespace and repository
-            layers = self._download_layers(q['url'], digest)
+        image_file = self._pull(file_name=file_name, 
+                                save=save, 
+                                force=force, 
+                                names=q,
+                                kwargs=kwargs)
 
 
-            # Add environment to the layers
-            envtar = self._get_environment_tar()
-            layers = [envtar] + layers
-
-            # Create singularity image from an empty folder
-            for layer in layers:
-                bot.info('Exploding %s' %layer)
-                result = extract_tar(layer, sandbox, handle_whiteout=True)
-                if result['return_code'] != 0:
-                    bot.error(result['message'])
-                    sys.exit(1)        
-
-
-            # Build from a sandbox (recipe) into the image_file (squashfs)
-            sudo = kwargs.get('sudo', False)
-            image_file = Singularity.build(image=file_name,
-                                           recipe=sandbox,
-                                           sudo=sudo)
-
-
-
-        # Save to local storage
-        if save is True:
-
-            container = self.add(image_path=image_file,
-                                 image_uri=q['uri'],
-                                 metadata=self.manifests,
-                                 url=url)
-
-            # When the container is created, this is the path to the image
-            image_file = container.image
-
-        if os.path.exists(image_file):
-            bot.debug('Retrieved image file %s' %image_file)
-            bot.custom(prefix="Success!", message=image_file)
-            finished.append(image_file)
-
-        # Clean up sandbox
-        shutil.rmtree(sandbox)
+        finished.append(image_file)
 
     if len(finished) == 1:
         finished = finished[0]
     return finished
+
+
+def _pull(self, 
+          file_name, 
+          names, 
+          save=True, 
+          force=False, 
+          uri="docker://", 
+          **kwargs):
+
+    '''pull an image from a docker hub. This is a (less than ideal) workaround
+       that actually does the following:
+
+       - creates a sandbox folder
+       - adds docker layers, metadata folder, and custom metadata to it
+       - converts to a squashfs image with build
+
+    the docker manifests are stored with registry metadata.
+ 
+    Parameters
+    ==========
+    images: refers to the uri given by the user to pull in the format
+    <collection>/<namespace>. You should have an API that is able to 
+    retrieve a container based on parsing this uri.
+    file_name: the user's requested name for the file. It can 
+               optionally be None if the user wants a default.
+    save: if True, you should save the container to the database
+          using self.add()
+    
+    Returns
+    =======
+    finished: a single container path, or list of paths
+    '''
+
+    # Use Singularity to build the image, based on user preference
+    if file_name is None:
+        file_name = self._get_storage_name(names)
+
+    # Determine if the user already has the image
+    if os.path.exists(file_name) and force is False:
+        bot.error('Image exists! Remove first, or use --force to overwrite')
+        sys.exit(1)
+
+    digest = names['version'] or names['tag']
+
+    # Build from sandbox 
+    sandbox = tempfile.mkdtemp()
+
+    # First effort, get image via Sregistry
+    layers = self._download_layers(names['url'], digest)
+
+    # This is the url where the manifests were obtained
+    url = self._get_manifest_selfLink(names['url'], digest)
+
+    # Add environment to the layers
+    envtar = self._get_environment_tar()
+    layers = [envtar] + layers
+
+    # Create singularity image from an empty folder
+    for layer in layers:
+        bot.info('Exploding %s' %layer)
+        result = extract_tar(layer, sandbox, handle_whiteout=True)
+        if result['return_code'] != 0:
+            bot.error(result['message'])
+            sys.exit(1)        
+
+    sudo = kwargs.get('sudo', False)
+
+    # Build from a sandbox (recipe) into the image_file (squashfs)
+    image_file = Singularity.build(image=file_name,
+                                   recipe=sandbox,
+                                   sudo=sudo)
+
+    # Fall back to using Singularity
+    if image_file is None:
+        bot.info('Downloading with native Singularity, please wait...')
+        image = image.replace('docker://', uri)
+        image_file = Singularity.pull(image, pull_folder=sandbox)
+
+    # Save to local storage
+    if save is True:
+
+        # Did we get the manifests?
+        manifests = {}
+        if hasattr(self, 'manifests'):
+            manifests = self.manifests
+
+        container = self.add(image_path = image_file,
+                             image_uri = names['uri'],
+                             metadata = manifests,
+                             url = url)
+
+        # When the container is created, this is the path to the image
+        image_file = container.image
+
+    if os.path.exists(image_file):
+        bot.debug('Retrieved image file %s' %image_file)
+        bot.custom(prefix="Success!", message=image_file)
+
+    # Clean up sandbox
+    shutil.rmtree(sandbox)
+
+    return image_file
