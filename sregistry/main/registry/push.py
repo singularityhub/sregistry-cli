@@ -60,7 +60,7 @@ def push(self, path, name, tag=None):
     if "data" not in metadata:
         metadata['data'] = {'attributes': {}}
     if "labels" not in metadata['data']['attributes']:
-        metadata['data']['attributes'] = {'labels': {} }
+        metadata['data']['attributes']['labels'] = {}
     if metadata['data']['attributes']['labels'] == None:
         metadata['data']['attributes']['labels'] = {}
 
