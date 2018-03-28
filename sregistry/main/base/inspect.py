@@ -52,7 +52,7 @@ def get_metadata(self, image_file, names={}):
     if image_file is not None:
         if not os.path.exists(image_file):
             bot.error('Cannot find %s.' %image_file)
-            return names
+            return names or metadata
 
     # The user provided a file, but no names
     if not names:
