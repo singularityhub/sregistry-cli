@@ -73,6 +73,7 @@ if __name__ == "__main__":
     INSTALL_BASIC_ALL = get_reqs(lookup,'INSTALL_BASIC_ALL')
     DROPBOX_BASIC = get_reqs(lookup,'INSTALL_BASIC_DROPBOX')
     REGISTRY_BASIC = get_reqs(lookup,'INSTALL_BASIC_REGISTRY')
+    GLOBUS_BASIC = get_reqs(lookup,'INSTALL_BASIC_GLOBUS')
     GOOGLE_STORAGE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_STORAGE')
     GOOGLE_DRIVE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_DRIVE')
     GOOGLE_COMPUTE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_COMPUTE')
@@ -82,6 +83,7 @@ if __name__ == "__main__":
     INSTALL_REQUIRES_ALL = get_reqs(lookup,'INSTALL_REQUIRES_ALL')
     DROPBOX = get_reqs(lookup,'INSTALL_REQUIRES_DROPBOX')
     REGISTRY = get_reqs(lookup,'INSTALL_REQUIRES_REGISTRY')
+    GLOBUS = get_reqs(lookup,'INSTALL_REQUIRES_GLOBUS')
     GOOGLE_STORAGE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
     GOOGLE_DRIVE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
     GOOGLE_COMPUTE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_COMPUTE')
@@ -108,12 +110,14 @@ if __name__ == "__main__":
               'google-compute-basic': [GOOGLE_COMPUTE_BASIC],
               'google-storage-basic': [GOOGLE_STORAGE_BASIC],
               'google-drive-basic': [GOOGLE_DRIVE_BASIC],
+              'globus-basic': [GLOBUS_BASIC],
               'all-basic': [INSTALL_BASIC_ALL],
               'dropbox': [DROPBOX],
               'registry': [REGISTRY],
               'google-compute': [GOOGLE_COMPUTE],
               'google-storage': [GOOGLE_STORAGE],
               'google-drive': [GOOGLE_DRIVE],
+              'globus': [GLOBUS],
               'all': [INSTALL_REQUIRES_ALL]
 
           },

@@ -168,8 +168,12 @@ def get_parser():
                                    help="search remote containers")
 
         search.add_argument("query", nargs='*', 
-                         help="container search query, don't specify for all", 
-                         type=str, default="*")
+                            help="container search query, don't specify for all", 
+                            type=str, default="*")
+
+        search.add_argument("--endpoint", default=None, dest='endpoint',
+                            help='remote endpoint and path. id:/path"', 
+                            type=str)
 
     # Build an image
     if hasattr(cli,'build'):
