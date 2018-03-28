@@ -58,7 +58,11 @@ def push(self, path, name, tag=None):
 
     # Add expected attributes
     if "data" not in metadata:
-        metadata['data'] = {'attributes': {'labels': dict() }}
+        metadata['data'] = {'attributes': {}}
+    if "labels"not in metadata['data']['attributes']:
+        metadata['data']['attributes'] = {'labels': {} }
+    if metadata['data']['attributes']['labels'] == None:
+        metadata['data']['attributes']['labels'] = {}
 
     # Try to add the size
     image_size = os.path.getsize(path) >> 20
