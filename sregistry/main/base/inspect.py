@@ -46,7 +46,6 @@ def get_metadata(self, image_file, names={}):
               variables for the image, likely from utils.parse_image_name
 
     '''
-
     metadata = dict()
 
     # We can't return anything without image_file or names
