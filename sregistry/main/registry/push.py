@@ -54,8 +54,8 @@ def push(self, path, name, tag=None):
 
     # Extract the metadata
     names = parse_image_name(remove_uri(name), tag=tag)
-    metadata = self.get_metadata(path, names=names)
-
+    metadata = self.get_metadata(path, names=names) or {}
+     
     # Add expected attributes
     if "data" not in metadata:
         metadata['data'] = {'attributes': {'labels': dict() }}
