@@ -25,6 +25,24 @@ import requests
 import globus_sdk
 
 
+def parse_endpoint_name(self, endpoint):
+    '''split an endpoint name by colon, as the user can provide an
+       endpoint name separated from a path:
+
+       Parameters
+       ==========
+       endpoint 12345:/path/on/remote
+    
+    '''
+    parts = [x for x in endpoint.split(':') if x]
+    endpoint = parts[0]
+    if len(parts) == 1:
+        path = ''
+    else:
+        path = '/'.join(parts[1:])
+
+    return endpoint, path
+
 def init_transfer_client(self):
     '''return a transfer client for the user''' 
 
@@ -32,8 +50,8 @@ def init_transfer_client(self):
         self._update_tokens()
 
     access_token = self.transfer['access_token']
-    #authorizer = globus_sdk.AccessTokenAuthorizer(access_token)
-    #self.transfer_client = globus_sdk.TransferClient(authorizer=authorizer)
+
+    # Createe Refresh Token Authorizer
 
     authorizer = globus_sdk.RefreshTokenAuthorizer(
                                  self.transfer['refresh_token'],
@@ -50,6 +68,12 @@ def get_endpoints(self, query=None):
        we use it to search a scope of "all" in addition to personal and shared
        endpoints. Endpoints are organized
        by type (my-endpoints, shared-with-me, optionally all) and then id.
+
+       Parameters
+       ==========
+       query: an endpoint search term to add to a scope "all" search. If not 
+              defined, no searches are done with "all"
+
     ''' 
     self.endpoints = {}
     
@@ -79,60 +103,3 @@ def get_endpoints(self, query=None):
         bot.warning('https://www.globus.org/globus-connect-personal')
 
     return self.endpoints
-
-
-
-
-def do_transfer(self, endpoint, container):
-
-    if not hasattr(self, 'endpoints'):
-        self.get_endpoints()
-
-    if len(self.endpoints['my-endpoints']) > 0:
-
-        # Use relative paths, we are in container and endpoint is mapped
-        source = os.path.abspath(container)
-        client = get_transfer_client(user)
-        source_endpoint = settings.GLOBUS_ENDPOINT_ID
-    tdata = globus_sdk.TransferData(client, source_endpoint,
-                                    endpoint,
-                                    label="Singularity Registry Transfer",
-                                    sync_level="checksum")
-    tdata.add_item(source, source)
-    transfer_result = client.submit_transfer(tdata)
-    return transfer_result
-
-
-def globus_transfer(request, cid=None):
-    ''' a main portal for working with globus. If the user has navigated
-        here with a container id, it is presented with option to do a 
-        transfer
-    '''
-    container = None
-    if cid is not None:
-        container = get_container(cid)
-    endpoints = get_endpoints(request.user)
-    context = {'user': request.user,
-               'endpoints': endpoints,
-               'container': container }
-
-    return render(request, 'globus/transfer.html', context)
-
-
-def submit_transfer(request, endpoint, cid):
-    '''submit a transfer request for a container id to an endpoint, also
-       based on id
-    '''
-
-    container = get_container(cid)
-    if container is None:
-        message = "This container could not be found."
-
-    else:
-        result = do_transfer(user=request.user,
-                             endpoint=endpoint,
-                             container=container)
-        message = result['message']
-
-    status = {'message': message }
-    return JsonResponse(status)

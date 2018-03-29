@@ -28,10 +28,10 @@ import time
 import sys
 import os
 
-from .transfer import (
+from .utils import (
     get_endpoints,
-    do_transfer,
-    init_transfer_client
+    init_transfer_client,
+    parse_endpoint_name
 )
 
 from .query import (
@@ -122,6 +122,7 @@ class Client(ApiConnection):
 Client._init_transfer_client = init_transfer_client
 Client._get_endpoints = get_endpoints        
 Client._do_transfer = do_transfer
+Client._parse_endpoint_name = parse_endpoint_name
 
 # Search
 Client.search = search

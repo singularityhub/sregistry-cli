@@ -111,12 +111,9 @@ def list_endpoint(self, endpoint, query=None):
     if not hasattr(self, 'transfer_client'):
         self._init_transfer_client()
 
-    parts = [x for x in endpoint.split(':') if x]
-    endpoint = parts[0]
-    if len(parts) == 1:
-        path = ''
-    else:
-        path = '/'.join(parts[1:])
+    # Separate endpoint id from the desired path
+
+    endpoint, path = self._parse_endpoint_name(endpoint)
 
     # Get a list of files at endpoint, under specific path
     try:
