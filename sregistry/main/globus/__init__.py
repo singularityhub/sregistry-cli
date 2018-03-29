@@ -34,6 +34,7 @@ from .utils import (
     parse_endpoint_name
 )
 
+from .push import push
 from .query import (
     search,
     list_endpoint,
@@ -121,8 +122,10 @@ class Client(ApiConnection):
 # Transfer
 Client._init_transfer_client = init_transfer_client
 Client._get_endpoints = get_endpoints        
-Client._do_transfer = do_transfer
 Client._parse_endpoint_name = parse_endpoint_name
+
+# Push
+Client.push = push
 
 # Search
 Client.search = search
