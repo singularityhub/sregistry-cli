@@ -29,12 +29,16 @@ import sys
 import os
 
 from .utils import (
+    create_endpoint_cache,
+    create_endpoint_folder,
     get_endpoints,
+    get_endpoint_path,
     init_transfer_client,
     parse_endpoint_name
 )
 
 from .push import push
+from .pull import pull
 from .query import (
     search,
     list_endpoint,
@@ -121,11 +125,17 @@ class Client(ApiConnection):
 
 # Transfer
 Client._init_transfer_client = init_transfer_client
+
+# Endpoints
+Client._create_endpoint_cache = create_endpoint_cache
+Client._create_endpoint_folder = create_endpoint_folder
 Client._get_endpoints = get_endpoints        
 Client._parse_endpoint_name = parse_endpoint_name
+Client._get_endpoint_path = get_endpoint_path
 
 # Push
 Client.push = push
+Client.pull = pull
 
 # Search
 Client.search = search

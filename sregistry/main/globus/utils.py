@@ -20,9 +20,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
+from sregistry.utils import read_file
 import pickle
+import os
 import requests
 import globus_sdk
+from globus_sdk.exc import TransferAPIError
 
 
 def parse_endpoint_name(self, endpoint):
@@ -42,6 +45,75 @@ def parse_endpoint_name(self, endpoint):
         path = '/'.join(parts[1:])
 
     return endpoint, path
+
+
+
+def create_endpoint_cache(self, 
+                          endpoint_id, 
+                          cache='.singularity/shub'):
+
+    '''create a directory for sregistry in the user's 
+       base folder to share images.
+
+       Parameters
+       ==========
+       endpoint_id: the endpoint id parameters
+       cache: the relative path for the images cache folder at the
+              root of the endpoint
+
+    '''
+    self._create_endpoint_folder(endpoint_id, cache)
+
+
+def create_endpoint_folder(self, endpoint_id, folder):
+    '''create an endpoint folder, catching the error if it exists.
+
+       Parameters
+       ==========
+       endpoint_id: the endpoint id parameters
+       folder: the relative path of the folder to create
+
+    '''
+    try:
+        res = self.transfer_client.operation_mkdir(endpoint_id, folder)
+        bot.info("%s --> %s" %(res['message'], folder))
+    except TransferAPIError:
+        bot.info('%s already exists at endpoint' %folder)
+
+
+def get_endpoint_path(self, endpoint_id):
+    '''return the first fullpath to a folder in the endpoint based on
+       expanding the user's home from the globus config file. This
+       function is fragile but I don't see any other way to do it.
+    
+       Parameters
+       ==========
+       endpoint_id: the endpoint id to look up the path for
+
+    '''
+    config = os.path.expanduser("~/.globusonline/lta/config-paths")
+    if not os.path.exists(config):
+        bot.error('%s not found for a local Globus endpoint.')
+        sys.exit(1)
+
+    path = None
+
+    # Read in the config and get the root path
+
+    config = [x.split(',')[0] for x in read_file(config)]
+    for path in config:
+        if os.path.exists(path):
+            break
+
+    # If we don't have an existing path, exit
+
+    if path is None:
+        bot.error('No path was found for a local Globus endpoint.')
+        sys.exit(1)
+
+    return path
+
+
 
 def init_transfer_client(self):
     '''return a transfer client for the user''' 

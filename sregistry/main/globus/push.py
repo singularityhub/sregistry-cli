@@ -23,7 +23,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from spython.main import Client as Singularity
 from sregistry.logger import bot
+from sregistry.defaults import SREGISTRY_STORAGE
 from sregistry.utils import parse_image_name
+import globus_sdk
+from globus_sdk.exc import TransferAPIError
 import json
 import sys
 import os
@@ -79,15 +82,27 @@ def push(self, path, name, tag=None):
         bot.error('No activated local endpoints online! Go online to transfer')
         sys.exit(1)
 
-    # Use relative paths, we are in container and endpoint is mapped
-    source = os.path.abspath(container)
 
+    # The destination endpoint should have an .singularity/shub folder set
+    self._create_endpoint_cache(endpoint)
+
+    # SREGISTRY_STORAGE must be an endpoint
+    # if the image isn't already there, add it first
+
+    added = self.add(image_path=path, 
+                     image_uri=q['uri'],
+                     copy=True)
+    
+    label = "Singularity Registry Transfer for %s" %added.name
     tdata = globus_sdk.TransferData(self.transfer_client, 
                                     source_endpoint['id'],
                                     endpoint,
-                                    label="Singularity Registry Transfer",
+                                    label=label,
                                     sync_level="checksum")
-    tdata.add_item(path, image)
+    image = ".singularity/shub/%s" %image
+    tdata.add_item(added.image, image)
+    bot.info('Requesting transfer from local %s to %s:%s' %(SREGISTRY_STORAGE,
+                                                            endpoint, image))
     transfer_result = self.transfer_client.submit_transfer(tdata)
     bot.info(transfer_result['message'])
     return transfer_result
