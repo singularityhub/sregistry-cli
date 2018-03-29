@@ -471,6 +471,13 @@ Given that something is found in the environment, it will also update the settin
 
 where `setting` corresponds to whatever was found in the environment. The client name (`myclient`) is obtained from the client itself (`self.client_name`). 
 
+You can also do more of a forced update, meaning updating a setting key with
+a value regardless of its definition in the environment or cache. This function
+assumes you already have the pair and doesn't return anything.
+
+```python
+self._update_setting('SREGISTRY_PANCAKES_COLOR', 'red')
+```
 
 ##### GET (entire settings file)
 If you would prefer to read the entire file (one level down from the above, and used by the functions above):

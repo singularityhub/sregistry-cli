@@ -101,6 +101,16 @@ def get_and_update_setting(self, name, default=None):
     return setting
 
 
+def update_setting(self, name, value):
+    '''Just update a setting, doesn't need to be returned.
+    ''' 
+
+    if value is not None:
+        updates = {name : value}
+        update_client_secrets(backend=self.client_name, 
+                              updates=updates)
+
+
 def get_storage_name(self, names, remove_dir=False):
     '''use a parsed names dictionary from get_image_name (above) to return
        the path in storage based on the user's preferences
