@@ -25,6 +25,7 @@ from spython.main import Client as Singularity
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_STORAGE
 from sregistry.utils import ( parse_image_name, remove_uri )
+import globus_sdk
 
 import requests
 import shutil
