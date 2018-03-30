@@ -15,6 +15,7 @@ Singularity Registry Global client has tutorials and walkthroughs for the follow
  - [Google Container Registry](/sregistry-cli/client-gcr): the same as docker. Here are tricks for authenticating if you have trouble.
  - [Google Storage](/sregistry-cli/client-google-storage): interact with images from Google Storage
  - [Google Drive](/sregistry-cli/client-google-drive): interact with images from Google Drive
+ - [Globus](/sregistry-cli/client-globus): transfer images to/from a Globus endpoint
  - [Nvidia Container Registry](/sregistry-cli/client-nvidia): Nvidia Container registry serves Docker images
  - [Singularity Hub](/sregistry-cli/client-hub): the default endpoint will work (search and pull) images from Singularity Hub.
  - [Singularity Registry](/sregistry-cli/client-registry): to interact with an institution or personally hosted Singularity Registry.
