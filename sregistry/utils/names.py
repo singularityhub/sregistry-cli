@@ -152,6 +152,7 @@ def get_uri(image):
         accepted_uris = ['docker', 
                          'dropbox',
                          'hub',
+                         'globus',
                          'registry', 
                          'nvidia', 
                          'google-storage',
