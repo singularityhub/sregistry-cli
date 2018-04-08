@@ -320,7 +320,7 @@ The transfer has been accepted and a task has been created and queued for execut
 In the above command, we are lazy and instead of getting the long name of the image, we just
 use sregistry to get it. You should then be able to go to [https://www.globus.org/app/activity](https://www.globus.org/app/activity) to see the transfer!
 
-![/img/globus-activity.png](/img/globus-activity.png)
+![img/globus-activity.png](img/globus-activity.png)
 
 If you get this error:
 
