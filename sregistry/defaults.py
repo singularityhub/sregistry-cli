@@ -20,9 +20,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
+from sregistry.utils import get_userhome
 import tempfile
 import os
-import pwd
 import sys
 
 ################################################################################
@@ -67,7 +67,7 @@ def getenv(variable_key, default=None, required=False, silent=True):
 # Global Settings
 #########################
 
-USERHOME = pwd.getpwuid(os.getuid())[5]
+USERHOME = get_userhome()
 DISABLE_CACHE = convert2boolean(getenv("SINGULARITY_DISABLE_CACHE", False))
 DISABLE_DATABASE = convert2boolean(getenv("SREGISTRY_DISABLE", False))
 SREGISTRY_CLIENT = getenv("SREGISTRY_CLIENT", "hub")
@@ -128,8 +128,7 @@ DISABLE_CREDENTIAL_CACHE = convert2boolean(DISABLE_CREDENTIAL_CACHE)
 CREDENTIAL_CACHE = None
 
 # Download Cache for Singularity layers (not complete images)
-userhome = pwd.getpwuid(os.getuid())[5]
-_cache = os.path.join(userhome, ".singularity")
+_cache = os.path.join(USERHOME, ".singularity")
 SINGULARITY_CACHE = getenv("SINGULARITY_CACHEDIR", default=_cache)
 
 _secrets = os.path.join(USERHOME, ".sregistry")

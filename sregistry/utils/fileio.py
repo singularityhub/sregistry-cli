@@ -23,6 +23,7 @@ import datetime
 import hashlib
 import errno
 import os
+import pwd
 import re
 import shutil
 import tempfile
@@ -53,6 +54,13 @@ def mkdir_p(path):
         else:
             bot.error("Error creating path %s, exiting." % path)
             sys.exit(1)
+
+
+def get_userhome():
+    '''get the user home based on the effective uid
+    '''
+    return pwd.getpwuid(os.getuid())[5]
+
 
 ############################################################################
 ## COMPRESSION #############################################################
