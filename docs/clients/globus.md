@@ -40,7 +40,7 @@ you can also prepend it to any sregistry command:
 $ SREGISTRY_CLIENT=globus sregistry shell
 ```
 
-### Your Globus  Personal Endpoint
+### Your Globus Personal Endpoint
 A globus personal endpoint is referring to a computer (such as yours!) that can be
 connected to via Globus, meaning that a small set of directories that you've designated
 can share files with others that use Globus. This also means that you can transfer files
@@ -428,6 +428,70 @@ get a successful transfer message. You can also use this as an opportunity to re
 
 ```
 $ sregistry add --name sherlock/better-pancakes /home/vanessa/.singularity/shub/sherlock/pancakes\:latest.simg
+```
+
+# Python Shell
+The above commands are also available, and with more robust usage from within
+a Python shell, for developers and users alike! You can open a shell with
+the client loaded:
+
+```
+sregistry shell globus://
+[client|globus] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Python 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.1.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]:
+```
+
+The `client` variable is already loaded. You can see the functions available 
+if you do a TAB complete with `_get`:
+
+```
+In [1]: client._get
+                   client._get                    client._get_endpoint_path      client._get_setting             
+                   client._get_and_update_setting client._get_endpoints          client._get_settings            
+                   client._get_endpoint           client._get_headers            client._get_storage_name 
+```
+
+For example, you can list endpoints as you did before, with or without a search
+term:
+
+```
+$ client._list_endpoints()
+...
+  '[my-endpoints]',
+  '29890592-374e-11e8-b96a-0ac6873fc732'],
+ ['aa82607a-3466-11e8-b92a-0ac6873fc732',
+  '[my-endpoints]',
+  'aa82607a-3466-11e8-b92a-0ac6873fc732'],
+ ['9ec1db6a-5052-11e7-bdb7-22000b9a448b',
+  '[shared-with-me]',
+  '9ec1db6a-5052-11e7-bdb7-22000b9a448b']]
+```
+
+And then get a single endpoint based on the endpoint id.
+
+```
+$ client._get_endpoint('9ec1db6a-5052-11e7-bdb7-22000b9a448b')
+...
+ 'sharing_target_root_path': None,
+ 'storage_type': None,
+ 'subscription_id': None,
+ 'username': 'u_b6cdsmgivbe2be4wnfkorwj2sm'}
+```
+
+If you are authenticated (some require two factor authentication) then you can
+list the contents of a single endpoint:
+
+```
+$ client._list_endpoint('9ec1db6a-5052-11e7-bdb7-22000b9a448b')
 ```
 
 This is the first implementation of Globus, and if you have feedback please <a href="https://www.github.com/singularityhub/sregistry-cli/issues" target="_blank">let us know!</a>

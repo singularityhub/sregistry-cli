@@ -134,6 +134,26 @@ def init_transfer_client(self):
     self.transfer_client = globus_sdk.TransferClient(authorizer=authorizer)
 
 
+def get_endpoint(self, endpoint_id):
+    '''use a transfer client to get a specific endpoint based on an endpoint id.
+       
+       Parameters
+       ==========
+       endpoint_id: the endpoint_id to retrieve
+
+    ''' 
+    endpoint = None
+    
+    if not hasattr(self, 'transfer_client'):
+        self._init_transfer_client()
+
+    try:
+        endpoint = self.transfer_client.get_endpoint(endpoint_id).data
+    except TransferAPIError:
+        bot.info('%s does not exist.' %endpoint_id)
+    
+    return endpoint
+
 
 def get_endpoints(self, query=None):
     '''use a transfer client to get endpoints. If a search term is included,
