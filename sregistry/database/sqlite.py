@@ -253,9 +253,9 @@ def mv(self, image_name, path):
        
             # Copy to the fullpath from the storage
             fullpath = os.path.abspath(os.path.join(filedir,filename))
-            container = self.cp(move_to=fullpath, 
-                                container=container,
-                                command="move")
+            return self.cp(move_to=fullpath, 
+                           container=container,
+                           command="move")
     
     bot.warning('%s not found' %(image_name))
 
