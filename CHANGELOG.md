@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - bumping spython dependency to 0.0.25 (0.0.82)
  - adding get_endpoint function to Globus (0.0.81)
  - adding globus integration (0.0.80)
  - fixing bug that registry does not have label for size in metadata (0.0.79)
