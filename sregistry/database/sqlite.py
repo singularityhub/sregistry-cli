@@ -169,12 +169,13 @@ def inspect(self, name):
         print(json.dumps(fields, indent=4, sort_keys=True))
         return fields
 
+
 def rename(self, image_name, path):
     '''rename performs a move, but ensures the path is maintained in storage
 
        Parameters
        ==========
-       image_name: the parsed image name.
+       image_name: the image name (uri) to rename to.
        path: the name to rename (basename is taken)
 
     '''
@@ -182,12 +183,34 @@ def rename(self, image_name, path):
 
     if container is not None:
         if container.image is not None:
+
+            # The original directory for the container stays the same
             dirname = os.path.dirname(container.image)
-            filename = os.path.basename(path)
-            fullpath = os.path.abspath(os.path.join(dirname,filename))
-            return self.cp(move_to=fullpath, 
-                           container=container,
-                           command="rename")
+
+            # But we derive a new filename and uri
+
+            names = parse_image_name( remove_uri (path) )
+            storage = os.path.join( self.storage,
+                                    os.path.dirname(names['storage']) )
+
+            # This is the collection folder
+
+            if not os.path.exists(storage):
+                os.mkdir(storage)
+
+            # Here we get the new full path, rename the container file
+
+            fullpath = os.path.abspath(os.path.join(dirname, names['storage']))
+            container = self.cp(move_to=fullpath,
+                                container=container,
+                                command="rename")
+
+            # On successful rename of file, update the uri
+
+            if container is not None:
+                container.uri = names['uri']
+                self.session.commit()
+                return container
 
     bot.warning('%s not found' %(image_name))
 
@@ -237,13 +260,13 @@ def mv(self, image_name, path):
     bot.warning('%s not found' %(image_name))
 
 
-def cp(self, move_to, image_uri=None, container=None, command="copy"):
+def cp(self, move_to, image_name=None, container=None, command="copy"):
     '''_cp is the shared function between mv (move) and rename, and performs
        the move, and returns the updated container
     
        Parameters
        ==========
-       image_uri: an image_uri to look up a container in the database
+       image_name: an image_uri to look up a container in the database
        container: the container object to move (must have a container.image
        move_to: the full path to move it to
 
