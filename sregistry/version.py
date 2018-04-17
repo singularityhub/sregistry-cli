@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.0.82"
+__version__ = "0.0.83"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -33,7 +33,7 @@ LICENSE = "LICENSE"
 
 
 INSTALL_REQUIRES = (
-    ('spython', {'min_version': '0.0.23'}),
+    ('spython', {'min_version': '0.0.25'}),
     ('requests', {'exact_version': '2.18.4'}),
     ('pygments', {'min_version': '2.1.3'}),
 )
