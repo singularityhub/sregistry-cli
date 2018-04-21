@@ -37,7 +37,6 @@ Recommended (but not required) commands for *remote* endpoints can be read about
  - [build](#): issues a local command to build a remote Github repository.
  - [pull](#): `[remote->local]` pull an image from a remote endpoint to the local database and storage.
  - [search](#): `[remote]` list all image collections in a remote endpoint
- - [record](#): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
  - [share](#): Share a container! For Google Drive, this correponds to sharing a link by email. For other endpoints, it may mean something else.
 
 For each of these remote commands that are client specific, you can select the client via export of an environment variable:
@@ -269,13 +268,6 @@ sregistry mv peanut-butter/jelly:time /home/vanessa/Desktop/pusheen.simg
 [move] peanut-butter/jelly:time => /home/vanessa/Desktop/pusheen.simg
 ```
 
-If you try to move a remote (record), you will get an error, of course.
-
-```
-sregistry mv pusheen/asaurus:green /home/vanessa/Desktop/pusheen.simg
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-WARNING pusheen/asaurus:green is a remote image.
-```
 
 If you want to just rename it, wherever it might be, you can also use rename (an alias for move that keeps the current directory the container is in.)
 
@@ -294,17 +286,8 @@ sregistry rmi vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
 
-sregistry rmi vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-https://www.googleapis.com/download/storage/v1/b/singularityhub/o/singularityhub%2Fgithub.com%2Fvsoch%2Fhello-world%2Fe279432e6d3962777bb7b5e8d54f30f4347d867e%2Fed9755a0871f04db3e14971bec56a33f%2Fed9755a0871f04db3e14971bec56a33f.simg?generation=1508072025589820&alt=media
 ```
 
-The first example has found and removed an image and record, and the second is just a record (a url for an image). We could have issued these same two deletions (but perhaps out of order) like:
-
-```
-sregistry rmi vsoch/hello-world:latest
-sregistry rmi vsoch/hello-world:latest
-```
 
 <div>
     <a href="/sregistry-cli/getting-started"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>

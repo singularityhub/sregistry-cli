@@ -42,7 +42,6 @@ For a detailed list of other (default) environment variables and settings that y
 
  - [pull](#pull): `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
  - [search](#search): `[remote]` list all image collections in Singularity Hub
- - [record](#record): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
 
 For all of the examples below, we will export our client preference to be `google-storage`
 
@@ -88,28 +87,8 @@ sregistry push --name vsoch/hello-world:latest vsoch-hello-world-master-latest.s
 https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
 ```
 
-You will see again the connection to the bucket, and then a progress bar that shows the status of the upload, and the progress bar is replaced by the final container url. By default, this push command doesn't add a container to our local storage database, but just a record that it exists in Google. To see the record, you can list your images:
+You will see again the connection to the bucket, and then a progress bar that shows the status of the upload, and the progress bar is replaced by the final container url. 
 
-```bash
-sregistry images
-[bucket][sregistry-vanessa]
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	remote	   [google-storage]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:test@846442ecd7487f99fce3b8fb68ae15af
-```
-
-At this point you have remote records, but no images locally. You could do a "get" or an "inspect".
-
-## Get
-For a remote image record, if you do a "get" you will be given the remote url:
-
-```bash
-sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg?generation=1514668522289409&alt=media
-```
-
-If you don't want to get the url but you want to look at all metadata, then use "inspect."
 
 ## Inspect
 Of course you can inspect an image (here we will inspect the image we just pushed above), and you will see a ton of goodness:
@@ -182,19 +161,6 @@ https://www.googleapis.com/download/storage/v1/b/sregistry-vanessa/o/vsoch%2Fhel
 }
 ```
 
-### Record
-Finally, if you don't have a record locally but want to get one that already exists, then use record.
-
-```bash
-sregistry record vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Searching for vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f in gs://sregistry-vanessa
-[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-```
-
-If you had an image already, it won't be replaced, but the record will be updated.
-
 
 ## Pull and Search
 Now let's say that we pushed an image a while back to Google Storage, we have the record locally, and we want to get it. We could use "get" to get the url and then plug it into our special download logic, or we could instead want to pull the image to our local `sregistry` database. This would mean that the "remote" record gets updated to "local" because we actually have the image! How do we do that? We will go through two scenarios. In the first, we've totally forgotten about our local database (or it blew up) and we need to search the remote endpoint. In the second, we have our local database and just want to get one (pull).
@@ -231,7 +197,7 @@ md5:     7ZdVoIcfBNs+FJcb7FajPw==
 ```
 
 ### Pull
-With pull, we might have a record (or did a search to find a container that we liked, as shown above). In this case, instead of inspect or get, we just use pull.
+With pull, we might have done a search to find a container that we liked, as shown above, and we want to retrieve it. In this case, instead of inspect or get, we just use pull.
 
 ```bash
 $ sregistry pull vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
@@ -242,19 +208,7 @@ Progress |===================================| 100.0%
 [container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 Success! /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
 ```
-
-Did you notice that this was an update? The reason is because we already had the record in our database from when we pushed it in the first place, and the record was updated to now be for a local file:
-
-```bash
-$ sregistry images
-[client|google-storage] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[bucket][sregistry-vanessa]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-storage]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:test@846442ecd7487f99fce3b8fb68ae15af
-```
-
-and if we do a get, instead of the url we get the path to the file:
+and if we do a get, we get the path to the file:
 
 ```bash
 $ sregistry get vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f

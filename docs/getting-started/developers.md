@@ -251,21 +251,6 @@ image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
 # 'vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f'
 ```
 
-At this point, we could download the image, get a file, and call the Client "add" function to add the entry and file to storage. But since we just want to keep a record of this file, we will call add without any image file.
-
-```
-container = Client.add(image_uri=image_uri,
-                       metadata=manifest,
-                       url=manifest['image'])
-```
-
-Note that if you put the url to the image download in the manifest (given to variable metadata) it will be found automatically and you don't need to supply the url variable:
-
-```
-manifest['url'] = url
-container = Client.add(image_uri=image_uri,
-                       metadata=manifest)
-```
 
 ### Images
 We will sneak in another command here, because right now it is useful! `Client.images()` is a way to list local images in the database, akin to `docker images` in spirit. It's different from functions that interact with remote endpoints (e.g., search) that are implemented on the level of the client. If you take a look at your images now with `Client.images()` you can see the newly added image is classified as remote:
@@ -276,7 +261,7 @@ Containers:   [date]   [location]  [client]	[uri]
 1  December 27, 2017	local 	   [hub]	vsoch/hello-pancakes:latest@22aa66e0c80847c676f34f35e70ea066
 2  December 27, 2017	local 	   [hub]	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
 3  December 27, 2017	local 	   [hub]	vsoch/sregistry-example:v1.0@b102e9f4c1b2228d6e21755b27c32ed2
-4  December 27, 2017	remote	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+4  December 27, 2017	local	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 
 #
 [<Container 'vsoch/hello-pancakes:latest'>,
@@ -287,7 +272,7 @@ Containers:   [date]   [location]  [client]	[uri]
 # search just for it
 Client.images('hello-world')
 Containers:   [date]   [location]  [client]	[uri]
-1  December 27, 2017	remote	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+1  December 27, 2017	local	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 # [<Container 'vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f'>]
 ```
 
@@ -388,19 +373,6 @@ Client.rmi('vsoch/hello-world')
 
 The first example removes the image from the database (but not the file) and the second removes the
 file from storage and the image.
-
-## Your Ideas Appreciated!
-Here is a general list of thoughts and ideas that I'd be interested in feedback on. I will discuss pros and cons of each idea.
-
- - Can we put some kind of watcher on the file? so when it moves or changes, the database updates? The pro of this is a database that reacts to changes in storage, or manually. This would also make it possible to have a registry on the local file system, and know when an image is moved. The huge con is that it won't work on most cluster filesystems that don't have inotify.
- - Given the above (or not) should the user be allowed to store images around the filesystem, wherever he/she pleases? This seems messy to me and I haven't thought of rationale to support it, given that the organized manner is (in my mind) more consistent and dependable.
- - What kind of weirdness happens if a Singularity Registry uses that cache for its storage?
- - How do (or should) we update the database if a previously existing image is gone (meaning manual removal). Should we clean up, or just give a warning?
- - The user should have GLOBAL functions to:
-   - remove all images (or database records)
-   - clean the database / cache (meaning fixing broken links, etc.)
-   - use clients and associated metadata to refresh or update a database (with caution).
- - What happens with shared caches?
 
 
 <div>

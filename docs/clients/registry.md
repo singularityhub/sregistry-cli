@@ -12,7 +12,6 @@ A Singularity Registry backend is optimized to interact with a Singularit Regist
 
  - *pull*: `[remote->local]` is a common use case. It says "get this remote registry image and pull it from there to my storage."
  - *push*: `[local->remote]` takes an image on your host and pushes to the registry (if you have permission).
- - *record*: `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
  - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
 
 The following commands are not yet developed or implemented, but can be (please [post an issue](https://www.singularityhub.github.io/sregistry/issues)):
@@ -100,65 +99,7 @@ Success! /home/vanessa/.singularity/shub/vanessa/tacos:latest.simg
 
 Importantly, if you pull an image that is a different **version** it's going to create a new container file and database entry. The above example is pulling an equivalent image, so we update the database entry that exists.
 
-
-## Record
-Creating a record is akin to doing a pull, but you don't save any image file. If there isn't an associated version with the endpoint, you will create a general record representation for the container and collection. For example:
-
-```bash
-$ sregistry record vanessa/tacos:latest
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][new] vanessa/tacos:latest
-```
-
-Notice that there isn't any download, and it tells us that a `[new]` container record was generated.  If we were to retrieve the record again, it would tell us it's an `[update]`
-
-```bash
-$ sregistry record vanessa/tacos:latest
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][update] vanessa/tacos:latest
-```
-
-We would need to remove the record and then create it again to have the "new" reappear.
-
-```bash
-$ sregistry rm vanessa/tacos:latest
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[rm] vanessa/tacos:latest
-vanessa@vanessa-ThinkPad-T460s:~/Documents/Dropbox/Code/sregistry/sregistry-cli$ sregistry record vanessa/tacos:latest
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][new] vanessa/tacos:latest
-```
-
-## Record and Pull
-Now that we understand how pull and record work, we can talk about how they interact. You can imagine doing something like this:
-
-```bash
-get record --> go make a sandwich --> pull 
-```
-
-The idea is that we can have a record for a container, and then later use the client to pull the record. That would look like this:
-
-```bash
-# Only creates record
-$ sregistry record vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
-
-# Retrieves file to update record
-$ sregistry pull vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
-```
-
-Be careful with the case of pulling a record without a version, and then doing a pull. The pull, if a version isn't found, will generate a version, and two records will be maintained. Below we are searching for `vanessa/tacos` under our set of images:
-
-```bash
-sregistry images vanessa/tacos
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 28, 2017	local 	   [registry]	vanessa/tacos:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 28, 2017	remote	   [registry]	vanessa/tacos:latest
-```
-
-And we find a remote record and a local image in storage, both obtained from the registry client. The general idea here is to maintain a (non versioned) remote record, if it was originally retrieved. I ([@vsoch](https://www.github.com/vsoch)) was originally going to not allow records without versions, but this might make sense to have for particular resources.
-
-Note that both of these commands are available from within python using the client:
+Note that the pull command is available from within python using the client:
 
 
 ```bash
@@ -166,11 +107,10 @@ $ sregistry shell
 $ client.client_name
 # 'registry'
 $ client.pull('vanessa/tacos:latest')
-$ client.record('vanessa/tacos:latest')
 ```
 
 ## Inspect
-Inspect isn't a command specific to any client, but we can use it here to look at the differences between the local record (without an image file) and the versioned file. When we don't ask to inspect a version, we just see the record:
+Inspect isn't a command specific to any client, but we can use it here to look at the local image:
 
 ```python
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -290,15 +230,8 @@ Collections
 2  milkshakes/pudding:banana	http://127.0.0.1/containers/5
 ```
 
-and then add it as a local record, or pull it to your local database.
+and then pull it to your local database.
 
-```bash
-$ sregistry record milkshakes/pudding:banana
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][new] milkshakes/pudding:banana
-sregistry images | grep banana
-27 January 24, 2018	remote	   [registry]	milkshakes/pudding:banana
-```
 ```bash
 $ sregistry pull milkshakes/pudding:banana
 [client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
@@ -308,8 +241,8 @@ Success! /home/vanessa/.singularity/shub/milkshakes-pudding:banana.simg
 ```
 ```python
 $ sregistry images | grep banana
-27 January 24, 2018	remote	   [registry]	milkshakes/pudding:banana
-28 January 24, 2018	local 	   [registry]	milkshakes/pudding:banana@846442ecd7487f99fce3b8fb68ae15af
+27 January 24, 2018	[registry]	milkshakes/pudding:banana
+28 January 24, 2018	[registry]	milkshakes/pudding:banana@846442ecd7487f99fce3b8fb68ae15af
 vanessa@vanessa-ThinkPad-T460s:~/Desktop$
 ```
 

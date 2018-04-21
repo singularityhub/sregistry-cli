@@ -48,7 +48,6 @@ from sregistry.main.docker.api import (
 
 from sregistry.main.docker.pull import _pull
 from .pull import pull
-from .record import record
 
 class Client(ApiConnection):
 
@@ -153,7 +152,6 @@ class Client(ApiConnection):
 # Functions exposed to the client
 Client.pull = pull
 Client._pull = _pull
-Client.record = record
 
 # Api functions for image layers and manifests (hidden)
 Client._create_metadata_tar = create_metadata_tar

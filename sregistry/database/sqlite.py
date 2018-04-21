@@ -116,7 +116,7 @@ def get(self, name, quiet=False):
             elif container.url is not None:
                 print(container.url)
             else:
-                bot.info('No remote url or storage file found for %s' %name)
+                bot.info('No storage file found for %s' %name)
 
     return container
 
@@ -142,12 +142,12 @@ def images(self, query=None):
         containers = Container.query.all()
 
     if len(containers) > 0:
-        message = "  [date]   [location]  [client]\t[uri]"
+        message = "  [date]   [client]\t[uri]"
         bot.custom(prefix='Containers:', message=message, color="RED")
         for c in containers:
             uri = c.get_uri()
             created_at = c.created_at.strftime('%B %d, %Y')
-            rows.append([created_at, c.location(), "   [%s]" %c.client, uri])
+            rows.append([created_at, "   [%s]" %c.client, uri])
         bot.table(rows) 
     return containers
 
@@ -312,8 +312,7 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
             bot.error('Cannot %s %s to %s' %(command, original, move_to))
             sys.exit(1)
 
-    bot.warning('''This operation is not permitted on a remote image. 
-                   Please pull %s and then %s to the appropriate
+    bot.warning('''Not found! Please pull %s and then %s to the appropriate
                    location.''' %(container.uri, command))
 
 

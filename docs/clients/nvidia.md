@@ -97,7 +97,6 @@ ePython 3.5.2 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:53:06)
 For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](../getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are specific to the Nvidia Container Registry client:
 
  - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
- - [record](#record): `[remote->local]` obtain Docker Hub manifests and metadata to save to the database, but don't pull layers to build a container.
 
 For all of the examples below, we will export our client preference to be `nvidia`
 
@@ -133,7 +132,7 @@ In [1]:
 ## Pull
 The most likely action you want to do is to pull. Pull in this context is different than a pull from Singularity Registry, because we aren't pulling an entire, pre-built image - we are assembling layers at pull time and building an image with them. Specifically we:
 
- 1. **obtain image manifests from a Docker registry served by Nvidia** based on an image unique resource identifier (uri) e.g., `tensorflow:17.10`. Currently, the image manifests we look for are schemaVersion 1 and 2. Version 1 has important metadata relevant to environment, labels, and the EntryPoint and Cmd (what Singularity will use as the runscript). Version 2 has sizes for layers, and in some cases returns a list of manifests that the user (you!) can choose based on selecting an operating system and system architecture. If you do a simple record (and not pull) it's these manifests that will be obtained and stored in your database.
+ 1. **obtain image manifests from a Docker registry served by Nvidia** based on an image unique resource identifier (uri) e.g., `tensorflow:17.10`. Currently, the image manifests we look for are schemaVersion 1 and 2. Version 1 has important metadata relevant to environment, labels, and the EntryPoint and Cmd (what Singularity will use as the runscript). Version 2 has sizes for layers, and in some cases returns a list of manifests that the user (you!) can choose based on selecting an operating system and system architecture. 
 
  2. **download layers into a sandbox** and build a squashfs image from the sandbox (per usual with Singularity, build is recommended to do using sudo). The client will detect if you are running the command as sudo (user id 0) and adjust the command to singularity appropriately.
  3. **add the image** to your local storage and sregistry manager so you can find it later.
@@ -201,52 +200,17 @@ Notice that the first layer extracted is the standard environment metadata tar. 
 ```bash
 sregistry images
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
-3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
-4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
-5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
-8  January 15, 2018	local 	   [nvidia]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
+Containers:   [date]    [client]	[uri]
+1  December 29, 2017	[google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+2  December 30, 2017	[google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
+3  December 30, 2017	[google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
+4  January 01, 2018	[google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
+5  January 01, 2018	[google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+6  January 09, 2018 	[registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
+7  January 14, 2018	[docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+8  January 15, 2018	[nvidia]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
 ```
 
-## Record
-We can do the same action as above, but without the download! You might want to grab metadata for an image but not pull and download layers. You can use record for that. Let's first get the record for another version of caffe:
-
-```bash
-$ sregistry record caffe2:17.10
-[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][new] continuumio/anaconda3:latest
-```
-
-It's a really quick action, because all we've done is obtained the manifests. If you do it a second time, you
-update the existing record:
-
-```bash
-$ sregistry record caffe2:17.10
-[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][update] nvidia/caffe2:17.10
-```
-
-## Images
-We can see the record in our images list (last one):
-
-```bash
-$ sregistry images
-[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
-3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
-4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
-5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
-8  January 15, 2018	local 	   [nvidia]	nvidia/tensorflow:17.11@16765f12b73ec77235726fa9e47e808c
-9  January 15, 2018	remote	   [nvidia]	nvidia/caffe2:17.10
-```
 
 ## Inspect
 And we can inspect it!

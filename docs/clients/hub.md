@@ -152,11 +152,11 @@ and then view that a record (see the remote label) for our image was added to ou
 ```bash
 $ sregistry images
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 27, 2017	local 	   [hub]	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
-2  December 27, 2017	local 	   [hub]	vsoch/sregistry-example:v1.0@b102e9f4c1b2228d6e21755b27c32ed2
-7  December 28, 2017	local 	   [registry]	library/tacolicious:gobacktosleep@5b0c0982-9e9a-4e66-8aa1-91ae2cba4cd3
-8  December 28, 2017	remote	   [hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+Containers:   [date]   [client]	[uri]
+1  December 27, 2017	[hub]	expfactory/expfactory-master:v2.0@03c1ab08e58c6a5101bc790cd9836d25
+2  December 27, 2017	[hub]	vsoch/sregistry-example:v1.0@b102e9f4c1b2228d6e21755b27c32ed2
+7  December 28, 2017	[registry]	library/tacolicious:gobacktosleep@5b0c0982-9e9a-4e66-8aa1-91ae2cba4cd3
+8  December 28, 2017	[hub]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 ```
 
 If you have a record and then later pull the image, the record is considered equivalent and updated.
