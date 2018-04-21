@@ -183,8 +183,9 @@ to Singularity Hub directly. We will discuss clients at a high level here. When 
 use the client, whether from within Python or command line:
 
  1. The environment is parsed for `SREGISTRY_CLIENT`. If it's found, then you have specified a particular client to use and that choice is honored.
- 2. If a specified client is not declared, then we step through looking for client-specific exports. Finding a path to a `SREGISTRY_CLIENT_SECRETS` for example means it is likely you want to interact with a Singularity Registry, so the client is loaded.
- 3. If no environment variables can be determined, the default client is optimized to work with Singularity Hub.
+ 2. We look for an activated client name in `SREGISTRY_CLIENT_SECRETS`.
+ 3. If a specified client is not declared, then we step through looking for client-specific exports. Finding a path to a `SREGISTRY_CLIENT_SECRETS` for example means it is likely you want to interact with a Singularity Registry, so the client is loaded.
+ 4. If no environment variables can be determined, the default client is optimized to work with Singularity Hub.
 
 In all cases, after we create a client, given that we have not disabled it, a local database is generated or connected to:
 

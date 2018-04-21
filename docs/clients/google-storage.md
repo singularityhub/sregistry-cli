@@ -55,6 +55,18 @@ but note that you could just as easily define the variable for one command:
 SREGISTRY_CLIENT=google-storage sregistry shell
 ```
 
+or do away the need to export this environment variable by simply activating the client:
+
+```bash
+$ sregistry backend activate google-storage
+[activate] google-storage
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: google-storage
+```
+
+
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the google-storage `sregistry` client, just ask for it:
 

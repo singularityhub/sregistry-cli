@@ -43,6 +43,17 @@ sregistry search dropbox://
 sregistry pull dropbox://vanessa/tacos
 ```
 
+or do away the need to export this environment variable by simply activating the client:
+
+```bash
+$ sregistry backend activate dropbox
+[activate] dropbox
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: dropbox
+```
+
 
 ### Environment
 Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Dropbox, we have defined the following environment variables (and defaults).

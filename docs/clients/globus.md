@@ -40,6 +40,18 @@ you can also prepend it to any sregistry command:
 $ SREGISTRY_CLIENT=globus sregistry shell
 ```
 
+or do away the need to export this environment variable by simply activating the client:
+
+```bash
+$ sregistry backend activate globus
+[activate] globus
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: globus
+```
+
+
 ### Your Globus Personal Endpoint
 A globus personal endpoint is referring to a computer (such as yours!) that can be
 connected to via Globus, meaning that a small set of directories that you've designated

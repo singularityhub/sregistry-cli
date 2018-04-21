@@ -55,6 +55,16 @@ for your terminal session:
 SREGISTRY_CLIENT=registry
 export SREGISTRY_CLIENT
 ```
+You can also activate the client:
+
+```bash
+$ sregistry backend activate registry
+[activate] registry
+sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: registry
+```
 
 Now when you run the client, it will be active for the registry. You can glance quickly at which client is detected just by running
 `sregistry` without any arguments, and note the top of the message:

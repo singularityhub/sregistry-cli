@@ -103,6 +103,17 @@ but note that you could just as easily define the variable for one command:
 SREGISTRY_CLIENT=docker sregistry shell
 ```
 
+or do away the need to export this environment variable by simply activating the client:
+
+```bash
+$ sregistry backend activate docker
+[activate] docker
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: docker
+```
+
 ## Shell
 After we have exported `SREGISTRY_CLIENT` above, if you are looking to interact with a shell for the Docker Hub `sregistry` client, just ask for it:
 

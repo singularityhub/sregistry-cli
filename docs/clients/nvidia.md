@@ -81,6 +81,19 @@ SREGISTRY_CLIENT=nvidia sregistry shell
 ERROR You must have an Nvidia GPU cloud token to use it.
 ```
 
+Let's do away with the need to export or otherwise set the `SREGISTRY_CLIENT` environment variable by simply activating the 
+nvidia client:
+
+```bash
+$ sregistry backend activate nvidia
+[activate] nvidia
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: nvidia
+```
+
+
 Once you export your token (and increase the message level) you can see that there is an Authentication header added to the client:
 
 ```bash

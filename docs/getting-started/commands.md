@@ -39,7 +39,13 @@ Recommended (but not required) commands for *remote* endpoints can be read about
  - [search](#): `[remote]` list all image collections in a remote endpoint
  - [share](#): Share a container! For Google Drive, this correponds to sharing a link by email. For other endpoints, it may mean something else.
 
-For each of these remote commands that are client specific, you can select the client via export of an environment variable:
+
+## Choosing a Client
+Singularity Registry supports a [large number](/sregistry-cli/clients) of clients from Google Storage, to Globus, to Docker. Since many of these remote commands are client specific, it may be the case that you find the command defined for one client, but not another. How might you choose to use or activate a client? We have a few ways! 
+
+*Environment Variable*
+
+For a programmatic way to issue a group of commands using a specific client, you can select the client via export of an environment variable:
 
 ```
 SREGISTRY_CLIENT=google-drive
@@ -48,11 +54,112 @@ sregistry shell
 client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ```
 
-or you can use the same environment variable, just for one command:
+the same strategy can be applied for just one command:
 
 ```
 SREGISTRY_CLIENT=google-drive sregistry shell
 ```
+
+*Activation*
+
+Another way to ensure that a particular client is used is to activate it. The `sregistry` command line utility has a command group, `backend` that makes it easy to interact with backends. Here is the help for it that shows various examples:
+
+```bash
+ sregistry backend
+usage: sregistry backend [-h] [commands [commands ...]]
+
+positional arguments:
+  commands    activate, deactivate, ls, rm a client
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+             sregistry backend ls:     list backends found in secrets
+             sregistry backend status: get status
+             sregistry backend rm <backend> remove a backend
+             sregistry backend de|activate: activate or deactivate
+```
+
+We could get a status at any time
+
+```bash
+sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: globus
+```
+
+We could also do a listing to see how more comprehensive list:
+
+```bash
+$ sregistry backend ls
+Backends Installed
+google-storage
+nvidia
+dropbox
+registry
+google-drive
+globus
+google-compute
+hub
+```
+
+You can ask for a detailed listing for a specific backend:
+
+```
+sregistry backend ls dropbox
+dropbox
+{
+    "SREGISTRY_DROPBOX_TOKEN": "xxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+You can remove (`rm`) a backend from the credential file:
+
+```bash
+$ sregistry backend rm docker
+[remove] docker
+```
+```bash
+$ sregistry backend ls docker
+docker is not a known client.
+Backends Installed
+nvidia
+globus
+registry
+hub
+google-storage
+google-drive
+dropbox
+google-compute
+```
+
+Finally, you can get a current status, activate a particular backend to be used as the client,
+or deactivate so none are selected.
+
+```bash
+$ sregistry backend status
+[backend status]
+There are 8 clients found in secrets.
+There is no active client.
+```
+```bash
+$ sregistry backend activate globus
+[activate] globus
+```
+```bash
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: globus
+```
+
+This activated approach takes preference to using the default client (Singularity Hub) but does
+not override any specification that you set in the environment or on the command line with a unique
+resource identifier, discussed next.
+
+
+*Unique Resource Identifier*
 
 Finally, you can do away with environment variables, and add a unique resource identifier (uri) to your image names or queries:
 
