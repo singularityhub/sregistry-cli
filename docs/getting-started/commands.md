@@ -65,7 +65,7 @@ SREGISTRY_CLIENT=google-drive sregistry shell
 Another way to ensure that a particular client is used is to activate it. The `sregistry` command line utility has a command group, `backend` that makes it easy to interact with backends. Here is the help for it that shows various examples:
 
 ```bash
- sregistry backend
+$ sregistry backend
 usage: sregistry backend [-h] [commands [commands ...]]
 
 positional arguments:
@@ -83,7 +83,7 @@ optional arguments:
 We could get a status at any time
 
 ```bash
-sregistry backend status
+$ sregistry backend status
 [backend status]
 There are 9 clients found in secrets.
 active: globus
