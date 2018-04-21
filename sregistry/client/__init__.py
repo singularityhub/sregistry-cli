@@ -57,7 +57,7 @@ def get_parser():
                                     help="list, remove, or activate a backend.")
 
     backend.add_argument("commands", nargs='*',
-                          help='activate, deactivate, ls, rm a client', 
+                          help='activate, deactivate, ls, status, rm a client', 
                          type=str)
 
     # Local shell with client loaded
