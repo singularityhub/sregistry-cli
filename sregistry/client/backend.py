@@ -229,6 +229,7 @@ def list_backends(backend=None):
         bot.info(backend)
         print(json.dumps(settings[backend], indent=4, sort_keys=True))
     else:
-        print('%s is not a known client.' %backend)
+        if backend is not None:
+            print('%s is not a known client.' %backend)
         bot.info("Backends Installed")
         print('\n'.join(backends))
