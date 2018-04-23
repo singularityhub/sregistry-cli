@@ -27,7 +27,6 @@ import os
 from .auth import authorize
 from .pull import pull
 from .push import push
-from .record import record
 from .delete import remove
 from .query import *
 
@@ -80,7 +79,6 @@ Client.authorize = authorize
 Client.remove = remove
 Client.pull = pull
 Client.push = push
-Client.record = record
 Client.search = search
 Client._search_all = search_all
 Client._collection_search = collection_search

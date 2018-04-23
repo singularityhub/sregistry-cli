@@ -43,6 +43,17 @@ sregistry search dropbox://
 sregistry pull dropbox://vanessa/tacos
 ```
 
+or do away the need to export this environment variable by simply activating the client:
+
+```bash
+$ sregistry backend activate dropbox
+[activate] dropbox
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: dropbox
+```
+
 
 ### Environment
 Singularity Registry Global Client works by way of obtaining information from the environment, which are cached when appropriate for future use. For Dropbox, we have defined the following environment variables (and defaults).
@@ -87,7 +98,6 @@ For a detailed list of other (default) environment variables and settings that y
 
  - [push](#push): `[local->remote]` push a local image to the `sregistry` Apps folder in your personal Dropbox
  - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
- - [record](#record): `[remote->local]` obtain metadata to save to the database, but don't pull the container.
  - [search](#search): `[remote]` search your personal Dropbox for a container
  - [share](#share): `[remote]`: share a remote container, meaning returning a share link
 
@@ -224,37 +234,19 @@ We can then see the images (tags red and blue) have been added to our local data
 
 ```bash
 sregistry images | grep dropbox
-30 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:blue@02c08a25c8f4697e16e896239e549a2b
-31 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:red@02c08a25c8f4697e16e896239e549a2b
+30 January 28, 2018	[dropbox]	pusheen/asaurus:blue@02c08a25c8f4697e16e896239e549a2b
+31 January 28, 2018	[dropbox]	pusheen/asaurus:red@02c08a25c8f4697e16e896239e549a2b
 ```
 
-## Record
-We can do the same action as above, but without the download! You might want to grab metadata for an image but not pull the file itself. You can use record for that. Let's first get the record for another version of the pusheen green image:
-
-```bash
-sregistry record pusheen/asaurus:green
-[client|dropbox] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-connected to Vanessa S
-[container][new] pusheen/asaurus:green
-```
-
-It's a really quick action, because all we've done is obtained the file metadata. If you do it a second time, you
-update the existing record:
-
-```bash
-sregistry record pusheen/asaurus:green
-[client|nvidia] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][update] pusheen/asaurus:green
-```
 
 ## Images
 We can see the record as a "remote" in our images list:
 
 ```bash
  sregistry images | grep dropbox
-30 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:blue@02c08a25c8f4697e16e896239e549a2b
-31 January 28, 2018	local 	   [dropbox]	pusheen/asaurus:red@02c08a25c8f4697e16e896239e549a2b
-32 January 28, 2018	remote	   [dropbox]	pusheen/asaurus:green
+30 January 28, 2018	[dropbox]	pusheen/asaurus:blue@02c08a25c8f4697e16e896239e549a2b
+31 January 28, 2018	[dropbox]	pusheen/asaurus:red@02c08a25c8f4697e16e896239e549a2b
+32 January 28, 2018	[dropbox]	pusheen/asaurus:green
 ```
 
 ## Inspect

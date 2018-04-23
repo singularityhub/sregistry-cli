@@ -19,6 +19,17 @@ For the quickstart you need:
  - your `GOOGLE_APPLICATION_CREDENTIALS` and `GOOGLE_CLOUD_PROJECT` exported to the environment
  - sregistry [installed](/sregistry-cli/install) with the `google-compute` client dependencies
 
+If you want to set the Google Compute builder as your current active client:
+
+```bash
+$ sregistry backend activate google-compte
+[activate] google-compute
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: google-compute
+```
+
 The following sections demonstrate the most common usage for the build commands! We also provide a [static demo](https://vsoch.github.io/sherlock_vep/) of the current builder interface.
 
 ```bash

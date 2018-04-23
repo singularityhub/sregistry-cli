@@ -117,7 +117,7 @@ def get_manifests(self, repo_name, digest=None):
 
 def get_manifest_selfLink(self, repo_name, digest=None):
     ''' get a selfLink for the manifest, for use by the client get_manifest
-        function, along with the parents pull and record
+        function, along with the parents pull
  
        Parameters
        ==========

@@ -68,7 +68,6 @@ This next set of commands, while they interact with local resources, are primari
  - *delete*: `[remote]`: delete an image from a remote endpoint. You likely will need some kind of credential.
  - *pull*: `[remote->local]` is a common use case. It says "there is this image somewhere remote and I want to pull it from there to my local host."
  - *push*: `[local->remote]` takes an image in your local resource and puts it in some remote one.
- - *record*: `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
  - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
 
 Each of these commands will be detailed with examples in the various [client walkthroughs](/sregistry-cli/clients), and if you are implementing an endpoint, there are also details about how you should "fill in the space" to
@@ -184,8 +183,9 @@ to Singularity Hub directly. We will discuss clients at a high level here. When 
 use the client, whether from within Python or command line:
 
  1. The environment is parsed for `SREGISTRY_CLIENT`. If it's found, then you have specified a particular client to use and that choice is honored.
- 2. If a specified client is not declared, then we step through looking for client-specific exports. Finding a path to a `SREGISTRY_CLIENT_SECRETS` for example means it is likely you want to interact with a Singularity Registry, so the client is loaded.
- 3. If no environment variables can be determined, the default client is optimized to work with Singularity Hub.
+ 2. We look for an activated client name in `SREGISTRY_CLIENT_SECRETS`.
+ 3. If a specified client is not declared, then we step through looking for client-specific exports. Finding a path to a `SREGISTRY_CLIENT_SECRETS` for example means it is likely you want to interact with a Singularity Registry, so the client is loaded.
+ 4. If no environment variables can be determined, the default client is optimized to work with Singularity Hub.
 
 In all cases, after we create a client, given that we have not disabled it, a local database is generated or connected to:
 

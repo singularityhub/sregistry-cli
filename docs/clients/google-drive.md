@@ -68,7 +68,6 @@ Here we will review the set of commands that are specific to the Google Drive cl
 
  - [pull](#pull): `[remote->local]` pull an image from the Singularity Hub registry to the local database and storage.
  - [search](#search): `[remote]` list all image collections in Singularity Hub
- - [record](#record): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
  - [share](share): Share a container! This means sharing a container like you would a file in Google Drive, and the recipient getting an email about the shared container.
 
 For all of the examples below, we will export our client preference to be `google-drive`
@@ -81,6 +80,17 @@ but note that you could just as easily define the variable for one command:
 
 ```bash
 SREGISTRY_CLIENT=google-drive sregistry shell
+```
+
+or do away the need to export this environment variable by simply activating the client:
+
+```bash
+$ sregistry backend activate google-drive
+[activate] google-drive
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: google-drive
 ```
 
 ## Shell
@@ -303,46 +313,6 @@ https://www.googleapis.com/drive/v3/files/1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe?alt=
 ```
 
 One thing I'm not happy about is the subtle differences between the metadata data structures between clients. A lot of this has to do with having different APIs, but I think we can generally do better. Please [post an issue](https://www.github.com/singularityhub/sregistry-cli/issues) if you have ideas!
-
-
-### Record
-Finally, if you don't have a record locally but want to get one that already exists, then use record. Here I look at images on the remote:
-
-```bash
-$ sregistry search
-[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[folder][sregistry]
-[drive://sregistry] Containers
-   [drive://sregistry] 		[id]	[uri]
-1  1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-2  1qOVpMmk4nAg0IX0rG_QT_GT5VpV5cKUe	expfactory/expfactory:master
-```
-
-Then I ask for the record based on the Google Drive id:
-
-```bash
-$ sregistry record 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt
-[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[folder][sregistry]
-Searching for 1WUnfqLMxemo1QiFz3G0dFrVmYNs78-mt in drive://sregistry
-[container][new] vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-```
-
-The search is done and the record created, and I can see it (the last one with pancakes):
-
-```bash
-[client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[folder][sregistry]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
-3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
-4  January 01, 2018	remote	   [google-drive]	expfactory/expfactory:master
-5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-```
-
-If you had an image already, it won't be replaced, but the record will be updated.
-
 
 ### Pull
 With pull, we might have a record (or did a search to find a container that we liked, as shown above). In this case, instead of inspect or get, we just use pull.

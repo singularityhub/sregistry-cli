@@ -79,7 +79,7 @@ def update_client_secrets(backend, updates, secrets=None, save=True):
 
     # The update typically includes a save
     if save is True:
-        secrets_file = _get_secrets_file()
+        secrets_file = get_secrets_file()
         if secrets_file is not None:
             write_json(secrets,secrets_file)
 
@@ -93,7 +93,7 @@ def read_client_secrets():
     client_secrets = _default_client_secrets()
 
     # If token file not provided, check environment
-    secrets = _get_secrets_file()
+    secrets = get_secrets_file()
 
     # If exists, load
     if secrets is not None:
@@ -107,7 +107,7 @@ def read_client_secrets():
     return client_secrets
 
 
-def _get_secrets_file():
+def get_secrets_file():
     '''Sniff the environment and standard location for client
        secrets file. Otherwise, return None
     '''

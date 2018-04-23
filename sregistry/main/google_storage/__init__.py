@@ -47,7 +47,6 @@ from .delete import ( delete, destroy )
 from .logs import ( logs, list_logs, print_log )
 from .pull import pull
 from .push import ( push, upload )
-from .record import record
 from .query import ( container_query, list_containers, search, search_all )
 
 
@@ -165,7 +164,6 @@ class Client(ApiConnection):
 Client.pull = pull
 Client.push = push
 Client._upload = upload
-Client.record = record
 Client.delete = delete
 Client.destroy = destroy
 

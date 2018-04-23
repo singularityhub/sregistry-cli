@@ -96,11 +96,7 @@ class Container(Base):
 
     We index / filter containers based on the full uri, which is assembled 
                from the <collection>/<namespace>:<tag>@<version>, then stored
-               as a variable, and maintained separately for easier query. We also
-               maintain separate indices for the storage location, meaning that
-               the same image could theoretically come from two different locations,
-               and thus be represented twice (although unlikely). This future
-               behavior might change.
+               as a variable, and maintained separately for easier query.
     '''
     __tablename__ = 'container'
     id = Column(Integer, primary_key=True)
@@ -132,16 +128,6 @@ class Container(Base):
         if self.uri is None:
             return '<Container %r>' % (self.name)
         return '<Container %r>' % (self.uri)
-
-
-    def location(self):
-        ''' return "local" or "remote" depending on the existence of the 
-            container image.
-        '''
-        location = 'local '
-        if self.image is None:
-            location = 'remote'
-        return location
 
 
     def get_uri(self):

@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import get_userhome
+from sregistry.utils import get_userhome, read_json
 import tempfile
 import os
 import sys
@@ -70,8 +70,18 @@ def getenv(variable_key, default=None, required=False, silent=True):
 USERHOME = get_userhome()
 DISABLE_CACHE = convert2boolean(getenv("SINGULARITY_DISABLE_CACHE", False))
 DISABLE_DATABASE = convert2boolean(getenv("SREGISTRY_DISABLE", False))
-SREGISTRY_CLIENT = getenv("SREGISTRY_CLIENT", "hub")
 DISABLE_SSL_CHECK = convert2boolean(getenv("SREGISTRY_HTTPS_NOVERIFY", False))
+
+_secrets = os.path.join(USERHOME, ".sregistry")
+SREGISTRY_CLIENT_SECRETS = getenv('SREGISTRY_CLIENT_SECRETS', _secrets)
+
+# If the client secrets exist, use the default as first priority
+_client = 'hub'
+if os.path.exists(SREGISTRY_CLIENT_SECRETS):
+    secrets = read_json(SREGISTRY_CLIENT_SECRETS)   
+    _client = secrets.get('SREGISTRY_CLIENT', 'hub')
+SREGISTRY_CLIENT = getenv("SREGISTRY_CLIENT", _client)
+
 
 #########################
 # Fun Settings
@@ -130,9 +140,6 @@ CREDENTIAL_CACHE = None
 # Download Cache for Singularity layers (not complete images)
 _cache = os.path.join(USERHOME, ".singularity")
 SINGULARITY_CACHE = getenv("SINGULARITY_CACHEDIR", default=_cache)
-
-_secrets = os.path.join(USERHOME, ".sregistry")
-SREGISTRY_CLIENT_SECRETS = getenv('SREGISTRY_CLIENT_SECRETS', _secrets)
 
 # We only use the credential cache if user didn't disable it
 # and if the entire sregistry database isn't disabled for use.

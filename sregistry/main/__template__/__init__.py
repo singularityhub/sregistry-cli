@@ -27,7 +27,6 @@ from sregistry.main import ApiConnection
 # folder that you add to your client (at the bottom)
 # from .pull import pull
 # from .push import push
-# from .record import record
 # from .query import search
 
 class Client(ApiConnection):
@@ -83,5 +82,4 @@ class Client(ApiConnection):
 # Add your different functions imported at the top to the client here
 # Client.pull = pull
 # Client.push = push
-# Client.record = record
 # Client.search = search

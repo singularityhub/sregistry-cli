@@ -37,10 +37,15 @@ Recommended (but not required) commands for *remote* endpoints can be read about
  - [build](#): issues a local command to build a remote Github repository.
  - [pull](#): `[remote->local]` pull an image from a remote endpoint to the local database and storage.
  - [search](#): `[remote]` list all image collections in a remote endpoint
- - [record](#): `[remote->local]` obtain metadata and image paths for a remote image and save to the database, but don't pull the container to storage.
  - [share](#): Share a container! For Google Drive, this correponds to sharing a link by email. For other endpoints, it may mean something else.
 
-For each of these remote commands that are client specific, you can select the client via export of an environment variable:
+
+## Choosing a Client
+Singularity Registry supports a [large number](/sregistry-cli/clients) of clients from Google Storage, to Globus, to Docker. Since many of these remote commands are client specific, it may be the case that you find the command defined for one client, but not another. How might you choose to use or activate a client? We have a few ways! 
+
+*Environment Variable*
+
+For a programmatic way to issue a group of commands using a specific client, you can select the client via export of an environment variable:
 
 ```
 SREGISTRY_CLIENT=google-drive
@@ -49,11 +54,131 @@ sregistry shell
 client|google-drive] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 ```
 
-or you can use the same environment variable, just for one command:
+the same strategy can be applied for just one command:
 
 ```
 SREGISTRY_CLIENT=google-drive sregistry shell
 ```
+
+*Activation*
+
+Another way to ensure that a particular client is used is to activate it. The `sregistry` command line utility has a command group, `backend` that makes it easy to interact with backends. Here is the help for it that shows various examples:
+
+```bash
+$ sregistry backend
+usage: sregistry backend [-h] [commands [commands ...]]
+
+positional arguments:
+  commands    activate, deactivate, ls, rm a client
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+             sregistry backend ls:     list backends found in secrets
+             sregistry backend status: get status
+             sregistry backend rm <backend> remove a backend
+             sregistry backend de|activate: activate or deactivate
+```
+
+We could get a status at any time
+
+```bash
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: globus
+```
+
+We could also do a listing to see how more comprehensive list:
+
+```bash
+$ sregistry backend ls
+Backends Installed
+google-storage
+nvidia
+dropbox
+registry
+google-drive
+globus
+google-compute
+hub
+```
+
+You can ask for a detailed listing for a specific backend:
+
+```
+sregistry backend ls dropbox
+dropbox
+{
+    "SREGISTRY_DROPBOX_TOKEN": "xxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+For any backend, you can add a variable to the configuration (such as a token) using the add command:
+
+```bash
+sregistry backend add nvidia varname varvalue --force
+[add]
+SREGISTRY_NVIDIA_VARNAME varvalue
+```
+
+Note that since the namespace follows the pattern `SREGISTRY_<backend>_<varname>`, if we add
+"varname" to "nvidia" it will be updated to be `SREGISTRY_NVIDIA_VARNAME` in all caps. There is no
+limit on the variable names that you can add, given that clients can implement their own set within
+a namespace. You can equally remove a setting:
+
+```bash
+sregistry backend remove nvidia varname
+[remove]
+SREGISTRY_NVIDIA_VARNAME
+```
+
+You can delete a backend from the credential file:
+
+```bash
+$ sregistry backend delete docker
+[delete] docker
+```
+```bash
+$ sregistry backend ls docker
+docker is not a known client.
+Backends Installed
+nvidia
+globus
+registry
+hub
+google-storage
+google-drive
+dropbox
+google-compute
+```
+
+Finally, you can get a current status, activate a particular backend to be used as the client,
+or deactivate so none are selected.
+
+```bash
+$ sregistry backend status
+[backend status]
+There are 8 clients found in secrets.
+There is no active client.
+```
+```bash
+$ sregistry backend activate globus
+[activate] globus
+```
+```bash
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: globus
+```
+
+This activated approach takes preference to using the default client (Singularity Hub) but does
+not override any specification that you set in the environment or on the command line with a unique
+resource identifier, discussed next.
+
+
+*Unique Resource Identifier*
 
 Finally, you can do away with environment variables, and add a unique resource identifier (uri) to your image names or queries:
 
@@ -269,13 +394,6 @@ sregistry mv peanut-butter/jelly:time /home/vanessa/Desktop/pusheen.simg
 [move] peanut-butter/jelly:time => /home/vanessa/Desktop/pusheen.simg
 ```
 
-If you try to move a remote (record), you will get an error, of course.
-
-```
-sregistry mv pusheen/asaurus:green /home/vanessa/Desktop/pusheen.simg
-[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-WARNING pusheen/asaurus:green is a remote image.
-```
 
 If you want to just rename it, wherever it might be, you can also use rename (an alias for move that keeps the current directory the container is in.)
 
@@ -294,17 +412,8 @@ sregistry rmi vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
 
-sregistry rmi vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-https://www.googleapis.com/download/storage/v1/b/singularityhub/o/singularityhub%2Fgithub.com%2Fvsoch%2Fhello-world%2Fe279432e6d3962777bb7b5e8d54f30f4347d867e%2Fed9755a0871f04db3e14971bec56a33f%2Fed9755a0871f04db3e14971bec56a33f.simg?generation=1508072025589820&alt=media
 ```
 
-The first example has found and removed an image and record, and the second is just a record (a url for an image). We could have issued these same two deletions (but perhaps out of order) like:
-
-```
-sregistry rmi vsoch/hello-world:latest
-sregistry rmi vsoch/hello-world:latest
-```
 
 <div>
     <a href="/sregistry-cli/getting-started"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>

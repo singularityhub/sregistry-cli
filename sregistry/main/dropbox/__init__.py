@@ -28,7 +28,6 @@ import datetime
 
 from .pull import pull
 from .push import push
-from .record import record
 from .query import ( search, search_all, container_query )
 from .share import share
 
@@ -113,7 +112,6 @@ class Client(ApiConnection):
 # Add your different functions imported at the top to the client here
 Client.pull = pull
 Client.push = push
-Client.record = record
 Client.share = share
 
 # Query functions

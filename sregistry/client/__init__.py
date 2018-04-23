@@ -51,7 +51,19 @@ def get_parser():
     # print version and exit
     version = subparsers.add_parser("version",
                                     help="show software version")
- 
+
+    # Backend controller
+    backend = subparsers.add_parser("backend",
+                                    help="list, remove, or activate a backend.")
+
+    backend.add_argument("commands", nargs='*',
+                         help='activate, deactivate, ls, status, delete, add/rm settings from a client', 
+                         type=str)
+
+    backend.add_argument('--force','-f', dest="force", 
+                         help="force add if variable exists.", 
+                         default=False, action='store_true')
+
     # Local shell with client loaded
     shell = subparsers.add_parser("shell",
                                   help="shell into a session a client.")
@@ -85,23 +97,6 @@ def get_parser():
                      help="container search query to inspect", 
                      type=str, default="*")
 
-
-    # Work with database records (not images)
-    if hasattr(cli,'record'):
-
-        record = subparsers.add_parser("record",
-                                       help="interact with a container record.")
-
-        record.add_argument('--action', '-a',
-                            default='add',
-                            const='add',
-                            nargs='?',
-                            choices=['add'],
-                            help='add an image record, without a file (default: %(default)s)')
-        
-        record.add_argument("image", nargs=1,
-                            help="name of image, in format 'library/image'", 
-                            type=str)
 
     # Add/copy local containers to storage, if client has it
     if hasattr(cli,'storage'):
@@ -359,6 +354,7 @@ def main():
 
     # Does the user want a shell?
     if args.command == "add": from .add import main
+    if args.command == "backend": from .backend import main
     if args.command == "build": from .build import main
     if args.command == "get": from .get import main
     if args.command == "delete": from .delete import main
@@ -368,7 +364,6 @@ def main():
     if args.command == "mv": from .mv import main
     if args.command == "push": from .push import main
     if args.command == "pull": from .pull import main
-    if args.command == "record": from .record import main
     if args.command == "rename": from .rename import main
     if args.command == "rm": from .rm import main
     if args.command == "rmi": from .rmi import main

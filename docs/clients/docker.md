@@ -90,7 +90,6 @@ As an alternative option, you can also choose to export your username and passwo
 For a detailed list of other (default) environment variables and settings that you can configure, see the [getting started](../getting-started) pages.  For the globally shared commands (e.g., "add", "get", "inspect," "images," and any others that are defined for all clients) see the [commands](../getting-started/commands.md) documentation. Here we will review the set of commands that are specific to the `sregistry` Docker Hub client.
 
  - [pull](#pull): `[remote->local]` pull layers from Docker Hub to build a Singularity images, and save in storage.
- - [record](#record): `[remote->local]` obtain Docker Hub manifests and metadata to save to the database, but don't pull layers to build a container.
 
 For all of the examples below, we will export our client preference to be `docker`
 
@@ -102,6 +101,17 @@ but note that you could just as easily define the variable for one command:
 
 ```
 SREGISTRY_CLIENT=docker sregistry shell
+```
+
+or do away the need to export this environment variable by simply activating the client:
+
+```bash
+$ sregistry backend activate docker
+[activate] docker
+$ sregistry backend status
+[backend status]
+There are 9 clients found in secrets.
+active: docker
 ```
 
 ## Shell
@@ -160,79 +170,16 @@ Notice that the first layer extracted is the standard environment metadata tar. 
 ```bash
 $ sregistry images
 [client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
-3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
-4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
-5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
+Containers:   [date]   [client]	[uri]
+1  December 29, 2017	[google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+2  December 30, 2017	[google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
+3  December 30, 2017	[google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
+4  January 01, 2018	[google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
+5  January 01, 2018	[google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
+6  January 09, 2018	[registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
+7  January 14, 2018	[docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
 ```
 
-## Record
-You might want to grab metadata for an image but not pull and download layers. You can use record for that. Let's first get the record for an anaconda image:
-
-```bash
-$ sregistry record continuumio/anaconda3
-[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-[container][new] continuumio/anaconda3:latest
-```
-
-It's a really quick action, because all we've done is obtained the manifests. We can see the record in our images list:
-
-```bash
-$ sregistry images
-[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-Containers:   [date]   [location]  [client]	[uri]
-1  December 29, 2017	local 	   [google-drive]	vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
-2  December 30, 2017	remote	   [google-storage]	expfactory/expfactory:metadata@846442ecd7487f99fce3b8fb68ae15af
-3  December 30, 2017	local 	   [google-storage]	vsoch/avocados:tacos@ed9755a0871f04db3e14971bec56a33f
-4  January 01, 2018	local 	   [google-drive]	expfactory/expfactory:master@846442ecd7487f99fce3b8fb68ae15af
-5  January 01, 2018	remote	   [google-drive]	vsoch/hello-world:pancakes@ed9755a0871f04db3e14971bec56a33f
-6  January 09, 2018	local 	   [registry]	mso4sc/sregistry-cli:latest@953fc2a30e6a9f997c1e9ca897142869
-7  January 14, 2018	local 	   [docker]	library/ubuntu:latest@f8d7d2e9f5da3fa4112aab30105e2fcd
-8 January 14, 2018	remote	   [docker]	continuumio/anaconda3:latest
-```
-
-Since we didn't ask for an image, the record just records the uri without a version. What did we get? let's inspect it.
-
-```bash
-$ sregistry inspect continuumio/anaconda3:latest
-[client|docker] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
-continuumio/anaconda3:latest
-{
-    "client": "docker",
-    "collection": "continuumio",
-    "collection_id": 5,
-    "created_at": "2018-01-14 22:08:41",
-    "id": 10,
-    "image": null,
-    "metrics": {
-        "1": {
-            "architecture": "amd64",
-            "fsLayers": [
-                {
-                    "blobSum": "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4"
-                },
-                ...
-
-            ],
-            "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
-            "schemaVersion": 2,
-            "selfLink": "https://index.docker.io/v2/continuumio/anaconda3/manifests/latest"
-        },
-        "selfLink": "https://index.docker.io/v2/continuumio/anaconda3/manifests"
-    },
-    "name": "anaconda3",
-    "tag": "latest",
-    "uri": "continuumio/anaconda3:latest",
-    "url": "continuumio/anaconda3:latest",
-    "version": ""
-}
-
-```
-the above is truncated in the middle, but what you should know is that the middle chunk contains both versions of the manifest, if available.
 
 ## Get
 Here is an example of a typical flow to download an image, and then use it. We will set the client at runtime to be Docker Hub (and not the default of Singularity Hub)

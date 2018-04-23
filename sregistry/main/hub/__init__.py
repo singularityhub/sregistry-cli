@@ -22,7 +22,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from sregistry.main import ApiConnection
 
 from .pull import pull
-from .record import record
 from .query import (
     search,
     list_all, 
@@ -54,7 +53,6 @@ class Client(ApiConnection):
     
 
 Client.pull = pull
-Client.record = record
 Client.search = search
 Client.list = list_all
 Client._search_collection = search_collection

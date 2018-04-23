@@ -13,7 +13,6 @@ A client is an endpoint that you might want to push or pull Singularity images (
 
  - *pull*: `[remote->local]` is a common use case. It says "get this remote image and pull it from there to my local database and storage."
  - *push*: `[local->remote]` takes an image on your host and pushes to the remote (usually given some permission).
- - *record*: `[remote->local]` the same as a pull, but without the image file (just get the metadata!)
  - *search*: `[remote]`: list or search a remote endpoint. 
  - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential.
 
@@ -25,8 +24,8 @@ I'll briefly outline the order of operations that I (@vsoch) have taken when add
 In a nutshell, do this:
 
 ```bash
-1.                    2.          3.         4.           5.         6.           7. 
-[skeleton client] --> [shell] --> [push] --> [search] --> [pull] --> [record] --> [share]
+1.                    2.          3.         4.           5.         6.     
+[skeleton client] --> [shell] --> [push] --> [search] --> [pull] --> [share]
 ```
 
 1. Very importantly, as you go through each step, write the documentation for it. It's very easy to test as you go, and write notes about different functions when they are fresh in your mind.
@@ -34,8 +33,7 @@ In a nutshell, do this:
 3. When you have a basic client that is authenticated with a service, write the `push` function first. Your goal is to start with a local image file, and ultimately get it into your storage place. It needs to have organization and metadata to identify it as a container, **and** easily provide a uri back to the user.
 4. Once you have "push" working, it's trivial to push a few images. Do this. Write some documentation about it if you haven't already. When you have a few different ones, then it's logical to write `search` (functions in the template query.py file) because you have images with metadata to work with, and a client that can interact with the service.)
 5. After push and search are done, write the `pull` function. It's going to be similar to search because you will start with searching for a particular container given some user query, but then you add the step to actually download and add it to the local storage.
-6. Following `pull` you should write the `record` function. It will be trivial and simple because it's exactly the same as pull, but for the final call to the `add` function you don't provide an image file.
-7. After this core, implement any of the extra functions relevant to your client (like share!) Usually at this point I'm super excited and I record an asciinema for it, and finish up the documentation.
+6. Following `pull` you should write the implement any of the extra functions relevant to your client (like share!) Usually at this point I'm super excited and I record an asciinema for it, and finish up the documentation.
 
 
 ### The General Steps
