@@ -60,6 +60,10 @@ def get_parser():
                           help='activate, deactivate, ls, status, rm a client', 
                          type=str)
 
+    backend.add_argument('--force','-f', dest="force", 
+                         help="force add if variable exists.", 
+                         default=False, action='store_true')
+
     # Local shell with client loaded
     shell = subparsers.add_parser("shell",
                                   help="shell into a session a client.")

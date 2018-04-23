@@ -114,6 +114,17 @@ dropbox
 }
 ```
 
+For any backend, you can add a variable to the configuration (such as a token) using the add command:
+
+```bash
+sregistry backend add nvidia varname varvalue --force
+[add]
+SREGISTRY_NVIDIA_VARNAME varvalue
+```
+
+Note that since the namespace follows the pattern `SREGISTRY_<backend>_<varname>`, if we add
+"varname" to "nvidia" it will be updated to be `SREGISTRY_NVIDIA_VARNAME` in all caps.
+
 You can remove (`rm`) a backend from the credential file:
 
 ```bash

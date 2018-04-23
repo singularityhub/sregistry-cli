@@ -61,8 +61,20 @@ def main(args,parser,subparser):
     elif command == 'deactivate':
         deactivate()
 
+    # Option 5: get a status
+
     elif command == "status":
         status(backend)
+
+    # Option 6: add a config value 
+
+    elif command == "add":
+        if len(args.commands) > 1:
+            variable = args.commands.pop(0)
+            value = args.commands.pop(0)
+            add(backend, variable, value, force=args.force)
+        else:
+            print('Usage: sregistry backend add <backend> <variable> <value>')
 
     else:
 
@@ -74,6 +86,9 @@ def usage():
              sregistry backend status: get status
              sregistry backend rm <backend> remove a backend
              sregistry backend de|activate: activate or deactivate
+             sregistry backend add nvidia token 123455
+               
+             SREGISTRY_NVIDIA_TOKEN 123455
           ''')
 
 def status(backend):
@@ -88,6 +103,36 @@ def status(backend):
     else:
         print('There is no active client.')
 
+
+def add(backend, variable, value, force=False):
+    '''add the variable to the config
+    '''
+    print('[add]')
+    settings = read_client_secrets()
+
+    # If the variable begins with the SREGISTRY_<CLIENT> don't add it
+    prefix = 'SREGISTRY_%s_' %backend.upper()
+    if not variable.startswith(prefix):
+        variable = '%s%s' %(prefix, variable)
+
+    # All must be uppercase
+    variable = variable.upper()
+    bot.info("%s %s" %(variable, value))
+    
+    # Does the setting already exist?
+
+    if backend in settings:
+        if variable in settings[backend] and force is False:
+            previous = settings[backend][variable]
+            bot.error('%s is already set as %s. Use --force to override.' %(variable, previous))
+            sys.exit(1)
+
+    if backend not in settings:
+        settings[backend] = {}
+
+    settings[backend][variable] = value
+    update_secrets(settings)
+    
 
 def activate(backend):
     '''activate a backend by adding it to the .sregistry configuration file.
