@@ -123,7 +123,9 @@ SREGISTRY_NVIDIA_VARNAME varvalue
 ```
 
 Note that since the namespace follows the pattern `SREGISTRY_<backend>_<varname>`, if we add
-"varname" to "nvidia" it will be updated to be `SREGISTRY_NVIDIA_VARNAME` in all caps.
+"varname" to "nvidia" it will be updated to be `SREGISTRY_NVIDIA_VARNAME` in all caps. There is no
+limit on the variable names that you can add, given that clients can implement their own set within
+a namespace.
 
 You can remove (`rm`) a backend from the credential file:
 
