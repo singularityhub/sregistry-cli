@@ -50,8 +50,8 @@ def main(args,parser,subparser):
         list_backends(backend) 
 
     # Option 2: Remove a configuration
-    elif command == "rm":
-        remove_backend(backend)
+    elif command == "delete":
+        delete_backend(backend)
 
     # Option 3: Activate a backend
     elif command == "activate":
@@ -76,6 +76,15 @@ def main(args,parser,subparser):
         else:
             print('Usage: sregistry backend add <backend> <variable> <value>')
 
+    # Option 7: Remove a config value
+    elif command in ["remove", "rm"]:
+        if len(args.commands) > 0:
+            variable = args.commands.pop(0)
+            remove(backend, variable)
+        else:
+            print('Usage: sregistry backend remove <backend> <variable>')
+
+
     else:
 
         subparser.print_help()
@@ -86,6 +95,7 @@ def usage():
              sregistry backend status: get status
              sregistry backend rm <backend> remove a backend
              sregistry backend de|activate: activate or deactivate
+             sregistry backend remove nvidia token
              sregistry backend add nvidia token 123455
                
              SREGISTRY_NVIDIA_TOKEN 123455
@@ -134,6 +144,29 @@ def add(backend, variable, value, force=False):
     update_secrets(settings)
     
 
+
+def remove(backend, variable):
+    '''remove a variable from the config, if found.
+    '''
+    print('[remove]')
+    settings = read_client_secrets()
+
+    # If the variable begins with the SREGISTRY_<CLIENT> don't add it
+    prefix = 'SREGISTRY_%s_' %backend.upper()
+    if not variable.startswith(prefix):
+        variable = '%s%s' %(prefix, variable)
+
+    # All must be uppercase
+    variable = variable.upper()
+    bot.info(variable)
+    
+    # Does the setting already exist?
+    if backend in settings:
+        if variable in settings[backend]:
+            del settings[backend][variable]           
+            update_secrets(settings)
+
+
 def activate(backend):
     '''activate a backend by adding it to the .sregistry configuration file.
     '''
@@ -149,19 +182,20 @@ def update_secrets(secrets):
     write_json(secrets, secrets_file)
 
 
-def remove_backend(backend):
-    '''remove a backend, and update the secrets file
+def delete_backend(backend):
+    '''delete a backend, and update the secrets file
     '''
     settings = read_client_secrets()
     if backend in settings:
         del settings[backend]
         update_secrets(settings)
-        print('[removed] %s' %backend)
+        print('[delete] %s' %backend)
     else:
         if backend is not None:
             print('%s is not a known client.' %backend)
         else:
-            print('Please specify a backend to remove.')
+            print('Please specify a backend to delete.')
+
 
 def deactivate():    
     '''deactivate any active backend by removing it from the .sregistry
