@@ -153,9 +153,10 @@ def remove(backend, variable):
     settings = read_client_secrets()
 
     # If the variable begins with the SREGISTRY_<CLIENT> don't add it
+    prefixed = variable
     prefix = 'SREGISTRY_%s_' %backend.upper()
     if not variable.startswith(prefix):
-        variable = '%s%s' %(prefix, variable)
+        prefixed = '%s%s' %(prefix, variable)
 
     # All must be uppercase
     variable = variable.upper()
@@ -165,7 +166,9 @@ def remove(backend, variable):
     if backend in settings:
         if variable in settings[backend]:
             del settings[backend][variable]           
-            update_secrets(settings)
+        if prefixed in settings[backend]:
+            del settings[backend][prefixed]           
+        update_secrets(settings)
 
 
 def activate(backend):
@@ -189,6 +192,12 @@ def delete_backend(backend):
     settings = read_client_secrets()
     if backend in settings:
         del settings[backend]
+
+        # If the backend was the active client, remove too
+        if 'SREGISTRY_CLIENT' in settings:
+            if settings['SREGISTRY_CLIENT'] == backend:
+                del settings['SREGISTRY_CLIENT']
+
         update_secrets(settings)
         print('[delete] %s' %backend)
     else:
