@@ -92,6 +92,7 @@ def main(args,parser,subparser):
 def usage():
     print('''
              sregistry backend ls:     list backends found in secrets
+             sregistry backend ls hub
              sregistry backend status: get status
              sregistry backend rm <backend> remove a backend
              sregistry backend de|activate: activate or deactivate
