@@ -22,7 +22,7 @@ For the quickstart you need:
 If you want to set the Google Compute builder as your current active client:
 
 ```bash
-$ sregistry backend activate google-compte
+$ sregistry backend activate google-compute
 [activate] google-compute
 $ sregistry backend status
 [backend status]
