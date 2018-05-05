@@ -34,7 +34,7 @@ LICENSE = "LICENSE"
 
 INSTALL_REQUIRES = (
     ('spython', {'min_version': '0.0.25'}),
-    ('requests', {'exact_version': '2.18.4'}),
+    ('requests', {'min_version': '2.18.4'}),
     ('pygments', {'min_version': '2.1.3'}),
 )
 
@@ -43,7 +43,7 @@ INSTALL_REQUIRES = (
 
 
 INSTALL_BASIC_REGISTRY = (
-    ('requests-toolbelt', {'exact_version': '0.8.0'}),
+    ('requests-toolbelt', {'min_version': '0.8.0'}),
     ('dateutils', {'min_version': "0.6.6"}),
     ('python-dateutil', {'min_verison': "2.5.3"})
 )
@@ -60,7 +60,7 @@ INSTALL_BASIC_GLOBUS = (
 INSTALL_BASIC_GOOGLE_STORAGE = (
     ('oauth2client', {'min_version': '3.0'}),
     ('google-cloud-storage', {'min_version': '1.4.0'}),
-    ('retrying', {'exact_version': '1.3.3'})
+    ('retrying', {'min_version': '1.3.3'})
 )
 
 INSTALL_BASIC_GOOGLE_DRIVE = (
@@ -87,7 +87,7 @@ INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
 
 
 INSTALL_REQUIRES_REGISTRY = (
-    ('requests-toolbelt', {'exact_version': '0.8.0'}),
+    ('requests-toolbelt', {'min_version': '0.8.0'}),
     ('dateutils', {'min_version': "0.6.6"}),
     ('python-dateutil', {'min_verison': "2.5.3"}),
     ('sqlalchemy', {'min_version': None})
@@ -126,7 +126,6 @@ INSTALL_REQUIRES_GOOGLE_COMPUTE = (
 
 INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
                         INSTALL_REQUIRES_DROPBOX + 
-                        INSTALL_REQUIRES_GLOBUS +
                         INSTALL_REQUIRES_REGISTRY +
                         INSTALL_REQUIRES_GOOGLE_COMPUTE +
                         INSTALL_REQUIRES_GOOGLE_STORAGE +
