@@ -21,6 +21,7 @@ LABEL maintainer vsochat@stanford.edu
 RUN apt-get update && apt-get install -y git build-essential \
                    libtool \
                    squashfs-tools \
+                   libarchive-dev \
                    autotools-dev \
                    automake \
                    autoconf \
