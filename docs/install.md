@@ -6,20 +6,12 @@ permalink: /install
 toc: false
 ---
 
-# Installation Local
+# Local Install
 
 To install from the Github repository:
 
 ```bash
 git clone https://www.github.com/singularityhub/sregistry-cli.git
-cd sregistry-cli
-python setup.py install
-```
-
-We recommend for the latest features to use the development branch:
-
-```bash
-git clone -b development https://www.github.com/singularityhub/sregistry-cli.git
 cd sregistry-cli
 python setup.py install
 ```
@@ -56,17 +48,69 @@ or for a particular extra client:
 pip install sregistry[myclient]
 ```
 
-For now, it's probably fastest and easiest to use the Singularity image.
+# Docker
+You can use Singularity Registry Global clients via Docker. Importantly, you need to
+run the commands with the `--privileged` flag.
+
+```bash
+$ docker run --privileged vanessa/sregistry-cli pull shub://vsoch/hello-world
+```
+
+If you need to build the container locally:
+
+```bash
+$ docker build -t vanessa/sregistry-cli .
+```
+
+# Singularity
+Singularity no longer supports running Singularity inside Singularity, and so some commands
+will not work as desired. For example:
+
+```bash
+ ./sregistry.simg pull shub://vsoch/hello-world
+[client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Progress |===================================| 100.0% 
+2.5.1-master.gd6e81547
+ERROR  : Singularity is not running with appropriate privileges!
+ERROR  : Check installation path is not mounted with 'nosuid', and/or consult manual.
+ABORT  : Retval = 255
+
+ERROR Return Code 255: ("\x1b[91mERROR  : Singularity is not running with appropriate privileges!\n\x1b[0m\x1b[91mERROR  : Check installation path is not mounted with 'nosuid', and/or consult manual.\n\x1b[0m\x1b[31mABORT  : Retval = 255\n\x1b[0m",)
+[container][update] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+Success! /home/vanessa/.singularity/shub/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
+```
+
+You could run with sudo, but that might defeat the purpose. Most functions should work, and
+missing is adding the inspection of the container to the database. It can, of course,
+easily be obtained by inspecting the container image directly.
+
+To activate a particular client endpoint, thanks to the [Standard Container Integration Format](https://containersftw.github.io/SCI-F/)
+you can just use an `--app` flag instead:
+
+```bash
+$ singularity run --app registry sregistry-cli
+```
 
 # Clients Available
 Singularity Registry Global Client is developed to give you maximum flexibility to install only what you need. For this, you have many different options for installing the software. if you use the above method, you will install the full client and storage, meaning that you can push and pull images to many different clients (Google vs. Singularity Registry) and you can keep a local database file for keeping track of your images. However, it might be that you want to install dependencies for just one client. Remember for all of the pip commands below, you can install with a local repository, or remote.
+
+Install all clients
+
+```bash
+# Local repository
+pip install -e .[all]
+
+# From pypi
+pip install sregistry[all]
+```
+
 
 ```bash
 # Local repository
 pip install -e .[myclient]
 
 # From pypi
-pip install [myclient]
+pip install sregistry[myclient]
 ```
 
 And here are your options.
@@ -100,24 +144,3 @@ pip install sregistry[google-drive-basic]
 
 Clients for Singularity Hub and Nvidia are not detailed here as they don't require additional library dependencies.
 
-
-# Singularity
-To build a singularity container
-
-```bash
-sudo singularity build sregistry-cli Singularity
-```
-
-And now anywhere in these pages where you run an sregistry command, instead just
-reference the image:
-
-```bash
-./sregistry-cli
-```
-
-and to activate a particular client endpoint, thanks to the [Standard Container Integration Format](https://containersftw.github.io/SCI-F/)
-you can just use an `--app` flag instead:
-
-```bash
-singularity run --app registry sregistry-cli
-```
