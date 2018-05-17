@@ -7,7 +7,7 @@ FROM continuumio/miniconda3
 # docker run vanessa/sregistry-cli
 #########################################
 
-ENV PATH /usr/local/bin:$PATH
+ENV PATH /opt/conda/bin:/usr/local/bin:$PATH
 LABEL maintainer vsochat@stanford.edu
 
 RUN apt-get update && apt-get install -y git build-essential \
