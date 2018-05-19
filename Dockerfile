@@ -7,7 +7,6 @@ FROM continuumio/miniconda3
 # docker run vanessa/sregistry-cli
 #########################################
 
-ENV PATH /opt/conda/bin:/usr/local/bin:$PATH
 LABEL maintainer vsochat@stanford.edu
 
 RUN apt-get update && apt-get install -y git build-essential \
@@ -37,5 +36,6 @@ RUN scif install /code/sregistry-cli.scif
 ENTRYPOINT ["sregistry"]
 
 WORKDIR /code
+RUN rm /usr/bin/python && ln -s /opt/conda/bin/python /usr/bin/python
 
 RUN /opt/conda/bin/pip install -e .[all]
