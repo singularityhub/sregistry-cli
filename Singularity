@@ -33,6 +33,16 @@ From: continuumio/miniconda3
     exec /opt/conda/bin/sregistry "$@"
 
 
+#######################################
+# Globus
+#######################################
+
+%appenv globus
+    SREGISTRY_CLIENT=globus
+    export SREGISTRY_CLIENT
+%apprun globus
+    exec /opt/conda/bin/sregistry "$@"
+
 
 #######################################
 # Singularity Hub
@@ -57,7 +67,7 @@ From: continuumio/miniconda3
 
 
 %environment
-    PATH=/usr/local/bin:$PATH
+    PATH=/usr/local/bin:/opt/conda/bin:$PATH
     export PATH
 
 
@@ -68,12 +78,14 @@ From: continuumio/miniconda3
     apt-get update && apt-get install -y git build-essential \
                    libtool \
                    squashfs-tools \
+                   libarchive-dev  \
                    autotools-dev \
                    automake \
                    autoconf \
                    uuid-dev \
                    libssl-dev
 
+    export PATH=/opt/conda/bin:$PATH
     /opt/conda/bin/pip install dateutils
 
     # Install Singularity
@@ -86,7 +98,4 @@ From: continuumio/miniconda3
     /opt/conda/bin/pip install setuptools
 
     # This installs all "install extras"
-    /opt/conda/bin/pip install -e .
-    /opt/conda/bin/pip install -e .[registry]
-    /opt/conda/bin/pip install -e .[google-drive]
-    /opt/conda/bin/pip install -e .[google-storage]
+    /opt/conda/bin/pip install -e .[all]

@@ -7,15 +7,6 @@ FROM continuumio/miniconda3
 # docker run vanessa/sregistry-cli
 #########################################
 
-RUN mkdir /code
-ADD . /code
-RUN /opt/conda/bin/pip install setuptools
-RUN /opt/conda/bin/pip install scif
-
-RUN scif install /code/sregistry-cli.scif
-ENTRYPOINT ["scif"]
-
-ENV PATH /usr/local/bin:$PATH
 LABEL maintainer vsochat@stanford.edu
 
 RUN apt-get update && apt-get install -y git build-essential \
@@ -36,6 +27,15 @@ RUN git clone https://www.github.com/singularityware/singularity.git
 WORKDIR singularity
 RUN ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 
-WORKDIR /code
+RUN mkdir /code
+ADD . /code
+RUN /opt/conda/bin/pip install setuptools
+RUN /opt/conda/bin/pip install scif
 
-RUN /opt/conda/bin/pip install -e .
+RUN scif install /code/sregistry-cli.scif
+ENTRYPOINT ["sregistry"]
+
+WORKDIR /code
+RUN rm /usr/bin/python && ln -sf /opt/conda/bin/python /usr/bin/python
+
+RUN /opt/conda/bin/pip install -e .[all]

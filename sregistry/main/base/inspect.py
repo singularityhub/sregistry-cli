@@ -67,6 +67,7 @@ def get_metadata(self, image_file, names={}):
 
         # We try and inspect, but not required (wont work within Docker)
         try:
+            Singularity.quiet = True
             updates = Singularity.inspect(image=image_file)
         except:
             bot.warning('Inspect command not supported, metadata not included.')
