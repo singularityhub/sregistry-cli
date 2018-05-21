@@ -36,6 +36,6 @@ RUN scif install /code/sregistry-cli.scif
 ENTRYPOINT ["sregistry"]
 
 WORKDIR /code
-RUN rm /usr/bin/python && ln -s /opt/conda/bin/python /usr/bin/python
+RUN rm /usr/bin/python && ln -sf /opt/conda/bin/python /usr/bin/python
 
 RUN /opt/conda/bin/pip install -e .[all]
