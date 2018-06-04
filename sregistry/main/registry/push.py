@@ -99,12 +99,100 @@ def push(self, path, name, tag=None):
 
 
 
+
+
+/api/containers/upload-complete/	shub.apps.api.actions.upload.ShubChunkedUploadCompleteView	api_chunked_upload_complete
+/api/containers/upload/	shub.apps.api.actions.upload.ShubChunkedUploadView	api_chunked_upload
+
+
+
+
+
+ <script type="text/javascript">
+    var md5 = "",
+        csrf = $("input[name='csrfmiddlewaretoken']")[0].value,
+        form_data = [{"name": "csrfmiddlewaretoken", "value": csrf}];
+    function calculate_md5(file, chunk_size) {
+      var slice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+          chunks = chunks = Math.ceil(file.size / chunk_size),
+          current_chunk = 0,
+          spark = new SparkMD5.ArrayBuffer();
+      function onload(e) {
+        spark.append(e.target.result);  // append chunk
+        current_chunk++;
+        if (current_chunk < chunks) {
+          read_next_chunk();
+        } else {
+          md5 = spark.end();
+        }
+      };
+      function read_next_chunk() {
+        var reader = new FileReader();
+        reader.onload = onload;
+        var start = current_chunk * chunk_size,
+            end = Math.min(start + chunk_size, file.size);
+        reader.readAsArrayBuffer(slice.call(file, start, end));
+      };
+      read_next_chunk();
+    }
+    $("#chunked_upload").fileupload({
+      url: "{% url 'api_chunked_upload' %}",
+      dataType: "json",
+      maxChunkSize: 100000, // Chunks of 100 kB
+      formData: form_data,
+      add: function(e, data) { // Called before starting upload
+        $("#messages").empty();
+        // If this is the second file you're uploading we need to remove the
+        // old upload_id and just keep the csrftoken (which is always first).
+        form_data.splice(1);
+        calculate_md5(data.files[0], 100000);  // Again, chunks of 100 kB
+        data.submit();
+      },
+      chunkdone: function (e, data) { // Called after uploading each chunk
+        if (form_data.length < 2) {
+          form_data.push(
+            {"name": "upload_id", "value": data.result.upload_id}
+          );
+        }
+        $("#messages").append($('<p>').text(JSON.stringify(data.result)));
+        var progress = parseInt(data.loaded / data.total * 100.0, 10);
+        $("#progress").text(Array(progress).join("=") + "> " + progress + "%");
+      },
+      done: function (e, data) { // Called when the file has completely uploaded
+        $.ajax({
+          type: "POST",
+          url: "{% url 'api_chunked_upload_complete' %}",
+          data: {
+            csrfmiddlewaretoken: csrf,
+            upload_id: data.result.upload_id,
+            md5: md5
+          },
+          dataType: "json",
+          success: function(data) {
+            $("#messages").append($('<p>').text(JSON.stringify(data)));
+          }
+        });
+      },
+    });
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
 def create_callback(encoder):
+    print(encoder)
     encoder_len = encoder.len / (1024*1024.0)
     bar = ProgressBar(expected_size=encoder_len,
                       filled_char='=')
-
     def callback(monitor):
+        print(monitor)
         bar.show(monitor.bytes_read / (1024*1024.0))
-
     return callback
