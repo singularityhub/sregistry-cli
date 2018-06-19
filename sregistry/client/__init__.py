@@ -73,12 +73,13 @@ def get_parser():
                        type=str, default=None)
 
     # List local containers and collections
-    images = subparsers.add_parser("images",
-                                   help="list local images, optionally with query")
+    if hasattr(cli, 'images'):
+        images = subparsers.add_parser("images",
+                                       help="list local images, optionally with query")
 
-    images.add_argument("query", nargs='*', 
-                        help="container search query", 
-                        type=str, default="*")
+        images.add_argument("query", nargs='*', 
+                            help="container search query", 
+                            type=str, default="*")
 
 
     # List local containers and collections
@@ -373,14 +374,13 @@ def main():
 
     # Pass on to the correct parser
     return_code = 0
-    if 1==1:
-    #try:
+    try:
         main(args=args,
              parser=parser,
              subparser=subparsers[args.command])
         sys.exit(return_code)
-    #except UnboundLocalError:
-    #    return_code = 1
+    except UnboundLocalError:
+        return_code = 1
 
     help(return_code)
 
