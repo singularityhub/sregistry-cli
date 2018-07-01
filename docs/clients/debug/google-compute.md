@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Singularity Google Compute Builder
+title: Singularity Google Debugging
 pdf: true
 permalink: /client-google-debugging
 toc: false
