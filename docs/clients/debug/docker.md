@@ -21,8 +21,8 @@ KeyError: 'schemaVersion'
 ## 1. Why might this happen?
 It's likely that the manifest being returned by the Docker API isn't what is
 expected. It could either be a permissions issue, or a problem with the name 
-(uri, unique resource identifier) you have provided, and the manifest isn't
-found (akin to a 404). The reason we get a "KeyError" is because the json 
+(unique resource identifier) you have provided, and the manifest isn't
+found (akin to a *404*). The reason we get a "KeyError" is because the json 
 response from the API is different than expected, and the key doesn't exist.
 For the example below I'm using `sregistry version 0.0.86`
 
@@ -36,7 +36,7 @@ to specify that you want a docker client.
 
 # The client is loaded - make sure it's docker
 client
-# [client][docker]
+[client][docker]
 ```
 
 ## 3. Define Image
@@ -56,7 +56,7 @@ from sregistry.utils import *
 base = client._update_base(image)
 
 base
-#'gcr.io'
+'gcr.io'
 ```
 
 To make life easier, sregistry has a standard function for parsing the 
@@ -75,30 +75,21 @@ q
 # 'version': None}
 ```
 
-## 3. Define Output File
-For the filename, let's just define something in the present working directory
-The actual sregistry uses the "storage" field, but we don't need the subfolder!
-
-```python
-file_name = os.path.basename(q['storage'])
-# 'deepvariant:latest.simg'
-```
-
-## 4. Get Manifests
+## 3. Get Manifests
 Now let's walk through getting the manifests, which is the step we normally
-do to get layers. This is definiitely likely where you are hitting issues. This is walking through the function `client._download_layers`. The repository name coincides with the url in the dictionary
+do to get layers. If you get a key error of `schemaVersion`, this is where you are hitting issues. For curious users, these steps are akin to walking through the function `client._download_layers`. The repository name coincides with the url in the dictionary
 
 ```python
 repo_name = q['url']
-#'deepvariant-docker/deepvariant'
+'deepvariant-docker/deepvariant'
 ```
 
-The digest is going to be a version (e.g., if there is @ in the uri) or if the version
+The digest is going to be a version (e.g., if there is *@* in the uri) or if the version
+if `None`, we use the tag.
 
 ```python
-# is undefined, it's a tag.
 digest = names['version'] or names['tag']
-# `latest`
+`latest`
 ```
 
 Now let's get the manifests. This is likely where the error is going to trigger.
@@ -159,15 +150,13 @@ with `[None, <manifest>, None]`. Here is what I see for the manifest:
 ```
 
 At this point, we would use the `layers` key to get a list of layers, and dump
-them into the container we are building. But if you get the KeyError of schemaVersion,
-this means you didn't get this far, and the response above isn't what you expected.
-Because notice that we DO have a schema version, so we have already gone passed the error.
-If you get an error message in the json above, then you can debug that. If you got a response of all `None` (`[None,None,None]`) then keep reading.
+them into the container we are building. But if you previously got a *KeyError* then 
+you didn't get this far. You probably got a response of all `None` (`[None,None,None]`).
+We need to dig deeper!
 
-## 5. Response of all None
-Oh no, you got None for all the queries! Let's dig a bit deeper and get the actual
-response from the API, since it clearly wasn't a manifest. We will modify the loop
-slightly to go one level deeper. First, define a header lookup table. This
+## 4. Response of all None
+Oh no, you got None for all the queries! Let's modify the loop
+slightly to inspect one level deeper. First, define a header lookup table. This
 is actually what drives which version we "ask for":
 
 ```python
@@ -177,7 +166,9 @@ accepts = {'config': "application/vnd.docker.container.image.v1+json",
 ```
 
 We are still going to check each of the schema versions, because different registries
-(unfortunately) serve different versions.  We are also going to use the base requests library instead of the sregistry client get function (that parses responses / errors and would handle them for us)
+(unfortunately) serve different versions.  We are also going to use the base 
+<a href="http://docs.python-requests.org/en/master/" target="_blank">requests</a>
+library instead of the sregistry client get function (that parses responses / errors and would handle them for us)
 
 ```python
 # use requests library
@@ -206,9 +197,9 @@ for schemaVersion in schemaVersions:
 ```
 
 ## 5. Inspect API Responses
-Now you can inspect each of the results to understand what is going on. Let's look at each.
+Results is a list of response objects. We can inspect each to understand what is going on. 
 Our first result was looking for a `schemaVersion` of `v1` which is likely not implemented
-on `gcr.io`. We can see from the result that we got a 404, "not found."
+for `gcr.io`. We can see from the result that we got a *404*, "not found."
 
 ```python
 results[0]
@@ -224,13 +215,13 @@ results[0].json()
    'message': "Manifest with tag 'latest' has media type 'application/vnd.docker.distribution.manifest.v2+json', but client accepts 'application/vnd.docker.distribution.manifest.v1+json'."}]}
 ```
 
-This is saying "hey, you asked for a version 1 manifest, but this manifest only accepts 
-only verison 2. This is a really good example of why it's important to
+This is saying "hey, you are only accepting a version 1 manifest, but this manifest is verison 2. This is a really good example of why it's important to
 
 > read the error output in full!
 
-It's telling you what's wrong! So logically, the `v2` request, which is the next entry
-in the list of results...
+It's telling you what's wrong! So logically, what shoul we do? We should ask for the
+version 2 manifest, of course! The `v2` *schemaVersion* request is the next entry
+in the list of results:
 
 ```python
 results[1]
@@ -238,7 +229,9 @@ results[1]
 ```
 
 is a success! 200 indicates all is OK. It follows then, that the `json()` output is
-the manifest that we were asking for.
+the manifest that we were asking for. If you were getting an error, you probably have a different response code here, and likely a different error message. Look at this
+carefully to determine why you aren't getting the manifest. If all is well, you
+should see this:
 
 ```python
 results[1].json()
