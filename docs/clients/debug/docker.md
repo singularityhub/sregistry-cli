@@ -75,7 +75,7 @@ q
 # 'version': None}
 ```
 
-## 3. Get Manifests
+## 4. Get Manifests
 Now let's walk through getting the manifests, which is the step we normally
 do to get layers. If you get a key error of `schemaVersion`, this is where you are hitting issues. For curious users, these steps are akin to walking through the function `client._download_layers`. The repository name coincides with the url in the dictionary
 
@@ -154,7 +154,7 @@ them into the container we are building. But if you previously got a *KeyError* 
 you didn't get this far. You probably got a response of all `None` (`[None,None,None]`).
 We need to dig deeper!
 
-## 4. Response of all None
+## 5. Response of all None
 Oh no, you got None for all the queries! Let's modify the loop
 slightly to inspect one level deeper. First, define a header lookup table. This
 is actually what drives which version we "ask for":
@@ -196,7 +196,7 @@ for schemaVersion in schemaVersions:
 
 ```
 
-## 5. Inspect API Responses
+## 6. Inspect API Responses
 Results is a list of response objects. We can inspect each to understand what is going on. 
 Our first result was looking for a `schemaVersion` of `v1` which is likely not implemented
 for `gcr.io`. We can see from the result that we got a *404*, "not found."
@@ -279,7 +279,7 @@ results[1].json()
 The last result in the list is the same as the first, it's a 404 because the manifest
 accept header doesn't match what the registry is offering. 
 
-## 6. Another Error?
+## 7. Another Error?
 At this point, either you will get an obvious message returned from the API
 (something akin to telling you that you don't have correct permissions for an operation)
 or in the case that you don't understand the error and need help, please <a href="https://www.github.com/singularityhub/sregistry-cli/issues" target="_blank">open an issue!</a>
