@@ -13,7 +13,7 @@ If you see this error:
 
 SREGISTRY_CLIENT=google-compute sregistry shell
 ...
-ERROR Cannot get or create gbsc-gcp-lab-priest-group
+ERROR Cannot get or create awesome-group-pancakes-universe
 
 ```
 
@@ -43,26 +43,30 @@ Now you can open up a python shell. I prefer ipython because of the colors
 and autocompletion :) If you have sregistry installed, you will have these dependencies
 
 ```python
+# ipython
 from googleapiclient.discovery import build as discovery_build
 from oauth2client.client import GoogleCredentials
 from google.cloud import storage
 import os
 
 bucket_name = os.environ['SREGISTRY_GOOGLE_STORAGE_BUCKET']
+```
 
-# This is a client for storage, and our credentials from the environment
+The next function to load credentials is only going to work given that you've
+exported `GOOGLE_APPLICATION_CREDENTIALS`.
+
+```python
 creds = GoogleCredentials.get_application_default()
 ```
 
-Above we have imported needed modules, and we grab our `GOOGLE_APPLICATION_CREDENTIALS`
-and read into `creds`. As a reminder, these are the 
+As a reminder, these are the 
 <a href="https://cloud.google.com/video-intelligence/docs/common/auth#authenticating_with_application_default_credentials" target="_blank">Default Application Credentials</a> that you download from the web interface, a json file.
 
 ## Step 3. Create clients
 Now we want to create handles for interactions with storage and compute. Creating
 these all here isn't totally necessary, but in the case that some error triggers,
 let's do it anyway to see that. I actually think this step doesn't interact with
-the API, so you shouldn't seen an unless one of Google's "sanity checks" doesn't 
+the API, so you shouldn't see an error unless one of Google's "sanity checks" doesn't 
 pass.
 
 ```python
@@ -77,12 +81,25 @@ Here is where the error is going to trigger.
 
 ```python
 bucket = bucket_service.get_bucket(bucket_name)
+```
 
-# When I run this command (with correct permissions, and an existing bucket)
-# I get back a bucket
+When I run this command (with correct permissions, and an existing bucket) 
+I get back a bucket.
+
+```python
 # bucket
 # <Bucket: sregistry-vanessa>
 ```
+
+But if you are hitting the error above, you likely aren't going to get this message.
+Another derivation of this error (which wouldn't be properly caught) is if the bucket doesn't
+exist, but you don't have permission to create it. Here is how to trigger that error 
+(`google.cloud.exceptions.NotFound`)
+
+```python
+bucket = bucket_service.create_bucket(bucket_name)
+```
+
 Either you will get an obvious message
 (something akin to telling you that you don't have correct permissions for an operation)
 or in the case that you don't understand the error and need help, please <a href="https://www.github.com/singularityhub/sregistry-cli/issues" target="_blank">open an issue!</a>
