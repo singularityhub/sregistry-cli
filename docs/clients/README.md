@@ -29,10 +29,10 @@ We provide details for builders here.
 
 
 ## Debugging
-Troubleshooting is just as important as usage! Here are some quick guides to debugging common errors. If you have an error that isn't represented, please <a href="https://www.singularityhub.github.io/sregistry-cli/issues" target="_blank">reach out</a>.
+Troubleshooting is just as important as usage! Here are some quick guides to debugging common errors. If you have an error that isn't represented, please <a href="https://www.github.com/singularityhub/sregistry-cli/issues" target="_blank">reach out</a>.
 
  - [Docker Pulling Errors](/sregistry-cli/client-docker-debugging): walk through pulling a container from gcr.io and inspecting the manifest responses.
- - [Google Cloud Errors](/sregistry-cli/client-google-debugging) Interacting with the Google Cloud Python API to reveal underlying reasons you can't connect to a bucket or service.
+ - [Google Cloud Errors](/sregistry-cli/client-google-debugging) interact with the Google Cloud Python API to reveal underlying reasons you can't connect to a bucket or service.
 
 <div>
     <a href="/sregistry-cli/getting-started"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
