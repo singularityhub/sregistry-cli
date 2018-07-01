@@ -231,6 +231,9 @@ You can also see in the pull output that on the backend of pull is the same sear
 if you want to be precise, you should ask for the complete uri (version included). If you aren't precise, it will do
 a search across name fields and give you the first match. Be careful, my linux penguins.
 
+For debugging scripts, see [Google Cloud Debugging](/sregistry-cli/client-google-debugging).
+
+
 <div>
     <a href="/sregistry-cli/commands"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
     <a href="/sregistry-cli/client-google-drive"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
