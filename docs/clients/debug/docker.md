@@ -88,7 +88,7 @@ The digest is going to be a version (e.g., if there is *@* in the uri) or if the
 if `None`, we use the tag.
 
 ```python
-digest = names['version'] or names['tag']
+digest = q['version'] or q['tag']
 `latest`
 ```
 
