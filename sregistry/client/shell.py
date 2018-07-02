@@ -73,7 +73,7 @@ def bpython(args):
     client = get_client(args.endpoint)
     client.announce(args.command)
     from sregistry.database.models import Container, Collection
-    bpython.embed(locals_={'client': cli,
+    bpython.embed(locals_={'client': client,
                            'Container': Container,
                            'Collection': Collection})
 
@@ -83,6 +83,6 @@ def python(args):
     client = get_client(args.endpoint)
     client.announce(args.command)
     from sregistry.database.models import Container, Collection
-    code.interact(local={"client":cli,
+    code.interact(local={"client":client,
                          'Container': Container,
                          'Collection': Collection})
