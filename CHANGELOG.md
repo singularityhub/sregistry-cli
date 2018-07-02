@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - fixing shell client bug (0.0.87)
  - updating Dockerfile and Singularity recipt with additional dependencies for 2.5 (0.0.86).
  - removing Globus dependency to avoid install conflict (0.0.85)
  - added client command to add, list, activate, and remove backends (0.0.84)
