@@ -97,6 +97,7 @@ RaawwWWWWWRRRR!! Avocado!
 
 There is more to learn! 
 
+ - For debugging scripts, see [Google Cloud Debugging](/sregistry-cli/client-google-debugging).
  - For a more detailed tutorial, see the [Detailed Start](/sregistry-cli/client-google-compute-detail)
  - For interaction within Python, see the [Developer Tutorial](/sregistry-cli/client-google-compute-developer)
  - To learn about development of the builders, see docs on [The Builders](https://singularityhub.github.io/builders/)

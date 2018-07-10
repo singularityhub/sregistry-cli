@@ -217,6 +217,10 @@ Singularity: Invoking an interactive shell within container...
 Singularity library-centos:7.simg:~/Documents/Dropbox/Code/sregistry/sregistry-cli> 
 ```
 
+## Debugging
+Check out our <a href="/sregistry-cli/client-docker-debugging">debugging and support page</a>
+if you run into issues and need to debug or get help.
+
 <div>
     <a href="/sregistry-cli/commands"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
     <a href="/sregistry-cli/client-google-storage"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
