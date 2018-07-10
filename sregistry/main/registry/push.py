@@ -27,13 +27,14 @@ from sregistry.utils import (
     parse_header,
     remove_uri
 )
+from requests_toolbelt.streaming_iterator import StreamingIterator
 from requests_toolbelt import (
     MultipartEncoder,
     MultipartEncoderMonitor
 )
 
 import requests
-import json
+import hashlib
 import sys
 import os
 
@@ -54,34 +55,48 @@ def push(self, path, name, tag=None):
 
     # Extract the metadata
     names = parse_image_name(remove_uri(name), tag=tag)
-    metadata = self.get_metadata(path, names=names) or {}
-
-    # Add expected attributes
-    if "data" not in metadata:
-        metadata['data'] = {'attributes': {}}
-    if "labels" not in metadata['data']['attributes']:
-        metadata['data']['attributes']['labels'] = {}
-    if metadata['data']['attributes']['labels'] == None:
-        metadata['data']['attributes']['labels'] = {}
-
-    # Try to add the size
     image_size = os.path.getsize(path) >> 20
-    fromimage = os.path.basename(path)
-    metadata['data']['attributes']['labels']['SREGISTRY_SIZE_MB'] = image_size
-    metadata['data']['attributes']['labels']['SREGISTRY_FROM'] = fromimage
 
-    # Prepare push request with multipart encoder
+# COLLECTION ###################################################################
+    
+    # Prepare push request, this will return a collection ID if permission
     url = '%s/push/' % self.base
-    upload_to = os.path.basename(names['storage'])
-
+    auth_url = '%s/upload/chunked_upload' % self.base
     SREGISTRY_EVENT = self.authorize(request_type="push",
                                      names=names)
 
-    encoder = MultipartEncoder(fields={'collection': names['collection'],
-                                       'name':names['image'],
-                                       'metadata': json.dumps(metadata),
+    # Data fields for collection
+    fields = { 'collection': names['collection'],
+               'name':names['image'],
+               'tag': names['tag']}
+
+    headers = { 'Authorization': SREGISTRY_EVENT }
+    
+    r = requests.post(auth_url, json=fields, headers=headers)
+
+    # Always tell the user what's going on!
+    message = self._read_response(r)
+    print('\n[1. Collection return status {0} {1}]'.format(r.status_code, message))
+
+    # Get the collection id, if created, and continue with upload
+    if r.status_code != 200:
+        sys.exit(1)
+
+
+# UPLOAD #######################################################################
+
+    url = '%s/upload' % self.base.strip('api/')
+    cid = r.json()['cid']
+    upload_to = os.path.basename(names['storage'])
+
+    SREGISTRY_EVENT = self.authorize(request_type="upload",
+                                     names=names)
+
+    encoder = MultipartEncoder(fields={'SREGISTRY_EVENT': SREGISTRY_EVENT,
+                                       'name': names['image'],
+                                       'collection': str(cid),
                                        'tag': names['tag'],
-                                       'datafile': (upload_to, open(path, 'rb'), 'text/plain')})
+                                       'file1': (upload_to, open(path, 'rb'), 'text/plain')})
 
     progress_callback = create_callback(encoder)
     monitor = MultipartEncoderMonitor(encoder, progress_callback)
@@ -90,21 +105,18 @@ def push(self, path, name, tag=None):
 
     try:
         r = requests.post(url, data=monitor, headers=headers)
-        message = self._read_response(r)
-
+        message = r.json()['message']
         print('\n[Return status {0} {1}]'.format(r.status_code, message))
-
     except KeyboardInterrupt:
         print('\nUpload cancelled.')
-
+    except Exception as e:
+        print(e)
 
 
 def create_callback(encoder):
     encoder_len = encoder.len / (1024*1024.0)
     bar = ProgressBar(expected_size=encoder_len,
                       filled_char='=')
-
     def callback(monitor):
         bar.show(monitor.bytes_read / (1024*1024.0))
-
     return callback
