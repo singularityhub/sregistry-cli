@@ -66,7 +66,7 @@ def parse_image_name(image_name,
         image_name = image_name.replace(base,'').strip('/')
 
     result = dict()
-    image_name = re.sub('[.](img|simg)','',image_name).lower()
+    image_name = re.sub('[.](img|simg)','',image_name)
     image_name = re.split('/', image_name, 1)
 
     # User only provided an image
@@ -78,13 +78,13 @@ def parse_image_name(image_name,
 
     # Collection and image provided
     elif len(image_name) >= 2:
-        collection = image_name[0]
+        collection = image_name[0].lower()
         image_name = image_name[1]
     
     # Is there a version?
     image_name = image_name.split('@')
     if len(image_name) > 1: 
-        version = image_name[1]
+        version = image_name[1].lower()
     image_name = image_name[0]
 
     # Is there a tag?
@@ -93,7 +93,7 @@ def parse_image_name(image_name,
     # No tag in provided string
     if len(image_name) > 1: 
         tag = image_name[1]
-    image_name = image_name[0]
+    image_name = image_name[0].lower()
     
     # If still no tag, use default or blank
     if tag is None and defaults is True:
