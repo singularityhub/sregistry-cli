@@ -74,18 +74,18 @@ def parse_image_name(image_name,
         collection = ''
         if defaults is True:
             collection = default_collection
-        image_name = image_name[0].lower()
+        image_name = image_name[0]
 
     # Collection and image provided
     elif len(image_name) >= 2:
         collection = image_name[0].lower()
-        image_name = image_name[1].lower()
+        image_name = image_name[1]
     
     # Is there a version?
     image_name = image_name.split('@')
     if len(image_name) > 1: 
         version = image_name[1].lower()
-    image_name = image_name[0].lower()
+    image_name = image_name[0]
 
     # Is there a tag?
     image_name = image_name.split(':')
