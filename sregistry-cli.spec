@@ -3,8 +3,8 @@
 # spec file for package sregistry-cli
 # credit for work goes to the amazing @griznog, John Hanks
 #
-Name:           python-sregistry
-Version:        0.0.89
+Name:           sregistry-cli
+Version:        0.0.90
 Release:        0
 Url:            http://www.github.com/singularityhub/sregistry-cli
 Summary:        Command line tool for working with container storage
