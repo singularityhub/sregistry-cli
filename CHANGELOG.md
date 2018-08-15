@@ -14,7 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
- - adding rpm spec file, sregistry.cli.spec (0.0.90)
+ - adding rpm spec file, sregistry.cli.spec (0.0.90,0.0.91)
  - image URI tag should not be changed to lowercase (0.0.89)
  - adding chunked upload to chunk uploads to Singularity Registry (0.0.88)
  - fixing shell client bug (0.0.87)
