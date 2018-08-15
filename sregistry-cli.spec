@@ -4,14 +4,14 @@
 # credit for work goes to the amazing @griznog, John Hanks
 #
 Name:           sregistry-cli
-Version:        0.0.91
+Version:        0.0.92
 Release:        0
 Url:            http://www.github.com/singularityhub/sregistry-cli
 Summary:        Command line tool for working with container storage
 License:        LICENSE (FIXME:No SPDX)
 Group:          Development/Languages/Python
 Source:         https://files.pythonhosted.org/packages/source/s/sregistry/sregistry-%{version}.tar.gz
-BuildRoot:      %{_tmppath}/%{version}-build
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 %description
 # Singularity Global Client
@@ -22,7 +22,7 @@ See our [installation guide](https://singularityhub.github.io/sregistry-cli/inst
 ## License
 This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICENSE).
 %prep
-%setup -q -n sregistry-%{version}
+%setup -q -n %{name}-%{version}
 %build
 python setup.py build
 %install
