@@ -25,7 +25,7 @@ Version:        0.0.89
 
 ```bash
 VERSION=0.0.89
-wget https://github.com/singularityhub/sregistry-cli/archive/0.0.${VERSION}.tar.gz
+wget https://github.com/singularityhub/sregistry-cli/archive/${VERSION}.tar.gz
 ```
 
  4. Use rpmbuild to build it.

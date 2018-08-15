@@ -1,4 +1,4 @@
-include README.md LICENSE
+include README.md LICENSE sregistry-cli.spec
 recursive-include sregistry *.png
 recursive-include sregistry *.sh
 recursive-include sregistry *
