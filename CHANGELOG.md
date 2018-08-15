@@ -15,6 +15,7 @@ The versions coincide with releases on pip. Only major versions will be released
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
  - image URI tag should not be changed to lowercase (0.0.89)
+ - adding rpm spec file, sregistry.cli.spec
  - adding chunked upload to chunk uploads to Singularity Registry (0.0.88)
  - fixing shell client bug (0.0.87)
  - updating Dockerfile and Singularity recipt with additional dependencies for 2.5 (0.0.86).
