@@ -8,6 +8,38 @@ Singularity Global Client is an interface to interact with Singularity container
 
 See our [installation guide](https://singularityhub.github.io/sregistry-cli/install) to get started. For more details, please refer to our [documentation](docs)
 
+## Building the RPM
+
+The file [sregistry-cli.spec](sregistry-cli.spec) is provided to build an rpm for a specified version,
+typcailly the current release on pypi, and was discussed [here](https://github.com/singularityhub/sregistry-cli/issues/138#issuecomment-413323717).
+You should do the following:
+
+ 1. Update the version to be the current in pypi specified in [sregistry/version.py](sregistry/version.py).
+
+```bash
+Version:        0.0.89
+```
+
+ 2. Create a [new release](https://github.com/singularityhub/sregistry-cli/releases/new) on Github with the version spec file added.
+ 3. Download the .tar.gz file from the release
+
+```bash
+VERSION=0.0.89
+wget https://github.com/singularityhub/sregistry-cli/archive/0.0.${VERSION}.tar.gz
+```
+
+ 4. Use rpmbuild to build it.
+
+```bash
+rpmbuild -ta sregistry-$version.tar.gz
+```
+
+You should get an srpm which that can be distributed and anyone can be rebuilt:
+
+```bash
+rpmbuild --rebuild sregistry-cli.srpm
+```
+
 ## License
 
 This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICENSE).
