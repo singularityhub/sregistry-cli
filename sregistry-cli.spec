@@ -4,13 +4,13 @@
 # credit for work goes to the amazing @griznog, John Hanks
 #
 Name:           sregistry-cli
-Version:        0.0.92
+Version:        0.0.93
 Release:        0
 Url:            http://www.github.com/singularityhub/sregistry-cli
 Summary:        Command line tool for working with container storage
 License:        LICENSE (FIXME:No SPDX)
 Group:          Development/Languages/Python
-Source:         https://files.pythonhosted.org/packages/source/s/sregistry/sregistry-%{version}.tar.gz
+Source:         https://github.com/singularityhub/sregistry-cli/archive/${name}-${version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel
 %description

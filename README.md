@@ -24,14 +24,14 @@ Version:        0.0.89
  3. Download the .tar.gz file from the release
 
 ```bash
-VERSION=0.0.89
+VERSION=0.0.92
 wget https://github.com/singularityhub/sregistry-cli/archive/sregistry-cli-${VERSION}.tar.gz
 ```
 
  4. Use rpmbuild to build it.
 
 ```bash
-rpmbuild -ta sregistry-cli-$version.tar.gz
+rpmbuild -ta sregistry-cli-$VERSION.tar.gz
 ```
 
 You should get an srpm which that can be distributed and anyone can be rebuilt:
