@@ -107,8 +107,11 @@ def push(self, path, name, tag=None):
 
     try:
         r = requests.post(url, data=monitor, headers=headers)
+        r.raise_for_status()
         message = r.json()['message']
         print('\n[Return status {0} {1}]'.format(r.status_code, message))
+    except requests.HTTPError as e:
+        print('\nUpload failed: {0}.'.format(e))
     except KeyboardInterrupt:
         print('\nUpload cancelled.')
     except Exception as e:
