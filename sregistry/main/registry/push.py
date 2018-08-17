@@ -58,7 +58,7 @@ def push(self, path, name, tag=None):
     image_size = os.path.getsize(path) >> 20
 
 # COLLECTION ###################################################################
-    
+
     # Prepare push request, this will return a collection ID if permission
     url = '%s/push/' % self.base
     auth_url = '%s/upload/chunked_upload' % self.base
@@ -71,7 +71,7 @@ def push(self, path, name, tag=None):
                'tag': names['tag']}
 
     headers = { 'Authorization': SREGISTRY_EVENT }
-    
+
     r = requests.post(auth_url, json=fields, headers=headers)
 
     # Always tell the user what's going on!
@@ -85,7 +85,9 @@ def push(self, path, name, tag=None):
 
 # UPLOAD #######################################################################
 
-    url = '%s/upload' % self.base.strip('api/')
+    url = '%s/upload' % self.base.replace('/api','')
+    bot.debug('Seting upload URL to {0}'.format(url))
+
     cid = r.json()['cid']
     upload_to = os.path.basename(names['storage'])
 
@@ -105,8 +107,11 @@ def push(self, path, name, tag=None):
 
     try:
         r = requests.post(url, data=monitor, headers=headers)
+        r.raise_for_status()
         message = r.json()['message']
         print('\n[Return status {0} {1}]'.format(r.status_code, message))
+    except requests.HTTPError as e:
+        print('\nUpload failed: {0}.'.format(e))
     except KeyboardInterrupt:
         print('\nUpload cancelled.')
     except Exception as e:
