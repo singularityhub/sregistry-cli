@@ -10,7 +10,7 @@ Url:            http://www.github.com/singularityhub/sregistry-cli
 Summary:        Command line tool for working with container storage
 License:        LICENSE (FIXME:No SPDX)
 Group:          Development/Languages/Python
-Source:         https://github.com/singularityhub/sregistry-cli/archive/${name}-${version}.tar.gz
+Source:         https://github.com/singularityhub/sregistry-cli/archive/${version}.tar.gz
 BuildRoot:      %{_tmppath}/sregistry-cli-0.0.94-build
 BuildRequires:  python-devel
 %description
