@@ -1,18 +1,27 @@
 # https://www.ibm.com/developerworks/library/l-rpm1/
 #
 # spec file for package sregistry-cli
-# credit for work goes to the amazing @griznog, John Hanks
+# Thanks @griznog, John Hanks
 #
+
+%global provider        github
+%global provider_tld    com
+%global project         singularityhub
+%global repo            sregistry-cli
+# https://github.com/singularityhub/sregistry-cli
+%global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
+%global import_path     %{provider_prefix}
+
 Name:           sregistry-cli
 Version:        0.0.94
 Release:        0
-Url:            http://www.github.com/singularityhub/sregistry-cli
 Summary:        Command line tool for working with container storage
 License:        LICENSE (FIXME:No SPDX)
 Group:          Development/Languages/Python
-Source:         https://github.com/singularityhub/sregistry-cli/archive/${version}.tar.gz
-BuildRoot:      %{_tmppath}/sregistry-cli-0.0.94-build
+URL:            https://%{provider_prefix}
+Source:         https://%{provider_prefix}/archive/%{repo}-%{version}.tar.gz
 BuildRequires:  python-devel
+
 %description
 # Singularity Global Client
 Hi Friends! Are your containers lonely? Singularity containers thrive in happiness when they are shared. This means that wherever you might have them in these cloudy places, they are easy to find and move around.
@@ -22,7 +31,8 @@ See our [installation guide](https://singularityhub.github.io/sregistry-cli/inst
 ## License
 This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICENSE).
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -Sgit -n %{name}-%{version}
+#%setup -q -n %{name}-%{version}
 %build
 python setup.py build
 %install
