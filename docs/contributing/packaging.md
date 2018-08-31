@@ -6,6 +6,8 @@ permalink: /contribute-packaging
 toc: false
 ---
 
+# Packaging
+
 If you are in need of more than a [traditional install](/sregistry-cli/install)
 You've come to the right place! Here are some helpers to do custom packaging 
 for the Singularity Registry Client. We have provided basic scripts that are used
