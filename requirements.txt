@@ -1,2 +1,2 @@
-spython==0.0.25
+spython>=0.0.34
 requests

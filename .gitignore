@@ -1,7 +1,6 @@
 sregistry.egg-info/
 _site
 dist/
-pypi.sh
 OLD
 __pycache__
 *.simg
