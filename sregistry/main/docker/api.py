@@ -153,7 +153,7 @@ def get_manifest(self, repo_name, digest=None, version="v1"):
 
     url = self._get_manifest_selfLink(repo_name, digest)
 
-    bot.verbose("Obtaining manifest: %s %s" % (url,version))
+    bot.verbose("Obtaining manifest: %s %s" % (url, version))
     headers = {'Accept': accepts[version] }
 
     try:

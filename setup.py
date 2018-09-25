@@ -71,6 +71,7 @@ if __name__ == "__main__":
     # These requirement DON'T include sqlalchemy, only client
 
     INSTALL_BASIC_ALL = get_reqs(lookup,'INSTALL_BASIC_ALL')
+    AWS_BASIC = get_reqs(lookup,'INSTALL_BASIC_AWS')
     DROPBOX_BASIC = get_reqs(lookup,'INSTALL_BASIC_DROPBOX')
     REGISTRY_BASIC = get_reqs(lookup,'INSTALL_BASIC_REGISTRY')
     GLOBUS_BASIC = get_reqs(lookup,'INSTALL_BASIC_GLOBUS')
@@ -81,6 +82,7 @@ if __name__ == "__main__":
     # These requirement sets include sqlalchemy, for client+storage
 
     INSTALL_REQUIRES_ALL = get_reqs(lookup,'INSTALL_REQUIRES_ALL')
+    AWS = get_reqs(lookup,'INSTALL_REQUIRES_AWS')
     DROPBOX = get_reqs(lookup,'INSTALL_REQUIRES_DROPBOX')
     REGISTRY = get_reqs(lookup,'INSTALL_REQUIRES_REGISTRY')
     GLOBUS = get_reqs(lookup,'INSTALL_REQUIRES_GLOBUS')
@@ -104,14 +106,15 @@ if __name__ == "__main__":
           keywords=KEYWORDS,
           install_requires = INSTALL_REQUIRES,
           extras_require={
-
               'dropbox-basic': [DROPBOX_BASIC],
+              'aws-basic': [AWS_BASIC],
               'registry-basic': [REGISTRY_BASIC],
               'google-compute-basic': [GOOGLE_COMPUTE_BASIC],
               'google-storage-basic': [GOOGLE_STORAGE_BASIC],
               'google-drive-basic': [GOOGLE_DRIVE_BASIC],
               'globus-basic': [GLOBUS_BASIC],
               'all-basic': [INSTALL_BASIC_ALL],
+              'aws': [AWS],
               'dropbox': [DROPBOX],
               'registry': [REGISTRY],
               'google-compute': [GOOGLE_COMPUTE],

@@ -1,8 +1,8 @@
 '''
 
-Copyright (C) 2018 The Board of Trustees of the Leland Stanford Junior
-University.
 Copyright (C) 2018 Vanessa Sochat.
+
+These are aws tasks.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -79,28 +79,6 @@ def download_task(url, headers, destination, download_type='layer'):
 ##  functions directly.
 ##
 ################################################################################
-
-
-def post(url,data=None,return_json=True):
-    '''post will use requests to get a particular url
-    '''
-    bot.debug("POST %s" %url)
-    return call(url,
-                headers=headers,
-                func=requests.post,
-                data=data,
-                return_json=return_json)
-
-
-def get(url,headers=None,token=None,data=None,return_json=True):
-    '''get will use requests to get a particular url
-    '''
-    bot.debug("GET %s" %url)
-    return call(url,
-                headers=headers,
-                func=requests.get,
-                data=data,
-                return_json=return_json)
         
 
 def download(url, file_name, headers=None, show_progress=True):
@@ -120,17 +98,8 @@ def download(url, file_name, headers=None, show_progress=True):
         bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
 
     verify = not DISABLE_SSL_CHECK
-
-    # Does the url being requested exist?
-    if requests.head(url, verify=verify).status_code in [200, 401]:
-        response = stream(url, headers=headers, stream_to=tmp_file)
-
-        if isinstance(response, HTTPError):
-            bot.error("Error downloading %s, exiting." %url)
-            sys.exit(1)
-        shutil.move(tmp_file, file_name)
-    else:
-        bot.error("Invalid url or permissions %s" %url)
+    response = stream(url, headers=headers, stream_to=tmp_file)
+    shutil.move(tmp_file, file_name)
     return file_name
 
 
@@ -139,22 +108,15 @@ def stream(url, headers, stream_to=None, retry=True):
        task, it differs from the client provided version in that it requires
        headers.
     '''
-
     bot.debug("GET %s" %url)
 
     if DISABLE_SSL_CHECK is True:
         bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
 
     # Ensure headers are present, update if not
-    response = requests.get(url,         
-                            headers=headers,
+    response = requests.get(url,  
                             verify=not DISABLE_SSL_CHECK,
                             stream=True)
-
-    # Deal with token if necessary
-    if response.status_code == 401 and retry is True:
-        headers = update_token(response, headers)
-        return stream(url, headers, stream_to, retry=False)
 
     if response.status_code == 200:
 
@@ -186,79 +148,7 @@ def stream(url, headers, stream_to=None, retry=True):
 
 
 
-def call(url, func, data=None, headers=None, 
-                    return_json=True, stream=False, 
-                    retry=True):
-
-    '''call will issue the call, and issue a refresh token
-    given a 401 response, and if the client has a _update_token function
-
-    Parameters
-    ==========
-    func: the function (eg, post, get) to call
-    url: the url to send file to
-    headers: headers for the request
-    data: additional data to add to the request
-    return_json: return json if successful
-    '''
- 
-    if DISABLE_SSL_CHECK is True:
-        bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
-
-    if data is not None:
-        if not isinstance(data,dict):
-            data = json.dumps(data)
-
-    response = func(url=url,
-                    headers=headers,
-                    data=data,
-                    verify=not DISABLE_SSL_CHECK,
-                    stream=stream)
-
-    # Errored response, try again with refresh
-    if response.status_code in [500, 502]:
-        bot.error("Beep boop! %s: %s" %(response.reason,
-                                        response.status_code))
-        sys.exit(1)
-
-    # Errored response, try again with refresh
-    if response.status_code == 404:
-        bot.error("Beep boop! %s: %s" %(response.reason,
-                                        response.status_code))
-        sys.exit(1)
-
-
-    # Errored response, try again with refresh
-    if response.status_code == 401:
-
-        # If client has method to update token, try it once
-        if retry is True:
-
-            # A result of None indicates no update to the call
-            headers = update_token(response, headers)
-            return call(url, func, data=data,
-                        headers=headers,
-                        return_json=return_json,
-                        stream=stream, retry=False)
-
-        bot.error("Your credentials are expired! %s: %s" %(response.reason,
-                                                           response.status_code))
-        sys.exit(1)
-
-    elif response.status_code == 200:
-
-        if return_json:
-
-            try:
-                response = response.json()
-            except ValueError:
-                bot.error("The server returned a malformed response.")
-                sys.exit(1)
-
-    return response
-
-
-def update_token(response, headers):
+def update_token(headers):
     '''update_token uses HTTP basic authentication to attempt to authenticate
     given a 401 response. We take as input previous headers, and update 
     them.
@@ -268,31 +158,18 @@ def update_token(response, headers):
     response: the http request response to parse for the challenge.
     
     '''
+    try:
+        from awscli.clidriver import create_clidriver
+    except:
+        bot.exit('Please install pip install sregistry[aws]')
 
-    not_asking_auth = "Www-Authenticate" not in response.headers
-    if response.status_code != 401 or not_asking_auth:
-        bot.error("Authentication error, exiting.")
-        sys.exit(1)
-
-    challenge = response.headers["Www-Authenticate"]
-    regexp = '^Bearer\s+realm="(.+)",service="(.+)",scope="(.+)",?'
-    match = re.match(regexp, challenge)
-
-    if not match:
-        bot.error("Unrecognized authentication challenge, exiting.")
-        sys.exit(1)
-
-    realm = match.group(1)
-    service = match.group(2)
-    scope = match.group(3).split(',')[0]
-
-    token_url = realm + '?service=' + service + '&expires_in=900&scope=' + scope
-
-    response = get(token_url)
+    driver = create_clidriver()
+    aws = driver.session.create_client('ecr')
+    tokens = aws.get_authorization_token()
+    token = tokens['authorizationData'][0]['authorizationToken']    
 
     try:
-        token = response["token"]
-        token = {"Authorization": "Bearer %s" % token}
+        token = {"Authorization": "Basic %s" % token}
         headers.update(token)
 
     except Exception:

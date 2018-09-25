@@ -8,13 +8,22 @@ toc: false
 
 # Singularity Global Client: AWS ECR
 
-These sections will detail use of the AWS Container Cloud client for `sregistry`, which is a connection to the Docker registry served by Amazon Web Services. Implementation wise, this means that we start with the basic [docker](/sregistry-cli/client-docker) client, and tweak it.
+These sections will detail use of the AWS Container Cloud client for `sregistry`, 
+which is a connection to the Docker registry served by Amazon Web Services. 
+Implementation wise, this means that we start with the basic 
+[docker](/sregistry-cli/client-docker) client, and tweak it. The tweaks pertain
+to slight differences in headers and requests that are done by the AWS client.
 
 ## Why would I want to use this?
-Singularity proper will be the best solution if you want to pull and otherwise interact with Docker images. However, the sregistry
-client can be useful to you if you want to easily do this through Python, such as in a script for scientific programming.
 
-As with [Docker Hub](/sregistry-cli/client-docker) The images are built from layers, and the layers that you obtain depend on the uri that you ask for. See the [environment](#environment). setting for more details.
+Singularity proper will be the best solution if you want to pull and otherwise
+interact with Docker images. However, the sregistry client can be useful 
+to you if you want to easily do this through Python, such as in a script for 
+scientific programming.
+
+As with [Docker Hub](/sregistry-cli/client-docker) The images are built from 
+layers, and the layers that you obtain depend on the uri that you ask for. 
+See the [environment](#environment). setting for more details.
 
 ## Getting Started
 The AWS Container Registry module does not require any extra dependencies other 
@@ -35,8 +44,10 @@ The next steps we will take are to first set up authentication and other
 environment variables of interest, and then review the basic usage.
 
 ### Credentials
-You will need to generate a special token from AWS using your IAM login.  Importantly,
-we are going to be using [AWS HTTP Authorization](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth_http), and this means to get your `$AWS_TOKEN` you will need to 
+
+You will need to generate a special token from AWS using your IAM login.  
+Importantly, we are going to be using 
+[AWS HTTP Authorization](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth_http), and this means to get your `$AWS_TOKEN` you will need to 
 [install the AWS Client](https://docs.aws.amazon.com/cli/latest/userguide/installing.html) first.
 
 ```bash
@@ -77,16 +88,23 @@ Default region name [None]: us-east-1
 Default output format [None]: json
 ```
 
-You can see more details about the various [options here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
+You can see more details about the various 
+[options here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
 
-Now, you should have enough to generate the token for the client!
+### Testing Credentials
+
+It's important to test your credentials before trying to use them with sregistry.
+The reason is that a permissions (or related error) should be caught here first.
+
+You should now have enough to generate the token for the client from the
+command line:
 
 ```bash
 AWS_TOKEN=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
 ```
 
-To get your registry url, I wasn't sure how to do this either, so I used their docker login command and it shows
-up as the last item in the call:
+To get your registry url, I wasn't sure how to do this either, so I used their 
+docker login command and it shows up as the last item in the call:
 
 ```bash
 aws ecr get-login --no-include-email
@@ -99,21 +117,28 @@ so I set this to a variable too:
 AWS_URL=https://692517157806.dkr.ecr.us-east-1.amazonaws.com
 ```
 
-### Test Credentials
-Before trying to use your credentials with the Singularity Registry client, let's make sure they work! If you
-selected some kind of different permissions, or otherwise messed something up (hey, it happens!) this
-command might fail. We would want to identify this is about the setup and not the client itself. This command to
-list your registries should work.
+#### Interaction with Repositories
 
-First, here is a command to test with their client (this likely will return an empty list)
+Before trying to use your credentials with the Singularity Registry client, 
+let's make sure they work! If you selected some kind of different permissions, 
+or otherwise messed something up (hey, it happens!) this command might fail. 
+We would want to identify this is about the setup and not the client itself. 
+This command to list your registries should work.
+
+First, here is a command to test with their client. This likely will return 
+an empty list if you just created the account and its registry:
+
 ```bash
 aws --debug ecr describe-repositories
 ```
 
 Next, here is a curl command to use the token (`AWS_token`) and url we derived (`AWS_URL`)
-to ping your endpoint:
+to ping your endpoint. Since the token expires fairly quickly, I'm going to keep
+placing the command beside the action we want to do to ensure you copy paste both 
+and get a new token :)
 
 ```bash
+AWS_TOKEN=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
 curl -i -H "Authorization: Basic $AWS_TOKEN" ${AWS_URL}/v2/
 ```
 
@@ -128,25 +153,28 @@ Content-Length: 0
 Connection: keep-alive
 ```
 
-### Create a repository
-This is pretty annoying, but you have to manually [create a repository](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html) otherwise you see:
+#### Create a repository
+
+This is pretty annoying, but you have to manually 
+[create a repository](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html) 
+otherwise you see:
 
 ```bash
 name unknown: The repository with name 'library/busybox' does not exist in the registry with id '692517157806'
 ```
 
-I went to [the repository base page](https://console.aws.amazon.com/ecs/) and then created a repository called "library/busybox". The login (if you haven't
+Yeah, really. Ug. I went to [the repository base page](https://console.aws.amazon.com/ecs/) and 
+then created a repository called "library/busybox". The login (if you haven't
 done it yet) looks like this:
 
 ```bash
 $(aws ecr get-login --no-include-email --region us-east-1)
 ```
 
-Yeah, really. Ug.
+#### Push a container
 
-### Push a container
-Now that we've tested the registry endpoint and confirmed we can access it, let's push a container!
-How about a tiny one? Yes that sounds good.
+Now that we've tested the registry endpoint and confirmed we can access it, 
+let's push a container! How about a tiny one? Yes that sounds good.
 
 ```bash
 docker pull busybox:latest
@@ -172,9 +200,15 @@ docker push ${AWS_REPO}/library/busybox
 f9d9e4e6e2f0: Pushed 
 latest: digest: sha256:5e8e0509e829bb8f990249135a36e81a3ecbe94294e7a185cc14616e5fad96bd size: 527
 ```
+You should then be able to pull with
+
+```bash
+docker pull ${AWS_REPO}/library/busybox
+```
 It took me almost an hour to get this complete thing working. That's really sad, Amazon.
 
-### Test with CURL
+#### Test with CURL
+
 Now we would want to test pinging our repository with curl.
 
 ```bash
@@ -191,6 +225,42 @@ Connection: keep-alive
 
 {"name":"library/busybox","tags":["latest"]}
 ```
+
+## sregistry Pull
+Now that we have confirmed the endpoint is working, and our container exists
+there we can talk about interaction with it via sregistry. Let's first
+export some of the variables we discussed above, in the format that the sregistry 
+client will find them.
+
+The first thing we need is the ID of your registry. Remember the long string defined 
+at `$AWS_REPO` above? We can derive it from that. We also need to know the zone
+your registry is in:
+
+```bash
+export SREGISTRY_AWS_ID=$(echo $AWS_REPO | cut -d. -f1)
+export SREGISTRY_AWS_ZONE=us-east-1
+```
+
+The key and secret are used for authentication, and you derived them above.
+
+```bash
+export SREGISTRY_AWS_KEY=xxxxxxxxxxx
+export SREGISTRY_AWS_SECRET=xxxxxxxxxxxxxxxxx
+```
+
+You'll only need to do this once, the first time that you use the client.
+
+### Python Client
+
+Now let's try pulling our image! First we will work within python.
+Note that I'm specifying the `aws://` uri to tell the client what I want.
+
+
+```bash
+export SREGISTRY_CLIENT=aws 
+sregistry shell
+```
+
 
 <div>
     <a href="/sregistry-cli/client-nvidia"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
