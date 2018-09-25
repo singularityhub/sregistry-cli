@@ -59,7 +59,8 @@ had to click on the tab to "Create individual IAM users" and then the button to
 
 
 You need to add your user to a group, and select permissions. I chose `AmazonEC2ContainerRegistryFullAccess`
-because I wanted all the things! Once you get this, THEN the next screen will give you an "Access Key ID" 
+and `AmazonEC2ContainerServiceFullAccess` because I wasn't really sure what to choose, but generally
+wanted all the things! Once you get this, THEN the next screen will give you an "Access Key ID" 
 and secret token, and these are exactly what you want to copy paste into this first field asked for by `aws configure`.
 You can also choose a default zone. I chose the one that showed up as default in my Manager Console.
 
@@ -84,17 +85,112 @@ Now, you should have enough to generate the token for the client!
 AWS_TOKEN=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
 ```
 
+To get your registry url, I wasn't sure how to do this either, so I used their docker login command and it shows
+up as the last item in the call:
+
+```bash
+aws ecr get-login --no-include-email
+...
+https://692517157806.dkr.ecr.us-east-1.amazonaws.com
+```
+so I set this to a variable too:
+
+```bash
+AWS_URL=https://692517157806.dkr.ecr.us-east-1.amazonaws.com
+```
+
 ### Test Credentials
 Before trying to use your credentials with the Singularity Registry client, let's make sure they work! If you
 selected some kind of different permissions, or otherwise messed something up (hey, it happens!) this
-command might fail. We would want to identify this is about the setup and not the client itself.
+command might fail. We would want to identify this is about the setup and not the client itself. This command to
+list your registries should work.
 
+First, here is a command to test with their client (this likely will return an empty list)
 ```bash
-curl -i -H "Authorization: Basic $AWS_TOKEN" https://012345678910.dkr.ecr.us-east-1.amazonaws.com/v2/amazonlinux/tags/list
+aws --debug ecr describe-repositories
 ```
 
-** This doesn't work yet**
+Next, here is a curl command to use the token (`AWS_token`) and url we derived (`AWS_URL`)
+to ping your endpoint:
 
+```bash
+curl -i -H "Authorization: Basic $AWS_TOKEN" ${AWS_URL}/v2/
+```
+
+If all goes well, you should get a 200 response!
+
+```bash
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Date: Tue, 25 Sep 2018 13:01:11 GMT
+Docker-Distribution-Api-Version: registry/2.0
+Content-Length: 0
+Connection: keep-alive
+```
+
+### Create a repository
+This is pretty annoying, but you have to manually [create a repository](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html) otherwise you see:
+
+```bash
+name unknown: The repository with name 'library/busybox' does not exist in the registry with id '692517157806'
+```
+
+I went to [the repository base page](https://console.aws.amazon.com/ecs/) and then created a repository called "library/busybox". The login (if you haven't
+done it yet) looks like this:
+
+```bash
+$(aws ecr get-login --no-include-email --region us-east-1)
+```
+
+Yeah, really. Ug.
+
+### Push a container
+Now that we've tested the registry endpoint and confirmed we can access it, let's push a container!
+How about a tiny one? Yes that sounds good.
+
+```bash
+docker pull busybox:latest
+docker images | grep busybox
+```
+
+and push! You can tag it something else first if you like. Note the first command
+is removing the `https://`
+
+```bash
+AWS_REPO=$(echo $AWS_URL |sed 's/https\?:\/\///')
+docker tag busybox:latest ${AWS_REPO}/library/busybox
+$(aws ecr get-login --no-include-email --region us-east-1)
+...
+Login Succeeded
+```
+Note that if you don't have the `--no-include-email` it's going to give you a hanging `-e` that 
+will trigger a bug.
+
+```
+AWS_TOKEN=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
+docker push ${AWS_REPO}/library/busybox
+f9d9e4e6e2f0: Pushed 
+latest: digest: sha256:5e8e0509e829bb8f990249135a36e81a3ecbe94294e7a185cc14616e5fad96bd size: 527
+```
+It took me almost an hour to get this complete thing working. That's really sad, Amazon.
+
+### Test with CURL
+Now we would want to test pinging our repository with curl.
+
+```bash
+AWS_TOKEN=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
+curl -i -H "Authorization: Basic $AWS_TOKEN" $AWS_URL/v2/library/busybox/tags/list
+```
+```bash
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Date: Tue, 25 Sep 2018 13:51:09 GMT
+Docker-Distribution-Api-Version: registry/2.0
+Content-Length: 44
+Connection: keep-alive
+
+{"name":"library/busybox","tags":["latest"]}
+```
 
 <div>
     <a href="/sregistry-cli/client-nvidia"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
