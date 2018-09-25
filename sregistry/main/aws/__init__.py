@@ -26,18 +26,10 @@ import os
 
 # The core of nvidia is actually docker
 from sregistry.main.docker.api import ( 
-    create_metadata_tar, 
-    get_manifest_selfLink,
     get_config, 
     get_environment_tar, 
-    get_layer,
-    get_layerLink,
-    get_manifests,
     get_download_cache,
-    get_size,
-    extract_env,
-    extract_labels,
-    extract_runscript
+    get_size
 )
 from sregistry.main.aws.api import ( download_layers, update_token, get_digests,
                                      get_manifest )
@@ -125,31 +117,6 @@ class Client(ApiConnection):
 
         driver = create_clidriver()
         self.aws = driver.session.create_client('ecr')
-         
-        # If the user has defined secrets, use them
-        #aws_id = self._get_and_update_setting('SREGISTRY_AWS_ID')
-       # aws_key = self._get_and_update_setting('SREGISTRY_AWS_KEY')
-        #aws_secret = self._get_and_update_setting('SREGISTRY_AWS_SECRET')
-        #zone = self._get_and_update_setting('SREGISTRY_AWS_ZONE', 'us-east-1')
-
-        # Tell the user the zone in case it's wrong
-        #bot.debug('SREGISTRY_AWS_ZONE set to %s' % zone)
-
-        # These are all required for aws interaction
-        #if aws_key is None or aws_secret is None or aws_id is None:
-        #    bot.error('''Please export your SREGISTRY_AWS_KEY, 
-        #                 SREGISTRY_AWS_SECRET, and SREGISTRY_KEY_ID.''')
-        #    sys.exit(1)
-
-        # Option 1: the user exports username and password
-        #auth = basic_auth_header(aws_key, aws_secret)
-        #self.headers.update(auth)
-
-        # Update the base url
-        #self._set_base(aws_id, zone)
-
-        # Update the zone in the header
-        #self.headers.update({"Host": "ecr.%s.amazonaws.com" % zone})
 
     def __str__(self):
         return type(self)
@@ -160,19 +127,10 @@ Client.pull = pull
 Client._pull = _pull
 
 # Api functions for image layers and manifests (hidden)
-Client._create_metadata_tar = create_metadata_tar
 Client._download_layers = download_layers
-Client._extract_runscript = extract_runscript
-Client._extract_labels = extract_labels
-Client._extract_env = extract_env
-Client._get_config = get_config
 Client._get_digests = get_digests
 Client._get_download_cache = get_download_cache
-Client._get_layer = get_layer
-Client._get_layerLink = get_layerLink
 Client._get_manifest = get_manifest
-Client._get_manifests = get_manifests
 Client._get_size = get_size
 Client._update_token = update_token
-Client._get_manifest_selfLink = get_manifest_selfLink
 Client._get_environment_tar = get_environment_tar
