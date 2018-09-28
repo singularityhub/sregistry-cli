@@ -76,12 +76,13 @@ class Client(ApiConnection):
                         "Accept-Encoding": "identity",
                         'Content-Type': 'application/x-amz-json-1.1; application/json; charset=utf-8'}
 
-    def _set_base(self):
+    def _set_base(self, zone=None):
         '''set the API base or default to use Docker Hub. The user is able
            to set the base, api version, and protocol via a settings file
            of environment variables:
         '''
-        zone = self.aws._client_config.get('region_name')
+        if hasattr(self.aws._client_config, 'region_name'):
+            zone = self.aws._client_config.region_name
 
         aws_id = self._get_setting('SREGISTRY_AWS_ID')
         aws_zone = self._get_setting('SREGISTRY_AWS_ZONE', zone)
