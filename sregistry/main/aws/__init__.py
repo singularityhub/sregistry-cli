@@ -47,6 +47,7 @@ class Client(ApiConnection):
         self.reverseLayers = False
         self._reset_headers()
         self._update_secrets()
+        self._set_base()
         self._update_headers()
         super(ApiConnection, self).__init__(**kwargs)
 
@@ -75,19 +76,23 @@ class Client(ApiConnection):
                         "Accept-Encoding": "identity",
                         'Content-Type': 'application/x-amz-json-1.1; application/json; charset=utf-8'}
 
-    def _set_base(self, aws_id, aws_zone):
+    def _set_base(self):
         '''set the API base or default to use Docker Hub. The user is able
            to set the base, api version, and protocol via a settings file
            of environment variables:
         '''
+        zone = self.aws._client_config.get('region_name')
+
+        aws_id = self._get_setting('SREGISTRY_AWS_ID')
+        aws_zone = self._get_setting('SREGISTRY_AWS_ZONE', zone)
         base = self._get_setting('SREGISTRY_AWS_BASE')
-        version = self._get_setting('SREGISTRY_AWS_VERSION')
+        version = self._get_setting('SREGISTRY_AWS_VERSION', 'v2')
+
+        if aws_id is None or aws_zone is None:
+            bot.exit('Please export SREGISTRY_AWS_ID and SREGISTRY_AWS_ZONE.')
 
         if base is None:
             base = "%s.dkr.ecr.%s.amazonaws.com" % (aws_id, aws_zone)
-
-        if version is None:
-            version = "v2"
 
         nohttps = self._get_setting('SREGISTRY_AWS_NOHTTPS')
         if nohttps is None:
@@ -97,9 +102,6 @@ class Client(ApiConnection):
 
         # <protocol>://<base>/<version>
         self.base = "%s%s/%s" %(nohttps, base.strip('/'), version)
-
-
-        pull_params = {'Action': ''}
 
     def _update_secrets(self):
         '''update secrets will take a secrets credential file
@@ -117,6 +119,7 @@ class Client(ApiConnection):
 
         driver = create_clidriver()
         self.aws = driver.session.create_client('ecr')
+        
 
     def __str__(self):
         return type(self)
