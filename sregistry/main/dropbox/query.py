@@ -2,8 +2,6 @@
 
 ls: search and query functions for client
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
-University.
 Copyright (C) 2017 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it

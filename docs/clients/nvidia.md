@@ -8,7 +8,7 @@ toc: false
 
 # Singularity Global Client: Nvidia Container Registry
 
-These sections will detail use of the Nvidia Container Cloud client for `sregistry`, which is a connection to the Docker registry served y Nvidia. Implementation wise, this means that we start with the basic [docker](/sregistry-cli/client-docker) client, and tweak it.
+These sections will detail use of the Nvidia Container Cloud client for `sregistry`, which is a connection to the Docker registry served by Nvidia. Implementation wise, this means that we start with the basic [docker](/sregistry-cli/client-docker) client, and tweak it.
 
 ## Why would I want to use this?
 Singularity proper will be the best solution if you want to pull and otherwise interact with Docker images. However, the Nvidia Container Cloud uses a slightly different authentication protocol (use of `$oauthtoken` as a username, and password as an API token, and so this client helps to support those customizations.

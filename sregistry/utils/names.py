@@ -1,7 +1,5 @@
 '''
 
-Copyright (C) 2017 The Board of Trustees of the Leland Stanford Junior
-University.
 Copyright (C) 2017 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
@@ -149,7 +147,8 @@ def get_uri(image):
                           .replace('_','-')
                           .replace('://',''))
  
-        accepted_uris = ['docker', 
+        accepted_uris = ['aws',
+                         'docker', 
                          'dropbox',
                          'hub',
                          'globus',

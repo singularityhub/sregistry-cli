@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - adding aws container registry client (0.0.95)
  - resolved [bug in registry backend push function](https://github.com/singularityhub/sregistry-cli/issues/137) that stripped wrong char(s) (0.0.94)
  - adding rpm spec file, sregistry.cli.spec (0.0.90,0.0.91)
  - image URI tag should not be changed to lowercase (0.0.89)

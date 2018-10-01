@@ -4,8 +4,6 @@ This is a base client that imports functions depending on the API it is
     using. Currently, it supports singularity hub and registry, with default
     to use Singularity Hub.
 
-Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
-University.
 Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
@@ -61,7 +59,8 @@ def get_client(image=None, quiet=False, **kwargs):
         SREGISTRY_CLIENT = client_name
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
-    if   SREGISTRY_CLIENT == 'docker': from .docker import Client
+    if   SREGISTRY_CLIENT == 'aws': from .aws import Client
+    elif SREGISTRY_CLIENT == 'docker': from .docker import Client
     elif SREGISTRY_CLIENT == 'dropbox': from .dropbox import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
     elif SREGISTRY_CLIENT == 'nvidia': from .nvidia import Client

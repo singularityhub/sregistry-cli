@@ -23,16 +23,11 @@ from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
 import shutil
 import os
+import re
 import sys
 
 
-def pull(self, images, 
-               file_name=None, 
-               save=True, 
-               force=False, 
-               base=None, 
-               **kwargs):
-
+def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     '''pull an image from a docker hub. This is a (less than ideal) workaround
        that actually does the following:
 
@@ -51,12 +46,10 @@ def pull(self, images,
                optionally be None if the user wants a default.
     save: if True, you should save the container to the database
           using self.add()
-    base: the registry base, in case the client doesn't want to set in env.
     
     Returns
     =======
     finished: a single container path, or list of paths
-
     '''
 
     if not isinstance(images,list):
@@ -65,19 +58,18 @@ def pull(self, images,
     bot.debug('Execution of PULL for %s images' %len(images))
 
     # If used internally we want to return a list to the user.
+
     finished = []
     for image in images:
 
-        # 0. Update the base in case we aren't working with default
-        base = self._update_base(image)
-        q = parse_image_name(remove_uri(image), base=base)
+        q = parse_image_name( remove_uri(image), 
+                              default_collection='aws' )
 
         image_file = self._pull(file_name=file_name, 
                                 save=save, 
                                 force=force, 
                                 names=q,
                                 kwargs=kwargs)
-
 
         finished.append(image_file)
 
@@ -91,17 +83,14 @@ def _pull(self,
           names, 
           save=True, 
           force=False, 
-          uri="docker://", 
           **kwargs):
 
-    '''pull an image from a docker hub. This is a (less than ideal) workaround
+    '''pull an image from aws. This is a (less than ideal) workaround
        that actually does the following:
 
        - creates a sandbox folder
-       - adds docker layers, metadata folder, and custom metadata to it
+       - adds docker layers from S3
        - converts to a squashfs image with build
-
-    the docker manifests are stored with registry metadata.
  
     Parameters
     ==========
@@ -133,10 +122,7 @@ def _pull(self,
     sandbox = tempfile.mkdtemp()
 
     # First effort, get image via Sregistry
-    layers = self._download_layers(names['url'], digest)
-
-    # This is the url where the manifests were obtained
-    url = self._get_manifest_selfLink(names['url'], digest)
+    layers, url = self._download_layers(names['url'], digest)
 
     # Add environment to the layers
     envtar = self._get_environment_tar()
@@ -160,7 +146,7 @@ def _pull(self,
     # Fall back to using Singularity
     if image_file is None:
         bot.info('Downloading with native Singularity, please wait...')
-        image = image.replace('docker://', uri)
+        image = image.replace('aws://', 'docker://')
         image_file = Singularity.pull(image, pull_folder=sandbox)
 
     # Save to local storage
@@ -168,12 +154,12 @@ def _pull(self,
 
         # Did we get the manifests?
         manifests = {}
-        if hasattr(self, 'manifests'):
-            manifests = self.manifests
+        if hasattr(self, 'manifest'):
+            manifest = self.manifest
 
         container = self.add(image_path = image_file,
                              image_uri = names['uri'],
-                             metadata = manifests,
+                             metadata = manifest,
                              url = url)
 
         # When the container is created, this is the path to the image

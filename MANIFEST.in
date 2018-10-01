@@ -4,6 +4,7 @@ recursive-include sregistry *.sh
 recursive-include sregistry *
 recursive-include * *.png
 global-exclude *.py[co]
+recursive-exclude .git *
 global-exclude *.img
 global-exclude *.simg
 global-exclude __pycache__

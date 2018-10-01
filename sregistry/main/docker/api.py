@@ -1,7 +1,5 @@
 '''
 
-Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
-University.
 Copyright (C) 2016-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
@@ -153,7 +151,7 @@ def get_manifest(self, repo_name, digest=None, version="v1"):
 
     url = self._get_manifest_selfLink(repo_name, digest)
 
-    bot.verbose("Obtaining manifest: %s %s" % (url,version))
+    bot.verbose("Obtaining manifest: %s %s" % (url, version))
     headers = {'Accept': accepts[version] }
 
     try:

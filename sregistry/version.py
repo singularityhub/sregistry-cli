@@ -1,7 +1,5 @@
 '''
 
-Copyright (C) 2017-2018 The Board of Trustees of the Leland Stanford Junior
-University.
 Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
@@ -19,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.0.94"
+__version__ = "0.0.95"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -46,6 +44,10 @@ INSTALL_BASIC_REGISTRY = (
     ('requests-toolbelt', {'min_version': '0.8.0'}),
     ('dateutils', {'min_version': "0.6.6"}),
     ('python-dateutil', {'min_verison': "2.5.3"})
+)
+
+INSTALL_BASIC_AWS = (
+    ('awscli', {'min_version': '1.16.19'}),
 )
 
 INSTALL_BASIC_DROPBOX = (
@@ -90,6 +92,11 @@ INSTALL_REQUIRES_REGISTRY = (
     ('requests-toolbelt', {'min_version': '0.8.0'}),
     ('dateutils', {'min_version': "0.6.6"}),
     ('python-dateutil', {'min_verison': "2.5.3"}),
+    ('sqlalchemy', {'min_version': None})
+)
+
+INSTALL_REQUIRES_AWS = (
+    ('awscli', {'min_version': '1.16.19'}),
     ('sqlalchemy', {'min_version': None})
 )
 
