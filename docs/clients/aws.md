@@ -8,7 +8,8 @@ toc: false
 
 # Singularity Global Client: AWS ECR
 
-These sections will detail use of the AWS Container Cloud client for `sregistry`, 
+These sections will detail use of the [Amazon ECR](https://aws.amazon.com/ecr/) 
+(Amazon Elastic Container Registry) client for `sregistry`, 
 which is a connection to the Docker registry served by Amazon Web Services. 
 Implementation wise, this means that we start with the basic 
 [docker](/sregistry-cli/client-docker) client, and tweak it. The tweaks pertain
