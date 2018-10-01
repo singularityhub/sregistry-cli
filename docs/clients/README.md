@@ -10,6 +10,7 @@ toc: false
 Singularity Registry Global client has tutorials and walkthroughs for the following clients:
 
  - [Global Commands](/sregistry-cli/commands): commands for all clients.
+ - [Amazon Elastic Container Registry](/sregistry-cli/client-aws): create your AWS ECR registry and pull images from it.
  - [Docker Hub](/sregistry-cli/client-docker): interact with layers to build images from Docker Hub
  - [Dropbox](/sregistry-cli/client-dropbox): interact with images stored in Dropbox
  - [Google Container Registry](/sregistry-cli/client-gcr): the same as docker. Here are tricks for authenticating if you have trouble.

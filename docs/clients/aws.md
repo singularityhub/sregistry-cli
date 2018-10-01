@@ -8,7 +8,8 @@ toc: false
 
 # Singularity Global Client: AWS ECR
 
-These sections will detail use of the AWS Container Cloud client for `sregistry`, 
+These sections will detail use of the [Amazon ECR](https://aws.amazon.com/ecr/) 
+(Amazon Elastic Container Registry) client for `sregistry`, 
 which is a connection to the Docker registry served by Amazon Web Services. 
 Implementation wise, this means that we start with the basic 
 [docker](/sregistry-cli/client-docker) client, and tweak it. The tweaks pertain
@@ -294,6 +295,8 @@ Exploding /home/vanessa/.singularity/docker/sha256:8c5a7da1afbc602695fcb2cd64457
 [container][new] library/busybox:latest
 Success! /home/vanessa/.singularity/shub/library-busybox:latest.simg
 ```
+
+### Command Line
 
 You can also pull from the command line. Here I'll show unsetting the `SREGISTRY_CLIENT`
 environment variable so you can see how to use the `aws://` uri, and also
