@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.0.95"
+__version__ = "0.0.96"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -77,6 +77,7 @@ INSTALL_BASIC_GOOGLE_COMPUTE = (
 )
 
 INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
+                     INSTALL_BASIC_AWS +
                      INSTALL_BASIC_DROPBOX +
                      INSTALL_BASIC_GLOBUS +
                      INSTALL_BASIC_REGISTRY +
@@ -132,6 +133,7 @@ INSTALL_REQUIRES_GOOGLE_COMPUTE = (
 )
 
 INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
+                        INSTALL_REQUIRES_AWS +
                         INSTALL_REQUIRES_DROPBOX +
                         INSTALL_REQUIRES_REGISTRY +
                         INSTALL_REQUIRES_GOOGLE_COMPUTE +

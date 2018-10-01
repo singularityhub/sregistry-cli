@@ -77,9 +77,9 @@ dockersave: &dockersave
     no_output_timeout: 40m
     command: |
         source ${BASH_ENV}
-        echo "Saving ${CONTAINER_NAME}:${DOCKER_TAG} to container.tar.gz"
+        echo "Saving ${CONTAINER_NAME} to container.tar.gz"
         mkdir -p /tmp/cache
-        docker save ${CONTAINER_NAME}:${DOCKER_TAG} \
+        docker save ${CONTAINER_NAME} \
           | pigz -2 -p 3 > /tmp/cache/container.tar.gz
 
 
@@ -89,20 +89,21 @@ dockerdeploy: &dockerdeploy
     command: |
       source ${BASH_ENV}
       docker images
-      echo "Container name set to ${CONTAINER_NAME}:${DOCKER_TAG}"
+      echo "Container name set to ${CONTAINER_NAME}"
       if [[ -n "$DOCKER_PASS" ]]; then
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push ${CONTAINER_NAME}:${DOCKER_TAG}
+            SREGISTRY_VERSION=$(docker run "${CONTAINER_NAME}:latest" version)
             echo "Tagging latest image..."
-            docker tag ${CONTAINER_NAME}:${DOCKER_TAG} ${CONTAINER_NAME}:latest
+            docker tag ${CONTAINER_NAME}:latest ${CONTAINER_NAME}:${SREGISTRY_VERSION}
             docker push ${CONTAINER_NAME}:latest
+            docker push ${CONTAINER_NAME}:${SREGISTRY_VERSION}
       fi
 
 dockerbuild: &dockerbuild
     name: Build development Docker container
     command: |
       source ${BASH_ENV}
-      docker build -f ${DOCKERFILE} -t ${CONTAINER_NAME}:${DOCKER_TAG} .
+      docker build -f ${DOCKERFILE} -t ${CONTAINER_NAME} .
 
 
 ################################################################################
