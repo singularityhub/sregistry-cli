@@ -23,6 +23,7 @@ from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
 import tempfile
 import shutil
 import os
+import re
 import sys
 
 
@@ -82,7 +83,6 @@ def _pull(self,
           names, 
           save=True, 
           force=False, 
-          uri="aws://", 
           **kwargs):
 
     '''pull an image from aws. This is a (less than ideal) workaround
@@ -146,7 +146,7 @@ def _pull(self,
     # Fall back to using Singularity
     if image_file is None:
         bot.info('Downloading with native Singularity, please wait...')
-        image = image.replace('a://', uri)
+        image = image.replace('aws://', 'docker://')
         image_file = Singularity.pull(image, pull_folder=sandbox)
 
     # Save to local storage

@@ -36,7 +36,7 @@ import tempfile
 ## Shared Tasks for the Worker
 ################################################################################
 
-def download_task(url, headers, destination, download_type='layer'):
+def download_task(url, headers, download_to, download_type='layer'):
     '''download an image layer (.tar.gz) to a specified download folder.
        This task is done by using local versions of the same download functions
        that are used for the client.
@@ -46,7 +46,7 @@ def download_task(url, headers, destination, download_type='layer'):
        ==========
        image_id: the shasum id of the layer, already determined to not exist
        repo_name: the image name (library/ubuntu) to retrieve
-       download_folder: download to this folder. If not set, uses temp.
+       download_to: download to this folder. If not set, uses temp.
  
 
     '''
@@ -54,20 +54,20 @@ def download_task(url, headers, destination, download_type='layer'):
     bot.verbose("Downloading %s from %s" % (download_type, url))
 
     # Step 1: Download the layer atomically
-    file_name = "%s.%s" % (destination,
+    file_name = "%s.%s" % (download_to,
                            next(tempfile._get_candidate_names()))
 
     tar_download = download(url, file_name, headers=headers)
 
     try:
-        shutil.move(tar_download, destination)
+        shutil.move(tar_download, download_to)
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
         bot.error(msg)
         sys.exit(1)
 
-    return destination
+    return download_to
 
 
 ################################################################################
@@ -108,17 +108,24 @@ def stream(url, headers, stream_to=None, retry=True):
        task, it differs from the client provided version in that it requires
        headers.
     '''
-    bot.debug("GET %s" %url)
+    bot.debug("GET %s" % url)
 
     if DISABLE_SSL_CHECK is True:
         bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
 
     # Ensure headers are present, update if not
     response = requests.get(url,  
+                            headers=headers,
                             verify=not DISABLE_SSL_CHECK,
                             stream=True)
 
-    if response.status_code == 200:
+    # If we get permissions error, one more try with updated token
+    if response.status_code in [401, 403]:
+        headers = update_token(headers)
+        return stream(url, headers, stream_to, retry=False)
+
+    # Successful Response
+    elif response.status_code == 200:
 
         # Keep user updated with Progress Bar
         content_size = None

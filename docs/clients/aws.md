@@ -26,18 +26,20 @@ layers, and the layers that you obtain depend on the uri that you ask for.
 See the [environment](#environment). setting for more details.
 
 ## Getting Started
-The AWS Container Registry module does not require any extra dependencies other 
-than having Singularity on the host.
+The AWS Container Registry module uses the [awscli](https://docs.aws.amazon.com/cli/latest/userguide/installing.html) 
+python library to help with authentication. 
 
-To get started, you simply need to install the `sregistry` client:
+You can install them both like:
+
+```bash
+pip install sregistry[aws]
+```
+
+If you want to install each yourself:
 
 ```bash
 pip install sregistry
-
-# or from source
-git clone https://www.github.com/singularityhub/sregistry-cli.git
-cd sregistry-cli 
-python setup.py install
+pip install awscli
 ```
 
 The next steps we will take are to first set up authentication and other 
@@ -48,17 +50,20 @@ environment variables of interest, and then review the basic usage.
 You will need to generate a special token from AWS using your IAM login.  
 Importantly, we are going to be using 
 [AWS HTTP Authorization](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth_http), and this means to get your `$AWS_TOKEN` you will need to 
-[install the AWS Client](https://docs.aws.amazon.com/cli/latest/userguide/installing.html) first.
+[install the AWS Client](https://docs.aws.amazon.com/cli/latest/userguide/installing.html) 
+that we mentioned previously first.
 
-```bash
-pip install awscli
-```
+#### Configuration
 
 If this is the first time you are using it, you will need to configure regions and whatnot.
 
 ```bash
 aws configure
 ```
+
+These **will not exist** until you run the aws configure, and when you run aws configure
+you will need to give it some access keys for a specific IAM user. Let's walk through
+how to generate this user.
 
 **Aws Access Key ID and Secret**
 
@@ -71,7 +76,10 @@ had to click on the tab to "Create individual IAM users" and then the button to
 
 You need to add your user to a group, and select permissions. I chose `AmazonEC2ContainerRegistryFullAccess`
 and `AmazonEC2ContainerServiceFullAccess` because I wasn't really sure what to choose, but generally
-wanted all the things! Once you get this, THEN the next screen will give you an "Access Key ID" 
+wanted all the things! You could very likely create different users with different permissions depending
+on your use case.
+
+Once you get this, THEN the next screen will give you an "Access Key ID" 
 and secret token, and these are exactly what you want to copy paste into this first field asked for by `aws configure`.
 You can also choose a default zone. I chose the one that showed up as default in my Manager Console.
 
@@ -86,6 +94,16 @@ AWS Access Key ID [None]: XXXXXXXXXXXXXXXX
 AWS Secret Access Key [None]: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 Default region name [None]: us-east-1
 Default output format [None]: json
+```
+and when you finish, you should have files in your $HOME. The process
+is writing some credentials to a `$HOME/.aws` folder.
+By the end of this process you will likely have two files:
+
+```bash
+$ tree /home/vanessa/.aws/
+/home/vanessa/.aws/
+├── config
+└── credentials
 ```
 
 You can see more details about the various 
@@ -205,11 +223,12 @@ You should then be able to pull with
 ```bash
 docker pull ${AWS_REPO}/library/busybox
 ```
-It took me almost an hour to get this complete thing working. That's really sad, Amazon.
+It took me almost an hour to get this complete thing working. Not going to comment further on that.
+
 
 #### Test with CURL
 
-Now we would want to test pinging our repository with curl.
+Now we would want to test pinging our repository with curl. This entire shenanigans should work.
 
 ```bash
 AWS_TOKEN=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
@@ -227,14 +246,15 @@ Connection: keep-alive
 ```
 
 ## sregistry Pull
-Now that we have confirmed the endpoint is working, and our container exists
+You've made it! Now that we have confirmed the endpoint is working, and our container exists
 there we can talk about interaction with it via sregistry. Let's first
 export some of the variables we discussed above, in the format that the sregistry 
-client will find them.
+client will find them. Don't worry - you only need to do this once and never again.
 
-The first thing we need is the ID of your registry. Remember the long string defined 
-at `$AWS_REPO` above? We can derive it from that. We also need to know the zone
-your registry is in:
+The first thing we need is the ID of your registry. It's the "number part"
+of the long URL that we looked at earlier, and it was a part of the `$AWS_REPO` 
+variable that we used above. We can derive just the id (the numbers) from that. 
+We also need to know the zone your registry is in:
 
 ```bash
 export SREGISTRY_AWS_ID=$(echo $AWS_REPO | cut -d. -f1)
@@ -254,13 +274,62 @@ You'll only need to do this once, the first time that you use the client.
 
 Now let's try pulling our image! First we will work within python.
 Note that I'm specifying the `aws://` uri to tell the client what I want.
-
+If I wanted to do this globally, I would do this before any kind of pull
+or interaction with the client. For example, here is doing this via
+a shell:
 
 ```bash
 export SREGISTRY_CLIENT=aws 
-sregistry shell
+$ sregistry shell
+[client|aws] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+```
+```python
+Python 3.6.4 |Anaconda custom (64-bit)| (default, Jan 16 2018, 18:10:19) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 6.2.1 -- An enhanced Interactive Python. Type '?' for help.
+
+$ image = client.pull('library/busybox')
+Exploding /usr/local/libexec/singularity/bootstrap-scripts/environment.tar
+Exploding /home/vanessa/.singularity/docker/sha256:8c5a7da1afbc602695fcb2cd6445743cec5ff32053ea589ea9bd8773b7068185.tar.gz
+[container][new] library/busybox:latest
+Success! /home/vanessa/.singularity/shub/library-busybox:latest.simg
 ```
 
+You can also pull from the command line. Here I'll show unsetting the `SREGISTRY_CLIENT`
+environment variable so you can see how to use the `aws://` uri, and also
+how to not cache the image (and pull to the present working directory with a
+custom name).
+
+```bash
+$ unset SREGISTRY_CLIENT
+$ sregistry pull --name aws-is-hard.simg --no-cache aws://library/busybox
+```
+```bash
+$ sregistry pull --name aws-is-hard.simg --no-cache aws://library/busybox
+[client|aws] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Exploding /usr/local/libexec/singularity/bootstrap-scripts/environment.tar
+Exploding /home/vanessa/.singularity/docker/sha256:8c5a7da1afbc602695fcb2cd6445743cec5ff32053ea589ea9bd8773b7068185.tar.gz
+Building image from sandbox: /tmp/tmpl_zzhuba
+Building Singularity image...
+Singularity container built: aws-is-hard.simg
+Cleaning up...
+WARNING: Building container as an unprivileged user. If you run this container as root
+WARNING: it may be missing some functionality.
+WARNING: Building container as an unprivileged user. If you run this container as root
+WARNING: it may be missing some functionality.
+Success! aws-is-hard.simg
+```
+
+Importantly, does it work?
+
+```bash
+$ singularity shell aws-is-hard.simg 
+Singularity: Invoking an interactive shell within container...
+
+Singularity> 
+```
+
+Yes! Oh thank goodness.
 
 <div>
     <a href="/sregistry-cli/client-nvidia"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>

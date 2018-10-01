@@ -32,7 +32,7 @@ from urllib.parse import urlparse
 
 ###############################################################################
 
-def update_token(self, response):
+def update_token(self):
     '''update_token uses HTTP basic authentication to get a token for
     Docker registry API V2 operations. We get here if a 401 is
     returned for a request.
@@ -81,17 +81,18 @@ def download_layers(self, repo_name, digest=None, destination=None):
     # Download each layer atomically
     tasks = []
     layers = []
+
+    # Start with a fresh token
+    self._update_token()
+
     for digest in digests:
 
         targz = "%s/%s.tar.gz" % (destination, digest['digest'])
-        res = self.aws.get_download_url_for_layer(repositoryName=repo_name,
-                                                  layerDigest=digest['digest'])
-        
-        url = res['downloadUrl']
- 
+        url = '%s/%s/blobs/%s' % (self.base, repo_name, digest['digest'])
+         
         # Only download if not in cache already
         if not os.path.exists(targz):
-            tasks.append((url, None, targz))
+            tasks.append((url, self.headers, targz))
         layers.append(targz)
 
     # Download layers with multiprocess workers
