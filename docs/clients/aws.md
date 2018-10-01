@@ -295,6 +295,8 @@ Exploding /home/vanessa/.singularity/docker/sha256:8c5a7da1afbc602695fcb2cd64457
 Success! /home/vanessa/.singularity/shub/library-busybox:latest.simg
 ```
 
+### Command Line
+
 You can also pull from the command line. Here I'll show unsetting the `SREGISTRY_CLIENT`
 environment variable so you can see how to use the `aws://` uri, and also
 how to not cache the image (and pull to the present working directory with a
