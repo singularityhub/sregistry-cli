@@ -96,7 +96,11 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
 
     response = None
     total = request.resumable._size / (1024*1024.0)
-    bar = ProgressBar(expected_size=total, filled_char='=')
+
+    # A level of 0 (quiet) means we hide the bar entirely, hide_bar is True)
+    hide_bar = bool(not bot.level)
+    bar = ProgressBar(expected_size=total, filled_char='=', hide=hide_bar)
+
     while response is None:
         error = None
         try:

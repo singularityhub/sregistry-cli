@@ -343,7 +343,9 @@ def main():
         sys.exit(0)
 
     # if environment logging variable not set, make silent
-    if args.debug is False:
+    elif args.quiet is True:
+        os.environ['MESSAGELEVEL'] = "QUIET"
+    elif args.debug is False:
         os.environ['MESSAGELEVEL'] = "INFO"
 
     # Show the version and exit

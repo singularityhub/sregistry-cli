@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-from sregistry.logger import bot, ProgressBar
+from sregistry.logger import bot
 from googleapiclient.errors import HttpError
 from sregistry.utils import (
     get_image_hash,

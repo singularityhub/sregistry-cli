@@ -75,6 +75,9 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             done = False
             bar = None
 
+            # A level of 0 (quiet) means we hide the bar entirely, hide_bar is True)
+            hide_bar = bool(not bot.level)
+    
             # Download and update the user with progress bar
             while done is False:
                 status, done = downloader.next_chunk()
@@ -83,7 +86,9 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 # Create bar on first call
                 if bar is None:
                     total = status.total_size / (1024*1024.0)
-                    bar = ProgressBar(expected_size=total, filled_char='=')
+                    bar = ProgressBar(expected_size=total,
+                                      filled_char='=',
+                                      hide=hide_bar)
 
                 bar.show(status.resumable_progress / (1024*1024.0))
             
