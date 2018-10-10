@@ -342,16 +342,15 @@ def main():
     except:
         sys.exit(0)
 
-    # if environment logging variable not set, make silent
-    elif args.quiet is True:
-        os.environ['MESSAGELEVEL'] = "QUIET"
-    elif args.debug is False:
-        os.environ['MESSAGELEVEL'] = "INFO"
+    if args.debug is False:
+        os.environ['MESSAGELEVEL'] = "DEBUG"
 
     # Show the version and exit
     if args.command == "version":
         print(sregistry.__version__)
         sys.exit(0)
+
+    from sregistry.logger import bot
 
     # Does the user want a shell?
     if args.command == "add": from .add import main

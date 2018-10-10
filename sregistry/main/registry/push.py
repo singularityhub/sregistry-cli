@@ -119,11 +119,9 @@ def push(self, path, name, tag=None):
 def create_callback(encoder):
     encoder_len = encoder.len / (1024*1024.0)
 
-    # A level of 0 (quiet) will be only case of True (hide bar = True)
-    hide_bar = bool(not bot.level)
     bar = ProgressBar(expected_size=encoder_len,
                       filled_char='=',
-                      hide=hide_bar)
+                      hide=self.quiet)
 
     def callback(monitor):
         bar.show(monitor.bytes_read / (1024*1024.0))

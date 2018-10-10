@@ -172,53 +172,56 @@ class SRegistryMessage:
         return self.history
 
 
-    def show_progress(
-            self,
-            iteration,
-            total,
-            length=40,
-            min_level=0,
-            prefix=None,
-            carriage_return=True,
-            suffix=None,
-            symbol=None):
+    def show_progress(self,
+                      iteration,
+                      total,
+                      length=40,
+                      min_level=0,
+                      prefix=None,
+                      carriage_return=True,
+                      suffix=None,
+                      symbol=None):
         '''create a terminal progress bar, default bar shows for verbose+
-        :param iteration: current iteration (Int)
-        :param total: total iterations (Int)
-        :param length: character length of bar (Int)
+ 
+           Parameters
+           ==========
+           iteration: current iteration (Int)
+           total: total iterations (Int)
+           length: character length of bar (Int)
         '''
-        percent = 100 * (iteration / float(total))
-        progress = int(length * iteration // total)
+        if not self.quiet:
+            percent = 100 * (iteration / float(total))
+            progress = int(length * iteration // total)
 
-        if suffix is None:
-            suffix = ''
+            if suffix is None:
+                suffix = ''
 
-        if prefix is None:
-            prefix = 'Progress'
+            if prefix is None:
+                prefix = 'Progress'
 
-        # Download sizes can be imperfect, setting carriage_return to False
-        # and writing newline with caller cleans up the UI
-        if percent >= 100:
-            percent = 100
-            progress = length
+            # Download sizes can be imperfect, setting carriage_return to False
+            # and writing newline with caller cleans up the UI
+            if percent >= 100:
+                percent = 100
+                progress = length
 
-        if symbol is None:
-            symbol = "="
+            if symbol is None:
+                symbol = "="
 
-        if progress < length:
-            bar = symbol * progress + '|' + '-' * (length - progress - 1)
-        else:
-            bar = symbol * progress + '-' * (length - progress)
+            if progress < length:
+                bar = symbol * progress + '|' + '-' * (length - progress - 1)
+            else:
+                bar = symbol * progress + '-' * (length - progress)
 
-        # Only show progress bar for level > min_level
-        if self.level > min_level:
-            percent = "%5s" % ("{0:.1f}").format(percent)
-            output = '\r' + prefix + \
-                " |%s| %s%s %s" % (bar, percent, '%', suffix)
-            sys.stdout.write(output),
-            if iteration == total and carriage_return:
-                sys.stdout.write('\n')
-            sys.stdout.flush()
+            # Only show progress bar for level > min_level
+            if self.level > min_level:
+                percent = "%5s" % ("{0:.1f}").format(percent)
+                output = '\r' + prefix + \
+                    " |%s| %s%s %s" % (bar, percent, '%', suffix)
+                sys.stdout.write(output),
+                if iteration == total and carriage_return:
+                    sys.stdout.write('\n')
+                sys.stdout.flush()
 
     # Logging ------------------------------------------
 
@@ -298,32 +301,33 @@ def get_logging_level():
     MESSAGELEVEL. if MESSAGELEVEL is not set, the maximum level
     (5) is assumed (all messages).
     '''
-    try:
-        level = int(os.environ.get("MESSAGELEVEL", INFO))
+    level = os.environ.get("MESSAGELEVEL", INFO)
 
-    except ValueError:
+    # User knows logging levels and set one
+    if isinstance(level, int):
+        return level
 
-        level = os.environ.get("MESSAGELEVEL", INFO)
-        if level == "CRITICAL":
-            return CRITICAL
-        elif level == "ABORT":
-            return ABORT
-        elif level == "ERROR":
-            return ERROR
-        elif level == "WARNING":
-            return WARNING
-        elif level == "LOG":
-            return LOG
-        elif level == "INFO":
-            return INFO
-        elif level == "QUIET":
-            return QUIET
-        elif level.startswith("VERBOSE"):
-            return VERBOSE3
-        elif level == "LOG":
-            return LOG
-        elif level == "DEBUG":
-            return DEBUG
+    # Otherwise it's a string
+    if level == "CRITICAL":
+        return CRITICAL
+    elif level == "ABORT":
+        return ABORT
+    elif level == "ERROR":
+        return ERROR
+    elif level == "WARNING":
+        return WARNING
+    elif level == "LOG":
+        return LOG
+    elif level == "INFO":
+        return INFO
+    elif level == "QUIET":
+        return QUIET
+    elif level.startswith("VERBOSE"):
+        return VERBOSE3
+    elif level == "LOG":
+        return LOG
+    elif level == "DEBUG":
+        return DEBUG
 
     return level
 
