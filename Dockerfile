@@ -23,7 +23,7 @@ RUN /opt/conda/bin/pip install dateutils
 
 # Install Singularity
 WORKDIR /opt
-RUN git clone -b vault/release-2.5 https://www.github.com/singularityware/singularity.git
+RUN git clone -b vault/release-2.6 https://www.github.com/sylabs/singularity.git
 WORKDIR singularity
 RUN ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 
