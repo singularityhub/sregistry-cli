@@ -73,9 +73,10 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
             bot.error('Image exists! Remove first, or use --force to overwrite')
             sys.exit(1)
 
+        show_bar = not bool(self.quiet)
         image_file = self.download(url=manifest['image'],
                                    file_name=os.path.basename(file_name),
-                                   show_progress=True)
+                                   show_progress=show_bar)
 
         # If the user is saving to local storage
         if save is True:

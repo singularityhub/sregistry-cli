@@ -177,7 +177,7 @@ def download(self, url,
         url: the url to stream from
         headers: additional headers to add
         force: If the final image exists, don't overwrite
-
+        show_progress: boolean to show progress bar
     '''
 
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
@@ -188,7 +188,10 @@ def download(self, url,
 
     # Check here if exists
     if requests.head(url, verify=verify).status_code in [200, 401]:
-        response = self.stream(url, headers=headers, stream_to=tmp_file)
+        response = self.stream(url,
+                               headers=headers,
+                               stream_to=tmp_file,
+                               show_progress=show_progress)
 
         if isinstance(response, HTTPError):
             bot.error("Error downloading %s, exiting." %url)
@@ -203,21 +206,21 @@ def stream(self, url,
                  headers=None, 
                  stream_to=None,
                  retry=True, 
-                 default_headers=True):
+                 default_headers=True,
+                 show_progress=True):
     '''
+        stream is a get that will stream to file_name. This stream is intended
+        to take a url and (optionally) a set of headers and file to stream to,
+        and will generate a response with requests.get.
 
-       stream is a get that will stream to file_name. This stream is intended
-       to take a url and (optionally) a set of headers and file to stream to,
-       and will generate a response with requests.get.
-
-       Parameters
-       ==========
-       url: the url to do a requests.get to
-       headers: any updated headers to use for the requets
-       stream_to: the file to stream to
-       retry: should the client retry? (intended for use after token refresh)
-              by default we retry once after token refresh, then fail.
-
+        Parameters
+        ==========
+        url: the url to do a requests.get to
+        headers: any updated headers to use for the requets
+        stream_to: the file to stream to
+        show_progress: boolean to show progress bar
+        retry: should the client retry? (intended for use after token refresh)
+               by default we retry once after token refresh, then fail.
     '''
 
     bot.debug("GET %s" %url)
@@ -237,22 +240,29 @@ def stream(self, url,
     if response.status_code == 401 and retry is True:
         if hasattr(self,'_update_token'):
             self._update_token(response)
-            return self.stream(url, headers, stream_to, retry=False)
+            return self.stream(url,
+                               headers, 
+                               stream_to, 
+                               retry=False,
+                               show_progress=show_progress)
 
     if response.status_code == 200: 
-        return self._stream(response, stream_to=stream_to)
+        return self._stream(response,
+                            stream_to=stream_to,
+                            show_progress=show_progress)
 
     bot.error("Problem with stream, response %s" %(response.status_code))
     sys.exit(1)
 
 
 
-def stream_response(self, response, stream_to=None):
+def stream_response(self, response, stream_to=None, show_progress=True):
     '''
        stream response is one level higher up than stream, starting with a 
        response object and then performing the stream without making the
        requests.get. The expectation is that the request was successful 
        (status code 20*).
+       show_progress: boolean to show progress bar
 
        Parameters
        ==========
@@ -262,10 +272,12 @@ def stream_response(self, response, stream_to=None):
 
 
     '''
-
     if response.status_code == 200:
 
-        # Keep user updated with Progress Bar
+        if show_progress is False:
+            bot.quiet = True
+ 
+        # Keep user updated with Progress Bar, if not quiet
         content_size = None
         if 'Content-Length' in response.headers:
             progress = 0

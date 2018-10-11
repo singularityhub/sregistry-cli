@@ -96,7 +96,9 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
 
     response = None
     total = request.resumable._size / (1024*1024.0)
-    bar = ProgressBar(expected_size=total, filled_char='=')
+
+    bar = ProgressBar(expected_size=total, filled_char='=', hide=self.quiet)
+
     while response is None:
         error = None
         try:

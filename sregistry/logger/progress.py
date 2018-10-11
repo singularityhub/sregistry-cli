@@ -35,17 +35,26 @@ class ProgressBar(object):
         self.done()
         return False  # we're not suppressing exceptions
 
-    def __init__(self, label='', width=32, hide=None, empty_char=BAR_EMPTY_CHAR,
-                 filled_char=BAR_FILLED_CHAR, expected_size=None, every=1):
+    def __init__(self, 
+                 label='',
+                 width=32, 
+                 hide=None, 
+                 empty_char=BAR_EMPTY_CHAR,
+                 filled_char=BAR_FILLED_CHAR,
+                 expected_size=None,
+                 every=1):
+
         self.label = label
         self.width = width
         self.hide = hide
+
         # Only show bar in terminals by default (better for piping, logging etc.)
         if hide is None:
             try:
                 self.hide = not STREAM.isatty()
             except AttributeError:  # output does not support isatty()
                 self.hide = True
+
         self.empty_char =    empty_char
         self.filled_char =   filled_char
         self.expected_size = expected_size
@@ -100,14 +109,26 @@ class ProgressBar(object):
         return time.strftime('%H:%M:%S', time.gmtime(seconds))
 
 
-def bar(it, label='', width=32, hide=None, empty_char=BAR_EMPTY_CHAR,
-        filled_char=BAR_FILLED_CHAR, expected_size=None, every=1):
+def bar(it,
+        label='',
+        width=32,
+        hide=None,
+        empty_char=BAR_EMPTY_CHAR,
+        filled_char=BAR_FILLED_CHAR,
+        expected_size=None,
+        every=1):
+
     """Progress iterator. Wrap your iterables with it."""
 
     count = len(it) if expected_size is None else expected_size
 
-    with Bar(label=label, width=width, hide=hide, empty_char=BAR_EMPTY_CHAR,
-             filled_char=BAR_FILLED_CHAR, expected_size=count, every=every) \
+    with Bar(label=label, 
+             width=width,
+             hide=hide,
+             empty_char=BAR_EMPTY_CHAR,
+             filled_char=BAR_FILLED_CHAR,
+             expected_size=count, 
+             every=every) \
             as bar:
         for i, item in enumerate(it):
             yield item

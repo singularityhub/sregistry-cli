@@ -83,7 +83,9 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 # Create bar on first call
                 if bar is None:
                     total = status.total_size / (1024*1024.0)
-                    bar = ProgressBar(expected_size=total, filled_char='=')
+                    bar = ProgressBar(expected_size=total,
+                                      filled_char='=',
+                                      hide=self.quiet)
 
                 bar.show(status.resumable_progress / (1024*1024.0))
             

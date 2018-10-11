@@ -98,7 +98,7 @@ def push(self, path, name, tag=None):
                                        'tag': names['tag'],
                                        'file1': (upload_to, open(path, 'rb'), 'text/plain')})
 
-    progress_callback = create_callback(encoder)
+    progress_callback = create_callback(encoder, self.quiet)
     monitor = MultipartEncoderMonitor(encoder, progress_callback)
     headers = {'Content-Type': monitor.content_type,
                'Authorization': SREGISTRY_EVENT }
@@ -116,10 +116,13 @@ def push(self, path, name, tag=None):
         print(e)
 
 
-def create_callback(encoder):
+def create_callback(encoder, quiet=False):
     encoder_len = encoder.len / (1024*1024.0)
+
     bar = ProgressBar(expected_size=encoder_len,
-                      filled_char='=')
+                      filled_char='=',
+                      hide=quiet)
+
     def callback(monitor):
         bar.show(monitor.bytes_read / (1024*1024.0))
     return callback

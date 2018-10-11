@@ -98,9 +98,10 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             if file_name is None:
                 file_name = q['storage'].replace('/','-')
     
+            # Show progress if not quiet
             image_file = self.download(url=manifest['image'],
                                        file_name=file_name,
-                                       show_progress=True)
+                                       show_progress=not self.quiet)
 
             # If the user is saving to local storage
             if save is True:
