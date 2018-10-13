@@ -101,7 +101,7 @@ def parse_image_name(image_name,
     uri = "%s/%s" % (collection, image_name)    
     url = uri
     if tag is not None:
-        uri = "%s:%s" % (uri, tag)
+        uri = "%s-%s" % (uri, tag)
     if version is not None:
         uri = "%s@%s" % (uri, version)
 
