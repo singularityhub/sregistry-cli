@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - storage name should use - instead of : to mirror Singularity  (0.0.99)
  - client missing quiet level  (0.0.98)
  - progress bar should respect quiet level  (0.0.97)
  - install of `[all]` includes aws, and containers building based on pypi version  (0.0.96)
