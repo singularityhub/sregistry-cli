@@ -20,7 +20,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from sregistry.logger import bot
 from spython.main import Client as Singularity
 from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
-import tempfile
 import shutil
 import os
 import sys

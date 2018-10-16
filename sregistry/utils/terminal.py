@@ -26,15 +26,21 @@ from subprocess import (
 )
 import os
 
-######################################################################################
+################################################################################
 # Software Versions
-######################################################################################
+################################################################################
 
 
 def get_singularity_version(singularity_version=None):
-    '''get_singularity_version will determine the singularity version for a build
-    first, an environmental variable is looked at, followed by using the system
-    version.
+    '''get_singularity_version will determine the singularity version for a
+       build first, an environmental variable is looked at, followed by 
+       using the system version.
+
+       Parameters
+       ==========
+       singularity_version: if not defined, look for in environment. If still
+       not find, try finding via executing --version to Singularity. Only return
+       None if not set in environment or installed.
     '''
 
     if singularity_version is None:        
@@ -78,6 +84,11 @@ def check_install(software=None, quiet=True):
     '''check_install will attempt to run the singularity command, and
        return True if installed. The command line utils will not run 
        without this check.
+
+       Parameters
+       ==========
+       software: the software to check if installed
+       quiet: should we be quiet? (default True)
     '''
     if software is None:
         software = "singularity"
@@ -125,11 +136,11 @@ def run_command(cmd, sudo=False):
         cmd = ['sudo'] + cmd
 
     try:
-        output = Popen(cmd,stderr=STDOUT,stdout=PIPE)
+        output = Popen(cmd, stderr=STDOUT, stdout=PIPE)
 
     except FileNotFoundError:
         cmd.pop(0)
-        output = Popen(cmd,stderr=STDOUT,stdout=PIPE)
+        output = Popen(cmd, stderr=STDOUT, stdout=PIPE)
 
     t = output.communicate()[0],output.returncode
     output = {'message':t[0],

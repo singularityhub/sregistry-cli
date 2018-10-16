@@ -28,11 +28,12 @@ Singularity image. For these same functions for within python (for developers) [
 
 A quick rundown of basic commands is shown in this asciicast.
 
-[![asciicast](https://asciinema.org/a/154623.png)](https://asciinema.org/a/154623?speed=3)
-
+<script src="https://asciinema.org/a/154623.js" id="asciicast-154623" data-speed="3" async></script>
 
 ## Remote Commands
-Recommended (but not required) commands for *remote* endpoints can be read about pertaining to [specific clients](/sregistry-cli/clients), and are listed briefly here:
+Recommended (but not required) commands for *remote* endpoints can be read about 
+pertaining to interacting with  [specific clients](/sregistry-cli/clients), and 
+are listed briefly here:
 
  - [build](#): issues a local command to build a remote Github repository.
  - [pull](#): `[remote->local]` pull an image from a remote endpoint to the local database and storage.
@@ -41,7 +42,12 @@ Recommended (but not required) commands for *remote* endpoints can be read about
 
 
 ## Choosing a Client
-Singularity Registry supports a [large number](/sregistry-cli/clients) of clients from Google Storage, to Globus, to Docker. Since many of these remote commands are client specific, it may be the case that you find the command defined for one client, but not another. How might you choose to use or activate a client? We have a few ways! 
+
+Singularity Registry supports a [large number](/sregistry-cli/clients) of clients 
+from Google Storage, to Globus, to Docker. Since many of these remote commands 
+are client specific, it may be the case that you find the command defined for 
+one client, but not another. How might you choose to use or activate a client? 
+We have a few ways! 
 
 *Environment Variable*
 
@@ -203,7 +209,8 @@ sregistry add --name expfactory/example expfactory-expfactory-master-test.simg
 ```
 
 In the above, I've taken the local file `expfactory-expfactory-master-test.simg` and moved
-it into my storage and database. The file will be removed from the present working directory. You can achieve the equivalent to add an image to your database and storage but make a copy with copy.
+it into my storage and database. The file will be removed from the present working directory. 
+You can achieve the equivalent to add an image to your database and storage but make a copy with copy.
 
 ```
 sregistry add --copy --name expfactory/example expfactory-expfactory-master-test.simg 

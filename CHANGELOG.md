@@ -14,6 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - adding `SREGISTRY_TMPDIR` to customize temporary folder  (0.01.00)
+ - not moving image if storage `SREGISTRY_STORAGE` is same as pull folder
  - storage name should use - instead of : to mirror Singularity  (0.0.99)
  - client missing quiet level  (0.0.98)
  - progress bar should respect quiet level  (0.0.97)
