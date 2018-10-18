@@ -19,8 +19,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.logger import bot
 from spython.main import Client as Singularity
-from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
-import tempfile
+from sregistry.utils import ( 
+    get_tmpdir, 
+    parse_image_name,
+    remove_uri,
+    extract_tar 
+)
 import shutil
 import os
 import re
@@ -119,7 +123,7 @@ def _pull(self,
     digest = names['version'] or names['tag']
 
     # Build from sandbox 
-    sandbox = tempfile.mkdtemp()
+    sandbox = get_tmpdir(prefix="sregistry-sandbox")
 
     # First effort, get image via Sregistry
     layers, url = self._download_layers(names['url'], digest)

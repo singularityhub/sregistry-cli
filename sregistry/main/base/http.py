@@ -21,10 +21,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from requests.exceptions import HTTPError
 
+from sregistry.utils import get_tmpfile
 from sregistry.logger import bot
 import shutil
 import requests
-import tempfile
 import json
 import sys
 import re
@@ -180,8 +180,7 @@ def download(self, url,
         show_progress: boolean to show progress bar
     '''
 
-    fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name)) 
-    os.close(fd)
+    tmp_file = get_tmpfile(prefix="%s.tmp." % file_name)
 
     # Should we verify the request?
     verify = self._verify()

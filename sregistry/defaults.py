@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import get_userhome, read_json
+from sregistry.utils import ( get_userhome, read_json )
 import tempfile
 import os
 import sys
@@ -28,9 +28,13 @@ import sys
 ################################################################################
 
 def convert2boolean(arg):
-    '''
-    convert2boolean is used for environmental variables
-    that must be returned as boolean
+    '''convert2boolean is used for environmental variables
+       that must be returned as boolean
+
+       Parameters
+       ==========
+       arg: the argument to convert to boolean. Must be a string given
+       grabbed from environment.
     '''
     if not isinstance(arg, bool):
         return arg.lower() in ("yes", "true", "t", "1", "y")
@@ -38,13 +42,14 @@ def convert2boolean(arg):
 
 
 def getenv(variable_key, default=None, required=False, silent=True):
-    '''
-    getenv will attempt to get an environment variable. If the variable
-    is not found, None is returned.
-
-    :param variable_key: the variable name
-    :param required: exit with error if not found
-    :param silent: Do not print debugging information for variable
+    '''getenv will attempt to get an environment variable. If the variable
+       is not found, None is returned.
+ 
+       Parameters
+       ==========   
+       variable_key: the variable name
+       required: exit with error if not found
+        silent: Do not print debugging information for variable
     '''
     variable = os.environ.get(variable_key, default)
     if variable is None and required:
@@ -123,7 +128,7 @@ if not DISABLE_CACHE and DISABLE_DATABASE is False:
     # Storage defaults to a subfolder of the database, shub
     _storage = os.path.join(_database, "shub")
     SREGISTRY_STORAGE = getenv("SREGISTRY_STORAGE", _storage)
-    SREGISTRY_DATABASE = "%s/sregistry.db" %SREGISTRY_BASE
+    SREGISTRY_DATABASE = "%s/sregistry.db" % SREGISTRY_BASE
 
 
 #########################
@@ -138,6 +143,12 @@ CREDENTIAL_CACHE = None
 # Download Cache for Singularity layers (not complete images)
 _cache = os.path.join(USERHOME, ".singularity")
 SINGULARITY_CACHE = getenv("SINGULARITY_CACHEDIR", default=_cache)
+
+#########################
+# Temporary Storage
+#########################
+
+SREGISTRY_TMPDIR = os.environ.get('SREGISTRY_TMPDIR', tempfile.gettempdir())
 
 # We only use the credential cache if user didn't disable it
 # and if the entire sregistry database isn't disabled for use.

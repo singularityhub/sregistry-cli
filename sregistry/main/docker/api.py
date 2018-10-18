@@ -19,7 +19,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from sregistry.defaults import SINGULARITY_CACHE
 from sregistry.logger import bot
-from sregistry.utils import ( mkdir_p, print_json, get_template, create_tar )
+from sregistry.utils import ( 
+    get_tmpdir,    
+    mkdir_p,
+    print_json,
+    get_template,
+    create_tar 
+)
 import json
 import math
 import os
@@ -224,8 +230,7 @@ def get_download_cache(self, destination, subfolder='docker'):
                                          SINGULARITY_CACHE)
      
         # If not set, the user has disabled (use tmp)
-        if destination is None:
-            destination = tempfile.mkdtemp()
+        destination = get_tmpdir(destination)
 
     if not destination.endswith(subfolder):
         destination = "%s/%s" %(destination, subfolder)
@@ -236,8 +241,7 @@ def get_download_cache(self, destination, subfolder='docker'):
         
 
 def get_digests(self):
-    '''
-       return a list of layers from a manifest.
+    '''return a list of layers from a manifest.
        The function is intended to work with both version
        1 and 2 of the schema. All layers (including redundant)
        are returned. By default, we try version 2 first,
@@ -331,9 +335,7 @@ def get_layer(self, image_id, repo_name, download_folder=None):
 
     bot.verbose("Downloading layers from %s" % url)
 
-    if download_folder is None:
-        download_folder = tempfile.mkdtemp()
-
+    download_folder = get_tmpdir(download_folder)
     download_folder = "%s/%s.tar.gz" % (download_folder, image_id)
 
     # Update user what we are doing
