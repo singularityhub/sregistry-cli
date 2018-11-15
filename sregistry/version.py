@@ -51,9 +51,9 @@ INSTALL_BASIC_AWS = (
 )
 
 INSTALL_BASIC_CEPH = (
+    ('python-swiftclient', {'min_version': '3.6.0'}),
     ('oauth2client', {'min_version': '3.0'}),
 )
-
 INSTALL_BASIC_DROPBOX = (
     ('dropbox', {'min_version': '8.5.1'}),
 )
@@ -107,7 +107,8 @@ INSTALL_REQUIRES_AWS = (
 )
 
 INSTALL_REQUIRES_CEPH = (
-    ('sqlalchemy', {'min_version': None})
+    ('python-swiftclient', {'min_version': '3.6.0'}),
+    ('sqlalchemy', {'min_version': None}),
     ('oauth2client', {'min_version': '3.0'}),
 )
 
