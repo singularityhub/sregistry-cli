@@ -51,7 +51,8 @@ class Client(ApiConnection):
         '''
         return self.conn.get_container(name)
 
-conn.put_container(name)
+   
+        #conn.put_container(name)
 
     def _update_secrets(self):
         '''update secrets will look for a ceph user and token in the environment

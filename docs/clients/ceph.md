@@ -107,14 +107,74 @@ demo user:
 }
 ```
 
-I would want to export the username and key, along with the base URL for the interface
- to my environment for sregistry to find:
+But notice how "swift keys" is empty? We need that to not be the case. let's be more specific and create out own demo user, because I had
+trouble with the user above. The authentication documentation for 
+swift [is here](http://docs.ceph.com/docs/master/radosgw/swift/auth/).
+
 
 ```bash
-export SREGISTRY_CEPH_USER=qqq
-export SREGISTRY_CEPH_KEY=qqq
+docker exec demo radosgw-admin user create --subuser="ceph:vanessa" --uid="vanessa" --display-name="Vanessa Saurus" --key-type=swift --access=full
+```
+```bash
+{
+    "user_id": "ceph",
+    "display_name": "Vanessa Saurus",
+    "email": "",
+    "suspended": 0,
+    "max_buckets": 1000,
+    "auid": 0,
+    "subusers": [
+        {
+            "id": "ceph:vanessa",
+            "permissions": "full-control"
+        }
+    ],
+    "keys": [],
+    "swift_keys": [
+        {
+            "user": "ceph:vanessa",
+            "secret_key": "gpBCS9JtiADQPz5C35yVNd05ItrjXtryZI8aJEdn"
+        }
+    ],
+    "caps": [],
+    "op_mask": "read, write, delete",
+    "default_placement": "",
+    "placement_tags": [],
+    "bucket_quota": {
+        "enabled": false,
+        "check_on_raw": false,
+        "max_size": -1,
+        "max_size_kb": 0,
+        "max_objects": -1
+    },
+    "user_quota": {
+        "enabled": false,
+        "check_on_raw": false,
+        "max_size": -1,
+        "max_size_kb": 0,
+        "max_objects": -1
+    },
+    "temp_url_keys": [],
+    "type": "rgw",
+    "mfa_ids": []
+}
+```
+
+This gives a more complete token (unlike the one we provided) so I wonder
+if the container demo was valid?
+
+I would want to export the username and key, along with the base URL for the interface to my environment for sregistry to find:
+
+```bash
+export SREGISTRY_CEPH_USER=ceph:vanessa
+export SREGISTRY_CEPH_KEY=gpBCS9JtiADQPz5C35yVNd05ItrjXtryZI8aJEdn
 export SREGISTRY_CEPH_URL=http://172.17.0.1:8080
 ```
+
+            "user": "dinosaur",
+            "access_key": "0WLQXCXFB1GXQ4GW5W2F",
+            "secret_key": "AaQX3raJhB9Z84IpMOZOHJLKCyTtA6VvWAYKjpmT"
+
 
 For example, for my storage I am going to `http://172.17.0.1:5000` and for the
 rest API (needed for this client) I am going to `http://172.17.0.1:8080`. This
