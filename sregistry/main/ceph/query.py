@@ -2,7 +2,7 @@
 
 ls: search and query functions for client
 
-Copyright (C) 2017 Vanessa Sochat.
+Copyright (C) 2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -47,24 +47,22 @@ def search(self, query=None, args=None):
 def search_all(self):
     '''a "show all" search that doesn't require a query'''
 
-    results = []
+    results = set()
 
-    # Parse through folders (collections):
-    for entry in self.dbx.files_list_folder('').entries:
+    # Here we get names of collections, and then look up containers
+    for container in self.conn.get_account()[1]:
 
-        # Parse through containers
-        for item in self.dbx.files_list_folder(entry.path_lower).entries:
-            name = item.name.replace('.simg','')
-            results.append([ "%s/%s" % (entry.name, name) ])
-   
+        # The result here is just the name
+        for result in self.conn.get_container(container['name'])[1]:
+            results.add('%s/%s' %(container['name'], result['name']))
 
     if len(results) == 0:
         bot.info("No container collections found.")
         sys.exit(1)
 
     bot.info("Collections")
-    bot.table(results)
-    return results
+    bot.table([list(results)])
+    return list(results)
 
 
 def container_query(self, query):
@@ -73,24 +71,22 @@ def container_query(self, query):
     filter criteria from the user (based on the query)
     '''
 
-    results = []
+    results = set()
 
     query = remove_uri(query)
 
-    # Parse through folders (collections):
-    for entry in self.dbx.files_list_folder('').entries:
+    # Here we get names of collections, and then look up containers
+    for container in conn.get_account()[1]:
 
-        # Parse through containers
-        for item in self.dbx.files_list_folder(entry.path_lower).entries:
-            name = item.name.replace('.simg','')
-            name = "%s/%s" % (entry.name, name)
-            if query in name:
-                results.append([ name ])
+        # The result here is just the name
+        for result in conn.get_container(container['name'])[1]:
+            if query in collection['name']:
+                results.add('%s/%s' %(container['name'], result['name']))
    
     if len(results) == 0:
         bot.info("No container collections found.")
         sys.exit(1)
 
     bot.info("Collections")
-    bot.table(results)
-    return results
+    bot.table([list(results)])
+    return list(results)

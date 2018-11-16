@@ -24,6 +24,7 @@ import sys
 
 from .pull import pull
 from .push import push
+from .query import ( search, search_all, container_query )
 
 class Client(ApiConnection):
 
@@ -106,3 +107,8 @@ class Client(ApiConnection):
 # Add your different functions imported at the top to the client here
 Client.pull = pull
 Client.push = push
+
+# Query functions
+Client.search = search
+Client._search_all = search_all
+Client._container_query = container_query
