@@ -341,45 +341,6 @@ ownership of '/var/lib/ceph/radosgw/ceph-rgw.vanessa-ThinkPad-T460s' retained as
         }
     ],
     "swift_keys": [],
-    "caps": [],
-    "op_mask": "read, write, delete",
-    "default_placement": "",
-    "placement_tags": [],
-    "bucket_quota": {
-        "enabled": false,
-        "check_on_raw": false,
-        "max_size": -1,
-        "max_size_kb": 0,
-        "max_objects": -1
-    },
-    "user_quota": {
-        "enabled": false,
-        "check_on_raw": false,
-        "max_size": -1,
-        "max_size_kb": 0,
-        "max_objects": -1
-    },
-    "temp_url_keys": [],
-    "type": "rgw",
-    "mfa_ids": []
-}
-
-{
-    "user_id": "qqq",
-    "display_name": "Ceph demo user",
-    "email": "",
-    "suspended": 0,
-    "max_buckets": 1000,
-    "auid": 0,
-    "subusers": [],
-    "keys": [
-        {
-            "user": "qqq",
-            "access_key": "qqq",
-            "secret_key": "qqq"
-        }
-    ],
-    "swift_keys": [],
     "caps": [
         {
             "type": "buckets",
