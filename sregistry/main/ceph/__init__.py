@@ -42,6 +42,13 @@ class Client(ApiConnection):
         if hasattr(self, 'account'):
             bot.info('connected to %s' % self.name)
 
+    def get_collections(self):
+        '''get a listing of collections that the user has access to.
+        '''
+        collections = []
+        for container in self.conn.get_account()[1]:
+            collections.append(container['name'])
+        return collections
 
     def get_collection(self, name):
         '''get a collection name, which corresponds to an upper level 
@@ -64,6 +71,7 @@ class Client(ApiConnection):
         if collection is None:
             collection = self.conn.put_container(name)
         return collection
+
 
     def _update_secrets(self):
         '''update secrets will look for a ceph user and token in the environment

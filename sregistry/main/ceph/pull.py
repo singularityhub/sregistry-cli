@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2017-2018 Vanessa Sochat.
+Copyright (C) 2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -18,12 +18,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
+from swiftclient.exceptions import ClientException
 from sregistry.utils import ( parse_image_name, remove_uri )
 import os
 import sys
 
 def pull(self, images, file_name=None, save=True, **kwargs):
-    '''pull an image from a dropbox. The image is found based on the storage 
+    '''pull an image from ceph storage. The image is found based on the storage 
        uri
  
        Parameters
@@ -48,7 +49,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     if not isinstance(images, list):
         images = [images]
 
-    bot.debug('Execution of PULL for %s images' %len(images))
+    bot.debug('Execution of PULL for %s images' % len(images))
 
     # If used internally we want to return a list to the user.
     finished = []
@@ -56,8 +57,28 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         names = parse_image_name(remove_uri(image))
 
-        # Dropbox path is the path in storage with a slash
-        dropbox_path = '/%s' % names['storage']
+        # First try to get the collection
+        collection = self.get_collection(names['collection'])
+        if collection is None:
+            bot.error('Collection %s does not exist.' % names['collection'])
+
+            # Show the user collections he/she does have access to
+            collections = self.get_collections()
+            if collections:
+                bot.info('Collections available to you: \n%s' %'\n'.join(collections))
+            sys.exit(1)
+
+        # Determine if the container exists in storage
+        image_name = os.path.basename(names['storage'])
+        
+        try:
+            obj_tuple = conn.get_object(names['collection'], image_name)
+        except ClientException:
+            bot.exit('%s does not exist.' % names['storage'])
+
+        # Give etag as version if version not defined
+        if names['version'] == None:
+            names['version'] = obj_tuple[0]['etag']
         
         # If the user didn't provide a file, make one based on the names
         if file_name is None:
@@ -68,25 +89,20 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             bot.error('Image exists! Remove first, or use --force to overwrite')
             sys.exit(1) 
 
-        # First ensure that exists
-        if self.exists(dropbox_path) is True:
+        # Write to file
+        with open(file_name, 'wb') as filey:
+            filey.write(obj_tuple[1])
 
-            # _stream is a function to stream using the response to start
-            metadata, response = self.dbx.files_download(dropbox_path)
-            image_file = self._stream(response, stream_to=file_name)
+        # If we save to storage, the uri is the dropbox_path
+        if save is True:
 
-            # parse the metadata (and add inspected image)
-            metadata = self._get_metadata(image_file, metadata)
+            names.update(obj_tuple[0])
+            container = self.add(image_path = file_name,
+                                 image_uri = names['uri'],
+                                 metadata = names)
 
-            # If we save to storage, the uri is the dropbox_path
-            if save is True:
-                container = self.add(image_path = image_file,
-                                     image_uri = dropbox_path.strip('/'),
-                                     metadata = metadata,
-                                     url = response.url)
-
-                # When the container is created, this is the path to the image
-                image_file = container.image
+            # When the container is created, this is the path to the image
+            image_file = container.image
 
             if os.path.exists(image_file):
                 bot.debug('Retrieved image file %s' %image_file)
@@ -94,7 +110,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 finished.append(image_file)
 
         else:
-            bot.error('%s does not exist. Try sregistry search to see images.' %path)
+            bot.error('%s does not exist. Try sregistry search to see images.' % path)
 
     if len(finished) == 1:
         finished = finished[0]
