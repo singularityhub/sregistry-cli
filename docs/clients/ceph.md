@@ -171,11 +171,6 @@ export SREGISTRY_CEPH_KEY=gpBCS9JtiADQPz5C35yVNd05ItrjXtryZI8aJEdn
 export SREGISTRY_CEPH_URL=http://172.17.0.1:8080
 ```
 
-            "user": "dinosaur",
-            "access_key": "0WLQXCXFB1GXQ4GW5W2F",
-            "secret_key": "AaQX3raJhB9Z84IpMOZOHJLKCyTtA6VvWAYKjpmT"
-
-
 For example, for my storage I am going to `http://172.17.0.1:5000` and for the
 rest API (needed for this client) I am going to `http://172.17.0.1:8080`. This
 means that I would export `http://172.17.0.1:8080` as the endpoint for the API.
