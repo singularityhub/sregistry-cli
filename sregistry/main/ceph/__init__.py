@@ -51,8 +51,19 @@ class Client(ApiConnection):
         '''
         return self.conn.get_container(name)
 
-   
-        #conn.put_container(name)
+
+    def get_or_create_collection(self. name):
+        '''get or create a collection, meaning that if the get returns
+           None, create and return the response to the user.
+ 
+           Parameters
+           ==========
+           name: the name of the collection to get (and create)
+        '''
+        collection = self.get_collection(name)
+        if collection is None:
+            collection = self.conn.put_container(name)
+        return collection
 
     def _update_secrets(self):
         '''update secrets will look for a ceph user and token in the environment
