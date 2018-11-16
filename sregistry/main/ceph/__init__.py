@@ -51,7 +51,7 @@ class Client(ApiConnection):
             collections.append(container['name'])
         return collections
 
-    def get_collection(self, name):
+    def _get_collection(self, name):
         '''get a collection name, which corresponds to an upper level 
            "container" in ceph storage. If we find and get it, return it.
            If it doesn't exist, return None. To get and create, use
@@ -59,8 +59,7 @@ class Client(ApiConnection):
         '''
         return self.conn.get_container(name)
 
-
-    def get_or_create_collection(self. name):
+    def _get_or_create_collection(self, name):
         '''get or create a collection, meaning that if the get returns
            None, create and return the response to the user.
  
@@ -68,8 +67,10 @@ class Client(ApiConnection):
            ==========
            name: the name of the collection to get (and create)
         '''
-        collection = self.get_collection(name)
-        if collection is None:
+        try:     
+            collection = self._get_collection(name)
+        except:
+            bot.info('Creating collection %s...' % name)
             collection = self.conn.put_container(name)
         return collection
 
@@ -86,7 +87,7 @@ class Client(ApiConnection):
             self.config[envar] = self._get_and_update_setting(envar)
 
             # All variables are required
-            if envars[envar] is None:
+            if self.config[envar] is None:
                 bot.error('You must export %s to use client.' % envar)
                 sys.exit(1)
 

@@ -58,7 +58,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         names = parse_image_name(remove_uri(image))
 
         # First try to get the collection
-        collection = self.get_collection(names['collection'])
+        collection = self._get_collection(names['collection'])
         if collection is None:
             bot.error('Collection %s does not exist.' % names['collection'])
 
@@ -72,7 +72,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         image_name = os.path.basename(names['storage'])
         
         try:
-            obj_tuple = conn.get_object(names['collection'], image_name)
+            obj_tuple = self.conn.get_object(names['collection'], image_name)
         except ClientException:
             bot.exit('%s does not exist.' % names['storage'])
 

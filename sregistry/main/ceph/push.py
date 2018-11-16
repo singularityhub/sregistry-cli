@@ -54,7 +54,7 @@ def push(self, path, name, tag=None):
     storage_path = "/%s" %names['storage']
 
     # Create / get the collection
-    collection = self.get_collection(names['collection'])
+    collection = self._get_or_create_collection(names['collection'])
 
     # The image name is the name followed by tag
     image_name = os.path.basename(names['storage'])

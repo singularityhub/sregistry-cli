@@ -43,74 +43,8 @@ environment variables of interest, and then review the basic usage.
 
 ### Credentials
 
-In generating the demo, I was able to create a user and token for myself. I would
-imagine for a cluster deployment you would need to get this from your administrator or similar.
-For example, when I set up my "demo" container I could see the output from generating my
-demo user:
-
-```bash
-2018-11-15 17:39:57  /entrypoint.sh: Setting up a demo user...
-{
-    "user_id": "qqq",
-    "display_name": "Ceph demo user",
-    "email": "",
-    "suspended": 0,
-    "max_buckets": 1000,
-    "auid": 0,
-    "subusers": [],
-    "keys": [
-        {
-            "user": "qqq",
-            "access_key": "qqq",
-            "secret_key": "qqq"
-        }
-    ],
-    "swift_keys": [],
-    "caps": [
-        {
-            "type": "buckets",
-            "perm": "*"
-        },
-        {
-            "type": "metadata",
-            "perm": "*"
-        },
-        {
-            "type": "usage",
-            "perm": "*"
-        },
-        {
-            "type": "users",
-            "perm": "*"
-        }
-    ],
-    "op_mask": "read, write, delete",
-    "default_placement": "",
-    "placement_tags": [],
-    "bucket_quota": {
-        "enabled": false,
-        "check_on_raw": false,
-        "max_size": -1,
-        "max_size_kb": 0,
-        "max_objects": -1
-    },
-    "user_quota": {
-        "enabled": false,
-        "check_on_raw": false,
-        "max_size": -1,
-        "max_size_kb": 0,
-        "max_objects": -1
-    },
-    "temp_url_keys": [],
-    "type": "rgw",
-    "mfa_ids": []
-}
-```
-
-But notice how "swift keys" is empty? We need that to not be the case. let's be more specific and create out own demo user, because I had
-trouble with the user above. The authentication documentation for 
-swift [is here](http://docs.ceph.com/docs/master/radosgw/swift/auth/).
-
+To authenticate with a Ceph Storage endpoint, you will need a username and token.
+In generating the demo, I was able to create a swift user for myself as follows:
 
 ```bash
 docker exec demo radosgw-admin user create --subuser="ceph:vanessa" --uid="vanessa" --display-name="Vanessa Saurus" --key-type=swift --access=full
@@ -160,14 +94,19 @@ docker exec demo radosgw-admin user create --subuser="ceph:vanessa" --uid="vanes
 }
 ```
 
-This gives a more complete token (unlike the one we provided) so I wonder
-if the container demo was valid?
+Note that we are getting the credentials under "ceph keys." If you are using
+the `ceph/daemon` container, the "demo" user credentials will not work because they
+lack this section. For more information, the authentication documentation for 
+swift [is here](http://docs.ceph.com/docs/master/radosgw/swift/auth/). If you
+are an administrator of a Ceph Storage and aren't familiar with the various roles
+and permissions, it would be wise to figure this out before opening up access.
 
-I would want to export the username and key, along with the base URL for the interface to my environment for sregistry to find:
+Now that we have a username (`ceph:vanessa`) and corresponding swift token, let's
+export it for sregistry client to find. Note that you just need to do this once.
 
 ```bash
 export SREGISTRY_CEPH_USER=ceph:vanessa
-export SREGISTRY_CEPH_KEY=gpBCS9JtiADQPz5C35yVNd05ItrjXtryZI8aJEdn
+export SREGISTRY_CEPH_TOKEN=gpBCS9JtiADQPz5C35yVNd05ItrjXtryZI8aJEdn
 export SREGISTRY_CEPH_URL=http://172.17.0.1:8080
 ```
 
@@ -178,7 +117,7 @@ The port must be included too because most setups will have either a different p
 or a proxy that hides it entirely.
 
 
-## sregistry Pull
+## sregistry push
 We've just exported our environment variables for our ceph Storage, now let's
 try pushing a container there! In ceph, the root of storage has a listing of
 (drumroll) things that are *also* called containers. From what I can tell,
@@ -188,8 +127,18 @@ of (linux) containers. What does this mean? For a container called `ubuntu.simg`
 in (what Singularity Hub calls a collection) `my-collection` we would find the
 file `ubuntu.simg` in the "container" (collection) `my-collection`.
 
+First, export the client to use
 
-**writing**
+```bash
+export SREGISTRY_CLIENT=ceph
+```
+
+```bash
+$ sregistry push --name yippy/yuppy ubuntu.simg
+[client|ceph] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Creating collection yippy...
+Progress |===================================| 100.0% 
+```
 
 ### Python Client
 
@@ -199,11 +148,17 @@ Let's now do the same pull, but using the Python shell.
 export SREGISTRY_CLIENT=ceph
 $ sregistry shell
 [client|ceph] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Python 3.6.4 |Anaconda custom (64-bit)| (default, Jan 16 2018, 18:10:19) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 6.2.1 -- An enhanced Interactive Python. Type '?' for help.
+
+$ client.push('aws-is-hard.simg','collection/container')
+Creating collection collection...
+Progress |===================================| 100.0% 
 ```
 
-### Command Line
 
-**writing**
+### Command Line
 
 You can also pull from the command line. Here I'll show unsetting the `SREGISTRY_CLIENT`
 environment variable so you can see how to use the `ceph://` uri.
@@ -213,11 +168,45 @@ $ unset SREGISTRY_CLIENT
 $ sregistry pull --name blueberry.simg --no-cache ceph://library/busybox
 ```
 
+## sregistry search
 
-## sregistry Push
+Now that we've pushed, let's search! First, from the command line:
 
-**writing**
+```bash
+[client|ceph] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Collections
+1  yippy/yuppy-latest.simg
+2  blueberry/pancake-latest.simg
+3  collection/container-latest.simg
+```
 
+And from within Python
+
+```python
+sregistry shell
+$ sregistry shell
+[client|ceph] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Python 3.6.4 |Anaconda custom (64-bit)| (default, Jan 16 2018, 18:10:19) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 6.2.1 -- An enhanced Interactive Python. Type '?' for help.
+
+> client.search()
+['collection/container-latest.simg',
+ 'yippy/yuppy-latest.simg',
+ 'blueberry/pancake-latest.simg']
+```
+```python
+> client.search('blueberry')
+['blueberry/pancake-latest.simg']
+```
+
+## sregistry pull
+
+You can then pull a container of interest. Make sure to specify the URI.
+
+```bash
+$ sregistry pull --name breakfast.simg blueberry/pancake:latest
+```
 
 # Development
 

@@ -61,7 +61,7 @@ def search_all(self):
         sys.exit(1)
 
     bot.info("Collections")
-    bot.table([list(results)])
+    bot.table([[x] for x in list(results)])
     return list(results)
 
 
@@ -76,10 +76,10 @@ def container_query(self, query):
     query = remove_uri(query)
 
     # Here we get names of collections, and then look up containers
-    for container in conn.get_account()[1]:
+    for container in self.conn.get_account()[1]:
 
         # The result here is just the name
-        for result in conn.get_container(container['name'])[1]:
+        for result in self.conn.get_container(container['name'])[1]:
             if query in collection['name']:
                 results.add('%s/%s' %(container['name'], result['name']))
    
