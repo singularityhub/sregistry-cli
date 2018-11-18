@@ -13,6 +13,7 @@ Singularity Registry Global client has tutorials and walkthroughs for the follow
  - [Amazon Elastic Container Registry](/sregistry-cli/client-aws): create your AWS ECR registry and pull images from it.
  - [Docker Hub](/sregistry-cli/client-docker): interact with layers to build images from Docker Hub
  - [Dropbox](/sregistry-cli/client-dropbox): interact with images stored in Dropbox
+ - [GitLab](/sregistry-cli/client-gitlab): pull your GitLab build artifacts
  - [Google Container Registry](/sregistry-cli/client-gcr): the same as docker. Here are tricks for authenticating if you have trouble.
  - [Google Storage](/sregistry-cli/client-google-storage): interact with images from Google Storage
  - [Google Drive](/sregistry-cli/client-google-drive): interact with images from Google Drive
