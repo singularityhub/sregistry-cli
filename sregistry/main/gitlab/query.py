@@ -50,7 +50,7 @@ def search_all(self, collection, job_id=None):
        the user is shown URLs to 
     '''
 
-    results = []
+    results = [['job_id', 'browser']]
  
     url = "%s/projects/%s/jobs" %(self.api_base, 
                                   quote_plus(collection.strip('/')))
@@ -77,13 +77,12 @@ def search_all(self, collection, job_id=None):
                                           collection, 
                                           job['id'],
                                           name))
-                        results.append([job['id'], commit, artifact_url])   
+                        results.append([str(job['id']), artifact_url])   
 
-    if len(results) == 0:
+    if len(results) == 1:
         bot.info("No potential archives found in artifacts.")
         sys.exit(0)
 
     bot.info("Artifact Browsers (you will need path and job id for pull)")
-    results = ['job_id', 'browser'] + results
     bot.table(results)
     return results

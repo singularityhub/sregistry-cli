@@ -22,13 +22,19 @@ from sregistry.utils import ( parse_image_name, remove_uri )
 import os
 import sys
 
+try:
+    from urllib.parse import quote_plus # python 3.*
+except:
+    from urllib import quote_plus  # python 2.*
+
 def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from gitlab. The image is found based on the 
        uri that should correspond to a gitlab repository, and then
        the branch, job name, artifact folder, and tag of the container.
        The minimum that we need are the job id, collection, and job name. Eg:
 
-       job_id|job_name|singularityhub/gitlab-ci:tag 
+       job_id|collection|job_name   (or)
+       job_id|collection
 
        Parameters
        ==========
@@ -57,14 +63,11 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
-        # Format job_id|job_name|collection
-        # 122056733|build|singularityhub/gitlab-ci'
-        try:
-            job_id, job_name, collection = image.split('|')
-        except:
-            bot.exit('''Malformed image string! Please provide:
-                        job_id | job_name | collection (without spaces)''')
+        # Format job_id|collection|job_name
+        # 122056733,singularityhub/gitlab-ci'
+        # 122056733,singularityhub/gitlab-ci,build
 
+        job_id, collection, job_name = self._parse_image_name(image)
         names = parse_image_name(remove_uri(collection))
 
         # If the user didn't provide a file, make one based on the names
@@ -77,7 +80,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             sys.exit(1) 
 
         # Put together the GitLab URI
-        image_name = "Singularity.%s.simg" %(tag)
+        image_name = "Singularity.%s.simg" %(names['tag'])
         if names['tag'] == 'latest':
             image_name = "Singularity.simg"
 
@@ -107,7 +110,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                                    file_name=file_name,
                                    show_progress=True)
 
-        metadata = self.get_metadata()
+        metadata = self._get_metadata()
         metadata['collection'] = collection
         metadata['job_id'] = job_id
         metadata['job_name'] = job_name

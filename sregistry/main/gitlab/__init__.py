@@ -23,7 +23,7 @@ import sys
 import re
 
 from .pull import pull
-from .query import ( search, search_all, container_query )
+from .query import ( search, search_all )
 
 class Client(ApiConnection):
 
@@ -60,7 +60,7 @@ class Client(ApiConnection):
     def __str__(self):
         return type(self)
 
-    def get_metadata(self):
+    def _get_metadata(self):
         '''since the user needs a job id and other parameters, save this
            for them.
         '''
@@ -84,10 +84,39 @@ class Client(ApiConnection):
             return "latest"
         return re.sub('.*Singularity[.]', '',filename).replace('.simg', '')
 
+    def _parse_image_name(self, image, retry=True):
+        '''starting with an image string in either of the following formats:
+           job_id|collection
+           job_id|collection|job_name
+ 
+           Parse the job_name, job_id, and collection uri from it. If the user
+           provides the first option, we use the job_name set by the client
+           (default is build).
+ 
+           Parameters
+           ==========
+           image: the string to parse, with values separated by |
+           retry: the client can call itself recursively once, providing the
+                  default job_name if the user doesn't.
+        '''
+        try:
+            job_id, collection, job_name = image.split(',')
+        except:
+            # Retry and add job_name
+            if retry:
+                return self._parse_image_name("%s,%s" %(image, self.job),
+                                              retry=False)
+
+            # Or fail
+            bot.exit('''Malformed image string! Please provide:
+                        job_id,collection           (or)
+                        job_id,collection,job_name''')
+
+        return job_id, collection, job_name
+
 # Add your different functions imported at the top to the client here
 Client.pull = pull
 
 # Query functions
 Client.search = search
 Client._search_all = search_all
-Client._container_query = container_query
