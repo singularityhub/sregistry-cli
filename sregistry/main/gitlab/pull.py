@@ -26,11 +26,14 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from gitlab. The image is found based on the 
        uri that should correspond to a gitlab repository, and then
        the branch, job name, artifact folder, and tag of the container.
- 
+       The minimum that we need are the job id, collection, and job name. Eg:
+
+       job_id|job_name|singularityhub/gitlab-ci:tag 
+
        Parameters
        ==========
        images: refers to the uri given by the user to pull in the format
-       <collection>/<namespace>:<tag>.
+               specified above
        file_name: the user's requested name for the file. It can 
                   optionally be None if the user wants a default.
        save: if True, you should save the container to the database
@@ -54,26 +57,16 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
-        names = parse_image_name(remove_uri(image))
+        # Format job_id|job_name|collection
+        # 122056733|build|singularityhub/gitlab-ci'
+        try:
+            job_id, job_name, collection = image.split('|')
+        except:
+            bot.exit('''Malformed image string! Please provide:
+                        job_id | job_name | collection (without spaces)''')
 
-        # Put together the GitLab URI
-        image_name = "Singularity.%s.simg" %(tag)
-        if names['tag'] == 'latest':
-            image_name = "Singularity.simg"
+        names = parse_image_name(remove_uri(collection))
 
-        # <base>/<collection>/-/jobs/artifacts/<branch>/raw/<job>/<artifacts>/Singularity.<tag>.simg?job=<job>
-        base = "%s/%s/-/jobs/artifacts/%s/raw/%s" %(self.base, 
-                                                    names['uri'],
-                                                    self.branch,
-                                                    self.job)
-
-        gitlab_url = "%s/<artifacts>/%s?job=<job>" %(base,
-                                                     self.artifacts,
-                                                     image_name,
-                                                     self.job)
-
-        # https://gitlab.com/gitlab-org/gitlab-ce/-/jobs/artifacts/master/raw/coverage/index.html?job=coverage
-              
         # If the user didn't provide a file, make one based on the names
         if file_name is None:
             file_name = self._get_storage_name(names)
@@ -83,15 +76,50 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             bot.error('Image exists! Remove first, or use --force to overwrite')
             sys.exit(1) 
 
+        # Put together the GitLab URI
+        image_name = "Singularity.%s.simg" %(tag)
+        if names['tag'] == 'latest':
+            image_name = "Singularity.simg"
+
+        # Assemble artifact path
+        artifact_path = "%s/%s" %(self.artifacts, image_name)
+        bot.info('Looking for artifact %s for job name %s, %s' %(artifact_path,
+                                                                 job_name,
+                                                                 job_id))
+
+        project = quote_plus(collection.strip('/'))
+        
+        # This is supposed to work, but it doesn't
+        # url = "%s/projects/%s/jobs/%s/artifacts/file/%s" %(self.api_base, 
+        #                                                  project, job_id,
+        #                                                  artifact_path)
+
+        # This does work :)
+        url = "%s/%s/-/jobs/%s/artifacts/raw/%s/?inline=false" % (self.base, 
+                                                                  collection, 
+                                                                  job_id, 
+                                                                  artifact_path) 
+
+        bot.info(url)
+
         # stream the url content to the file name
-        image_file = self._stream(gitlab_url, stream_to=file_name)
+        image_file = self.download(url=url,
+                                   file_name=file_name,
+                                   show_progress=True)
+
+        metadata = self.get_metadata()
+        metadata['collection'] = collection
+        metadata['job_id'] = job_id
+        metadata['job_name'] = job_name
+        metadata['artifact_path'] = artifact_path
+        metadata['sregistry_pull'] = image
 
         # If we save to storage, the uri is the dropbox_path
         if save is True:
             container = self.add(image_path = image_file,
-                                 image_uri = dropbox_path.strip('/'),
+                                 image_uri = image,
                                  metadata = metadata,
-                                 url = gitlab_url)
+                                 url = url)
 
             # When the container is created, this is the path to the image
             image_file = container.image
