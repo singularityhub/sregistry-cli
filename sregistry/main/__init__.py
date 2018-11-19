@@ -62,6 +62,7 @@ def get_client(image=None, quiet=False, **kwargs):
     if   SREGISTRY_CLIENT == 'aws': from .aws import Client
     elif SREGISTRY_CLIENT == 'docker': from .docker import Client
     elif SREGISTRY_CLIENT == 'dropbox': from .dropbox import Client
+    elif SREGISTRY_CLIENT == 'gitlab': from .gitlab import Client
     elif SREGISTRY_CLIENT == 'globus': from .globus import Client
     elif SREGISTRY_CLIENT == 'nvidia': from .nvidia import Client
     elif SREGISTRY_CLIENT == 'hub': from .hub import Client

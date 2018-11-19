@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2017-2018 Vanessa Sochat.
+Copyright (C) 2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -99,13 +99,3 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     if len(finished) == 1:
         finished = finished[0]
     return finished
-
-'''
-            with open(storage_path, 'wb') as output:
-                output.write(F.content)
-
-#TODO: this is "batch/big? way to do it
-metadata, res = dbx.files_download(path)
-for data in res.iter_content(10):
- print(data)
-'''

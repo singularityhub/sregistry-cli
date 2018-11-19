@@ -236,6 +236,10 @@ class SRegistryMessage:
     def error(self, message):
         self.emit(ERROR, message, 'ERROR')
 
+    def exit(self, message, return_code=1):
+        self.emit(ERROR, message, 'ERROR')
+        sys.exit(return_code)
+
     def warning(self, message):
         self.emit(WARNING, message, 'WARNING')
 
