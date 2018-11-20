@@ -17,11 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-<<<<<<< HEAD
 __version__ = "0.01.02"
-=======
-__version__ = "0.01.01"
->>>>>>> 919c9c05bd9325c0f7d8d4bd1e4885a6a4c6512c
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
