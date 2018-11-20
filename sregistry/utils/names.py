@@ -152,6 +152,7 @@ def get_uri(image):
                          'docker', 
                          'dropbox',
                          'hub',
+                         'gitlab',
                          'globus',
                          'registry', 
                          'nvidia', 
