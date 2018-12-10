@@ -2,6 +2,16 @@
 # Google Cloud Storage
 #######################################
 
+%appenv ceph
+    SREGISTRY_CLIENT=ceph
+    export SREGISTRY_CLIENT
+%apprun ceph
+    exec /opt/conda/bin/sregistry "$@"
+
+#######################################
+# Google Cloud Storage
+#######################################
+
 %appenv google-storage
     SREGISTRY_CLIENT=google-storage
     export SREGISTRY_CLIENT

@@ -336,5 +336,5 @@ Yes! Oh thank goodness.
 
 <div>
     <a href="/sregistry-cli/client-nvidia"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
-    <a href="/sregistry-cli/client-hub"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+    <a href="/sregistry-cli/client-ceph"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>

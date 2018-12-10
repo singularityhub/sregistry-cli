@@ -60,6 +60,7 @@ def get_client(image=None, quiet=False, **kwargs):
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
     if   SREGISTRY_CLIENT == 'aws': from .aws import Client
+    elif SREGISTRY_CLIENT == 'ceph': from .ceph import Client    
     elif SREGISTRY_CLIENT == 'docker': from .docker import Client
     elif SREGISTRY_CLIENT == 'dropbox': from .dropbox import Client
     elif SREGISTRY_CLIENT == 'gitlab': from .gitlab import Client

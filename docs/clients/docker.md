@@ -222,6 +222,6 @@ Check out our <a href="/sregistry-cli/client-docker-debugging">debugging and sup
 if you run into issues and need to debug or get help.
 
 <div>
-    <a href="/sregistry-cli/commands"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
-    <a href="/sregistry-cli/client-google-storage"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
+    <a href="/sregistry-cli/ceph"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
+    <a href="/sregistry-cli/client-dropbox"><button class="next-button btn btn-primary"><i class="fa fa-chevron-right"></i> </button></a>
 </div><br>
