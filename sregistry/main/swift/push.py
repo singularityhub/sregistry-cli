@@ -28,7 +28,7 @@ import os
 
 
 def push(self, path, name, tag=None):
-    '''push an image to your Ceph Storage. If the collection doesn't exist,
+    '''push an image to your Storage. If the collection doesn't exist,
        it is created.
    
        Parameters

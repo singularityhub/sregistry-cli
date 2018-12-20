@@ -24,8 +24,8 @@ import os
 import sys
 
 def pull(self, images, file_name=None, save=True, **kwargs):
-    '''pull an image from ceph storage. The image is found based on the storage 
-       uri
+    '''pull an image from storage using Swift. The image is found based on the
+       storage uri
  
        Parameters
        ==========

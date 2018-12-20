@@ -32,7 +32,7 @@ class Client(ApiConnection):
  
         self.config = dict()
         self._update_secrets()
-        self.name = self.config.get('SREGISTRY_CEPH_URL', 'Ceph Storage')
+        self.name = self.config.get('SREGISTRY_SWIFT_URL', 'Swift Client Storage')
         super(ApiConnection, self).__init__(**kwargs)
 
     def _speak(self):
@@ -76,14 +76,14 @@ class Client(ApiConnection):
 
 
     def _update_secrets(self):
-        '''update secrets will look for a ceph user and token in the environment
+        '''update secrets will look for a user and token in the environment
            If we find the values, cache and continue. Otherwise, exit with error
         '''
 
         # Retrieve the user token, user, and base. Exit if not found 
-        for envar in ['SREGISTRY_CEPH_USER',
-                      'SREGISTRY_CEPH_TOKEN',
-                      'SREGISTRY_CEPH_URL']:
+        for envar in ['SREGISTRY_SWIFT_USER',
+                      'SREGISTRY_SWIFT_TOKEN',
+                      'SREGISTRY_SWIFT_URL']:
             self.config[envar] = self._get_and_update_setting(envar)
 
             # All variables are required
@@ -92,12 +92,12 @@ class Client(ApiConnection):
                 sys.exit(1)
 
         # More human friendly to interact with
-        auth_url = '%s/auth/' % self.config['SREGISTRY_CEPH_URL']
+        auth_url = '%s/auth/' % self.config['SREGISTRY_SWIFT_URL']
 
         # Save the connection to use for some command
         self.conn = swiftclient.Connection(
-            user=self.config['SREGISTRY_CEPH_USER'],
-            key=self.config['SREGISTRY_CEPH_TOKEN'],
+            user=self.config['SREGISTRY_SWIFT_USER'],
+            key=self.config['SREGISTRY_SWIFT_TOKEN'],
             authurl=auth_url,
         )
 

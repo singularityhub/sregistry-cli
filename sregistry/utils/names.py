@@ -148,7 +148,7 @@ def get_uri(image):
                           .replace('://',''))
  
         accepted_uris = ['aws',
-                         'ceph',
+                         'swift',
                          'docker', 
                          'dropbox',
                          'hub',

@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.01.02"
+__version__ = "0.01.03"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -50,7 +50,7 @@ INSTALL_BASIC_AWS = (
     ('awscli', {'min_version': '1.16.19'}),
 )
 
-INSTALL_BASIC_CEPH = (
+INSTALL_BASIC_SWIFT = (
     ('python-swiftclient', {'min_version': '3.6.0'}),
     ('oauth2client', {'min_version': '3.0'}),
 )
@@ -82,7 +82,7 @@ INSTALL_BASIC_GOOGLE_COMPUTE = (
 
 INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
                      INSTALL_BASIC_AWS +
-                     INSTALL_BASIC_CEPH +
+                     INSTALL_BASIC_SWIFT +
                      INSTALL_BASIC_DROPBOX +
                      INSTALL_BASIC_GLOBUS +
                      INSTALL_BASIC_REGISTRY +
@@ -106,7 +106,7 @@ INSTALL_REQUIRES_AWS = (
     ('sqlalchemy', {'min_version': None})
 )
 
-INSTALL_REQUIRES_CEPH = (
+INSTALL_REQUIRES_SWIFT = (
     ('python-swiftclient', {'min_version': '3.6.0'}),
     ('sqlalchemy', {'min_version': None}),
     ('oauth2client', {'min_version': '3.0'}),
@@ -145,7 +145,7 @@ INSTALL_REQUIRES_GOOGLE_COMPUTE = (
 
 INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
                         INSTALL_REQUIRES_AWS +
-                        INSTALL_REQUIRES_CEPH +
+                        INSTALL_REQUIRES_SWIFT +
                         INSTALL_REQUIRES_DROPBOX +
                         INSTALL_REQUIRES_REGISTRY +
                         INSTALL_REQUIRES_GOOGLE_COMPUTE +
