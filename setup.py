@@ -78,7 +78,7 @@ if __name__ == "__main__":
     GOOGLE_STORAGE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_STORAGE')
     GOOGLE_DRIVE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_DRIVE')
     GOOGLE_COMPUTE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_COMPUTE')
-    SWIFT = get_reqs(lookup,'INSTALL_BASIC_SWIFT')
+    SWIFT_BASIC = get_reqs(lookup,'INSTALL_BASIC_SWIFT')
 
     # These requirement sets include sqlalchemy, for client+storage
 
@@ -108,22 +108,24 @@ if __name__ == "__main__":
           keywords=KEYWORDS,
           install_requires = INSTALL_REQUIRES,
           extras_require={
-              'dropbox-basic': [DROPBOX_BASIC],
+              'all-basic': [INSTALL_BASIC_ALL],
               'aws-basic': [AWS_BASIC],
-              'registry-basic': [REGISTRY_BASIC],
+              'dropbox-basic': [DROPBOX_BASIC],
               'google-compute-basic': [GOOGLE_COMPUTE_BASIC],
               'google-storage-basic': [GOOGLE_STORAGE_BASIC],
               'google-drive-basic': [GOOGLE_DRIVE_BASIC],
               'globus-basic': [GLOBUS_BASIC],
-              'all-basic': [INSTALL_BASIC_ALL],
+              'registry-basic': [REGISTRY_BASIC],
+              'swift-basic': [SWIFT_BASIC],
+              'all': [INSTALL_REQUIRES_ALL],
               'aws': [AWS],
               'dropbox': [DROPBOX],
-              'registry': [REGISTRY],
               'google-compute': [GOOGLE_COMPUTE],
               'google-storage': [GOOGLE_STORAGE],
               'google-drive': [GOOGLE_DRIVE],
               'globus': [GLOBUS],
-              'all': [INSTALL_REQUIRES_ALL]
+              'registry': [REGISTRY],
+              'swift': [SWIFT]
 
           },
           scripts=['sregistry/main/docker/blob2oci'],
