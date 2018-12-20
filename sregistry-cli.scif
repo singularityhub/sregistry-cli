@@ -2,10 +2,10 @@
 # Google Cloud Storage
 #######################################
 
-%appenv ceph
-    SREGISTRY_CLIENT=ceph
+%appenv swift
+    SREGISTRY_CLIENT=swift
     export SREGISTRY_CLIENT
-%apprun ceph
+%apprun swift
     exec /opt/conda/bin/sregistry "$@"
 
 #######################################

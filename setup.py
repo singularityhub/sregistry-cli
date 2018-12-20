@@ -78,6 +78,7 @@ if __name__ == "__main__":
     GOOGLE_STORAGE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_STORAGE')
     GOOGLE_DRIVE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_DRIVE')
     GOOGLE_COMPUTE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_COMPUTE')
+    SWIFT = get_reqs(lookup,'INSTALL_BASIC_REQUIRES_SWIFT')
 
     # These requirement sets include sqlalchemy, for client+storage
 
@@ -89,6 +90,7 @@ if __name__ == "__main__":
     GOOGLE_STORAGE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
     GOOGLE_DRIVE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
     GOOGLE_COMPUTE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_COMPUTE')
+    SWIFT = get_reqs(lookup,'INSTALL_REQUIRES_SWIFT')
 
     setup(name=NAME,
           version=VERSION,

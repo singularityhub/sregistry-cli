@@ -60,7 +60,6 @@ def get_client(image=None, quiet=False, **kwargs):
 
     # If no obvious credential provided, we can use SREGISTRY_CLIENT
     if   SREGISTRY_CLIENT == 'aws': from .aws import Client
-    elif SREGISTRY_CLIENT == 'ceph': from .ceph import Client    
     elif SREGISTRY_CLIENT == 'docker': from .docker import Client
     elif SREGISTRY_CLIENT == 'dropbox': from .dropbox import Client
     elif SREGISTRY_CLIENT == 'gitlab': from .gitlab import Client
@@ -71,6 +70,7 @@ def get_client(image=None, quiet=False, **kwargs):
     elif SREGISTRY_CLIENT == 'google-compute': from .google_storage import Client
     elif SREGISTRY_CLIENT == 'google-storage': from .google_storage import Client
     elif SREGISTRY_CLIENT == 'registry': from .registry import Client
+    elif SREGISTRY_CLIENT == 'swift': from .swift import Client
     else: from .hub import Client
 
     Client.client_name = SREGISTRY_CLIENT
