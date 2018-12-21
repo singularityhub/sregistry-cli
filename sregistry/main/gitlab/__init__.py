@@ -52,9 +52,7 @@ class Client(ApiConnection):
     def _update_secrets(self):
         '''update secrets will update metadata needed for pull and search
         '''
-        self.token = self._get_and_update_setting('SREGISTRY_GITLAB_TOKEN')
-        if self.token is None:
-            bot.exit('You must export SREGISTRY_GITLAB_TOKEN to authenticate.')
+        self.token = self._required_get_and_update('SREGISTRY_GITLAB_TOKEN')
         self.headers["Private-Token"] = self.token
 
     def __str__(self):

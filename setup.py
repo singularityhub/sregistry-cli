@@ -72,6 +72,7 @@ if __name__ == "__main__":
 
     INSTALL_BASIC_ALL = get_reqs(lookup,'INSTALL_BASIC_ALL')
     AWS_BASIC = get_reqs(lookup,'INSTALL_BASIC_AWS')
+    S3_BASIC = get_reqs(lookup,'INSTALL_BASIC_S3')
     DROPBOX_BASIC = get_reqs(lookup,'INSTALL_BASIC_DROPBOX')
     REGISTRY_BASIC = get_reqs(lookup,'INSTALL_BASIC_REGISTRY')
     GLOBUS_BASIC = get_reqs(lookup,'INSTALL_BASIC_GLOBUS')
@@ -84,6 +85,7 @@ if __name__ == "__main__":
 
     INSTALL_REQUIRES_ALL = get_reqs(lookup,'INSTALL_REQUIRES_ALL')
     AWS = get_reqs(lookup,'INSTALL_REQUIRES_AWS')
+    S3 = get_reqs(lookup,'INSTALL_REQUIRES_S3')
     DROPBOX = get_reqs(lookup,'INSTALL_REQUIRES_DROPBOX')
     REGISTRY = get_reqs(lookup,'INSTALL_REQUIRES_REGISTRY')
     GLOBUS = get_reqs(lookup,'INSTALL_REQUIRES_GLOBUS')
@@ -116,6 +118,7 @@ if __name__ == "__main__":
               'google-drive-basic': [GOOGLE_DRIVE_BASIC],
               'globus-basic': [GLOBUS_BASIC],
               'registry-basic': [REGISTRY_BASIC],
+              's3-basic': [S3_BASIC],
               'swift-basic': [SWIFT_BASIC],
               'all': [INSTALL_REQUIRES_ALL],
               'aws': [AWS],
@@ -125,6 +128,7 @@ if __name__ == "__main__":
               'google-drive': [GOOGLE_DRIVE],
               'globus': [GLOBUS],
               'registry': [REGISTRY],
+              's3': [S3],
               'swift': [SWIFT]
 
           },

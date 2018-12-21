@@ -25,8 +25,12 @@ import re
 
 def get_image_hash(image_path):
     '''return an md5 hash of the file based on a criteria level. This
-    is intended to give the file a reasonable version.
-    :param image_path: full path to the singularity image
+       is intended to give the file a reasonable version.
+    
+       Parameters
+       ==========
+       image_path: full path to the singularity image
+
     '''
     hasher = hashlib.md5()
     with open(image_path, "rb") as f:
@@ -100,18 +104,29 @@ def parse_image_name(image_name,
     # Piece together the filename
     uri = "%s/%s" % (collection, image_name)    
     url = uri
+
+    # Tag is defined
     if tag is not None:
         uri = "%s-%s" % (uri, tag)
+        tag_uri = "%s:%s" % (url, tag) 
+
+    # Version is defined
     if version is not None:
         uri = "%s@%s" % (uri, version)
+        tag_uri = "%s@%s" % (tag_uri, version) 
+
+    # A second storage URI honors the tag (:) separator
 
     storage = "%s.%s" %(uri, ext)
+    storage_uri = "%s.%s" %(tag_uri, ext)
     result = {"collection": collection,
               "image": image_name,
               "url": url,
               "tag": tag,
               "version": version,
               "storage": storage,
+              "storage_uri": storage_uri,
+              "tag_uri": tag_uri,
               "uri": uri}
 
     return result
@@ -148,16 +163,17 @@ def get_uri(image):
                           .replace('://',''))
  
         accepted_uris = ['aws',
-                         'swift',
                          'docker', 
                          'dropbox',
-                         'hub',
                          'gitlab',
                          'globus',
-                         'registry', 
-                         'nvidia', 
                          'google-storage',
-                         'google-drive']
+                         'google-drive'
+                         'hub',
+                         'nvidia', 
+                         'registry',
+                         's3', 
+                         'swift']
 
         # Allow for Singularity compatability
         if uri == "shub": uri = "hub"

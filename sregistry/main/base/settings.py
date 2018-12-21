@@ -99,6 +99,14 @@ def get_and_update_setting(self, name, default=None):
     return setting
 
 
+def required_get_and_update(self, name, default=None):
+    '''a wrapper to get_and_update, but if not successful, will print an
+       error and exit.
+    '''
+    setting = self._get_and_update_setting(name, default=None)
+    if setting in [None, ""]:
+        bot.error('You must export %s' % setting)
+
 def update_setting(self, name, value):
     '''Just update a setting, doesn't need to be returned.
     ''' 

@@ -128,15 +128,11 @@ class Client(ApiConnection):
            from there.
         '''
         # If the user has defined secrets, use them
-        token = self._get_and_update_setting('SREGISTRY_NVIDIA_TOKEN')
+        token = self._required_get_and_update('SREGISTRY_NVIDIA_TOKEN')
         username = self._get_and_update_setting('SREGISTRY_NVIDIA_USERNAME')
 
         if username is None:
             username = "$oauthtoken"
-
-        if token is None:
-            bot.error('You must have an Nvidia GPU cloud token to use it.')
-            sys.exit(1)
 
         # Option 1: the user exports username and password
         if token is not None:

@@ -84,13 +84,10 @@ class Client(ApiConnection):
         if hasattr(self.aws._client_config, 'region_name'):
             zone = self.aws._client_config.region_name
 
-        aws_id = self._get_setting('SREGISTRY_AWS_ID')
-        aws_zone = self._get_setting('SREGISTRY_AWS_ZONE', zone)
-        base = self._get_setting('SREGISTRY_AWS_BASE')
+        aws_id = self._required_get_and_update('SREGISTRY_AWS_ID')
+        aws_zone = self._required_get_and_update('SREGISTRY_AWS_ZONE', zone)
         version = self._get_setting('SREGISTRY_AWS_VERSION', 'v2')
-
-        if aws_id is None or aws_zone is None:
-            bot.exit('Please export SREGISTRY_AWS_ID and SREGISTRY_AWS_ZONE.')
+        base = self._get_setting('SREGISTRY_AWS_BASE')
 
         if base is None:
             base = "%s.dkr.ecr.%s.amazonaws.com" % (aws_id, aws_zone)

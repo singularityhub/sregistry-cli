@@ -76,12 +76,7 @@ class Client(ApiConnection):
         '''
 
         # Retrieve the user token. Exit if not found 
-
-        token = self._get_and_update_setting('SREGISTRY_DROPBOX_TOKEN')
-        if token is None:
-            bot.error('You must export SREGISTRY_DROPBOX_TOKEN to use client.')
-            sys.exit(1)
-
+        token = self._required_get_and_update('SREGISTRY_DROPBOX_TOKEN')
 
         # Create the dropbox client
         self.dbx = Dropbox(token)
