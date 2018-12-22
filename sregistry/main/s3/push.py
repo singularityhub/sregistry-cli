@@ -42,4 +42,8 @@ def push(self, path, name, tag=None):
     names = parse_image_name(remove_uri(name), tag=tag)
     image_size = os.path.getsize(path) >> 20
 
-    self.bucket.upload_file(path, names['storage_uri'])
+    # Create extra metadata, this is how we identify the image later
+    metadata = {'sizemb': "%s" % image_size,
+                'client': 'sregistry' }
+
+    self.bucket.upload_file(path, names['storage_uri'], {"Metadata": metadata })

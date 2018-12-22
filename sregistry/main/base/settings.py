@@ -1,7 +1,5 @@
 '''
 
-sregistry.api: base template for making a connection to an API
-
 Copyright (C) 2017-2018 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
@@ -20,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.utils import mkdir_p
+from sregistry.logger import bot
 from sregistry.auth import ( read_client_secrets, update_client_secrets )
 import re
 import os
@@ -105,7 +104,7 @@ def required_get_and_update(self, name, default=None):
     '''
     setting = self._get_and_update_setting(name, default=None)
     if setting in [None, ""]:
-        bot.error('You must export %s' % setting)
+        bot.exit('You must export %s' % name)
 
 def update_setting(self, name, value):
     '''Just update a setting, doesn't need to be returned.

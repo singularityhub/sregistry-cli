@@ -18,12 +18,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.auth import read_client_secrets
-from sregistry.logger import RobotNamer
+from sregistry.logger import ( RobotNamer, bot )
 from sregistry.main import ApiConnection
 import boto3
 import json
 import os
 
+from .query import ( 
+    search, 
+    search_all, 
+    container_search 
+)
 from .pull import pull
 from .push import push
 
@@ -88,7 +93,7 @@ class Client(ApiConnection):
         # If the bucket doesn't exist, create it
         if self.bucket is None:
             self.bucket = self.s3.create_bucket(Bucket=self.bucket_name)
-            bot.info('Created bucket %s' self.bucket.name )
+            bot.info('Created bucket %s' % self.bucket.name )
 
         return self.bucket
 
@@ -135,3 +140,6 @@ class Client(ApiConnection):
 
 Client.pull = pull
 Client.push = push
+Client.search = search
+Client._search_all = search_all
+Client._container_search = container_search
