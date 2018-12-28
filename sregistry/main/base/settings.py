@@ -105,6 +105,8 @@ def required_get_and_update(self, name, default=None):
     setting = self._get_and_update_setting(name, default=None)
     if setting in [None, ""]:
         bot.exit('You must export %s' % name)
+    return setting
+
 
 def update_setting(self, name, value):
     '''Just update a setting, doesn't need to be returned.
