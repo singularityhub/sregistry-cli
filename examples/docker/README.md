@@ -25,7 +25,7 @@ docker run vanessa/sregistrycli
 The [docker-compose.yml](docker-compose.yml) is an example if bringing up
 an sregistry-cli and a Minio Storage server. We used this for testing. The docker 
 image is from [Docker Hub](https://cloud.docker.com/repository/docker/vanessa/sregistry-cli).
-
+You should have [docker-compose](https://docs.docker.com/compose/install/) installed.
 
 ```
 cd examples/docker
@@ -35,9 +35,9 @@ docker-compose up -d
 Your images should be up and running:
 
 ```
-CONTAINER ID        IMAGE                                COMMAND                  CREATED             STATUS                            PORTS                    NAMES
-28eea3ee8658        minio/minio                          "/usr/bin/docker-ent…"   4 seconds ago       Up 2 seconds (health: starting)   0.0.0.0:9000->9000/tcp   docker_minio_1
-c94d26b20a69        vanessa/sregistry-cli:add_aws-push   "sregistry tail -F /…"   6 seconds ago       Up 3 seconds                                               docker_sregistrycli_1
+CONTAINER ID        IMAGE                                COMMAND                  CREATED             STATUS                    PORTS                    NAMES
+4fbe8ab72f4e        minio/minio                          "/usr/bin/docker-ent…"   11 minutes ago      Up 11 minutes (healthy)   0.0.0.0:9000->9000/tcp   docker_minio_1
+c512453bfeed        vanessa/sregistry-cli:add_aws-push   "tail -F /dev/null"      11 minutes ago      Up 11 minutes                                      docker_sregistrycli_1
 ```
 
 ## Shell Inside
