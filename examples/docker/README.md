@@ -49,11 +49,17 @@ $ docker exec -it docker_sregistrycli_1 bash
 (base) root@c512453bfeed:/code# 
 ```
 
+
+## Pull from Docker
+
 Pull an image from Docker, we will push this image to our local registry!
 
 ```bash
 SREGISTRY_CLIENT=docker sregistry pull ubuntu:latest
+
 ```
+
+## Push to Minio
 
 The minio and aws credentials for the attached minio server are already exported
 with the container. s3 is also export as the default client. Let's now use the client 
