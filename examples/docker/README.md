@@ -22,7 +22,7 @@ docker run vanessa/sregistrycli
 
 # Docker Compose
 
-The [docker-compose.yml](docker-compose.yml) is an example if bringing up
+The [docker-compose.yml](docker-compose.yml) is an example of bringing up
 an sregistry-cli and a Minio Storage server. We used this for testing. The docker 
 image is from [Docker Hub](https://cloud.docker.com/repository/docker/vanessa/sregistry-cli).
 You should have [docker-compose](https://docs.docker.com/compose/install/) installed.
