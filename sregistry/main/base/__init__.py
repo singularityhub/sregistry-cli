@@ -45,6 +45,7 @@ from sregistry.main.base.settings import (
     get_settings,
     get_storage_name,
     get_and_update_setting,
+    required_get_and_update,
     update_setting
 )
 
@@ -142,6 +143,7 @@ ApiConnection.require_secrets = require_secrets
 ApiConnection._get_setting = get_setting
 ApiConnection._get_settings = get_settings
 ApiConnection._get_and_update_setting = get_and_update_setting
+ApiConnection._required_get_and_update = required_get_and_update
 ApiConnection._get_storage_name = get_storage_name
 ApiConnection._update_setting = update_setting
 

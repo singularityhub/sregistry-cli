@@ -80,7 +80,12 @@ INSTALL_BASIC_GOOGLE_COMPUTE = (
     ('google-cloud-storage', {'min_version': '1.4.0'})
 )
 
+INSTALL_BASIC_S3 = (
+    ('boto3', {'min_version': '1.7.83'}),
+)
+
 INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
+                     INSTALL_BASIC_S3 +
                      INSTALL_BASIC_AWS +
                      INSTALL_BASIC_SWIFT +
                      INSTALL_BASIC_DROPBOX +
@@ -143,8 +148,14 @@ INSTALL_REQUIRES_GOOGLE_COMPUTE = (
     ('google-cloud-storage', {'min_version': '1.4.0'})
 )
 
+INSTALL_REQUIRES_S3 = (
+    ('sqlalchemy', {'min_version': None}),
+    ('boto3', {'min_version': '1.7.83'}),
+)
+
 INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
                         INSTALL_REQUIRES_AWS +
+                        INSTALL_REQUIRES_S3 +
                         INSTALL_REQUIRES_SWIFT +
                         INSTALL_REQUIRES_DROPBOX +
                         INSTALL_REQUIRES_REGISTRY +

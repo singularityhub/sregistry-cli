@@ -139,13 +139,7 @@ class Client(ApiConnection):
            zone: a default zone, will be us-west1-a by default
 
         '''
-        project = self._get_and_update_setting('SREGISTRY_GOOGLE_PROJECT', project)
-        
-        if not project:
-            bot.error('Export your SREGISTRY_GOOGLE_PROJECT to build.')
-            sys.exit(1)
-
-        return project
+        return self._required_get_and_update('SREGISTRY_GOOGLE_PROJECT', project)
 
 
     def _get_zone(self, zone='us-west1-a'):

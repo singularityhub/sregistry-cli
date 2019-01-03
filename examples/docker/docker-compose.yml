@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+    minio:
+      image: minio/minio
+      ports:
+        - "9000:9000"
+      environment:
+        MINIO_ACCESS_KEY: minio
+        MINIO_SECRET_KEY: minio123
+      command: server /data 
+      links:
+        - sregistrycli
+    sregistrycli:
+      image: vanessa/sregistry-cli:add_aws-push
+      privileged: true
+      command: -F /dev/null
+      entrypoint: tail
+      environment:
+        SREGISTRY_CLIENT: s3
+        SREGISTRY_S3_BASE: http://minio:9000
+        SREGISTRY_S3_BUCKET: mybucket
+        AWS_ACCESS_KEY_ID: minio
+        AWS_SECRET_ACCESS_KEY: minio123
