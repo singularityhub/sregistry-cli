@@ -3,6 +3,7 @@ version: '2'
 services:
     minio:
       image: minio/minio
+      container_name: minio
       ports:
         - "9000:9000"
       environment:
@@ -13,6 +14,7 @@ services:
         - sregistrycli
     sregistrycli:
       image: vanessa/sregistry-cli:add_aws-push
+      container_name: sregistrycli
       privileged: true
       command: -F /dev/null
       entrypoint: tail
