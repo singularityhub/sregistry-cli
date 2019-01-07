@@ -4,7 +4,7 @@ This is a base client that imports functions depending on the API it is
     using. Currently, it supports singularity hub and registry, with default
     to use Singularity Hub.
 
-Copyright (C) 2017-2018 Vanessa Sochat.
+Copyright (C) 2017-2019 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by

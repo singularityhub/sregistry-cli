@@ -13,7 +13,7 @@ services:
       links:
         - sregistrycli
     sregistrycli:
-      image: vanessa/sregistry-cli:add_aws-push
+      image: singularityhub/sregistry-cli:0.1.32
       container_name: sregistrycli
       privileged: true
       command: -F /dev/null

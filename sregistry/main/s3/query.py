@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2018 Vanessa Sochat.
+Copyright (C) 2018-2019 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -43,9 +43,9 @@ def search(self, query=None, args=None):
 
 
 
-##################################################################
+################################################################################
 # Search Helpers
-##################################################################
+################################################################################
 
 def search_all(self, quiet=False):
     '''a "show all" search that doesn't require a query
@@ -60,6 +60,10 @@ def search_all(self, quiet=False):
 
     for obj in self.bucket.objects.all():
        subsrc = obj.Object()
+
+       # Metadata bug will capitalize all fields, workaround is to lowercase
+       # https://github.com/boto/boto3/issues/1709
+       metadata = dict((k.lower(), v) for k, v in subsrc.metadata.items())
        size = ''
 
        # MM-DD-YYYY
@@ -67,8 +71,8 @@ def search_all(self, quiet=False):
                               obj.last_modified.day,
                               obj.last_modified.year)
 
-       if 'sizemb' in subsrc.metadata:
-           size = '%sMB' % subsrc.metadata['sizemb']
+       if 'sizemb' in metadata:
+           size = '%sMB' % metadata['sizemb']
 
        results.append([obj.key, datestr, size ])
    
