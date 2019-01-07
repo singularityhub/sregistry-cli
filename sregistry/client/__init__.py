@@ -2,7 +2,7 @@
 
 '''
 
-Copyright (C) 2017-2018 Vanessa Sochat.
+Copyright (C) 2017-2019 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -353,22 +353,22 @@ def main():
 
     # Does the user want a shell?
     if args.command == "add": from .add import main
-    if args.command == "backend": from .backend import main
-    if args.command == "build": from .build import main
-    if args.command == "get": from .get import main
-    if args.command == "delete": from .delete import main
-    if args.command == "inspect": from .inspect import main
-    if args.command == "images": from .images import main
-    if args.command == "labels": from .labels import main
-    if args.command == "mv": from .mv import main
-    if args.command == "push": from .push import main
-    if args.command == "pull": from .pull import main
-    if args.command == "rename": from .rename import main
-    if args.command == "rm": from .rm import main
-    if args.command == "rmi": from .rmi import main
-    if args.command == "search": from .search import main
-    if args.command == "share": from .share import main
-    if args.command == "shell": from .shell import main
+    elif args.command == "backend": from .backend import main
+    elif args.command == "build": from .build import main
+    elif args.command == "get": from .get import main
+    elif args.command == "delete": from .delete import main
+    elif args.command == "inspect": from .inspect import main
+    elif args.command == "images": from .images import main
+    elif args.command == "labels": from .labels import main
+    elif args.command == "mv": from .mv import main
+    elif args.command == "push": from .push import main
+    elif args.command == "pull": from .pull import main
+    elif args.command == "rename": from .rename import main
+    elif args.command == "rm": from .rm import main
+    elif args.command == "rmi": from .rmi import main
+    elif args.command == "search": from .search import main
+    elif args.command == "share": from .share import main
+    elif args.command == "shell": from .shell import main
 
     # Pass on to the correct parser
     return_code = 0

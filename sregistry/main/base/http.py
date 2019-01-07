@@ -2,7 +2,7 @@
 
 sregistry.api: base template for making a connection to an API
 
-Copyright (C) 2017-2018 Vanessa Sochat.
+Copyright (C) 2017-2019 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by

@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2018 Vanessa Sochat.
+Copyright (C) 2018-2019 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -90,7 +90,12 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         # If we find the object, get metadata
         metadata = {}
         if found != None:
-            metadata = found.get()['Metadata']       
+            metadata = found.get()['Metadata']
+
+            # Metadata bug will capitalize all fields, workaround is to lowercase
+            # https://github.com/boto/boto3/issues/1709
+            metadata = dict((k.lower(), v) for k, v in metadata.items())
+  
         metadata.update(names)
 
         # If the user is saving to local storage

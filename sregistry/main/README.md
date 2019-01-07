@@ -5,6 +5,7 @@ These are the primary functions for interacting with different kinds of Singular
  - [registry](registry): is specific to an open source [Singularity Registry](https://www.github.com/singularityhub/sregistry). This is set up by an institution and there are permissions to pull, push, and interact directly with the registry.
  - [hub](hub): is specific to the freely available and open source [Singularity Hub](https://www.singularity-hub.org). You can't directly push, but building is done through Github.
 
+Each other subfolder corresponds to the intended client, see [the documentation](https://singularityhub.github.io/sregistry-cli/clients) for a full list with client tutorials.
 
 ## Adding a Registry
 

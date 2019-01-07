@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2018 Vanessa Sochat.
+Copyright (C) 2018-2019 Vanessa Sochat.
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License as published by
@@ -43,6 +43,8 @@ def push(self, path, name, tag=None):
     image_size = os.path.getsize(path) >> 20
 
     # Create extra metadata, this is how we identify the image later
+    # *important* bug in boto3 will return these capitalized
+    # see https://github.com/boto/boto3/issues/1709
     metadata = {'sizemb': "%s" % image_size,
                 'client': 'sregistry' }
 
