@@ -439,11 +439,11 @@ step reveals the interface is working!
 
 And then open browser to 0.0.0.0:5000 as instructed.
 
-![/sregistry-cli/images/ceph-bucket.png](/sregistry-cli/images/ceph-bucket.png)
+![/sregistry-cli/img/ceph-bucket.png](/sregistry-cli/img/ceph-bucket.png)
 
 And then I was able to create a container called `sregistry:
 
-![/sregistry-cli/images/ceph-create-bucket.png](/sregistry-cli/images/ceph-create-bucket.png)
+![/sregistry-cli/img/ceph-create-bucket.png](/sregistry-cli/img/ceph-create-bucket.png)
 
 > Wait, a container?
 
@@ -492,11 +492,11 @@ log file = /var/log/ceph/ceph-restapi.log
 
 and this also reveals the API address, it's served at `http://172.17.0.1:8080/`
 
-![/sregistry-cli/images/ceph-storage-api.png](/sregistry-cli/images/ceph-storage-api.png)
+![/sregistry-cli/img/ceph-storage-api.png](/sregistry-cli/img/ceph-storage-api.png)
 
 and then to authenticate likely the endpoint here is used:
 
-![/sregistry-cli/images/ceph-storage-auth.png](/sregistry-cli/images/ceph-storage-auth.png)
+![/sregistry-cli/img/ceph-storage-auth.png](/sregistry-cli/img/ceph-storage-auth.png)
 
 <div>
     <a href="/sregistry-cli/client-aws"><button class="previous-button btn btn-primary"><i class="fa fa-chevron-left"></i> </button></a>
