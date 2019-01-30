@@ -81,8 +81,13 @@ class Client(ApiConnection):
         '''
 
         # Retrieve the user token, user, and base. Exit if not found 
-        for envar in ['SREGISTRY_SWIFT_USER',
+        for envar in ['SREGISTRY_SWIFT_AUTHTYPE',
+                      'SREGISTRY_SWIFT_OS_AUTH_TOKEN',
+                      'SREGISTRY_SWIFT_OS_STORAGE_URL',
+                      'SREGISTRY_SWIFT_USER',
                       'SREGISTRY_SWIFT_TOKEN',
+                      'SREGISTRY_SWIFT_TENANT',
+                      'SREGISTRY_SWIFT_REGION',
                       'SREGISTRY_SWIFT_URL']:
             self.config[envar] = self._get_and_update_setting(envar)
 
@@ -91,15 +96,62 @@ class Client(ApiConnection):
                 bot.error('You must export %s to use client.' % envar)
                 sys.exit(1)
 
-        # More human friendly to interact with
-        auth_url = '%s/auth/' % self.config['SREGISTRY_SWIFT_URL']
+        # Check what auth version is requested and setup the connection
+        if self.config['SREGISTRY_SWIFT_AUTHTYPE'] == 'preauth':
+            # Pre-Authenticated Token/URL - Use OS_AUTH_TOKEN/OS_STORAGE_URL
+            self.conn = swiftclient.Connection(
+                preauthurl=self.config['SREGISTRY_SWIFT_OS_STORAGE_URL'],
+                preauthtoken=self.config['SREGISTRY_SWIFT_OS_AUTH_TOKEN']
+            )
+        elif self.config['SREGISTRY_SWIFT_AUTHTYPE'] == 'keystonev3':
+            # Keystone v3 Authentication
+            auth_url = '%s/v3' % self.config['SREGISTRY_SWIFT_URL']
+            # Setting to default as a safety.  No v3 environment to test
+            # May require ENV vars for real use. - M. Moore
+            _os_options = {
+                'user_domain_name': 'Default',
+                'project_domain_name': 'Default',
+                'project_name': 'Default'
+            }
 
-        # Save the connection to use for some command
-        self.conn = swiftclient.Connection(
-            user=self.config['SREGISTRY_SWIFT_USER'],
-            key=self.config['SREGISTRY_SWIFT_TOKEN'],
-            authurl=auth_url,
-        )
+            # Save the connection to use for some command
+            self.conn = swiftclient.Connection(
+                user=self.config['SREGISTRY_SWIFT_USER'],
+                key=self.config['SREGISTRY_SWIFT_TOKEN'],
+                os_options=_os_options,
+                authurl=auth_url,
+                auth_version='3'
+            )
+
+        elif self.config['SREGISTRY_SWIFT_AUTHTYPE'] == 'keystonev2':
+            # Keystone v2 Authentication
+            # More human friendly to interact with
+            auth_url = '%s/v2.0/' % self.config['SREGISTRY_SWIFT_URL']
+            # Set required OpenStack options for tenant/region
+            _os_options = {
+                'tenant_name': self.config['SREGISTRY_SWIFT_TENANT'],
+                'region_name': self.config['SREGISTRY_SWIFT_REGION']
+            }
+
+            # Save the connection to use for some command
+            self.conn = swiftclient.Connection(
+                user=self.config['SREGISTRY_SWIFT_USER'],
+                key=self.config['SREGISTRY_SWIFT_TOKEN'],
+                os_options=_os_options,
+                authurl=auth_url,
+                auth_version='2'
+            )
+        else:
+            # Legacy Authentication
+            # More human friendly to interact with
+            auth_url = '%s/auth/' % self.config['SREGISTRY_SWIFT_URL']
+
+            # Save the connection to use for some command
+            self.conn = swiftclient.Connection(
+                user=self.config['SREGISTRY_SWIFT_USER'],
+                key=self.config['SREGISTRY_SWIFT_TOKEN'],
+                authurl=auth_url,
+            )
 
     def __str__(self):
         return type(self)
