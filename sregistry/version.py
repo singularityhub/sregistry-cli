@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.1.32"
+__version__ = "0.1.33"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -52,6 +52,7 @@ INSTALL_BASIC_AWS = (
 
 INSTALL_BASIC_SWIFT = (
     ('python-swiftclient', {'min_version': '3.6.0'}),
+    ('python-keystoneclient', {'min_version': '3.5.0'}),
     ('oauth2client', {'min_version': '3.0'}),
 )
 INSTALL_BASIC_DROPBOX = (

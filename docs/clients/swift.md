@@ -38,6 +38,12 @@ pip install sregistry
 pip install python-swiftclient
 ```
 
+If your environment uses Openstack Keystone for authentication, you need to add the Keystone client
+
+```bash
+pip install python-keystoneclient
+```
+
 The next steps we will take are to first set up authentication and other 
 environment variables of interest, and then review the basic usage.
 
@@ -116,6 +122,62 @@ means that I would export `http://172.17.0.1:8080` as the endpoint for the API.
 The port must be included too because most setups will have either a different port
 or a proxy that hides it entirely.
 
+### Keystone Authentication
+
+There are threee supported modes for authentication against Keystone - Keystone V3, 
+Keystone V2, and Pre-Authenticated Token Access. The mode is requested by setting
+SREGISTRY_SWIFT_AUTHTYPE environment variable.
+
+```bash
+export SREGISTRY_SWIFT_AUTHTYPE=keystonev3 - For Keystone V3
+export SREGISTRY_SWIFT_AUTHTYPE=keystonev2 - For Keystone V2
+export SREGISTRY_SWIFT_AUTHTYPE=preauth - For Token based authentication
+```
+Keystone V2 and V3 authentication requires the user to go through the 
+process of authenticating against Keystone before the client is allowed
+to communicate with the object storage service.
+
+Token based authentication requires the user to authenticate once against
+Keystone to collect an authenticated token and storage URL to the tenant.
+This provides quicker access to the images in object storage.
+ 
+Each type of access has several requireed environment variables to pass in the 
+required parameters to the swift client connection routine.
+
+#### Keystone V3 parameters
+
+The required parameters to use V3 authentication are:
+
+```bash
+export SREGISTRY_SWIFT_USER=<username>
+export SREGISTRY_SWIFT_TOKEN=<password> - Password or token for <username>
+export SREGSITRY_SWIFT_URL=<URL to Keystone Service>
+```
+This is currently just a placeholder as the functionality has not been validated
+
+#### Keystone V2 parameters
+
+The required parameters to use V2 authentication are:
+
+```bash
+export SREGISTRY_SWIFT_USER=<username>
+export SREGISTRY_SWIFT_TOKEN=<password> - Password or token for <username>
+export SREGSITRY_SWIFT_URL=<URL to Keystone Service>
+export SREGSITRY_SWIFT_TENANT=<tenant name>
+export SREGSITRY_SWIFT_REGION=<region name that contains the tenant>
+```
+
+#### Token authentication parameters
+
+The required parameters to use V2 authentication are:
+
+```bash
+export SREGISTRY_SWIFT_OS_AUTH_TOKEN=<pre-authenicated token>
+export SREGISTRY_SWIFT_OS_STORAGE_URL=<authenticated storage URL>
+```
+The SREGISTRY_SWIFT_OS_AUTH_TOKEN and SREGISTRY_SWIFT_OS_STORAGE_URL 
+are completely different from the SREGISTRY_SWIFT_TOKEN and
+SREGISTRY_SWIFT_URL
 
 ## sregistry push
 We've just exported our environment variables for our Ceph Storage, now let's
