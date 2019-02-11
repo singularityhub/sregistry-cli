@@ -116,7 +116,8 @@ class Client(ApiConnection):
             self.s3 = boto3.resource('s3',
                                      endpoint_url=self.base,
                                      aws_access_key_id=self._id,
-                                     aws_secret_access_key=self._key)
+                                     aws_secret_access_key=self._key,
+                                     config=boto3.session.Config(signature_version=self._signature))
         else:
            # We will need to test options for reading credentials here
            self.s3 = boto3.client('s3')
@@ -131,6 +132,17 @@ class Client(ApiConnection):
         self.base = self._get_and_update_setting('SREGISTRY_S3_BASE', self.base)
         self._id = self._required_get_and_update('AWS_ACCESS_KEY_ID')
         self._key = self._required_get_and_update('AWS_SECRET_ACCESS_KEY')
+
+        # Get the desired S3 signature.  Default is the current "s3v4" signature.
+        # If specified, user can request "s3" (v2 old) signature
+        self._signature = self._get_and_update_setting('SREGISTRY_S3_SIGNATURE')
+
+        if self._signature == 's3':
+            # Requested signature is S3 V2
+            self._signature = 's3'
+        else:
+            # self._signature is not set or not set to s3 (v2), default to s3v4
+            self._signature = 's3v4'
 
         # Define self.bucket_name, self.s3, then self.bucket
         self.get_bucket_name()
