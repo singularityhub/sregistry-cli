@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
 
-__version__ = "0.1.35"
+__version__ = "0.1.36"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -70,6 +70,12 @@ INSTALL_BASIC_GOOGLE_STORAGE = (
     ('retrying', {'min_version': '1.3.3'})
 )
 
+INSTALL_BASIC_GOOGLE_BUILD = (
+    ('oauth2client', {'min_version': '3.0'}),
+    ('google-cloud-storage', {'min_version': '1.4.0'}),
+    ('retrying', {'min_version': '1.3.3'})
+)
+
 INSTALL_BASIC_GOOGLE_DRIVE = (
     ('oauth2client', {'min_version': '3.0'}),
     ('google-api-python-client', {'min_version': '1.6.4'})
@@ -93,6 +99,7 @@ INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
                      INSTALL_BASIC_GLOBUS +
                      INSTALL_BASIC_REGISTRY +
                      INSTALL_BASIC_GOOGLE_STORAGE +
+                     INSTALL_BASIC_GOOGLE_BUILD +
                      INSTALL_BASIC_GOOGLE_COMPUTE +
                      INSTALL_BASIC_GOOGLE_DRIVE)
 
@@ -136,6 +143,13 @@ INSTALL_REQUIRES_GOOGLE_STORAGE = (
     ('sqlalchemy', {'min_version': None})
 )
 
+INSTALL_REQUIRES_GOOGLE_BUILD = (
+    ('oauth2client', {'min_version': '3.0'}),
+    ('google-cloud-storage', {'min_version': '1.4.0'}),
+    ('retrying', {'exact_version': '1.3.3'}),
+    ('sqlalchemy', {'min_version': None})
+)
+
 INSTALL_REQUIRES_GOOGLE_DRIVE = (
     ('oauth2client', {'min_version': '3.0'}),
     ('sqlalchemy', {'min_version': None}),
@@ -162,4 +176,5 @@ INSTALL_REQUIRES_ALL = (INSTALL_REQUIRES +
                         INSTALL_REQUIRES_REGISTRY +
                         INSTALL_REQUIRES_GOOGLE_COMPUTE +
                         INSTALL_REQUIRES_GOOGLE_STORAGE +
+                        INSTALL_REQUIRES_GOOGLE_BUILD +
                         INSTALL_REQUIRES_GOOGLE_DRIVE)

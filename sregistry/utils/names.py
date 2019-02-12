@@ -167,6 +167,7 @@ def get_uri(image):
                          'dropbox',
                          'gitlab',
                          'globus',
+                         'google-build',
                          'google-storage',
                          'google-drive'
                          'hub',

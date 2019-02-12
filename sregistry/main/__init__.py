@@ -69,6 +69,7 @@ def get_client(image=None, quiet=False, **kwargs):
     elif SREGISTRY_CLIENT == 'google-drive': from .google_drive import Client
     elif SREGISTRY_CLIENT == 'google-compute': from .google_storage import Client
     elif SREGISTRY_CLIENT == 'google-storage': from .google_storage import Client
+    elif SREGISTRY_CLIENT == 'google-build': from .google_build import Client
     elif SREGISTRY_CLIENT == 'registry': from .registry import Client
     elif SREGISTRY_CLIENT == 's3': from .s3 import Client
     elif SREGISTRY_CLIENT == 'swift': from .swift import Client

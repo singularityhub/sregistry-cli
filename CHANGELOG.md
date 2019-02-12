@@ -14,6 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - added google-build client, building with google build and sending to google storage (0.01.36)
+ - added environment variables to handle different versions of AWS api (0.01.35)
  - fixed upload to google-storage bug with metadata (0.01.34)
  - added keystone authetication support to swift backend (0.01.33)
  - renaming ceph to swift, no other changes  (0.01.03)
