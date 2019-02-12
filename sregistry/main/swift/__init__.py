@@ -82,13 +82,8 @@ class Client(ApiConnection):
 
         # Get the swift authentication type first.  That will determine what we
         # will need to collect for proper authentication
-        self.config['SREGISTRY_SWIFT_AUTHTYPE'] = self._get_and_update_setting(
+        self.config['SREGISTRY_SWIFT_AUTHTYPE'] = self._required_get_and_update(
                                                      'SREGISTRY_SWIFT_AUTHTYPE')
-
-        # Check that authtype is set
-        if self.config['SREGISTRY_SWIFT_AUTHTYPE'] is None:
-            bot.error('You must export SREGISTRY_SWIFT_AUTHTYPE to use client.')
-            sys.exit(1)
 
         # Check what auth version is requested and setup the connection
         if self.config['SREGISTRY_SWIFT_AUTHTYPE'] == 'preauth':
@@ -97,12 +92,7 @@ class Client(ApiConnection):
             # Retrieve the user token, user, and base. Exit if not found 
             for envar in ['SREGISTRY_SWIFT_OS_AUTH_TOKEN',
                           'SREGISTRY_SWIFT_OS_STORAGE_URL' ]:
-                self.config[envar] = self._get_and_update_setting(envar)
-
-                # All variables are required
-                if self.config[envar] is None:
-                    bot.error('You must export %s to use client.' % envar)
-                    sys.exit(1)
+                self.config[envar] = self._required_get_and_update(envar)
 
             self.conn = swiftclient.Connection(
                 preauthurl=self.config['SREGISTRY_SWIFT_OS_STORAGE_URL'],
@@ -115,12 +105,7 @@ class Client(ApiConnection):
             for envar in ['SREGISTRY_SWIFT_USER',
                           'SREGISTRY_SWIFT_TOKEN',
                           'SREGISTRY_SWIFT_URL']:
-                self.config[envar] = self._get_and_update_setting(envar)
-
-                # All variables are required
-                if self.config[envar] is None:
-                    bot.error('You must export %s to use client.' % envar)
-                    sys.exit(1)
+                self.config[envar] = self._required_get_and_update(envar)
 
             auth_url = '%s/v3' % self.config['SREGISTRY_SWIFT_URL']
             # Setting to default as a safety.  No v3 environment to test
@@ -149,12 +134,7 @@ class Client(ApiConnection):
                           'SREGISTRY_SWIFT_TENANT',
                           'SREGISTRY_SWIFT_REGION',
                           'SREGISTRY_SWIFT_URL']:
-                self.config[envar] = self._get_and_update_setting(envar)
-
-                # All variables are required
-                if self.config[envar] is None:
-                    bot.error('You must export %s to use client.' % envar)
-                    sys.exit(1)
+                self.config[envar] = self._required_get_and_update(envar)
 
             # More human friendly to interact with
             auth_url = '%s/v2.0/' % self.config['SREGISTRY_SWIFT_URL']
@@ -179,12 +159,7 @@ class Client(ApiConnection):
             for envar in ['SREGISTRY_SWIFT_USER',
                           'SREGISTRY_SWIFT_TOKEN',
                           'SREGISTRY_SWIFT_URL']:
-                self.config[envar] = self._get_and_update_setting(envar)
-
-                # All variables are required
-                if self.config[envar] is None:
-                    bot.error('You must export %s to use client.' % envar)
-                    sys.exit(1)
+                self.config[envar] = self._required_get_and_update(envar)
 
             # More human friendly to interact with
             auth_url = '%s/auth/' % self.config['SREGISTRY_SWIFT_URL']
