@@ -14,6 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - swift client ENV variable handling matches documentation (0.1.36)
+ - s3 client supports S3 V2 (old) and S3 V4 (current) signatures (0.1.35)
  - fixed upload to google-storage bug with metadata (0.01.34)
  - added keystone authetication support to swift backend (0.01.33)
  - renaming ceph to swift, no other changes  (0.01.03)
