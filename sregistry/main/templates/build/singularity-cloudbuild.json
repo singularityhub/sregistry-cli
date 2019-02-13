@@ -1,0 +1,14 @@
+{
+  "steps": [
+        {
+          "name": null,
+          "args": []
+        }
+  ],
+  "artifacts": {
+    "objects": {
+       "location": null,
+        "paths": []
+     }
+  }
+}
