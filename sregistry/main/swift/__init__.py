@@ -80,31 +80,33 @@ class Client(ApiConnection):
            If we find the values, cache and continue. Otherwise, exit with error
         '''
 
-        # Retrieve the user token, user, and base. Exit if not found 
-        for envar in ['SREGISTRY_SWIFT_AUTHTYPE',
-                      'SREGISTRY_SWIFT_OS_AUTH_TOKEN',
-                      'SREGISTRY_SWIFT_OS_STORAGE_URL',
-                      'SREGISTRY_SWIFT_USER',
-                      'SREGISTRY_SWIFT_TOKEN',
-                      'SREGISTRY_SWIFT_TENANT',
-                      'SREGISTRY_SWIFT_REGION',
-                      'SREGISTRY_SWIFT_URL']:
-            self.config[envar] = self._get_and_update_setting(envar)
-
-            # All variables are required
-            if self.config[envar] is None:
-                bot.error('You must export %s to use client.' % envar)
-                sys.exit(1)
+        # Get the swift authentication type first.  That will determine what we
+        # will need to collect for proper authentication
+        self.config['SREGISTRY_SWIFT_AUTHTYPE'] = self._required_get_and_update(
+                                                     'SREGISTRY_SWIFT_AUTHTYPE')
 
         # Check what auth version is requested and setup the connection
         if self.config['SREGISTRY_SWIFT_AUTHTYPE'] == 'preauth':
+
             # Pre-Authenticated Token/URL - Use OS_AUTH_TOKEN/OS_STORAGE_URL
+            # Retrieve the user token, user, and base. Exit if not found 
+            for envar in ['SREGISTRY_SWIFT_OS_AUTH_TOKEN',
+                          'SREGISTRY_SWIFT_OS_STORAGE_URL' ]:
+                self.config[envar] = self._required_get_and_update(envar)
+
             self.conn = swiftclient.Connection(
                 preauthurl=self.config['SREGISTRY_SWIFT_OS_STORAGE_URL'],
                 preauthtoken=self.config['SREGISTRY_SWIFT_OS_AUTH_TOKEN']
             )
         elif self.config['SREGISTRY_SWIFT_AUTHTYPE'] == 'keystonev3':
+
             # Keystone v3 Authentication
+            # Retrieve the user token, user, and base. Exit if not found 
+            for envar in ['SREGISTRY_SWIFT_USER',
+                          'SREGISTRY_SWIFT_TOKEN',
+                          'SREGISTRY_SWIFT_URL']:
+                self.config[envar] = self._required_get_and_update(envar)
+
             auth_url = '%s/v3' % self.config['SREGISTRY_SWIFT_URL']
             # Setting to default as a safety.  No v3 environment to test
             # May require ENV vars for real use. - M. Moore
@@ -124,7 +126,16 @@ class Client(ApiConnection):
             )
 
         elif self.config['SREGISTRY_SWIFT_AUTHTYPE'] == 'keystonev2':
+
             # Keystone v2 Authentication
+            # Retrieve the user token, user, and base. Exit if not found 
+            for envar in ['SREGISTRY_SWIFT_USER',
+                          'SREGISTRY_SWIFT_TOKEN',
+                          'SREGISTRY_SWIFT_TENANT',
+                          'SREGISTRY_SWIFT_REGION',
+                          'SREGISTRY_SWIFT_URL']:
+                self.config[envar] = self._required_get_and_update(envar)
+
             # More human friendly to interact with
             auth_url = '%s/v2.0/' % self.config['SREGISTRY_SWIFT_URL']
             # Set required OpenStack options for tenant/region
@@ -142,7 +153,14 @@ class Client(ApiConnection):
                 auth_version='2'
             )
         else:
+
             # Legacy Authentication
+            # Retrieve the user token, user, and base. Exit if not found 
+            for envar in ['SREGISTRY_SWIFT_USER',
+                          'SREGISTRY_SWIFT_TOKEN',
+                          'SREGISTRY_SWIFT_URL']:
+                self.config[envar] = self._required_get_and_update(envar)
+
             # More human friendly to interact with
             auth_url = '%s/auth/' % self.config['SREGISTRY_SWIFT_URL']
 
