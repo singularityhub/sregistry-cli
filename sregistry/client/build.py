@@ -36,11 +36,14 @@ def main(args,parser,subparser):
 
     if cli.client_name == 'google-build':
 
+        if args.name == None:
+            bot.exit('Please provide a container identifier with --name')
+
         recipe = args.commands.pop(0)
-        response = build(name=args.name,
-                         recipe=recipe,
-                         context=args.commands,
-                         preview=args.preview)
+        response = cli.build(name=args.name,
+                             recipe=recipe,
+                             context=args.commands,
+                             preview=args.preview)
 
         # If successful built, show container uri
         if response['status'] == 'SUCCESS':

@@ -74,8 +74,7 @@ def upload(self, source,
                  bucket,
                  chunk_size = 2 * 1024 * 1024, 
                  metadata=None,
-                 keep_private=True,
-                 bucket=None):
+                 keep_private=True):
 
     '''upload a file from a source to a destination. The client is expected
        to have a bucket (self._bucket) that is created when instantiated.
