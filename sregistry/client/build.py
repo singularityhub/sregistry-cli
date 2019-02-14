@@ -31,63 +31,78 @@ def main(args,parser,subparser):
         subparser.print_help()
         sys.exit(0)
 
-    # Does the user want to save the image?    
-    command = args.commands.pop(0)
-
-    # Option 1: The user wants to kill an instance
-    if command == "kill":
-        kill(args)    
-
-    # Option 2: Just list running instances
-    elif command == "instances":
-        instances()
-
-    # Option 3: The user wants to list templates
-    elif 'template' in command:
-        templates(args)
-
-    # Option 4: View a specific or latest log
-    elif command == 'logs':
-        list_logs(args)
-
-    # Option 3: The user is providing a Github repo!
-    recipe = "Singularity"
-
-    if "github" in command:
-
-        # One argument indicates a recipe
-        if len(args.commands) == 1:
-            recipe = args.commands.pop(0)       
-
-    else:
-
-        # If a command is provided, but not a Github repo
-        bot.error('%s is not a recognized option.' %command)
-        subparser.print_help()
-        sys.exit(1)
-
-
-    # Does the user want to specify a name for the collection?
-    name = args.name
-
-    # Does the user want to specify a specific config?
-    config = args.config
-
-    # No image is needed, we are creating in the cloud
     cli = get_client(quiet=args.quiet)
     cli.announce(args.command)
 
-    response = cli.build(repo=command, 
-                         name=name,
+    if cli.client_name == 'google-build':
+
+        recipe = args.commands.pop(0)
+        response = build(name=args.name,
                          recipe=recipe,
-                         config=config,
+                         context=args.commands,
                          preview=args.preview)
+
+        # If successful built, show container uri
+        if response['status'] == 'SUCCESS':
+            bucket = response['artifacts']['objects']['location']
+            obj = response['artifacts']['objects']['paths'][0]
+            bot.custom('SUCCESS', bucket + obj , 'CYAN')
+            bot.log(response['media_link'])
+
+        # Show the log no matter what
+        bot.log(response['logUrl'])
+        
+    else:
+
+        # Does the user want to save the image?    
+        command = args.commands.pop(0)
+
+        # Option 1: The user wants to kill an instance
+        if command == "kill":
+            kill(args)    
+
+        # Option 2: Just list running instances
+        elif command == "instances":
+            instances()
+
+        # Option 3: The user wants to list templates
+        elif 'template' in command:
+            templates(args)
+
+        # Option 4: View a specific or latest log
+        elif command == 'logs':
+            list_logs(args)
+
+        # Option 3: The user is providing a Github repo!
+        recipe = "Singularity"
+
+        if "github" in command:
+
+            # One argument indicates a recipe
+            if len(args.commands) == 1:
+                recipe = args.commands.pop(0)       
+
+        else:
+
+            # If a command is provided, but not a Github repo
+            bot.error('%s is not a recognized option.' %command)
+            subparser.print_help()
+            sys.exit(1)
+
+
+        # Does the user want to specify a name for the collection?
+        name = args.name
+
+        # No image is needed, we are creating in the cloud
+        response = cli.build(repo=command, 
+                             name=name,
+                             recipe=recipe,
+                             preview=args.preview)
 
     # If the client wants to preview, the config is returned
     if args.preview is True:
         print(json.dumps(response, indent=4, sort_keys=True))
         
-
 
 def kill(args):
     '''kill is a helper function to call the "kill" function of the client,

@@ -87,15 +87,20 @@ class Client(ApiConnection):
         if self._bucket_name is None:
             self._bucket_name = 'sregistry-gcloud-build-%s' %os.environ['USER']
 
-        self._get_bucket()
+        # The build bucket is for uploading .tar.gz files
+        self._build_bucket_name = "%s_cloudbuild" % self._bucket_name
+
+        # Main storage bucket for containers, and dependency bucket with targz
+        self._bucket = self._get_bucket(self._bucket_name)
+        self._build_bucket = self._get_bucket(self._build_bucket_name)
 
 
     def _get_services(self, version='v1'):
         '''get version 1 of the google compute and storage service
 
-        Parameters
-        ==========
-        version: version to use (default is v1)
+            Parameters
+            ==========
+            version: version to use (default is v1)
         '''
         self._bucket_service = storage.Client()
         creds = GoogleCredentials.get_application_default()
@@ -103,24 +108,30 @@ class Client(ApiConnection):
         self._build_service = discovery_build('cloudbuild', version, credentials=creds)
 
 
-    def _get_bucket(self):
+    def _get_bucket(self, bucket_name):
         '''get a bucket based on a bucket name. If it doesn't exist, create it.
+
+           Parameters
+           ==========
+           bucket_name: the name of the bucket to get (or create). It should
+                        not contain google, and should be all lowercase with -
+                        or underscores.
         '''
 
         # Case 1: The bucket already exists
         try:
-            self._bucket = self._bucket_service.get_bucket(self._bucket_name)
+            bucket = self._bucket_service.get_bucket(bucket_name)
 
         # Case 2: The bucket needs to be created
         except google.cloud.exceptions.NotFound:
-            self._bucket = self._bucket_service.create_bucket(self._bucket_name)
+            bucket = self._bucket_service.create_bucket(bucket_name)
 
         # Case 3: The bucket name is already taken
         except:
-            bot.error('Cannot get or create %s' %self._bucket_name)
+            bot.error('Cannot get or create %s' % bucket_name)
             sys.exit(1)
 
-        return self._bucket
+        return bucket
 
 
     def _get_project(self, project=None):

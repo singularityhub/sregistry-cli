@@ -250,6 +250,17 @@ def get_content_hash(contents):
     return hasher.hexdigest()
 
 
+def get_file_hash(filename):
+    '''find the SHA256 hash string of a file
+    '''
+    hasher = hashlib.sha256()
+    with open(filename, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+
 ################################################################################
 ## FILE OPERATIONS #############################################################
 ################################################################################

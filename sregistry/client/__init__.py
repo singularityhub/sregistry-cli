@@ -180,22 +180,17 @@ def get_parser():
                            default=False, action='store_true')
 
         build.add_argument("commands", nargs='*',
-                           help='''RUN:            build [repo] [recipe] [config] ----------------------      
-                                   ALL  templates: build templates -------------------------
-                                   GET  template:  build templates [template] ---------------
-                                   LIST instances: build instances --------------------------
-                                   GET  logs:      build logs [name] ---------------
+                           help='''Google Build + Storage
+                                   --------------------------------------------------------
+                                   build [recipe] [context] -------------------------------
+                                   build [recipe] . ---------------------------------------
+                                   build [recipe] file1 file2 -----------------------------
                                    ''', 
                            type=str)
 
         build.add_argument("--name", dest='name', 
                            help='name of image, in format "library/image"', 
                            type=str, default=None)
-
-        build.add_argument("--config", dest='config', 
-                           help='specify a config file or uri', 
-                           type=str, default=None)
-
 
 
     # Push an image
