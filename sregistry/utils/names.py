@@ -44,7 +44,7 @@ def parse_image_name(image_name,
                      tag=None,
                      version=None, 
                      defaults=True, 
-                     ext="simg",
+                     ext="sif",
                      default_collection="library",
                      default_tag="latest",
                      base=None):
@@ -68,7 +68,7 @@ def parse_image_name(image_name,
         image_name = image_name.replace(base,'').strip('/')
 
     result = dict()
-    image_name = re.sub('[.](img|simg)','',image_name)
+    image_name = re.sub('[.](img|simg|sif)','',image_name)
     image_name = re.split('/', image_name, 1)
 
     # User only provided an image
@@ -111,9 +111,11 @@ def parse_image_name(image_name,
         tag_uri = "%s:%s" % (url, tag) 
 
     # Version is defined
+    storage_version = None
     if version is not None:
         uri = "%s@%s" % (uri, version)
         tag_uri = "%s@%s" % (tag_uri, version) 
+        storage_version = "%s@%s.%s" % (tag_uri, version, ext)
 
     # A second storage URI honors the tag (:) separator
 
@@ -126,6 +128,7 @@ def parse_image_name(image_name,
               "version": version,
               "storage": storage,
               "storage_uri": storage_uri,
+              "storage_version": storage_version or storage_uri,
               "tag_uri": tag_uri,
               "uri": uri}
 

@@ -50,7 +50,10 @@ def main(args,parser,subparser):
             bucket = response['artifacts']['objects']['location']
             obj = response['artifacts']['objects']['paths'][0]
             bot.custom('SUCCESS', bucket + obj , 'CYAN')
-            bot.log(response['media_link'])
+
+        # Did the user make the container public?
+        if "public_url" in response:
+            bot.log(response['public_url'])
 
         # Show the log no matter what
         bot.log(response['logUrl'])

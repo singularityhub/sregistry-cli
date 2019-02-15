@@ -18,14 +18,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 from sregistry.logger import bot
-from googleapiclient.errors import HttpError
 from sregistry.utils import (
-    get_image_hash,
-    get_installdir,
     get_file_hash,
-    get_recipe_tag,
     get_tmpdir,
-    read_json,
     parse_image_name,
     remove_uri
 )
@@ -33,10 +28,9 @@ from sregistry.utils import (
 from sregistry.main.google_storage.utils import prepare_metadata
 from sregistry.main.google_build.utils import get_build_template
 
-from sregistry.logger import RobotNamer
 from retrying import retry
 from glob import glob
-from time import sleep
+import time
 import requests
 import tarfile
 import shutil
@@ -92,18 +86,21 @@ def build(self, name,
     blob = self._build_bucket.blob(destination)
 
     # if it doesn't exist, upload it
-    if not blob.exists():
+    if not blob.exists() and preview is False:
+        bot.log('Uploading build package!')
         manifest = self._upload(source=package, 
                                 bucket=self._build_bucket,
                                 destination=destination)
+    else:
+        bot.log('Build package found in %s.' % self._build_bucket.name)
 
-    # The config source should point to the bucket with the .tar.gz, latest generation
+    # The source should point to the bucket with the .tar.gz, latest generation
     config["source"]["storageSource"]['bucket'] = self._build_bucket.name
     config["source"]["storageSource"]['object'] = destination
 
     # If not a preview, run the build and return the response
     if preview is False:
-        config = self._run_build(config, self._bucket)
+        config = self._run_build(config, self._bucket, names)
 
     # If the user wants to cache cloudbuild files, this will be set
     if not self._get_and_update_setting('SREGISTRY_GOOGLE_BUILD_CACHE'):
@@ -125,6 +122,7 @@ def create_build_package(package_files):
        package_files: a list of files to include in the tar.gz
 
     '''
+    bot.log('Generating build package for %s files...' % len(package_files))
     build_dir = get_tmpdir(prefix="sregistry-build")
     build_tar = '%s/build.tar.gz' % build_dir
     tar = tarfile.open(build_tar, "w:gz")
@@ -177,38 +175,37 @@ def load_build_config(self, name, recipe):
     return config
                 
 
-@retry(wait_exponential_multiplier=1000,
-       wait_exponential_max=10000,
-       stop_max_attempt_number=3)
-
-
-def run_build(self, config, bucket):
+def run_build(self, config, bucket, names):
     '''run a build, meaning creating a build. Retry if there is failure
     '''
 
-    bot.custom(prefix='BUILD',
-               message=config['steps'][0]['name'], 
-               color="CYAN")
-
     project = self._get_project()
 
-    response = self._build_service.projects().builds().create(body=config, projectId=project).execute()
+    #          prefix,    message, color
+    bot.custom('PROJECT', project, "CYAN")
+    bot.custom('BUILD  ', config['steps'][0]['name'], "CYAN")
+
+    response = self._build_service.projects().builds().create(body=config, 
+                                              projectId=project).execute()
+
     build_id = response['metadata']['build']['id']
     status = response['metadata']['build']['status']
-  
-    # https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.builds#Build.StorageSource
-
     bot.log("build %s: %s" % (build_id, status))
 
+    start = time.time()
     while status not in ['COMPLETE', 'FAILED', 'SUCCESS']:
-        sleep(30)
+        time.sleep(15)
         response = self._build_service.projects().builds().get(id=build_id, 
-                                                               projectId=project).execute()
+                                                  projectId=project).execute()
 
         build_id = response['id']
         status = response['status']
         bot.log("build %s: %s" % (build_id, status))
 
+    end = time.time()
+    bot.log('Total build time: %s seconds' % (round(end - start, 2)))
+   
+    # If successful, update blob metadata and visibility
     if status == 'SUCCESS':
 
         # Does the user want to keep the container private?
@@ -216,17 +213,19 @@ def run_build(self, config, bucket):
         blob = bucket.blob(response['artifacts']['objects']['paths'][0])
         
         # Make Public, if desired
-        if not self._get_and_update_setting(env):
+        if self._get_and_update_setting(env) == None:
             blob.make_public()
+            response['public_url'] = blob.public_url
 
         # Add the metadata directly to the object
-        update_blob_metadata(blob, response, config)
+        update_blob_metadata(blob, response, config, bucket, names)
         response['media_link'] = blob.media_link
 
     return response
 
 
-def update_blob_metadata(blob, response, config):
+
+def update_blob_metadata(blob, response, config, bucket, names):
     '''a specific function to take a blob, along with a SUCCESS response
        from Google build, the original config, and update the blob 
        metadata with the artifact file name, dependencies, and image hash.
@@ -243,9 +242,10 @@ def update_blob_metadata(blob, response, config):
                 'buildCommand': ' '.join(config['steps'][0]['args']),
                 'builder': config['steps'][0]['name'],
                 'media_link': blob.media_link,
-                'self_link': blob.self_link}
+                'self_link': blob.self_link,
+                'name': names['tag_uri'],
+                'type': "container"} # identifier that the blob is a container
 
     blob.metadata = metadata   
     blob._properties['metadata'] = metadata
-    blob.patch()            
-
+    blob.patch()

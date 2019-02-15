@@ -402,6 +402,15 @@ def add(self, image_path=None,
     metadata = self.get_metadata(image_path, names=names)
     collection = self.get_or_create_collection(names['collection'])
 
+    # Get a hash of the file for the version, or use provided
+    version = names.get('version')
+    if version == None:
+        if image_path != None:
+            version = get_image_hash(image_path)
+        else:
+            version = ''  # we can't determine a version, not in API/no file
+        names = parse_image_name( remove_uri(image_uri), version=version )
+
     # If save, move to registry storage first
     if save is True and image_path is not None:
 
@@ -415,15 +424,6 @@ def add(self, image_path=None,
             shutil.move(image_path, image_name)
          
         image_path = image_name
-
-    # Get a hash of the file for the version, or use provided
-    version = names.get('version')
-    if version is None:
-        if image_path is not None:
-            version = get_image_hash(image_path)
-        else:
-            version = ''  # we can't determine a version, not in API/no file
-        names['version'] = version
 
     # Just in case the client didn't provide it, see if we have in metadata
     if url is None and "url" in metadata:

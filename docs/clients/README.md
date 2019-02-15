@@ -16,6 +16,7 @@ Singularity Registry Global client has tutorials and walkthroughs for the follow
  - [Docker Hub](/sregistry-cli/client-docker): interact with layers to build images from Docker Hub
  - [Dropbox](/sregistry-cli/client-dropbox): interact with images stored in Dropbox
  - [GitLab](/sregistry-cli/client-gitlab): pull your GitLab build artifacts
+ - [Google Cloud Build](/sregistry-cli/client-google-build): use the Google Cloud Build (remote) to build, and save to Google Storage.
  - [Google Container Registry](/sregistry-cli/client-gcr): the same as docker. Here are tricks for authenticating if you have trouble.
  - [Google Storage](/sregistry-cli/client-google-storage): interact with images from Google Storage
  - [Google Drive](/sregistry-cli/client-google-drive): interact with images from Google Drive
