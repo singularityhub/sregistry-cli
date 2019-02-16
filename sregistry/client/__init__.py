@@ -192,6 +192,10 @@ def get_parser():
                            help='name of image, in format "library/image"', 
                            type=str, default=None)
 
+        build.add_argument("--outfile", dest='outfile', 
+                           help='name of output file to write contents to', 
+                           type=str, default=None)
+
 
     # Push an image
     if hasattr(cli,'push'):

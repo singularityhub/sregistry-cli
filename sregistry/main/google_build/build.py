@@ -225,6 +225,8 @@ def run_build(self, config, bucket, names):
         # Add the metadata directly to the object
         update_blob_metadata(blob, response, config, bucket, names)
         response['media_link'] = blob.media_link
+        response['size'] = blob.size
+        response['file_hash'] = blob.md5_hash
 
     return response
 
@@ -248,6 +250,7 @@ def update_blob_metadata(blob, response, config, bucket, names):
                 'builder': config['steps'][0]['name'],
                 'media_link': blob.media_link,
                 'self_link': blob.self_link,
+                'size': blob.size,
                 'name': names['tag_uri'],
                 'type': "container"} # identifier that the blob is a container
 

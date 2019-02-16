@@ -96,6 +96,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/application-credentials.json
 Now let's launch a build, and provide the entire present working directory as context. Notice that we
 haven't exported `SREGISTRY_GOOGLE_BUILD_CACHE=yes` so we won't save intermediate build files.
 
+
 ### Example Recipe
 
 Let's say we've created a folder called "test" and added some Singularity recipe in it. 
@@ -170,6 +171,28 @@ If you use the interactive (from within Python) method, you are also returned th
 link to the container (`response['public_url']`) and you are free to put that in whatever
 database you are using to keep track of your containers. This is shown in the next section [Shell](#shell). 
 If you want to search your storage later, see [Pull](#pull).
+
+### Logs
+
+If you are working in a headless environment, you can capture the final URL, LOGS url,
+size, and hash in an output file with the `--outfile` flag:
+
+```bash
+$ sregistry build --name vanessa/yomamma --outfile output.txt Singularity
+```
+
+This is useful for continuous integration settings that expect the terminal to be updated,
+but also would need to return the results to you, the user. Here is the file that we could
+easy parse:
+
+```bash
+ cat output.txt 
+MD5HASH B9YrCKofgWvP6BgFgPjxZg==
+SIZE 774144
+SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa-yomamma-latest.sif
+LOGS https://console.cloud.google.com/gcr/builds/503e3836-88c4-4829-b50f-c0d059777961?project=287055059824
+URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-yomamma-latest.sif
+```
 
 ## Shell
 

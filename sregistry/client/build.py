@@ -45,18 +45,8 @@ def main(args,parser,subparser):
                              context=args.commands,
                              preview=args.preview)
 
-        # If successful built, show container uri
-        if response['status'] == 'SUCCESS':
-            bucket = response['artifacts']['objects']['location']
-            obj = response['artifacts']['objects']['paths'][0]
-
-        # Show the status and logs no matter what
-        bot.custom(response['status'], bucket + obj , 'CYAN')
-        bot.custom("LOGS", response['logUrl'], 'CYAN')
-
-        # Did the user make the container public?
-        if "public_url" in response:
-            bot.custom('URL', response['public_url'], 'CYAN')
+        # Print output to the console
+        print_output(response, args.outfile)
         
     else:
 
@@ -108,7 +98,44 @@ def main(args,parser,subparser):
     # If the client wants to preview, the config is returned
     if args.preview is True:
         print(json.dumps(response, indent=4, sort_keys=True))
-        
+
+
+def print_output(response, output_file=None):
+    '''print the output to the console for the user. If the user wants the content
+       also printed to an output file, do that.
+
+       Parameters
+       ==========
+       response: the response from the builder, with metadata added
+       output_file: if defined, write output also to file
+
+    '''
+    # If successful built, show container uri
+    if response['status'] == 'SUCCESS':
+        bucket = response['artifacts']['objects']['location']
+        obj = response['artifacts']['objects']['paths'][0]
+        bot.custom("MD5HASH", response['file_hash'], 'CYAN')
+        bot.custom("SIZE", response['size'], 'CYAN')
+
+    # Show the status and logs no matter what
+    bot.custom(response['status'], bucket + obj , 'CYAN')
+    bot.custom("LOGS", response['logUrl'], 'CYAN')
+
+    # Did the user make the container public?
+    if "public_url" in response:
+        bot.custom('URL', response['public_url'], 'CYAN')
+
+    # Does the user also need writing to an output file?
+    if output_file != None:    
+        with open(output_file, 'w') as filey:
+            if response['status'] == 'SUCCESS':
+                filey.writelines('MD5HASH %s\n' % response['file_hash'])    
+                filey.writelines('SIZE %s\n' % response['size'])    
+            filey.writelines('%s %s%s\n' % (response['status'], bucket, obj))
+            filey.writelines('LOGS %s\n' % response['logUrl'])
+            if "public_url" in response:
+                filey.writelines('URL %s\n' % response['public_url'])
+
 
 def kill(args):
     '''kill is a helper function to call the "kill" function of the client,
