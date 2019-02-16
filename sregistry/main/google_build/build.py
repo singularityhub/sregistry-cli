@@ -122,6 +122,11 @@ def create_build_package(package_files):
        package_files: a list of files to include in the tar.gz
 
     '''
+    # Ensure package files all exist
+    for package_file in package_files:
+        if not os.path.exists(package_file):
+            bot.exit('Cannot find %s.' % package_file)
+
     bot.log('Generating build package for %s files...' % len(package_files))
     build_dir = get_tmpdir(prefix="sregistry-build")
     build_tar = '%s/build.tar.gz' % build_dir
