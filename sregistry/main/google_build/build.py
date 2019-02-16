@@ -198,7 +198,7 @@ def run_build(self, config, bucket, names):
     bot.log("build %s: %s" % (build_id, status))
 
     start = time.time()
-    while status not in ['COMPLETE', 'FAILED', 'SUCCESS']:
+    while status not in ['COMPLETE', 'FAILURE', 'SUCCESS']:
         time.sleep(15)
         response = self._build_service.projects().builds().get(id=build_id, 
                                                   projectId=project).execute()
