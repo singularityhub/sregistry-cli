@@ -194,6 +194,16 @@ LOGS https://console.cloud.google.com/gcr/builds/503e3836-88c4-4829-b50f-c0d0597
 URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-yomamma-latest.sif
 ```
 
+Here is how you can easily parse these values:
+
+```bash
+if grep -q SUCCESS output.txt; then
+    container_size=$(cat output.txt | grep SIZE | cut -d' ' -f2)
+    digest=$(cat output.txt | grep MD5HASH | cut -d' ' -f2)
+    url=$(cat output.txt | grep URL | cut -d' ' -f2)
+fi
+```
+
 ## Shell
 
 Next, let's do this from the interactive shell. Note that we have exported `SREGISTRY_CLIENT` above, as we are looking to interact with a shell for the google-build `sregistry` client.
