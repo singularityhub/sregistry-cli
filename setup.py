@@ -137,7 +137,7 @@ if __name__ == "__main__":
           classifiers=[
               'Intended Audience :: Science/Research',
               'Intended Audience :: Developers',
-              'License :: OSI Approved :: MPL 2.0',
+              'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
               'Programming Language :: C',
               'Programming Language :: Python',
               'Topic :: Software Development',
