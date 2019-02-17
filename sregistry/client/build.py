@@ -2,18 +2,9 @@
 
 Copyright (C) 2018-2019 Vanessa Sochat.
 
-This program is free software: you can redistribute it and/or modify it
-under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public
-License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
+with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
@@ -116,9 +107,11 @@ def print_output(response, output_file=None):
         obj = response['artifacts']['objects']['paths'][0]
         bot.custom("MD5HASH", response['file_hash'], 'CYAN')
         bot.custom("SIZE", response['size'], 'CYAN')
+        bot.custom(response['status'], bucket + obj , 'CYAN')
+    else:
+        bot.custom(response['status'], 'see logs for details', 'CYAN')
 
-    # Show the status and logs no matter what
-    bot.custom(response['status'], bucket + obj , 'CYAN')
+    # Show the logs no matter what
     bot.custom("LOGS", response['logUrl'], 'CYAN')
 
     # Did the user make the container public?
