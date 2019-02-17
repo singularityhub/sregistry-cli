@@ -2,18 +2,9 @@
 
 Copyright (C) 2017-2019 Vanessa Sochat.
 
-This program is free software: you can redistribute it and/or modify it
-under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public
-License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
+with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
@@ -402,6 +393,15 @@ def add(self, image_path=None,
     metadata = self.get_metadata(image_path, names=names)
     collection = self.get_or_create_collection(names['collection'])
 
+    # Get a hash of the file for the version, or use provided
+    version = names.get('version')
+    if version == None:
+        if image_path != None:
+            version = get_image_hash(image_path)
+        else:
+            version = ''  # we can't determine a version, not in API/no file
+        names = parse_image_name( remove_uri(image_uri), version=version )
+
     # If save, move to registry storage first
     if save is True and image_path is not None:
 
@@ -415,15 +415,6 @@ def add(self, image_path=None,
             shutil.move(image_path, image_name)
          
         image_path = image_name
-
-    # Get a hash of the file for the version, or use provided
-    version = names.get('version')
-    if version is None:
-        if image_path is not None:
-            version = get_image_hash(image_path)
-        else:
-            version = ''  # we can't determine a version, not in API/no file
-        names['version'] = version
 
     # Just in case the client didn't provide it, see if we have in metadata
     if url is None and "url" in metadata:

@@ -4,18 +4,9 @@
 
 Copyright (C) 2017-2019 Vanessa Sochat.
 
-This program is free software: you can redistribute it and/or modify it
-under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public
-License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+This Source Code Form is subject to the terms of the
+Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
+with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
@@ -180,11 +171,11 @@ def get_parser():
                            default=False, action='store_true')
 
         build.add_argument("commands", nargs='*',
-                           help='''RUN:            build [repo] [recipe] [config] ----------------------      
-                                   ALL  templates: build templates -------------------------
-                                   GET  template:  build templates [template] ---------------
-                                   LIST instances: build instances --------------------------
-                                   GET  logs:      build logs [name] ---------------
+                           help='''Google Build + Storage
+                                   --------------------------------------------------------
+                                   build [recipe] [context] -------------------------------
+                                   build [recipe] . ---------------------------------------
+                                   build [recipe] file1 file2 -----------------------------
                                    ''', 
                            type=str)
 
@@ -192,10 +183,9 @@ def get_parser():
                            help='name of image, in format "library/image"', 
                            type=str, default=None)
 
-        build.add_argument("--config", dest='config', 
-                           help='specify a config file or uri', 
+        build.add_argument("--outfile", dest='outfile', 
+                           help='name of output file to write contents to', 
                            type=str, default=None)
-
 
 
     # Push an image

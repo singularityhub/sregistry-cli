@@ -8,8 +8,8 @@ toc: false
 
 # Singularity Global Client: Google Storage
 
-These sections will detail use of the Google Storage client for `sregistry`, which is a connection to a Google Storage
-cloud bucket. 
+These sections will detail use of the Google Storage client for `sregistry`, which is a connection to a Google Storage cloud bucket.  If you are interested in using Google Build and then saving to storage,
+see the [google-build](https://singularityhub.github.io/sregistry-cli/client-google-build) client.
 
 [![asciicast](https://asciinema.org/a/154858.png)](https://asciinema.org/a/154858?speed=3)
 

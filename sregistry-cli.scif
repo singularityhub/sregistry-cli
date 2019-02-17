@@ -20,6 +20,17 @@
 
 
 #######################################
+# Google Cloud Build
+#######################################
+
+%appenv google-build
+    SREGISTRY_CLIENT=google-build
+    export SREGISTRY_CLIENT
+%apprun google-build
+    exec /opt/conda/bin/sregistry "$@"
+
+
+#######################################
 # Google Cloud Drive
 #######################################
 

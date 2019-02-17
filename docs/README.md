@@ -62,7 +62,7 @@ This is an open source project. Please contribute to the package, or post feedba
 
 ## License
 
-This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](https://github.com/singularityhub/sregistry-cli/blob/master/LICENSE).
+This code is licensed under the MPL 2.0 [LICENSE](https://github.com/singularityhub/sregistry-cli/blob/master/LICENSE).
 This means that you can use and change the software and code, but your changes must also be open source.
 
 <div>

@@ -24,6 +24,7 @@ from .fileio import (
     create_tar,
     extract_tar,
     get_userhome,
+    get_file_hash,
     get_tmpdir,
     get_tmpfile,
     mkdir_p,

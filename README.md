@@ -42,4 +42,4 @@ rpmbuild --rebuild sregistry-cli.srpm
 
 ## License
 
-This code is licensed under the Affero GPL, version 3.0 or later [LICENSE](LICENSE).
+This code is licensed under the MPL 2.0 [LICENSE](LICENSE).
