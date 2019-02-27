@@ -116,7 +116,7 @@ class Client(ApiConnection):
         self.base = "%s%s/%s" %(nohttps, base.strip('/'), version)
 
 
-    def _update_secrets(self):
+    def _update_secrets(self, auth=None):
         '''update secrets will take a secrets credential file
            either located at .sregistry or the environment variable
            SREGISTRY_CLIENT_SECRETS and update the current client 
