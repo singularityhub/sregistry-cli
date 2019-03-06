@@ -48,9 +48,16 @@ def push(self, path, name, tag=None):
 
 # COLLECTION ###################################################################
 
+    # If the registry is provided in the uri, use it
+    if names['registry'] == None:
+        names['registry'] = self.base
+
+    # If the base doesn't start with http or https, add it
+    names = self._add_https(names)
+
     # Prepare push request, this will return a collection ID if permission
-    url = '%s/push/' % self.base
-    auth_url = '%s/upload/chunked_upload' % self.base
+    url = '%s/push/' % names['registry']
+    auth_url = '%s/upload/chunked_upload' % names['registry']
     SREGISTRY_EVENT = self.authorize(request_type="push",
                                      names=names)
 
@@ -74,7 +81,7 @@ def push(self, path, name, tag=None):
 
 # UPLOAD #######################################################################
 
-    url = '%s/upload' % self.base.replace('/api','')
+    url = '%s/upload' % names['registry'].replace('/api','')
     bot.debug('Seting upload URL to {0}'.format(url))
 
     cid = r.json()['cid']

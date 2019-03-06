@@ -91,10 +91,9 @@ def parse_image_name(image_name,
           user gave a registry url base that isn't part of namespace.
 
     '''
-    results = dict()
 
     # Save the original string
-    results['original'] = image_name
+    original = image_name
     
     if base is not None:
         image_name = image_name.replace(base,'').strip('/')
@@ -162,6 +161,7 @@ def parse_image_name(image_name,
     storage = "%s.%s" %(uri, ext)
     storage_uri = "%s.%s" %(tag_uri, ext)
     result = {"collection": collection,
+              "original": original,
               "registry": registry,
               "image": repo_name,
               "url": url,
@@ -208,7 +208,8 @@ def get_uri(image):
                           .replace('://',''))
  
         accepted_uris = ['aws',
-                         'docker', 
+                         'docker',
+                         'http', 'https', # Must be allowed for pull
                          'dropbox',
                          'gitlab',
                          'globus',
@@ -225,7 +226,7 @@ def get_uri(image):
         if uri == "shub": uri = "hub"
 
         if uri not in accepted_uris:
-            bot.warning('%s is not a recognized uri.' %uri)
+            bot.warning('%s is not a recognized uri.' % uri)
             uri = None
 
     return uri

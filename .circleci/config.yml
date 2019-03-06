@@ -106,6 +106,8 @@ dockerbuild: &dockerbuild
       docker build -f ${DOCKERFILE} -t ${CONTAINER_NAME} .
 
 
+# Test Singularity Registry
+
 test_sregistry: &test_sregistry
   name: Test Singularity Registry Client
   command: |

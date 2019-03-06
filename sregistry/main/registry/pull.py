@@ -11,6 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
+from requests.exceptions import SSLError
 from requests.models import Response
 from sregistry.utils import ( parse_image_name, remove_uri )
 import requests
@@ -46,13 +47,18 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
-        import json
         q = parse_image_name(remove_uri(image))
-        print(json.dumps(q,indent=4))
 
         # If a custom registry is not set, use default base
         if q['registry'] == None:
             q['registry'] = self.base
+
+        # Ensure https is added back to the registry  uri
+        q = self._add_https(q)
+
+        # All custom registries need api appended
+        if not q['registry'].endswith('api'):
+            q['registry'] = '%s/api' % q['registry']
 
         # Verify image existence, and obtain id
         url = "%s/container/%s/%s:%s" %(q['registry'], 
@@ -61,7 +67,11 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                                         q['tag'])
 
         bot.debug('Retrieving manifest at %s' % url)
-        manifest = self._get(url)
+
+        try:
+            manifest = self._get(url)
+        except SSLError:
+            bot.exit('Issue with %s, try exporting SREGISTRY_REGISTRY_NOHTTPS.' % url)
 
         # Private container collection
         if isinstance(manifest, Response):
