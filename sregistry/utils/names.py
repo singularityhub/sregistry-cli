@@ -162,6 +162,7 @@ def parse_image_name(image_name,
     storage = "%s.%s" %(uri, ext)
     storage_uri = "%s.%s" %(tag_uri, ext)
     result = {"collection": collection,
+              "registry": registry,
               "image": repo_name,
               "url": url,
               "tag": repo_tag,

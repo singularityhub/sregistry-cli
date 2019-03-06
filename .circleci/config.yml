@@ -106,6 +106,41 @@ dockerbuild: &dockerbuild
       docker build -f ${DOCKERFILE} -t ${CONTAINER_NAME} .
 
 
+test_sregistry: &test_sregistry
+  name: Test Singularity Registry Client
+  command: |
+        ls
+        cd /tmp/src/sregistry
+        ls
+        $HOME/conda/bin/python -m unittest tests.test_utils
+
+
+install_python_3: &install_python_3
+  name: install Python 3.5 dependencies
+  command: | 
+      ls $HOME
+      if [ ! -d "/home/circleci/conda" ]; then
+          wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+          /bin/bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
+          export PATH=$HOME/conda/bin:$PATH
+          $HOME/conda/bin/python setup.py install
+       else
+           echo "Miniconda 3 is already installed, continuing to build."
+       fi
+
+install_python_2: &install_python_2
+  name: install Python 3.5 dependencies
+  command: | 
+      ls $HOME
+      if [ ! -d "/home/circleci/conda" ]; then
+          wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
+          /bin/bash Miniconda2-latest-Linux-x86_64.sh -b -p $HOME/conda
+          export PATH=$HOME/conda/bin:$PATH
+          $HOME/conda/bin/python setup.py install
+       else
+           echo "Miniconda 2 is already installed, continuing to build."
+       fi
+
 ################################################################################
 # Jobs
 ################################################################################
@@ -113,6 +148,23 @@ dockerbuild: &dockerbuild
 
 version: 2
 jobs:
+
+  test-python-2:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker     
+      - run: *install_python_2
+      - run: *test_sregistry
+
+  test-python-3:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker     
+      - run: *install_python_3
+      - run: *test_sregistry
+
   build:
     <<: *defaults
     steps:
@@ -125,6 +177,7 @@ jobs:
       - restore_cache:
           key: dependency-cache
       - setup_remote_docker
+     
       - run: *dockerenv
       - run: *install
       - run: *dockerload
@@ -166,7 +219,20 @@ workflows:
   version: 2
   build_deploy:
     jobs:
+      - test-python-2:
+          filters:
+            branches:
+              ignore: master
+
+      - test-python-3:
+          filters:
+            branches:
+              ignore: master
+
       - build:
+          requires:
+            - test-python-2
+            - test-python-3
           filters:
             branches:
               ignore: 
