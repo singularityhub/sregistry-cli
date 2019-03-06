@@ -46,11 +46,21 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     finished = []
     for image in images:
 
+        import json
         q = parse_image_name(remove_uri(image))
+        print(json.dumps(q,indent=4))
+
+        # If a custom registry is not set, use default base
+        if q['registry'] == None:
+            q['registry'] = self.base
 
         # Verify image existence, and obtain id
-        url = "%s/container/%s/%s:%s" %(self.base, q['collection'], q['image'], q['tag'])
-        bot.debug('Retrieving manifest at %s' %url)
+        url = "%s/container/%s/%s:%s" %(q['registry'], 
+                                        q['collection'], 
+                                        q['image'], 
+                                        q['tag'])
+
+        bot.debug('Retrieving manifest at %s' % url)
         manifest = self._get(url)
 
         # Private container collection
