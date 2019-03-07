@@ -112,9 +112,11 @@ test_sregistry: &test_sregistry
   name: Test Singularity Registry Client
   command: |
         ls
-        cd /tmp/src/sregistry
-        ls
-        $HOME/conda/bin/python -m unittest tests.test_utils
+        cd /tmp/src
+        ls /opt
+        export PATH=/opt/conda/bin:$PATH
+        /opt/conda/bin/python setup.py install
+        /opt/conda/bin/python -m unittest tests.test_utils
 
 
 install_python_3: &install_python_3
@@ -123,22 +125,19 @@ install_python_3: &install_python_3
       ls $HOME
       if [ ! -d "/home/circleci/conda" ]; then
           wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-          /bin/sh Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/conda
-          export PATH=$HOME/conda/bin:$PATH
-          $HOME/conda/bin/python setup.py install
+          /bin/sh Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda
+          export PATH=/opt/conda/bin:$PATH
        else
            echo "Miniconda 3 is already installed, continuing to build."
        fi
 
 install_python_2: &install_python_2
-  name: install Python 3.5 dependencies
+  name: install Python 2 dependencies
   command: | 
-      ls $HOME
       if [ ! -d "/home/circleci/conda" ]; then
           wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
-          /bin/sh Miniconda2-latest-Linux-x86_64.sh -b -p $HOME/conda
-          export PATH=$HOME/conda/bin:$PATH
-          $HOME/conda/bin/python setup.py install
+          /bin/sh Miniconda2-latest-Linux-x86_64.sh -b -p /opt/conda
+          export PATH=/opt/conda/bin:$PATH
        else
            echo "Miniconda 2 is already installed, continuing to build."
        fi
