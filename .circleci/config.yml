@@ -16,9 +16,8 @@
 # Defaults
 
 defaults: &defaults
-  docker:
-    - image: docker:18.01.0-ce-git
   working_directory: /tmp/src
+
 
 # Installation
 
@@ -106,6 +105,20 @@ dockerbuild: &dockerbuild
       docker build -f ${DOCKERFILE} -t ${CONTAINER_NAME} .
 
 
+# Test Singularity Registry
+
+test_sregistry: &test_sregistry
+  name: Test Singularity Registry Client
+  command: |
+        which python
+        python --version
+        cd /tmp/src
+        sudo python setup.py install
+        cd sregistry/tests
+        python -m unittest test_utils
+
+
+
 ################################################################################
 # Jobs
 ################################################################################
@@ -113,8 +126,29 @@ dockerbuild: &dockerbuild
 
 version: 2
 jobs:
+
+  test-python-2:
+    <<: *defaults
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: *test_sregistry
+
+  test-python-3:
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.6.4
+    steps:
+      - checkout
+      - setup_remote_docker     
+      - run: *test_sregistry
+
   build:
     <<: *defaults
+    docker:
+    - image: docker:18.01.0-ce-git
     steps:
       - checkout
       - restore_cache:
@@ -125,6 +159,7 @@ jobs:
       - restore_cache:
           key: dependency-cache
       - setup_remote_docker
+     
       - run: *dockerenv
       - run: *install
       - run: *dockerload
@@ -138,6 +173,8 @@ jobs:
 
   update_cache:
     <<: *defaults
+    docker:
+    - image: docker:18.01.0-ce-git
     steps:
       - attach_workspace:
           at: /tmp
@@ -148,6 +185,8 @@ jobs:
 
   deploy:
     <<: *defaults
+    docker:
+    - image: docker:18.01.0-ce-git
     steps:
       - attach_workspace:
           at: /tmp
@@ -166,7 +205,20 @@ workflows:
   version: 2
   build_deploy:
     jobs:
+      - test-python-2:
+          filters:
+            branches:
+              ignore: master
+
+      - test-python-3:
+          filters:
+            branches:
+              ignore: master
+
       - build:
+          requires:
+            - test-python-2
+            - test-python-3
           filters:
             branches:
               ignore: 

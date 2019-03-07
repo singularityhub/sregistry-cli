@@ -30,6 +30,42 @@ def get_image_hash(image_path):
     return hasher.hexdigest()
 
 
+# Regular expressions to parse registry, collection, repo, tag and version
+_docker_uri = re.compile(
+    "(?:(?P<registry>[^/@]+[.:][^/@]*)/)?"
+    "(?P<collection>(?:[^:@/]+/)+)?"
+    "(?P<repo>[^:@/]+)"
+    "(?::(?P<tag>[^:@]+))?"
+    "(?:@(?P<version>.+))?"
+    "$")
+
+# Reduced to match registry:port/repo or registry.com/repo
+_reduced_uri = re.compile(
+    "(?:(?P<registry>[^/@]+[.:][^/@]*)/)?"
+    "(?P<repo>[^:@/]+)"
+    "(?::(?P<tag>[^:@]+))?"
+    "(?:@(?P<version>.+))?"
+    "$"
+    "(?P<collection>.)?")
+
+# Default
+_default_uri = re.compile(
+    "(?:(?P<registry>[^/@]+)/)?"
+    "(?P<collection>(?:[^:@/]+/)+)"
+    "(?P<repo>[^:@/]+)"
+    "(?::(?P<tag>[^:@]+))?"
+    "(?:@(?P<version>.+))?"
+    "$")
+
+
+def set_default(item, default, use_default):
+    '''if an item provided is None and boolean use_default is set to True,
+       return the default. Otherwise, return the item.
+    '''
+    if item == None and use_default:
+        return default
+    return item
+
 
 def parse_image_name(image_name,
                      tag=None,
@@ -55,51 +91,63 @@ def parse_image_name(image_name,
           user gave a registry url base that isn't part of namespace.
 
     '''
+
+    # Save the original string
+    original = image_name
+    
     if base is not None:
         image_name = image_name.replace(base,'').strip('/')
 
-    result = dict()
-    image_name = re.sub('[.](img|simg|sif)','',image_name)
-    image_name = re.split('/', image_name, 1)
+    # If a file is provided, remove extension
+    image_name = re.sub('[.](img|simg|sif)','', image_name)
 
-    # User only provided an image
-    if len(image_name) == 1:
-        collection = ''
-        if defaults is True:
-            collection = default_collection
-        image_name = image_name[0]
+    # Parse the provided name
+    uri_regexes = [ _reduced_uri,
+                    _default_uri,
+                    _docker_uri ]
 
-    # Collection and image provided
-    elif len(image_name) >= 2:
-        collection = image_name[0].lower()
-        image_name = image_name[1]
+    for r in uri_regexes:
+        match = r.match(image_name)
+        if match:
+            break
+
+    if not match:
+        bot.exit('Could not parse image "%s"! Exiting.' % image)
+
+    # Get matches
+    registry = match.group('registry')
+    collection = match.group('collection')
+    repo_name = match.group('repo')
+    repo_tag = match.group('tag')
+    version = match.group('version')
     
-    # Is there a version?
-    image_name = image_name.split('@')
-    if len(image_name) > 1: 
-        version = image_name[1].lower()
-    image_name = image_name[0]
+    # A repo_name is required
+    assert(repo_name)
 
-    # Is there a tag?
-    image_name = image_name.split(':')
+    # If a collection isn't provided
+    collection = set_default(collection, default_collection, defaults)
+    repo_tag = set_default(repo_tag, default_tag, defaults)
 
-    # No tag in provided string
-    if len(image_name) > 1: 
-        tag = image_name[1]
-    image_name = image_name[0].lower()
+    # The collection, name must be all lowercase
+    collection = collection.lower().rstrip('/')
+    repo_name = repo_name.lower()
+    repo_tag = repo_tag.lower()
+
+    if version != None:
+        version = version.lower()
     
-    # If still no tag, use default or blank
-    if tag is None and defaults is True:
-        tag = default_tag
+    # Piece together the uri base
+    if registry == None:
+        uri = "%s/%s" % (collection, repo_name)    
+    else:
+        uri = "%s/%s/%s" % (registry, collection, repo_name)    
 
-    # Piece together the filename
-    uri = "%s/%s" % (collection, image_name)    
     url = uri
 
     # Tag is defined
-    if tag is not None:
-        uri = "%s-%s" % (uri, tag)
-        tag_uri = "%s:%s" % (url, tag) 
+    if repo_tag != None:
+        uri = "%s-%s" % (uri, repo_tag)
+        tag_uri = "%s:%s" % (url, repo_tag) 
 
     # Version is defined
     storage_version = None
@@ -113,9 +161,11 @@ def parse_image_name(image_name,
     storage = "%s.%s" %(uri, ext)
     storage_uri = "%s.%s" %(tag_uri, ext)
     result = {"collection": collection,
-              "image": image_name,
+              "original": original,
+              "registry": registry,
+              "image": repo_name,
               "url": url,
-              "tag": tag,
+              "tag": repo_tag,
               "version": version,
               "storage": storage,
               "storage_uri": storage_uri,
@@ -124,6 +174,7 @@ def parse_image_name(image_name,
               "uri": uri}
 
     return result
+
 
 def format_container_name(name, special_characters=None):
     '''format_container_name will take a name supplied by the user,
@@ -157,7 +208,8 @@ def get_uri(image):
                           .replace('://',''))
  
         accepted_uris = ['aws',
-                         'docker', 
+                         'docker',
+                         'http', 'https', # Must be allowed for pull
                          'dropbox',
                          'gitlab',
                          'globus',
@@ -174,7 +226,7 @@ def get_uri(image):
         if uri == "shub": uri = "hub"
 
         if uri not in accepted_uris:
-            bot.warning('%s is not a recognized uri.' %uri)
+            bot.warning('%s is not a recognized uri.' % uri)
             uri = None
 
     return uri

@@ -32,7 +32,7 @@ class Client(ApiConnection):
     def _update_base(self):
         if self.base is not None:
             if not self.base.endswith('api'):
-                self.base = '%s/api' %self.base.strip('/')
+                self.base = self.base.strip('/')
 
 
     def _read_response(self,response, field="detail"):
@@ -44,6 +44,39 @@ class Client(ApiConnection):
         except:
             message = response.reason
         return message
+
+
+    def _add_https(self, q):
+        '''for push, pull, and other api interactions, the user can optionally
+           define a custom registry. If the registry name doesn't include http
+           or https, add it.
+ 
+           Parameters
+           ==========
+           q: the parsed image query (names), including the original
+        '''
+
+        # If image uses http or https, add back
+        if not q['registry'].startswith('http'):
+
+            if q['original'].startswith('http:'):
+                q['registry'] = 'http://%s' % q['registry']
+
+            elif q['original'].startswith('https:'):
+                q['registry'] = 'https://%s' % q['registry']
+
+            # Otherwise, guess from the user's environment
+            else:
+
+                prefix = 'https://'
+
+                # The user can set an environment variable to specify nohttps
+                nohttps = os.environ.get('SREGISTRY_REGISTRY_NOHTTPS')
+                if nohttps != None:
+                    prefix = 'http://'
+                q['registry'] = '%s%s' %(prefix, q['registry'])
+
+        return q
 
 
     def _update_secrets(self):
