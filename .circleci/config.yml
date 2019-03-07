@@ -150,6 +150,8 @@ jobs:
 
   build:
     <<: *defaults
+    docker:
+    - image: docker:18.01.0-ce-git
     steps:
       - checkout
       - restore_cache:
@@ -174,6 +176,8 @@ jobs:
 
   update_cache:
     <<: *defaults
+    docker:
+    - image: docker:18.01.0-ce-git
     steps:
       - attach_workspace:
           at: /tmp
@@ -184,6 +188,8 @@ jobs:
 
   deploy:
     <<: *defaults
+    docker:
+    - image: docker:18.01.0-ce-git
     steps:
       - attach_workspace:
           at: /tmp
