@@ -64,7 +64,7 @@ class TestUtils(unittest.TestCase):
         print("Testing utils.check_install")
         from sregistry.utils import check_install
         is_installed = check_install()
-        self.assertTrue(is_installed)
+        self.assertTrue(not is_installed) # Not installed Singularity yet
         is_not_installed = check_install('fakesoftwarename')
         self.assertTrue(not is_not_installed)
 
