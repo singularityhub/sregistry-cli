@@ -113,8 +113,8 @@ test_sregistry: &test_sregistry
         which python
         python --version
         cd /tmp/src
-        ls
         sudo python setup.py install
+        cd sregistry
         python -m unittest tests.test_utils
 
 
