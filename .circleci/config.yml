@@ -110,12 +110,11 @@ dockerbuild: &dockerbuild
 test_sregistry: &test_sregistry
   name: Test Singularity Registry Client
   command: |
-        ls
         which python
         python --version
         cd /tmp/src
         ls
-        python setup.py install
+        sudo python setup.py install
         python -m unittest tests.test_utils
 
 
