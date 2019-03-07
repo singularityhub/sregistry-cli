@@ -9,6 +9,54 @@
 # DOCKER_EMAIL
 # Dockerfile optional, if the path is different than the Dockerfile in $PWD
 
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - test-python-2:
+          filters:
+            branches:
+              ignore: master
+
+      - test-python-3:
+          filters:
+            branches:
+              ignore: master
+
+      - build:
+          requires:
+            - test-python-2
+            - test-python-3
+          filters:
+            branches:
+              ignore: 
+                - gh-pages
+                - /docs?/.*/
+            tags:
+              only: /.*/
+
+      - update_cache:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: 
+                - gh-pages
+                - /docs?/.*/
+            tags:
+              only: /.*/
+
+      # Upload the container to Docker Hub
+      - deploy:
+          requires:
+            - build
+            - update_cache
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/
+
 ################################################################################
 # Functions
 ################################################################################
@@ -197,57 +245,3 @@ jobs:
       - run: *dockerenv
       - run: *dockerload
       - run: *dockerdeploy
-
-
-################################################################################
-# Workflows
-################################################################################
-
-
-workflows:
-  version: 2
-  build_deploy:
-    jobs:
-      - test-python-2:
-          filters:
-            branches:
-              ignore: master
-
-      - test-python-3:
-          filters:
-            branches:
-              ignore: master
-
-      - build:
-          requires:
-            - test-python-2
-            - test-python-3
-          filters:
-            branches:
-              ignore: 
-                - gh-pages
-                - /docs?/.*/
-            tags:
-              only: /.*/
-
-      - update_cache:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore: 
-                - gh-pages
-                - /docs?/.*/
-            tags:
-              only: /.*/
-
-      # Upload the container to Docker Hub
-      - deploy:
-          requires:
-            - build
-            - update_cache
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /.*/
