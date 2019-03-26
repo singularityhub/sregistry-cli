@@ -74,7 +74,8 @@ def parse_image_name(image_name,
                      ext="sif",
                      default_collection="library",
                      default_tag="latest",
-                     base=None):
+                     base=None,
+                     lowercase=True):
 
     '''return a collection and repo name and tag
     for an image file.
@@ -89,7 +90,7 @@ def parse_image_name(image_name,
               for collection. 
     base: if defined, remove from image_name, appropriate if the
           user gave a registry url base that isn't part of namespace.
-
+    lowercase: turn entire URI to lowercase (default is True)
     '''
 
     # Save the original string
@@ -129,9 +130,12 @@ def parse_image_name(image_name,
     repo_tag = set_default(repo_tag, default_tag, defaults)
 
     # The collection, name must be all lowercase
-    collection = collection.lower().rstrip('/')
-    repo_name = repo_name.lower()
-    repo_tag = repo_tag.lower()
+    if lowercase:
+        collection = collection.lower().rstrip('/')
+        repo_name = repo_name.lower()
+        repo_tag = repo_tag.lower()
+    else:
+        collection = collection.rstrip('/')
 
     if version != None:
         version = version.lower()
@@ -215,7 +219,7 @@ def get_uri(image):
                          'globus',
                          'google-build',
                          'google-storage',
-                         'google-drive'
+                         'google-drive',
                          'hub',
                          'nvidia', 
                          'registry',
@@ -223,7 +227,7 @@ def get_uri(image):
                          'swift']
 
         # Allow for Singularity compatability
-        if uri == "shub": uri = "hub"
+        if "shub" in uri: uri = "hub"
 
         if uri not in accepted_uris:
             bot.warning('%s is not a recognized uri.' % uri)

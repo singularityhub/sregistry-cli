@@ -14,39 +14,39 @@ import os
 import sys
 
 def pull(self, images, file_name=None, save=True, force=False, **kwargs):
-    '''pull an image from an endpoint
+    ''' pull an image from an endpoint
  
-    Parameters
-    ==========
-    images: refers to the uri given by the user to pull in the format
-    <collection>/<namespace>. You should have an API that is able to 
-    retrieve a container based on parsing this uri.
-    file_name: the user's requested name for the file. It can 
+        Parameters
+        ==========
+        images: refers to the uri given by the user to pull in the format
+        <collection>/<namespace>. You should have an API that is able to 
+        retrieve a container based on parsing this uri.
+        file_name: the user's requested name for the file. It can 
                optionally be None if the user wants a default.
-    save: if True, you should save the container to the database
+        save: if True, you should save the container to the database
           using self.add()
     
-    Returns
-    =======
-    finished: a single container path, or list of paths
+        Returns
+        =======
+        finished: a single container path, or list of paths
     '''
 
     if not isinstance(images,list):
         images = [images]
 
-    bot.debug('Execution of PULL for %s images' %len(images))
+    bot.debug('Execution of PULL for %s images' % len(images))
 
     finished = []
     for image in images:
 
-        q = parse_image_name(remove_uri(image))
+        q = parse_image_name(remove_uri(image), lowercase=False)
 
         # Verify image existence, and obtain id
         url = "%s/container/%s/%s:%s" %(self.base, q['collection'], 
                                                    q['image'],
                                                    q['tag'])
 
-        bot.debug('Retrieving manifest at %s' %url)
+        bot.debug('Retrieving manifest at %s' % url)
 
         manifest = self._get(url)
         manifest['selfLink'] = url        
