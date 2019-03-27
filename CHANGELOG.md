@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - fixing bug with tag specification for registry pull (0.01.39)
  - registry client should honor base, if provided with uri (0.01.38)
  - added google-build client, building with google build and sending to google storage (0.01.37)
  - swift client ENV variable handling matches documentation (0.1.36)
