@@ -118,6 +118,11 @@ def get_storage_name(self, names, remove_dir=False):
        names: the output from parse_image_name
     '''
     storage_folder = os.path.dirname(names['storage'])
+
+    # If the client doesn't have a database, default to PWD
+    if not hasattr(self, 'storage'):
+        return os.path.basename(names['storage'])
+        
     storage_folder = "%s/%s" %(self.storage, storage_folder)
     mkdir_p(storage_folder)
     file_name = names['storage'].replace('/','-')
