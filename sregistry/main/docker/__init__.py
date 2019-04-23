@@ -135,6 +135,7 @@ class Client(ApiConnection):
         password = self._get_setting('SREGISTRY_DOCKERHUB_PASSWORD', password)
 
         # Option 1: the user exports username and password
+        auth = None
         if username is not None and password is not None:
             auth = basic_auth_header(username, password)
             self.headers.update(auth)

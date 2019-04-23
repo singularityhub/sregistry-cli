@@ -18,6 +18,7 @@ The following commands are not yet developed or implemented, but can be (please 
 
  - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential (note this isn't implemented yet for the registry, but is noted here as a todo).
 
+If you are using `sregistry` for a Singularity Registry, Python 3.3+ is required.
 
 ## Install
 The Singularity Registry client for sregistry is recommended for use with Python 3, since it uses the datetime package to help with the credential header (if you have a workaround for this, please contribute since it causes issues for many). To install the dependencies:
