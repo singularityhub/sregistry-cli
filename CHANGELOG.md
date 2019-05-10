@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - bug with sregistry push api endpoint, needs to end with api (0.01.41)
  - docker auth is undefined, and storage attribute needs to be checked for naming (0.01.40)
  - fixing bug with tag specification for registry pull (0.01.39)
  - registry client should honor base, if provided with uri (0.01.38)
