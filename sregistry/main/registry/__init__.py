@@ -31,8 +31,9 @@ class Client(ApiConnection):
 
     def _update_base(self):
         if self.base is not None:
+            self.base = self.base.strip('/')
             if not self.base.endswith('api'):
-                self.base = self.base.strip('/')
+                self.base = "%s/api" % self.base
 
 
     def _read_response(self,response, field="detail"):
