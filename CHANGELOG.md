@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - fix s3 client support when SREGISTRY_S3_BASE is not specified, and allow for IAM accounts that do not permit listing buckets (0.2.1)
  - remove dateutils to allow conda support, 0.1.41 will be last supported for Python 2 (0.2.0)
  - bug with sregistry push api endpoint, needs to end with api (0.1.41)
  - docker auth is undefined, and storage attribute needs to be checked for naming (0.1.40)
