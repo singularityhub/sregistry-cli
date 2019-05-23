@@ -75,11 +75,10 @@ class Client(ApiConnection):
             if not hasattr(self, attr):
                 bot.exit('client is missing attribute %s' %(attr))
 
-        # See if the bucket is already existing
-        self.bucket = None
-        for bucket in self.s3.buckets.all():
-            if bucket.name == self.bucket_name:
-                self.bucket = bucket
+        self.bucket = self.s3.Bucket(self.bucket_name)
+        # See if the bucket is already existing by checking the creation_date
+        if self.bucket.creation_date is None:
+            self.bucket = None
  
         # If the bucket doesn't exist, create it
         if self.bucket is None:
@@ -100,19 +99,12 @@ class Client(ApiConnection):
            https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
         '''
 
-        # If base is not defined, assume using aws client
-        if self.base != None:
-
-            # s3.ServiceResource()
-            self.s3 = boto3.resource('s3',
-                                     endpoint_url=self.base,
-                                     aws_access_key_id=self._id,
-                                     aws_secret_access_key=self._key,
-                                     config=boto3.session.Config(signature_version=self._signature))
-        else:
-           # We will need to test options for reading credentials here
-           self.s3 = boto3.client('s3')
-
+        # s3.ServiceResource()
+        self.s3 = boto3.resource('s3',
+                                 endpoint_url=self.base,
+                                 aws_access_key_id=self._id,
+                                 aws_secret_access_key=self._key,
+                                 config=boto3.session.Config(signature_version=self._signature))
 
 
     def _update_secrets(self, base=None):
