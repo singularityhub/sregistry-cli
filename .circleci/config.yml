@@ -127,15 +127,6 @@ test_sregistry: &test_sregistry
 version: 2
 jobs:
 
-  test-python-2:
-    <<: *defaults
-    docker:
-      - image: circleci/python:2.7
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: *test_sregistry
-
   test-python-3:
     <<: *defaults
     docker:
@@ -205,10 +196,6 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-      - test-python-2:
-          filters:
-            branches:
-              ignore: master
 
       - test-python-3:
           filters:
@@ -217,7 +204,6 @@ workflows:
 
       - build:
           requires:
-            - test-python-2
             - test-python-3
           filters:
             branches:
