@@ -8,7 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-__version__ = "0.1.41"
+__version__ = "0.2.0"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -33,7 +33,6 @@ INSTALL_REQUIRES = (
 
 INSTALL_BASIC_REGISTRY = (
     ('requests-toolbelt', {'min_version': '0.8.0'}),
-    ('dateutils', {'min_version': "0.6.6"}),
     ('python-dateutil', {'min_verison': "2.5.3"})
 )
 
@@ -100,7 +99,6 @@ INSTALL_BASIC_ALL = (INSTALL_REQUIRES +
 
 INSTALL_REQUIRES_REGISTRY = (
     ('requests-toolbelt', {'min_version': '0.8.0'}),
-    ('dateutils', {'min_version': "0.6.6"}),
     ('python-dateutil', {'min_verison': "2.5.3"}),
     ('sqlalchemy', {'min_version': None})
 )

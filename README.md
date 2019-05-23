@@ -8,6 +8,10 @@ Singularity Global Client is an interface to interact with Singularity container
 
 If used for the Singularity Registry client, Python 3 is required. See our [installation guide](https://singularityhub.github.io/sregistry-cli/install) to get started. For more details, please refer to our [documentation](docs).
 
+## Python Versions Under 3
+
+If you are looking for a version that works with Python 2.* see [this branch](https://github.com/singularityhub/sregistry-cli/releases/tag/v0.1.41), or all releases / branches prior to 0.2.0.
+
 ## Building the RPM
 
 The file [sregistry-cli.spec](sregistry-cli.spec) is provided to build an rpm for a specified version,
