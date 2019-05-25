@@ -11,7 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 def main(args, parser, subparser):
 
     from sregistry.main import get_client
-    cli = get_client()
+    cli = get_client(debug=args.debug)
     cli.announce(args.command, quiet=args.quiet)
 
     if not hasattr(cli, 'rename'):
