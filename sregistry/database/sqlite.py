@@ -299,10 +299,8 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
                    location.''' %(container.uri, command))
 
     
-def rm(self, image_name, delete=False):
-    '''Remove an image from the database, akin to untagging the image. This
-    does not delete the file from the cache, unless delete is set to True
-    (as called by rmi).
+def rm(self, image_name):
+    '''Delete an image record and file from the database.
     '''
     container = self.get(image_name)
     if container is not None:
@@ -311,7 +309,7 @@ def rm(self, image_name, delete=False):
         self.session.delete(container)
         self.session.commit()
         if image is not None:
-            if os.path.exists(image) and delete is True:
+            if os.path.exists(image):
                 os.remove(container.image)
             return image
         bot.info("[rm] %s" % name)

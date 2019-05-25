@@ -55,8 +55,7 @@ The following commands are considered "local" in that they come with every clien
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
  - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
- - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
- - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
+ - *rm* `[local]`: remove an image from the database.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
 These specific commands are [demonstrated with more examples](/sregistry-cli/commands).

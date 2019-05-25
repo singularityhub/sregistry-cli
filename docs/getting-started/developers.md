@@ -106,8 +106,7 @@ We've reviewed these commands before, and will do it again. The following comman
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
  - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
- - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
- - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
+ - *rm* `[local]`: remove an image.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
 
@@ -367,20 +366,14 @@ $'/home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33
 ```
 
 ## Remove
-Finally, the same remote functions are available to remove an image from the database record (rm) but **not** the container
-in storage (`rm`) or delete the database record **and** theimage (`rmi`). That looks like this:
+
+Finally, you can delete an image from the database with `rm`.
 
 ```
 from sregistry.main import get_client
 cli = get_client()
 cli.rm('vsoch/hello-world')
-
-# or
-cli.rmi('vsoch/hello-world')
 ```
-
-The first example removes the image from the database (but not the file) and the second removes the
-file from storage and the image.
 
 
 <div>
