@@ -125,7 +125,7 @@ We can also do this same thing from within Python, and get back rows (lists of t
 
 ```bash
 $ sregistry shell 
-# akin to starting a shell and doing from from sregistry.main import Client as client
+# akin to starting a shell and doing from from sregistry.main import get_client; client = get_client()
 
 rows = client.search()
 

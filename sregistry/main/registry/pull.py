@@ -16,7 +16,7 @@ from requests.models import Response
 from sregistry.utils import ( parse_image_name, remove_uri )
 import requests
 import os
-import sys
+
 
 def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from a singularity registry
@@ -92,13 +92,11 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         if isinstance(manifest, int):
             if manifest == 400:
-                bot.error('Bad request (400). Is this a private container?')
+                bot.exit('Bad request (400). Is this a private container?')
             elif manifest == 404:
-                bot.error('Container not found (404)')
+                bot.exit('Container not found (404)')
             elif manifest == 403:
-                bot.error('Unauthorized (403)')
-            sys.exit(1)
-
+                bot.exit('Unauthorized (403)')
 
         # Successful pull
         if "image" in manifest:

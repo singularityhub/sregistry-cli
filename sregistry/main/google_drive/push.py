@@ -20,7 +20,6 @@ from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 import base64
 import json
-import sys
 import os
 
 
@@ -40,8 +39,7 @@ def push(self, path, name, tag=None):
     bot.debug("PUSH %s" % path)
 
     if not os.path.exists(path):
-        bot.error('%s does not exist.' %path)
-        sys.exit(1)
+        bot.exit('%s does not exist.' % path)
 
     names = parse_image_name(remove_uri(name),tag=tag)
     if names['version'] is None:

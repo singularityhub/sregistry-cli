@@ -12,8 +12,6 @@ import sys
 
 def main(args,parser,subparser):
 
-    from sregistry.main import Client as cli
-
     lookup = { 'ipython': ipython,
                'python': python,
                'bpython': bpython }
@@ -25,6 +23,8 @@ def main(args,parser,subparser):
         if not args.endpoint.endswith('://'):
             args.endpoint = '%s://' %args.endpoint
 
+    from sregistry.main import get_client
+    cli = get_client(args.endpoint, quiet=args.quiet)
 
     # If the user asked for a specific shell via environment
     shell = cli._get_and_update_setting('SREGISTRY_SHELL')

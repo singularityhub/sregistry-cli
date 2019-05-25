@@ -19,21 +19,21 @@ no special variables exported. These commands are from the terminal after instal
 
 ```
 # Here we see the default client is Singularity Hub when no environment is set
-python -c "from sregistry.main import Client; print(Client.client_name)"
+python -c "from sregistry.main import get_client; print(get_client().client_name)"
 hub
 
 
 # Now we set the client to be Singularity Registry
-SREGISTRY_CLIENT=registry python -c "from sregistry.main import Client; print(Client.client_name)"
+SREGISTRY_CLIENT=registry python -c "from sregistry.main import get_client; print(Client.client_name)"
 registry
 
 # We see the registry database is defined
-python -c "from sregistry.main import Client; print(Client.database)"
+python -c "from sregistry.main import get_client; print(get_client().database)"
 sqlite:////home/vanessa/.singularity/sregistry.db
 
 # Now we see that the registry database is disabled, the attribute doesn't even exist
-SREGISTRY_DISABLE=true python -c "from sregistry.main import Client; print(hasattr(Client,'database'))"
-False
+SREGISTRY_DISABLE=true python -c "from sregistry.main import get_client; print(get_client().database)"
+dummy
 ```
 
 You should also remember that you can also customize the database location with `SREGISTRY_DATABASE` or (if applicable) your client secrets file `SREGISTRY_CLIENT_SECRETS`. So if you are wanting to integrate `sregistry` into your application using python functions, you would want to make sure to:
@@ -88,7 +88,8 @@ If there is an export of `SREGISTRY_CLIENT` in the environment, we get that.
 Otherwise, we get a client for Singularity Hub.
 
 ```
-from sregistry.main import Client
+from sregistry.main import get_client
+Client = get_client()
 
 # Hello client, who are you?
 Client.speak()
@@ -130,7 +131,8 @@ that I want to add when I first start using `sregistry`. This operation will loo
 
 
 ```
-from sregistry.main import Client as cli
+from sregistry.main import get_client
+cli = get_client()
 
 image_path='example:latest.simg'
 image_uri='vsoch/sregistry-example:v1.0'
@@ -204,7 +206,9 @@ Notice now that we are adding a metadata field, along with a url? This is import
 Images are fat. Computer hard drives can fill up quickly with fat containers hanging around. You might just want to keep a record of external resources, but not save the image files. If you are using a client that supports this feature for the user (for example, with Singularity Hub you could just save the url to the image and metadata) the client would have implemented an entrypoint to `sregistry record`. This entrypoint (on the backend) is just done via the `add` function, with `save` set to False, and without needing to provide an image file. We will walk through an example here. First, let's grab an image from Singularity Hub by grabbing it's manifest. We first parse the image name:
 
 ```
-from sregistry.main import Client
+from sregistry.main import get_client
+cli = get_client()
+
 from sregistry.utils import *
 
 image = 'vsoch/hello-world'
@@ -225,7 +229,7 @@ url = "%s/container/%s/%s:%s" %(Client.base, q['collection'], q['image'], q['tag
 # 'https://www.singularity-hub.org/api/container/vsoch/hello-world:latest'
 
 # Get the manifest, add a selfLink to it
-manifest = Client._get(url)
+manifest = cli._get(url)
 manifest['selfLink'] = url
 ```
 
@@ -288,8 +292,9 @@ just return the path to the image). If you have another default behavior you thi
 A "get" will work to point you to an image that you have in storage, or an image url that you need to pull. It will use the same logic to parse your requested name as is used to save an image, so you should be as specific as needed. For example, let's do a "get" for the image we added above.
 
 ```
-from sregistry.main import Client
-Client.get('vsoch/hello-world')
+from sregistry.main import get_client
+cli = get_client()
+cli.get('vsoch/hello-world')
 
 https://www.singularity-hub.org/api/container/vsoch/hello-world:latest
 <Container 'vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f'>
@@ -307,8 +312,10 @@ To inspect within the client, you could use a "get" and then look at the returne
 
 
 ```
-from sregistry.main import Client
-Client.inspect('vsoch/hello-world')
+from sregistry.main import get_client
+cli = get_client()
+
+cli.inspect('vsoch/hello-world')
 https://www.singularity-hub.org/api/container/vsoch/hello-world:latest
 {
     "client": "hub",
@@ -342,33 +349,34 @@ Since this is a Singularity Hub image, we have stored with it the metadata from 
 You can access the move (`mv`) command from within Python to move an image from a standard storage location to some other path on the system.
 
 ```
-from sregistry.main import Client as client
+from sregistry.main import get_client
+cli = get_client()
 
 # Grab a container
-container = client.images()[0] # grab the first
+container = cli.images()[0] # grab the first
 
 # The container is local (we have a file)
 container.location()
 $ 'local '
 
 # Move it from storage to the Desktop
-container = client.mv(container.uri, '/home/vanessa/Desktop')
+container = cli.mv(container.uri, '/home/vanessa/Desktop')
 [mv] vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f => /home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
 $ container.image
 $'/home/vanessa/Desktop/vsoch-hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg'
 ```
-
 
 ## Remove
 Finally, the same remote functions are available to remove an image from the database record (rm) but **not** the container
 in storage (`rm`) or delete the database record **and** theimage (`rmi`). That looks like this:
 
 ```
-from sregistry.main import Client
-Client.rm('vsoch/hello-world')
+from sregistry.main import get_client
+cli = get_client()
+cli.rm('vsoch/hello-world')
 
 # or
-Client.rmi('vsoch/hello-world')
+cli.rmi('vsoch/hello-world')
 ```
 
 The first example removes the image from the database (but not the file) and the second removes the

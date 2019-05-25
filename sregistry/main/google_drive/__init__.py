@@ -14,7 +14,6 @@ from oauth2client.file import Storage
 from oauth2client import tools
 
 import httplib2
-import sys
 import os
 
 from googleapiclient.discovery import build
@@ -57,8 +56,7 @@ class Client(ApiConnection):
 
         if self._secrets is None:
             bot.error('You must export %s to use Google Drive client' %env)
-            bot.info("https://singularityhub.github.io/sregistry-cli/client-google-drive")
-            sys.exit(1)
+            bot.exit("https://singularityhub.github.io/sregistry-cli/client-google-drive")
 
 
     def _init_client(self):

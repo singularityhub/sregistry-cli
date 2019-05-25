@@ -15,15 +15,11 @@ import os
 
 
 def main(args,parser,subparser):
-    from sregistry.main import get_client, Client as cli
-    
-    # Does the user want to save the image?
-    do_save = True
-    if args.nocache is True or not hasattr(cli,'storage'):
-        do_save = False
-    
+
+    from sregistry.main import get_client
+ 
     images = args.image
-    if not isinstance(images,list):
+    if not isinstance(images, list):
         images = [images]
 
     # if the user has given more than one image, not allowed to name
@@ -36,6 +32,17 @@ def main(args,parser,subparser):
         # Customize client based on uri
         cli = get_client(image, quiet=args.quiet)
         cli.announce(args.command)
+
+        # Does the user want to save the image?
+        do_save = True
+        if args.nocache is True or not hasattr(cli, 'storage'):
+            do_save = False
+
+        # If the client doesn't have the command, exit
+        if not hasattr(cli, 'pull'):
+            msg = "pull is not implemented for %s. Why don't you add it?"
+            bot.exit(msg % cli.client_name)
+
         response = cli.pull(images=image,
                             file_name=name,
                             force=args.force,

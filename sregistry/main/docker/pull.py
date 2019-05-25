@@ -18,7 +18,6 @@ from sregistry.utils import (
 )
 import shutil
 import os
-import sys
 
 
 def pull(self, images, 
@@ -119,8 +118,7 @@ def _pull(self,
 
     # Determine if the user already has the image
     if os.path.exists(file_name) and force is False:
-        bot.error('Image exists! Remove first, or use --force to overwrite')
-        sys.exit(1)
+        bot.exit('Image exists! Remove first, or use --force to overwrite')
 
     digest = names['version'] or names['tag']
 
@@ -143,8 +141,7 @@ def _pull(self,
         bot.info('Exploding %s' %layer)
         result = extract_tar(layer, sandbox, handle_whiteout=True)
         if result['return_code'] != 0:
-            bot.error(result['message'])
-            sys.exit(1)        
+            bot.exit(result['message'])
 
     sudo = kwargs.get('sudo', False)
 

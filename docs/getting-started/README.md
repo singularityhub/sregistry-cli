@@ -120,7 +120,8 @@ use the client, whether from within Python or command line:
 In all cases, after we create a client, given that we have not disabled it, a local database is generated or connected to:
 
 ```
-from sregistry.main import Client
+from sregistry.main import get_client
+client = get_client()
 # Database: /home/vanessa/.singularity/sregistry.db
 ```
 

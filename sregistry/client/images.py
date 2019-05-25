@@ -8,6 +8,8 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from sregistry.logger import bot
+
 def main(args,parser,subparser):
     '''the images entrypoint is intended to list images locally in the user
        database, optionally taking one or more query string to subset the 
@@ -15,6 +17,10 @@ def main(args,parser,subparser):
     '''
     from sregistry.main import get_client
     cli = get_client(quiet=args.quiet)
+
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'images'):
+        bot.exit("listing images requires using the sqlite database.")
 
     for query in args.query:
         if query in ['','*']:

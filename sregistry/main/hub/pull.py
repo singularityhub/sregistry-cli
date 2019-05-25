@@ -11,7 +11,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
 import os
-import sys
 
 def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     ''' pull an image from an endpoint
@@ -61,8 +60,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         # Determine if the user already has the image
         if os.path.exists(file_name) and force is False:
-            bot.error('Image exists! Remove first, or use --force to overwrite')
-            sys.exit(1)
+            bot.exit('Image exists! Remove first, or use --force to overwrite')
 
         show_bar = not bool(self.quiet)
         image_file = self.download(url=manifest['image'],

@@ -14,7 +14,6 @@ from sregistry.utils import (
     remove_uri
 )
 import os
-import sys
 
 
 def add(self, image_path=None,
@@ -32,12 +31,11 @@ def add(self, image_path=None,
     # We can only save if the image is provided
     if image_path is not None:
         if not os.path.exists(image_path):
-            bot.error('Cannot find %s' %image_path)
-            sys.exit(1)
+            bot.exit('Cannot find %s' %image_path)
 
     if image_uri is None:
-        bot.error('You must provide an image uri <collection>/<namespace>')
-        sys.exit(1)
+        bot.exit('You must provide an image uri <collection>/<namespace>')
+
     names = parse_image_name( remove_uri(image_uri) )
     bot.debug('Added %s to filesystem' % names['uri'])    
 

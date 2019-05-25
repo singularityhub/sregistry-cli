@@ -53,8 +53,7 @@ def download_task(url, headers, destination, download_type='layer'):
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
-        bot.error(msg)
-        sys.exit(1)
+        bot.exit(msg)
 
     return destination
 
@@ -115,8 +114,8 @@ def download(url, file_name, headers=None, show_progress=True):
         response = stream(url, headers=headers, stream_to=tmp_file)
 
         if isinstance(response, HTTPError):
-            bot.error("Error downloading %s, exiting." %url)
-            sys.exit(1)
+            bot.exit("Error downloading %s, exiting." %url)
+
         shutil.move(tmp_file, file_name)
     else:
         bot.error("Invalid url or permissions %s" %url)
@@ -170,8 +169,7 @@ def stream(url, headers, stream_to=None, retry=True):
 
         return stream_to 
 
-    bot.error("Problem with stream, response %s" %(response.status_code))
-    sys.exit(1)
+    bot.exit("Problem with stream, response %s" % response.status_code)
 
 
 
@@ -206,16 +204,13 @@ def call(url, func, data=None, headers=None,
 
     # Errored response, try again with refresh
     if response.status_code in [500, 502]:
-        bot.error("Beep boop! %s: %s" %(response.reason,
-                                        response.status_code))
-        sys.exit(1)
+        bot.exit("Beep boop! %s: %s" %(response.reason,
+                                       response.status_code))
 
     # Errored response, try again with refresh
     if response.status_code == 404:
-        bot.error("Beep boop! %s: %s" %(response.reason,
-                                        response.status_code))
-        sys.exit(1)
-
+        bot.exit("Beep boop! %s: %s" %(response.reason,
+                                       response.status_code))
 
     # Errored response, try again with refresh
     if response.status_code == 401:
@@ -230,9 +225,8 @@ def call(url, func, data=None, headers=None,
                         return_json=return_json,
                         stream=stream, retry=False)
 
-        bot.error("Your credentials are expired! %s: %s" %(response.reason,
-                                                           response.status_code))
-        sys.exit(1)
+        bot.exit("Your credentials are expired! %s: %s" %(response.reason,
+                                                          response.status_code))
 
     elif response.status_code == 200:
 
@@ -241,8 +235,7 @@ def call(url, func, data=None, headers=None,
             try:
                 response = response.json()
             except ValueError:
-                bot.error("The server returned a malformed response.")
-                sys.exit(1)
+                bot.exit("The server returned a malformed response.")
 
     return response
 
@@ -260,16 +253,14 @@ def update_token(response, headers):
 
     not_asking_auth = "Www-Authenticate" not in response.headers
     if response.status_code != 401 or not_asking_auth:
-        bot.error("Authentication error, exiting.")
-        sys.exit(1)
+        bot.exit("Authentication error, exiting.")
 
     challenge = response.headers["Www-Authenticate"]
     regexp = '^Bearer\s+realm="(.+)",service="(.+)",scope="(.+)",?'
     match = re.match(regexp, challenge)
 
     if not match:
-        bot.error("Unrecognized authentication challenge, exiting.")
-        sys.exit(1)
+        bot.exit("Unrecognized authentication challenge, exiting.")
 
     realm = match.group(1)
     service = match.group(2)
@@ -285,7 +276,6 @@ def update_token(response, headers):
         headers.update(token)
 
     except Exception:
-        bot.error("Error getting token.")
-        sys.exit(1)
+        bot.exit("Error getting token.")
 
     return headers

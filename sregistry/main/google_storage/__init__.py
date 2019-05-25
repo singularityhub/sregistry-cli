@@ -12,7 +12,6 @@ from sregistry.logger import bot
 from sregistry.main import ApiConnection
 import google
 import json
-import sys
 import os
 
 from retrying import retry
@@ -65,8 +64,7 @@ class Client(ApiConnection):
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
         self._secrets = self._get_and_update_setting(env)
         if self._secrets is None:
-            bot.error('You must export %s to use Google Storage client' %env)
-            sys.exit(1)
+            bot.exit('You must export %s to use Google Storage client' %env)
 
 
     def _init_client(self):
@@ -115,8 +113,7 @@ class Client(ApiConnection):
 
         # Case 3: The bucket name is already taken
         except:
-            bot.error('Cannot get or create %s' %self._bucket_name)
-            sys.exit(1)
+            bot.exit('Cannot get or create %s' %self._bucket_name)
 
         return self._bucket
 

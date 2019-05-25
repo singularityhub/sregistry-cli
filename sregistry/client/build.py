@@ -25,6 +25,11 @@ def main(args,parser,subparser):
     cli = get_client(quiet=args.quiet)
     cli.announce(args.command)
 
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'build'):
+        msg = "build is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
+
     if cli.client_name == 'google-build':
 
         if args.name == None:
@@ -134,7 +139,8 @@ def kill(args):
     '''kill is a helper function to call the "kill" function of the client,
        meaning we bring down an instance.
     '''
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
+    cli = get_client(quiet=args.quiet)
     if len(args.commands) > 0:
         for name in args.commands:
             cli.destroy(name)
@@ -144,10 +150,10 @@ def instances():
     '''list running instances for a user, including all builders and report
        instance names and statuses.
     '''
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
+    cli = get_client(quiet=args.quiet)
     cli.list_builders()
     sys.exit(0)
-
 
 def templates(args, template_name=None):
     '''list a specific template (if a name is provided) or all templates
@@ -162,7 +168,7 @@ def templates(args, template_name=None):
     from sregistry.main import get_client
 
     # We don't need storage/compute connections
-    cli = get_client(init=False)
+    cli = get_client(init=False, quiet=args.quiet)
 
     if len(args.commands) > 0:
         template_name = args.commands.pop(0)
@@ -179,7 +185,8 @@ def list_logs(args, container_name=None):
        container_name: a default container name set to be None (show latest log)
 
     '''
-    from sregistry.main import Client as cli    
+    from sregistry.main import get_client
+    cli = get_client(quiet=args.quiet)
     if len(args.commands) > 0:
         container_name = args.commands.pop(0)
     cli.logs(container_name)

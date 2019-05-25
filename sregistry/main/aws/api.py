@@ -17,7 +17,6 @@ import os
 import re
 import requests
 import shutil
-import sys
 import tempfile
 from urllib.parse import urlparse
 
@@ -44,8 +43,7 @@ def update_token(self):
         self.headers.update(token)
 
     except Exception:
-        bot.error("Error getting token.")
-        sys.exit(1)
+        bot.exit("Error getting token.")
 
 
 def download_layers(self, repo_name, digest=None, destination=None):
@@ -136,8 +134,7 @@ def get_digests(self, repo_name, tag):
 
     '''
     if not hasattr(self, 'manifest'):
-        bot.error('Please retrieve manifest for the image first.')
-        sys.exit(1)
+        bot.exit('Please retrieve manifest for the image first.')
 
     # version 2 manifest here!
     return self.manifest['layers']

@@ -260,8 +260,7 @@ def load_build_config(self, config=None):
     # otherwise, try to look it up in library
     configs = self._load_templates(config)
     if configs is None:
-        bot.error('%s is not a valid config. %s' %name)
-        sys.exit(1)
+        bot.exit('%s is not a valid config. %s' %name)
 
     bot.info('Found config %s in library!' %config)
     config = configs[0]
@@ -294,8 +293,7 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
     # Read in the config to know what we can edit
     config = self._load_build_config(config)
     if not config:
-        bot.error('Cannot find config, check path or URI.')
-        sys.exit(1)
+        bot.exit('Cannot find config, check path or URI.')
 
     # Ensure that the builder config is intended for the client
     self._client_tagged(config['data']['tags'])

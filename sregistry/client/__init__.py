@@ -19,9 +19,6 @@ import os
 def get_parser():
     parser = argparse.ArgumentParser(description="Singularity Registry tools")
 
-    # Customize parser depending on client
-    from sregistry.main import Client as cli
-
     # Global Variables
     parser.add_argument('--debug', dest="debug", 
                         help="use verbose logging to debug.", 
@@ -62,13 +59,12 @@ def get_parser():
                        type=str, default=None)
 
     # List local containers and collections
-    if hasattr(cli, 'images'):
-        images = subparsers.add_parser("images",
-                                       help="list local images, optionally with query")
+    images = subparsers.add_parser("images",
+                                   help="list local images, optionally with query")
 
-        images.add_argument("query", nargs='*', 
-                            help="container search query", 
-                            type=str, default="*")
+    images.add_argument("query", nargs='*', 
+                        help="container search query", 
+                        type=str, default="*")
 
 
     # List local containers and collections
@@ -81,198 +77,171 @@ def get_parser():
 
     # Get path to an image
     get = subparsers.add_parser("get",
-                                    help="get a container path from your storage")
+                                help="get a container path from your storage")
 
     get.add_argument("query", nargs='*', 
                      help="container search query to inspect", 
                      type=str, default="*")
 
 
-    # Add/copy local containers to storage, if client has it
-    if hasattr(cli,'storage'):
+    # Add an image file
+    add = subparsers.add_parser("add",
+                                help="add a container to local storage")
 
-        # Add an image file
-        add = subparsers.add_parser("add",
-                                    help="add a container to local storage")
+    add.add_argument("image", nargs=1,
+                     help="full path to image file", 
+                     type=str)
 
-        add.add_argument("image", nargs=1,
-                         help="full path to image file", 
-                         type=str)
+    add.add_argument("--name", dest='name', 
+                     help='name of image, in format "library/image"', 
+                     type=str)
 
-        add.add_argument("--name", dest='name', 
-                         help='name of image, in format "library/image"', 
-                         type=str)
-
-        add.add_argument('--copy', dest="copy", 
-                         help="copy the container instead of moving it.", 
-                         default=False, action='store_true')
+    add.add_argument('--copy', dest="copy", 
+                     help="copy the container instead of moving it.", 
+                     default=False, action='store_true')
 
 
-        mv = subparsers.add_parser("mv",
-                                   help="move a container and update database")
+    mv = subparsers.add_parser("mv",
+                               help="move a container and update database")
 
-        mv.add_argument("name", nargs=1, 
-                         help="container name or uri to move from database", 
-                         type=str)
+    mv.add_argument("name", nargs=1, 
+                     help="container name or uri to move from database", 
+                     type=str)
 
-        mv.add_argument("path", nargs=1, 
-                         help="directory or image file to move image.", 
-                         type=str)
+    mv.add_argument("path", nargs=1, 
+                     help="directory or image file to move image.", 
+                     type=str)
 
 
-        rename = subparsers.add_parser("rename",
-                                        help="rename a container in storage")
+    rename = subparsers.add_parser("rename",
+                                    help="rename a container in storage")
 
-        rename.add_argument("name", nargs=1, 
-                            help="container name or uri to rename in database", 
-                            type=str)
-
-        rename.add_argument("path", nargs=1, 
-                             help="path to rename image (will use basename)", 
-                             type=str)
-
-        rm = subparsers.add_parser("rm",
-                                   help="remove a container from the database")
-
-        rm.add_argument("image", nargs=1,
-                        help='name of image, in format "library/image"', 
+    rename.add_argument("name", nargs=1, 
+                        help="container name or uri to rename in database", 
                         type=str)
 
-        rmi = subparsers.add_parser("rmi",
-                                    help="remove a container from the database AND storage")
-
-        rmi.add_argument("image", nargs=1,
-                         help='name of image, in format "library/image"', 
+    rename.add_argument("path", nargs=1, 
+                         help="path to rename image (will use basename)", 
                          type=str)
 
+    rm = subparsers.add_parser("rm",
+                               help="remove a container from the database")
+
+    rm.add_argument("image", nargs=1,
+                    help='name of image, in format "library/image"', 
+                    type=str)
 
     # List or search containers and collections
-    if hasattr(cli,'search'):
+    search = subparsers.add_parser("search",
+                               help="search remote containers")
 
-        search = subparsers.add_parser("search",
-                                   help="search remote containers")
+    search.add_argument("query", nargs='*', 
+                        help="container search query, don't specify for all", 
+                        type=str, default="*")
 
-        search.add_argument("query", nargs='*', 
-                            help="container search query, don't specify for all", 
-                            type=str, default="*")
-
-        search.add_argument("--endpoint", default=None, dest='endpoint',
-                            help='remote endpoint and path. id:/path"', 
-                            type=str)
+    search.add_argument("--endpoint", default=None, dest='endpoint',
+                        help='remote endpoint and path. id:/path"', 
+                        type=str)
 
     # Build an image
-    if hasattr(cli,'build'):
+    build = subparsers.add_parser("build",
+                                 help="build a container using a remote.")
 
-        build = subparsers.add_parser("build",
-                                     help="build a container using a remote.")
+    build.add_argument('--preview','-p', dest="preview", 
+                       help="preview the parsed configuration file only.", 
+                       default=False, action='store_true')
 
-        build.add_argument('--preview','-p', dest="preview", 
-                           help="preview the parsed configuration file only.", 
-                           default=False, action='store_true')
+    build.add_argument("commands", nargs='*',
+                       help='''Google Build + Storage
+                               --------------------------------------------------------
+                               build [recipe] [context] -------------------------------
+                               build [recipe] . ---------------------------------------
+                               build [recipe] file1 file2 -----------------------------
+                               ''', 
+                       type=str)
 
-        build.add_argument("commands", nargs='*',
-                           help='''Google Build + Storage
-                                   --------------------------------------------------------
-                                   build [recipe] [context] -------------------------------
-                                   build [recipe] . ---------------------------------------
-                                   build [recipe] file1 file2 -----------------------------
-                                   ''', 
-                           type=str)
+    build.add_argument("--name", dest='name', 
+                       help='name of image, in format "library/image"', 
+                       type=str, default=None)
 
-        build.add_argument("--name", dest='name', 
-                           help='name of image, in format "library/image"', 
-                           type=str, default=None)
-
-        build.add_argument("--outfile", dest='outfile', 
-                           help='name of output file to write contents to', 
-                           type=str, default=None)
+    build.add_argument("--outfile", dest='outfile', 
+                       help='name of output file to write contents to', 
+                       type=str, default=None)
 
 
     # Push an image
-    if hasattr(cli,'push'):
+    push = subparsers.add_parser("push",
+                                 help="push one or more images to a registry")
 
-        push = subparsers.add_parser("push",
-                                     help="push one or more images to a registry")
+    push.add_argument("image", nargs=1,
+                       help="full path to image file", 
+                       type=str)
 
-        push.add_argument("image", nargs=1,
-                           help="full path to image file", 
-                           type=str)
+    push.add_argument("--tag", dest='tag', 
+                       help="tag for image. If not provided, defaults to latest", 
+                       type=str, default=None)
 
-        push.add_argument("--tag", dest='tag', 
-                           help="tag for image. If not provided, defaults to latest", 
-                           type=str, default=None)
-
-        push.add_argument("--name", dest='name', 
-                           help='name of image, in format "library/image"', 
-                           type=str, required=True)
+    push.add_argument("--name", dest='name', 
+                       help='name of image, in format "library/image"', 
+                       type=str, required=True)
 
     # Share an image
-    if hasattr(cli,'share'):
+    share = subparsers.add_parser("share",
+                                   help="share a remote image")
 
-        share = subparsers.add_parser("share",
-                                       help="share a remote image")
+    share.add_argument("image", nargs=1,
+                       help="full uri of image", 
+                       type=str)
 
-        share.add_argument("image", nargs=1,
-                           help="full uri of image", 
-                           type=str)
-
-        share.add_argument("--email", dest='share_to', 
-                            help='email (or share point) to share with', 
-                            type=str, default=None)
+    share.add_argument("--email", dest='share_to', 
+                        help='email (or share point) to share with', 
+                        type=str, default=None)
 
 
     # Pull an image
-    if hasattr(cli,'pull'):
+    pull = subparsers.add_parser("pull",
+                                 help="pull an image from a registry")
 
-        pull = subparsers.add_parser("pull",
-                                     help="pull an image from a registry")
+    pull.add_argument("image", nargs=1,
+                       help="full uri of image", 
+                       type=str)
 
-        pull.add_argument("image", nargs=1,
-                           help="full uri of image", 
-                           type=str)
+    pull.add_argument("--name", dest='name', 
+                       help='custom name for image', 
+                       type=str, default=None)
 
-        pull.add_argument("--name", dest='name', 
-                           help='custom name for image', 
-                           type=str, default=None)
+    pull.add_argument('--force','-f', dest="force", 
+                        help="force overwrite of existing image", 
+                        default=False, action='store_true')
 
-        pull.add_argument('--force','-f', dest="force", 
-                            help="force overwrite of existing image", 
-                            default=False, action='store_true')
-
-        pull.add_argument('--no-cache', dest="nocache", 
-                           help="if storage active, don't add the image to it", 
-                           default=False, action='store_true')
+    pull.add_argument('--no-cache', dest="nocache", 
+                       help="if storage active, don't add the image to it", 
+                       default=False, action='store_true')
 
 
     # List or search labels
-    if hasattr(cli,'label_search'):
+    labels = subparsers.add_parser("labels",
+                                help="query for labels")
 
-        labels = subparsers.add_parser("labels",
-                                    help="query for labels")
+    labels.add_argument("--key", "-k", dest='key', 
+                        help="A label key to search for", 
+                        type=str, default=None)
 
-        labels.add_argument("--key", "-k", dest='key', 
-                            help="A label key to search for", 
-                            type=str, default=None)
+    labels.add_argument("--value", "-v", dest='value', 
+                        help="A value to search for", 
+                        type=str, default=None)
 
-        labels.add_argument("--value", "-v", dest='value', 
-                            help="A value to search for", 
-                            type=str, default=None)
+    # Remove
+    delete = subparsers.add_parser("delete",
+                                    help="delete an image.")
 
-    # List or search labels
-    if hasattr(cli,'remove'):
+    delete.add_argument('--force','-f', dest="force", 
+                        help="don't prompt before deletion", 
+                        default=False, action='store_true')
 
-        # Remove
-        delete = subparsers.add_parser("delete",
-                                        help="delete an image from the registry.")
-
-        delete.add_argument('--force','-f', dest="force", 
-                            help="don't prompt before deletion", 
-                            default=False, action='store_true')
-
-        delete.add_argument("image", nargs=1,
-                            help="full path to image file", 
-                            type=str)
-
+    delete.add_argument("image", nargs=1,
+                        help="full path to image file", 
+                        type=str)
 
     return parser
 
@@ -307,7 +276,6 @@ def main():
     environment variables.
     '''
 
-    from sregistry.main import Client as cli
     parser = get_parser()
     subparsers = get_subparsers(parser)
 
@@ -317,9 +285,8 @@ def main():
         '''
 
         version = sregistry.__version__
-        name = cli.client_name
 
-        print("\nSingularity Registry Global Client v%s [%s]" %(version, name))
+        print("\nSingularity Registry Global Client v%s" % version)
         parser.print_help()
         sys.exit(return_code)
     
@@ -355,22 +322,21 @@ def main():
     elif args.command == "pull": from .pull import main
     elif args.command == "rename": from .rename import main
     elif args.command == "rm": from .rm import main
-    elif args.command == "rmi": from .rmi import main
     elif args.command == "search": from .search import main
     elif args.command == "share": from .share import main
     elif args.command == "shell": from .shell import main
 
     # Pass on to the correct parser
     return_code = 0
-    try:
-        main(args=args,
-             parser=parser,
-             subparser=subparsers[args.command])
-        sys.exit(return_code)
-    except UnboundLocalError:
-        return_code = 1
+    #try:
+    main(args=args,
+         parser=parser,
+         subparser=subparsers[args.command])
+    sys.exit(return_code)
+    #except UnboundLocalError:
+    #    return_code = 1
 
-    help(return_code)
+    #help(return_code)
 
 if __name__ == '__main__':
     main()
