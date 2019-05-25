@@ -328,15 +328,15 @@ def main():
 
     # Pass on to the correct parser
     return_code = 0
-    #try:
-    main(args=args,
-         parser=parser,
-         subparser=subparsers[args.command])
-    sys.exit(return_code)
-    #except UnboundLocalError:
-    #    return_code = 1
+    try:
+        main(args=args,
+             parser=parser,
+             subparser=subparsers[args.command])
+        sys.exit(return_code)
+    except UnboundLocalError:
+        return_code = 1
 
-    #help(return_code)
+    help(return_code)
 
 if __name__ == '__main__':
     main()
