@@ -52,7 +52,7 @@ def get_parser():
 
     # Local shell with client loaded
     shell = subparsers.add_parser("shell",
-                                  help="shell into a session a client.")
+                                  help="shell into a Python session with a client.")
 
     shell.add_argument("endpoint", nargs='?',
                        help="the endpoint to use (eg. docker)", 
@@ -63,30 +63,30 @@ def get_parser():
                                    help="list local images, optionally with query")
 
     images.add_argument("query", nargs='*', 
-                        help="container search query", 
+                        help="image search query", 
                         type=str, default="*")
 
 
     # List local containers and collections
     inspect = subparsers.add_parser("inspect",
-                                    help="inspect a container in your database")
+                                    help="inspect an image in your database")
 
     inspect.add_argument("query", nargs=1,
-                          help="container search query to inspect", 
+                          help="image search query to inspect", 
                           type=str, default=None)
 
     # Get path to an image
     get = subparsers.add_parser("get",
-                                help="get a container path from your storage")
+                                help="get an image path from your storage")
 
     get.add_argument("query", nargs='*', 
-                     help="container search query to inspect", 
+                     help="image search query to inspect", 
                      type=str, default="*")
 
 
     # Add an image file
     add = subparsers.add_parser("add",
-                                help="add a container to local storage")
+                                help="add an image to local storage")
 
     add.add_argument("image", nargs=1,
                      help="full path to image file", 
@@ -97,15 +97,15 @@ def get_parser():
                      type=str)
 
     add.add_argument('--copy', dest="copy", 
-                     help="copy the container instead of moving it.", 
+                     help="copy the image instead of moving it.", 
                      default=False, action='store_true')
 
 
     mv = subparsers.add_parser("mv",
-                               help="move a container and update database")
+                               help="move an image and update database")
 
     mv.add_argument("name", nargs=1, 
-                     help="container name or uri to move from database", 
+                     help="image name or uri to move from database", 
                      type=str)
 
     mv.add_argument("path", nargs=1, 
@@ -114,10 +114,10 @@ def get_parser():
 
 
     rename = subparsers.add_parser("rename",
-                                    help="rename a container in storage")
+                                    help="rename an image in storage")
 
     rename.add_argument("name", nargs=1, 
-                        help="container name or uri to rename in database", 
+                        help="image name or uri to rename in database", 
                         type=str)
 
     rename.add_argument("path", nargs=1, 
@@ -125,7 +125,7 @@ def get_parser():
                          type=str)
 
     rm = subparsers.add_parser("rm",
-                               help="remove a container from the database")
+                               help="remove an image from the local database")
 
     rm.add_argument("image", nargs=1,
                     help='name of image, in format "library/image"', 
@@ -133,10 +133,10 @@ def get_parser():
 
     # List or search containers and collections
     search = subparsers.add_parser("search",
-                               help="search remote containers")
+                               help="search remote images")
 
     search.add_argument("query", nargs='*', 
-                        help="container search query, don't specify for all", 
+                        help="image search query, don't specify for all", 
                         type=str, default="*")
 
     search.add_argument("--endpoint", default=None, dest='endpoint',
@@ -145,7 +145,7 @@ def get_parser():
 
     # Build an image
     build = subparsers.add_parser("build",
-                                 help="build a container using a remote.")
+                                 help="build an image using a remote.")
 
     build.add_argument('--preview','-p', dest="preview", 
                        help="preview the parsed configuration file only.", 
@@ -233,7 +233,7 @@ def get_parser():
 
     # Remove
     delete = subparsers.add_parser("delete",
-                                    help="delete an image.")
+                                    help="delete an image from a remote.")
 
     delete.add_argument('--force','-f', dest="force", 
                         help="don't prompt before deletion", 
