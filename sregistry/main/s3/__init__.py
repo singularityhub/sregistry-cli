@@ -113,8 +113,8 @@ class Client(ApiConnection):
         '''
         # We are required to have a base, either from environment or terminal
         self.base = self._get_and_update_setting('SREGISTRY_S3_BASE', self.base)
-        self._id = self._required_get_and_update('AWS_ACCESS_KEY_ID')
-        self._key = self._required_get_and_update('AWS_SECRET_ACCESS_KEY')
+        self._id = self._get_setting('AWS_ACCESS_KEY_ID')
+        self._key = self._get_setting('AWS_SECRET_ACCESS_KEY')
 
         # Get the desired S3 signature.  Default is the current "s3v4" signature.
         # If specified, user can request "s3" (v2 old) signature
