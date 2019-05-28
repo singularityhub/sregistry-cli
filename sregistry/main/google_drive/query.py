@@ -58,7 +58,7 @@ def list_containers(self):
 
     if len(containers) == 0:
         bot.info("No containers found, based on properties type:container")
-        sys.exit(1)
+        sys.exit(0)
 
     return containers
 

@@ -21,7 +21,6 @@ from glob import glob
 import os
 import json
 import shutil
-import sys
 
 
 # COLLECTIONS ##################################################################
@@ -261,8 +260,7 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
 
     '''
     if container is None and image_name is None:
-        bot.error('A container or image_name must be provided to %s' %command)
-        sys.exit(1)
+        bot.exit('A container or image_name must be provided to %s' % command)
 
     # If a container isn't provided, look for it from image_uri
     if container is None:
@@ -276,18 +274,15 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
 
         # If the two are the same, doesn't make sense
         if move_to == image:
-            bot.warning('%s is already the name.' %image)
-            sys.exit(1)
+            bot.exit('%s is already the name.' % image)
        
         # Ensure directory exists
         if not os.path.exists(filedir):
-            bot.error('%s does not exist. Ensure exists first.' %filedir)
-            sys.exit(1)
+            bot.exit('%s does not exist. Ensure exists first.' % filedir)
 
         # Ensure writable for user
         if not os.access(filedir, os.W_OK):
-            bot.error('%s is not writable' %filedir)
-            sys.exit(1)
+            bot.exit('%s is not writable' % filedir)
 
         original = os.path.basename(image)
 
@@ -298,25 +293,14 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
             bot.info('[%s] %s => %s' %(command, original, move_to))
             return container
         except:
-            bot.error('Cannot %s %s to %s' %(command, original, move_to))
-            sys.exit(1)
+            bot.exit('Cannot %s %s to %s' %(command, original, move_to))
 
     bot.warning('''Not found! Please pull %s and then %s to the appropriate
                    location.''' %(container.uri, command))
 
-
-def rmi(self, image_name):
-    '''Remove an image from the database and filesystem.
-    '''
-    container = self.rm(image_name, delete=True)
-    if container is not None:
-        bot.info("[rmi] %s" % container)
     
-
-def rm(self, image_name, delete=False):
-    '''Remove an image from the database, akin to untagging the image. This
-    does not delete the file from the cache, unless delete is set to True
-    (as called by rmi).
+def rm(self, image_name):
+    '''Delete an image record and file from the database.
     '''
     container = self.get(image_name)
     if container is not None:
@@ -325,7 +309,7 @@ def rm(self, image_name, delete=False):
         self.session.delete(container)
         self.session.commit()
         if image is not None:
-            if os.path.exists(image) and delete is True:
+            if os.path.exists(image):
                 os.remove(container.image)
             return image
         bot.info("[rm] %s" % name)
@@ -378,13 +362,11 @@ def add(self, image_path=None,
     # We can only save if the image is provided
     if image_path is not None:
         if not os.path.exists(image_path) and save is True:
-            bot.error('Cannot find %s' %image_path)
-            sys.exit(1)
+            bot.exit('Cannot find %s' % image_path)
 
     # An image uri is required for version, tag, etc.
     if image_uri is None:
-        bot.error('You must provide an image uri <collection>/<namespace>')
-        sys.exit(1)
+        bot.exit('You must provide an image uri <collection>/<namespace>')
 
     names = parse_image_name( remove_uri(image_uri) )
     bot.debug('Adding %s to registry' % names['uri'])    

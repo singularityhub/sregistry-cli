@@ -18,7 +18,6 @@ import globus_sdk
 
 import requests
 import shutil
-import sys
 import os
 
 
@@ -67,8 +66,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         endpoints = self._get_endpoints()
 
         if len(endpoints['my-endpoints']) == 0:
-            bot.error('You must have a personal endpoint to transfer the container')
-            sys.exit(1) 
+            bot.exit('You must have a personal endpoint to transfer the container')
 
         # Take the first endpoint that is active
 
@@ -81,8 +79,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         # Exit if none are active, required!
 
         if dest is None:
-            bot.error('No activated local endpoints online! Start to transfer')
-            sys.exit(1)
+            bot.exit('No activated local endpoints online! Start to transfer')
 
         # We need to know the full path of the endpoint
 

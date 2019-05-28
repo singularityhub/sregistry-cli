@@ -19,7 +19,6 @@ from sregistry.main.google_storage.utils import prepare_metadata
 from googleapiclient.http import MediaFileUpload
 from retrying import retry
 import json
-import sys
 import os
 
 
@@ -34,9 +33,7 @@ def push(self, path, name, tag=None):
     bot.debug("PUSH %s" % path)
 
     if not os.path.exists(path):
-        bot.error('%s does not exist.' %path)
-        sys.exit(1)
-
+        bot.exit('%s does not exist.' % path)
 
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(name),tag=tag)

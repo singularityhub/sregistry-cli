@@ -14,7 +14,6 @@ from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
 import os
 import re
-import sys
 
 
 def search(self, query=None, **kwargs):
@@ -56,8 +55,7 @@ def list_all(self, **kwargs):
     bot.spinner.stop()   
 
     if len(results) == 0:
-        bot.info("No container collections found.")
-        sys.exit(1)
+        bot.exit("No container collections found.", return_code=0)
 
     rows = []
     for result in results:

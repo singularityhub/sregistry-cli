@@ -77,8 +77,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # If the file already exists and force is False
         if os.path.exists(file_name) and force is False:
-            bot.error('Image exists! Remove first, or use --force to overwrite')
-            sys.exit(1) 
+            bot.exit('Image exists! Remove first, or use --force to overwrite') 
 
         # Write to file
         with open(file_name, 'wb') as filey:

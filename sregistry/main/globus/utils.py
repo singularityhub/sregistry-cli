@@ -82,8 +82,7 @@ def get_endpoint_path(self, endpoint_id):
     '''
     config = os.path.expanduser("~/.globusonline/lta/config-paths")
     if not os.path.exists(config):
-        bot.error('%s not found for a local Globus endpoint.')
-        sys.exit(1)
+        bot.exit('%s not found for a local Globus endpoint.')
 
     path = None
 
@@ -97,8 +96,7 @@ def get_endpoint_path(self, endpoint_id):
     # If we don't have an existing path, exit
 
     if path is None:
-        bot.error('No path was found for a local Globus endpoint.')
-        sys.exit(1)
+        bot.exit('No path was found for a local Globus endpoint.')
 
     return path
 

@@ -22,8 +22,7 @@ Singularity image. For these same functions for within python (for developers) [
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
  - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
- - *rm* `[local]`: is akin to Docker's remove, and says "remove this record from my database, but don't delete the image." This corresponds with deleting the database record, but not the image file in your storage.
- - *rmi* `[local]`: the same as `rm`, but additionally deletes the image file from storage.
+ - *rm* `[local]`: remove an image and record from the database.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
 A quick rundown of basic commands is shown in this asciicast.
@@ -411,11 +410,10 @@ sregistry rename vsoch/hello-world tacos.simg
 ```
 
 ## Remove
-The client can either remove an image from the database record (rm) but **not** the container
-in storage (`rm`) or delete the database record **and** theimage (`rmi`). You **must** be specific about versions, if you want to target a particular version. Otherwise, the first returned in the query is removed, which may not be what you want. Thus we recommend this sort of remove command:
+The client can delete the database record **and** theimage (`rm`). You **must** be specific about versions, if you want to target a particular version. Otherwise, the first returned in the query is removed, which may not be what you want. Thus we recommend this sort of remove command:
 
 ```
-sregistry rmi vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
+sregistry rm vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f
 [client|hub] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 /home/vanessa/.singularity/shub/vsoch/hello-world:latest@ed9755a0871f04db3e14971bec56a33f.simg
 

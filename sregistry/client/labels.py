@@ -8,9 +8,17 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from sregistry.logger import bot
 
-def main(args,parser,subparser):
+def main(args, parser, subparser):
 
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
+    cli = get_client(quiet=args.quiet)
+
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'label_search'):
+        msg = "label search is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
+
     return cli.label_search(key=args.key,
                             value=args.value)

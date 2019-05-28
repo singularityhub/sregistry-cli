@@ -184,11 +184,11 @@ def download(self, url,
                                show_progress=show_progress)
 
         if isinstance(response, HTTPError):
-            bot.error("Error downloading %s, exiting." %url)
-            sys.exit(1)
+            bot.exit("Error downloading %s, exiting." % url)
+ 
         shutil.move(tmp_file, file_name)
     else:
-        bot.error("Invalid url or permissions %s" %url)
+        bot.error("Invalid url or permissions %s" % url)
     return file_name
 
 
@@ -228,7 +228,7 @@ def stream(self, url,
 
     # Deal with token if necessary
     if response.status_code == 401 and retry is True:
-        if hasattr(self,'_update_token'):
+        if hasattr(self, '_update_token'):
             self._update_token(response)
             return self.stream(url,
                                headers, 
@@ -241,8 +241,7 @@ def stream(self, url,
                             stream_to=stream_to,
                             show_progress=show_progress)
 
-    bot.error("Problem with stream, response %s" %(response.status_code))
-    sys.exit(1)
+    bot.exit("Problem with stream, response %s" %(response.status_code))
 
 
 
@@ -290,8 +289,7 @@ def stream_response(self, response, stream_to=None, show_progress=True):
 
         return stream_to 
 
-    bot.error("Problem with stream, response %s" %(response.status_code))
-    sys.exit(1)
+    bot.exit("Problem with stream, response %s" %(response.status_code))
 
 
 def call(self, url, func, data=None,
@@ -336,19 +334,16 @@ def call(self, url, func, data=None,
 
     # Errored response, try again with refresh
     if response.status_code in [500, 502]:
-        bot.error("Beep boop! %s: %s" %(response.reason,
-                                        response.status_code))
-        sys.exit(1)
+        bot.exit("Beep boop! %s: %s" %(response.reason,
+                                       response.status_code))
 
     # Errored response, try again with refresh
     if response.status_code == 404:
 
         # Not found, we might want to continue on
         if quiet is False:
-            bot.error("Beep boop! %s: %s" %(response.reason,
-                                            response.status_code))
-        sys.exit(1)
-
+            bot.exit("Beep boop! %s: %s" %(response.reason,
+                                           response.status_code))
 
     # Errored response, try again with refresh
     if response.status_code == 401:
@@ -363,9 +358,8 @@ def call(self, url, func, data=None,
                               return_json=return_json,
                               stream=stream, retry=False)
 
-        bot.error("Your credentials are expired! %s: %s" %(response.reason,
-                                                           response.status_code))
-        sys.exit(1)
+        bot.exit("Your credentials are expired! %s: %s" %(response.reason,
+                                                          response.status_code))
 
     elif response.status_code == 200:
 
@@ -374,7 +368,6 @@ def call(self, url, func, data=None,
             try:
                 response = response.json()
             except ValueError:
-                bot.error("The server returned a malformed response.")
-                sys.exit(1)
+                bot.exit("The server returned a malformed response.")
 
     return response

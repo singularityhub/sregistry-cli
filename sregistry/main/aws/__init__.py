@@ -12,7 +12,6 @@ from sregistry.logger import bot
 from sregistry.auth import basic_auth_header
 from sregistry.main import ApiConnection
 import json
-import sys
 import os
 
 # The core of nvidia is actually docker

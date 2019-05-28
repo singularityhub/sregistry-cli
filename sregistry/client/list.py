@@ -17,6 +17,11 @@ def main(args,parser,subparser):
     from sregistry.main import get_client
     cli = get_client(quiet=args.quiet)
     
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'ls'):
+        msg = "list is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
+
     for query in args.query:
         if query in ['','*']:
             query = None

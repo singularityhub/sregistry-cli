@@ -5,7 +5,7 @@ if SREGISTRY_DATABASE is None:
 else:
     from .models import *
     from .sqlite import ( 
-        add, cp, get, mv, rm, rmi, 
+        add, cp, get, mv, rm,
         images, 
         inspect,
         get_container,

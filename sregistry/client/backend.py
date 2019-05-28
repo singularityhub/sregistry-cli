@@ -16,7 +16,6 @@ import sys
 import os
 
 
-
 def main(args,parser,subparser):
     
     # No commands provided, print help, show clients
@@ -124,8 +123,7 @@ def add(backend, variable, value, force=False):
     if backend in settings:
         if variable in settings[backend] and force is False:
             previous = settings[backend][variable]
-            bot.error('%s is already set as %s. Use --force to override.' %(variable, previous))
-            sys.exit(1)
+            bot.exit('%s is already set as %s. Use --force to override.' %(variable, previous))
 
     if backend not in settings:
         settings[backend] = {}

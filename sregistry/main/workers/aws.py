@@ -55,8 +55,7 @@ def download_task(url, headers, download_to, download_type='layer'):
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
-        bot.error(msg)
-        sys.exit(1)
+        bot.exit(msg)
 
     return download_to
 
@@ -141,8 +140,7 @@ def stream(url, headers, stream_to=None, retry=True):
 
         return stream_to 
 
-    bot.error("Problem with stream, response %s" %(response.status_code))
-    sys.exit(1)
+    bot.exit("Problem with stream, response %s" %(response.status_code))
 
 
 
@@ -171,7 +169,6 @@ def update_token(headers):
         headers.update(token)
 
     except Exception:
-        bot.error("Error getting token.")
-        sys.exit(1)
+        bot.exit("Error getting token.")
 
     return headers

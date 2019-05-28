@@ -40,10 +40,7 @@ def getenv(variable_key, required=False, default=None, silent=False):
     '''
     variable = os.environ.get(variable_key, default)
     if variable is None and required:
-        bot.error(
-            "Cannot find environment variable %s, exiting." %
-            variable_key)
-        sys.exit(1)
+        bot.exit("Cannot find environment variable %s, exiting." % variable_key)
 
     if silent:
         bot.verbose2("%s found" % variable_key)

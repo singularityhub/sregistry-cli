@@ -37,8 +37,7 @@ def push(self, path, name, tag=None):
     bot.debug("PUSH %s" % path)
 
     if not os.path.exists(path):
-        bot.error('%s does not exist.' %path)
-        sys.exit(1)
+        bot.exit('%s does not exist.' % path)
 
     # here is an exampole of getting metadata for a container
     names = parse_image_name(remove_uri(name), tag=tag)

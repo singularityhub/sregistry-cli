@@ -51,7 +51,7 @@ def search_all(self):
 
     if len(results) == 0:
         bot.info("No container collections found.")
-        sys.exit(1)
+        sys.exit(0)
 
     bot.info("Collections")
     bot.table(results)
@@ -80,7 +80,7 @@ def container_query(self, query):
    
     if len(results) == 0:
         bot.info("No container collections found.")
-        sys.exit(1)
+        sys.exit(0)
 
     bot.info("Collections")
     bot.table(results)

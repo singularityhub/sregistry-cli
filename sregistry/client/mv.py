@@ -10,7 +10,14 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 def main(args, parser, subparser):
 
-    from sregistry.main import Client as cli
+    from sregistry.main import get_client
+    cli = get_client(quiet=args.quiet)
     cli.announce(args.command)
+
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'mv'):
+        msg = "move is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
+
     cli.mv(image_name=args.name[0],
            path=args.path[0])

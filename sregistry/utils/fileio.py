@@ -41,8 +41,7 @@ def mkdir_p(path):
         if e.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
-            bot.error("Error creating path %s, exiting." % path)
-            sys.exit(1)
+            bot.exit("Error creating path %s, exiting." % path)
 
 
 def get_tmpfile(requested_tmpdir=None, prefix=""):
@@ -151,8 +150,7 @@ def _extract_tar(archive, output_folder):
 
     result = which('blob2oci')
     if result['return_code'] != 0:
-        bot.error('Cannot find blob2oci script on path, exiting.')
-        sys.exit(1)
+        bot.exit('Cannot find blob2oci script on path, exiting.')
  
     script = result['message'] 
     command = ['exec' ,script, '--layer', archive, '--extract', output_folder]

@@ -13,6 +13,7 @@ from sregistry.utils import ( parse_image_name, remove_uri )
 import os
 import sys
 
+
 def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from a dropbox. The image is found based on the storage 
        uri
@@ -56,8 +57,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # If the file already exists and force is False
         if os.path.exists(file_name) and force is False:
-            bot.error('Image exists! Remove first, or use --force to overwrite')
-            sys.exit(1) 
+            bot.exit('Image exists! Remove first, or use --force to overwrite')
 
         # First ensure that exists
         if self.exists(dropbox_path) is True:

@@ -13,6 +13,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.main.base import ApiConnection
+
 from sregistry.utils import ( 
     check_install, 
     get_uri 
@@ -21,7 +22,6 @@ from sregistry.auth import get_credential_cache
 from sregistry.defaults import SREGISTRY_DATABASE
 from sregistry.logger import bot
 import os
-
 
 def get_client(image=None, quiet=False, **kwargs):
     '''
@@ -77,7 +77,7 @@ def get_client(image=None, quiet=False, **kwargs):
 
         # These are global functions used across modules
         from sregistry.database import (
-            init_db, add, cp, get, mv, rm, rmi, 
+            init_db, add, cp, get, mv, rm, 
             images, inspect,
             rename,
             get_container,
@@ -94,7 +94,6 @@ def get_client(image=None, quiet=False, **kwargs):
         Client.mv = mv
         Client.rename = rename
         Client.rm = rm
-        Client.rmi = rmi
         Client.images = images
 
         # Collections
@@ -114,5 +113,3 @@ def get_client(image=None, quiet=False, **kwargs):
     if hasattr(Client, '_init_db'):
         cli._init_db(SREGISTRY_DATABASE)
     return cli
-
-Client = get_client()

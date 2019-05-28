@@ -43,7 +43,6 @@ from sregistry.main.base.settings import (
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_DATABASE
 import os
-import sys
 
 class ApiConnection(object):
 
@@ -78,9 +77,7 @@ class ApiConnection(object):
         tags = [t.lower() for t in tags]
 
         if name not in tags:
-            bot.error('%s not found in %s, must match!' %(name, tags))
-            sys.exit(1)
-
+            bot.exit('%s not found in %s, must match!' %(name, tags))
 
     def speak(self):
         '''

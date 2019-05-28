@@ -43,16 +43,14 @@ def update_token(self, response):
 
     not_asking_auth = "Www-Authenticate" not in response.headers
     if response.status_code != 401 or not_asking_auth:
-        bot.error("Authentication error, exiting.")
-        sys.exit(1)
+        bot.exit("Authentication error, exiting.")
 
     challenge = response.headers["Www-Authenticate"]
     regexp = '^Bearer\s+realm="(.+)",service="(.+)",scope="(.+)",?'
     match = re.match(regexp, challenge)
 
     if not match:
-        bot.error("Unrecognized authentication challenge, exiting.")
-        sys.exit(1)
+        bot.exit("Unrecognized authentication challenge, exiting.")
 
     realm = match.group(1)
     service = match.group(2)
@@ -69,8 +67,7 @@ def update_token(self, response):
         self.headers.update(token)
 
     except Exception:
-        bot.error("Error getting token.")
-        sys.exit(1)
+        bot.exit("Error getting token.")
 
 
 
@@ -246,14 +243,14 @@ def get_digests(self):
 
     '''
     if not hasattr(self, 'manifests'):
-        bot.error('Please retrieve manifests for an image first.')
-        sys.exit(1)
+        bot.exit('Please retrieve manifests for an image first.')
 
     digests = []
 
     reverseLayers = False
     schemaVersions = list(self.manifests.keys())
     schemaVersions.reverse()
+    manifest = None
 
     # Select the manifest to use
     for schemaVersion in schemaVersions:
@@ -282,8 +279,11 @@ def get_digests(self):
         else:
             msg = "Improperly formed manifest, "
             msg += "layers, manifests, or fsLayers must be present"
-            bot.error(msg)
-            sys.exit(1)
+            bot.exit(msg)
+
+    # If all attempts failed
+    if manifest == None:
+        bot.exit("Failed to find manifest. Check image name and login.")
 
     for layer in manifest[layer_key]:
         if digest_key in layer:
@@ -343,8 +343,7 @@ def get_layer(self, image_id, repo_name, download_folder=None):
     except Exception:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
-        bot.error(msg)
-        sys.exit(1)
+        bot.exit(msg)
     return download_folder
 
 
@@ -359,8 +358,7 @@ def get_size(self, add_padding=True, round_up=True, return_mb=True):
     
     '''
     if not hasattr(self,'manifests'):
-        bot.error('Please retrieve manifests for an image first.')
-        sys.exit(1)
+        bot.exit('Please retrieve manifests for an image first.')
 
     size = 768  # default size
     for schemaVersion, manifest in self.manifests.items():
@@ -400,8 +398,7 @@ def get_config(self, key="Entrypoint", delim=None):
 
     '''
     if not hasattr(self,'manifests'):
-        bot.error('Please retrieve manifests for an image first.')
-        sys.exit(1)
+        bot.exit('Please retrieve manifests for an image first.')
 
     cmd = None
 

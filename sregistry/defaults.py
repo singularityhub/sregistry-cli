@@ -121,7 +121,6 @@ if not DISABLE_CACHE and DISABLE_DATABASE is False:
     SREGISTRY_STORAGE = getenv("SREGISTRY_STORAGE", _storage)
     SREGISTRY_DATABASE = "%s/sregistry.db" % SREGISTRY_BASE
 
-
 #########################
 # Caches
 #########################

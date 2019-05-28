@@ -19,8 +19,9 @@ def main(args,parser,subparser):
             query = None
 
         try:
-            cli = get_client(query, args.quiet)
+            cli = get_client(query, quiet=args.quiet)
             cli.announce(args.command)
             cli.search(query=query, args=args)
         except NotImplementedError:
-            bot.info('Search is not available for this endpoint.')
+            msg = "search is not implemented for %s. Why don't you add it?"
+            bot.exit(msg % cli.client_name)

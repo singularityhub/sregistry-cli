@@ -21,7 +21,7 @@ def share(self, query, share_to):
 
     images = self._container_query(query, quiet=True)
     if len(images) == 0:
-        bot.error('Cannot find a remote image matching %s' %query)
+        bot.info('Cannot find a remote image matching %s' % query)
         sys.exit(0)
 
     image = images[0]
