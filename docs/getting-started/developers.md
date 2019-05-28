@@ -105,8 +105,8 @@ We've reviewed these commands before, and will do it again. The following comman
  - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
- - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
- - *rm* `[local]`: remove an image.
+ - *mv*: `[local]`: move an image in your storage to another location on your system, and update the database.
+ - *rm* `[local]`: remove an image and record from the database.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
 

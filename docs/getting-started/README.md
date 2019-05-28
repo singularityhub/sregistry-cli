@@ -54,8 +54,8 @@ The following commands are considered "local" in that they come with every clien
  - *get*: `[local]`: given a uri, return the full path to the image in your storage. A common use case would be to pipe a get command into a singularity command, for example.
  - *images*: `[local]`: list images in your local database, optionally with filters to search.
  - *inspect* `[local]`: prints out an image manifest and metadata retrieved from its endpoint.
- - *mv*: `[local]`: move a container in your storage to another location on your system, and update the database.
- - *rm* `[local]`: remove an image from the database.
+ - *mv*: `[local]`: move an image in your storage to another location on your system, and update the database.
+ - *rm* `[local]`: remove an image and record from the database.
  - *shell* `[local]`: want to work with a client interactively? Just shell in and go!
 
 These specific commands are [demonstrated with more examples](/sregistry-cli/commands).
@@ -67,7 +67,7 @@ This next set of commands, while they interact with local resources, are primari
  - *delete*: `[remote]`: delete an image from a remote endpoint. You likely will need some kind of credential.
  - *pull*: `[remote->local]` is a common use case. It says "there is this image somewhere remote and I want to pull it from there to my local host."
  - *push*: `[local->remote]` takes an image in your local resource and puts it in some remote one.
- - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
+ - *search*: `[remote]`: list images for a remote endpoint, optionally with a search term.
 
 Each of these commands will be detailed with examples in the various [client walkthroughs](/sregistry-cli/clients), and if you are implementing an endpoint, there are also details about how you should "fill in the space" to
 implement your custom client.
