@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - add support for deleting images in S3 buckets (0.2.12)
  - removing complicated (multiple) imports for client, removing redundant "rmi" command (0.2.11)
  - fix s3 client support when SREGISTRY_S3_BASE is not specified, and allow for IAM accounts that do not permit listing buckets (0.2.1)
  - remove dateutils to allow conda support, 0.1.41 will be last supported for Python 2 (0.2.0)
