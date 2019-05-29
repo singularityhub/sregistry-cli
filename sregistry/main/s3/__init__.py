@@ -22,6 +22,7 @@ from .query import (
 )
 from .pull import pull
 from .push import push
+from .delete import remove
 
 class Client(ApiConnection):
 
@@ -136,5 +137,6 @@ class Client(ApiConnection):
 Client.pull = pull
 Client.push = push
 Client.search = search
+Client.remove = remove
 Client._search_all = search_all
 Client._container_search = container_search

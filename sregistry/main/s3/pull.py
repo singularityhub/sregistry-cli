@@ -101,6 +101,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             bot.custom(prefix="Success!", message = file_name)
             finished.append(file_name)
 
-        if len(finished) == 1:
-            finished = finished[0]
-        return finished
+    if len(finished) == 1:
+        finished = finished[0]
+    return finished
