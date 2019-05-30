@@ -79,9 +79,9 @@ def get_parser():
     get = subparsers.add_parser("get",
                                 help="get an image path from your storage")
 
-    get.add_argument("query", nargs='*', 
+    get.add_argument("query",
                      help="image search query to inspect", 
-                     type=str, default="*")
+                     type=str, default=None)
 
 
     # Add an image file
