@@ -44,6 +44,8 @@ def remove(self, image, force=False):
         response = self._delete(url)
         message = self._read_response(response)
         bot.info("Response %s, %s" %(response.status_code, message))
-
+        # add some error handling here??
     else:
         bot.info("Delete cancelled.")
+
+    return image

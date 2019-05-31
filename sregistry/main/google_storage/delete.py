@@ -34,8 +34,9 @@ def delete_object(service, bucket_name, object_name):
         operation = service.objects().delete(bucket=bucket_name,
                                              object=object_name).execute()
     except HttpError as e:
-        pass
         operation = e
+        bot.error("could not delete object: {}".format(e))
+
     return operation
 
 
@@ -50,6 +51,7 @@ def delete(self, name):
 
     bot.debug("DELETE %s" % name)
 
+    # broken??
     for file_object in files:
         if isinstance(file_object, dict):
             if "kind" in file_object:
@@ -57,11 +59,14 @@ def delete(self, name):
                     object_name = "/".join(file_object['id'].split('/')[:-1])
                     object_name = re.sub('%s/' %self._bucket['name'],'', object_name,1)
 
-                    delete_object(service=self._bucket_service,
-                                  bucket_name=bucket['name'],
-                                  object_name=object_name)
+                    rv = delete_object(service=self._bucket_service,
+                                       bucket_name=bucket['name'],
+                                       object_name=object_name)
 
+                    if isinstance(rv, HttpError):
+                        return None
 
+    return name
 
 @retry(wait_exponential_multiplier=1000, 
        wait_exponential_max=10000,

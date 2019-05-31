@@ -239,7 +239,7 @@ def get_parser():
                         help="don't prompt before deletion", 
                         default=False, action='store_true')
 
-    delete.add_argument("image", nargs=1,
+    delete.add_argument("image",
                         help="full path to image file", 
                         type=str)
 
