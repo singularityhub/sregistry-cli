@@ -112,7 +112,7 @@ dockerbuild: &dockerbuild
 run_linter: &run_linter
   name: run linter
   command: |
-     pip3 install --upgrade pylint
+     sudo pip3 install --upgrade pylint
      cd ~/repo
      pylint sregistry
 
