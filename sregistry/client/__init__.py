@@ -116,11 +116,11 @@ def get_parser():
     rename = subparsers.add_parser("rename",
                                     help="rename an image in storage")
 
-    rename.add_argument("name", nargs=1, 
+    rename.add_argument("name",
                         help="image name or uri to rename in database", 
                         type=str)
 
-    rename.add_argument("path", nargs=1, 
+    rename.add_argument("path",
                          help="path to rename image (will use basename)", 
                          type=str)
 
