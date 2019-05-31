@@ -48,14 +48,6 @@ class Client(ApiConnection):
         super(Client, self).__init__(**kwargs)
 
 
-    def _speak(self):
-        '''if you want to add an extra print (of a parameter, for example)
-           for the user when the client initalizes, write it here, eg:
-           bot.info('[setting] value')
-        '''
-        pass
-
-
     def _reset_headers(self):
         '''reset headers is called from update_headers, and will update the
            headers based on what is found with the client secrets

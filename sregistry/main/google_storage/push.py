@@ -87,12 +87,9 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
     bar = ProgressBar(expected_size=total, filled_char='=', hide=self.quiet)
 
     while response is None:
-        try:
-            progress, response = request.next_chunk()
-            if progress:
-                bar.show(progress.resumable_progress / (1024*1024.0))
-        except:
-            raise
+        progress, response = request.next_chunk()
+        if progress:
+            bar.show(progress.resumable_progress / (1024*1024.0))
 
     # When we finish upload, get as blob
     blob = self._bucket.blob(destination)

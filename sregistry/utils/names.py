@@ -136,7 +136,7 @@ def parse_image_name(image_name,
     else:
         collection = collection.rstrip('/')
 
-    if version != None:
+    if version is not None:
         version = version.lower()
     
     # Piece together the uri base
@@ -148,7 +148,7 @@ def parse_image_name(image_name,
     url = uri
 
     # Tag is defined
-    if repo_tag != None:
+    if repo_tag is not None:
         uri = "%s-%s" % (uri, repo_tag)
         tag_uri = "%s:%s" % (url, repo_tag) 
 

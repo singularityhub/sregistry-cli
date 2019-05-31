@@ -123,7 +123,7 @@ def print_output(response, output_file=None):
         bot.custom('URL', response['public_url'], 'CYAN')
 
     # Does the user also need writing to an output file?
-    if output_file != None:    
+    if output_file is not None:    
         with open(output_file, 'w') as filey:
             if response['status'] == 'SUCCESS':
                 filey.writelines('MD5HASH %s\n' % response['file_hash'])    

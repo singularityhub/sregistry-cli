@@ -91,8 +91,8 @@ class ApiConnection(object):
             bot.info('[client|%s] [database|%s]' %(self.client_name,
                                                    self.database))
 
-            self._speak()
-
+            if hasattr(self, '_speak'):
+                self._speak()
 
     def _speak(self):
         '''this function should be subclassed if the client has additional
@@ -101,7 +101,7 @@ class ApiConnection(object):
            because with a command like "get" the expectation is to print a
            download url (and nothing else)
         '''
-        pass
+        pass # pylint: disable=unnecessary-pass
 
     def announce(self, command=None):
         '''the client will announce itself given that a command is not in a

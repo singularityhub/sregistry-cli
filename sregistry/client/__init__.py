@@ -305,7 +305,7 @@ def main():
         print(sregistry.__version__)
         sys.exit(0)
 
-    from sregistry.logger import bot # pylint: disable=unused-variable
+    from sregistry.logger import bot # pylint: disable=unused-import
 
     # Does the user want a shell?
     if args.command == "add": from .add import main

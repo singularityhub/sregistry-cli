@@ -79,7 +79,7 @@ class Client(ApiConnection):
 
                 # The user can set an environment variable to specify nohttps
                 nohttps = os.environ.get('SREGISTRY_REGISTRY_NOHTTPS')
-                if nohttps != None:
+                if nohttps is not None:
                     prefix = 'http://'
                 q['registry'] = '%s%s' %(prefix, q['registry'])
 

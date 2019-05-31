@@ -28,13 +28,6 @@ class Client(ApiConnection):
         self._update_headers()
         super(Client, self).__init__(**kwargs)
 
-    def _speak(self):
-        '''if you want to add an extra print (of a parameter, for example)
-           for the user when the client initalizes, write it here, eg:
-           bot.info('[setting] value')
-        '''
-        pass
-
     def _update_secrets(self):
         '''update secrets will take a secrets credential file
            either located at .sregistry or the environment variable
