@@ -35,7 +35,7 @@ def get_parser():
                                        dest="command")
 
     # print version and exit
-    version = subparsers.add_parser("version",
+    version = subparsers.add_parser("version", # pylint: disable=unused-variable
                                     help="show software version")
 
     # Backend controller
@@ -297,7 +297,7 @@ def main():
     # If an error occurs while parsing the arguments, the interpreter will exit with value 2
     args = parser.parse_args()
 
-    if args.debug is False:
+    if args.debug is True:
         os.environ['MESSAGELEVEL'] = "DEBUG"
 
     # Show the version and exit
@@ -305,7 +305,7 @@ def main():
         print(sregistry.__version__)
         sys.exit(0)
 
-    from sregistry.logger import bot
+    from sregistry.logger import bot # pylint: disable=unused-variable
 
     # Does the user want a shell?
     if args.command == "add": from .add import main

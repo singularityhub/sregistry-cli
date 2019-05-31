@@ -51,7 +51,7 @@ class Client(ApiConnection):
         self._redirect_url = "https://auth.globus.org/v2/web/auth-code"
         self._init_clients()
          
-        super(ApiConnection, self).__init__(**kwargs)
+        super(Client, self).__init__(**kwargs)
 
 
     def _init_clients(self):

@@ -25,4 +25,3 @@ def main(args, parser, subparser):
     cli.add(image_path=image,
             image_uri=args.name,
             copy=args.copy)
-

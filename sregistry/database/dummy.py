@@ -51,7 +51,7 @@ def add(self, image_path=None,
 
     container = DummyContainer(image_path, self.client_name, url, names)
 
-    bot.info("[container][%s] %s" % (action,names['uri']))
+    bot.info("[container][add] %s" % names['uri'])
     return container
 
 

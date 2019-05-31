@@ -15,10 +15,8 @@ from sregistry.utils import (
     remove_uri
 )
 
-from sregistry.main.google_storage.utils import prepare_metadata
 from googleapiclient.http import MediaFileUpload
 from retrying import retry
-import json
 import os
 
 
@@ -89,7 +87,6 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
     bar = ProgressBar(expected_size=total, filled_char='=', hide=self.quiet)
 
     while response is None:
-        error = None
         try:
             progress, response = request.next_chunk()
             if progress:
@@ -106,7 +103,6 @@ def upload(self, source, destination, chunk_size = 2 * 1024 * 1024, metadata=Non
     
         # If the user has a dictionary of metadata to update
         if metadata is not None:
-            body = prepare_metadata(metadata)
             blob.metadata = metadata   
             blob._properties['metadata'] = metadata
             blob.patch()

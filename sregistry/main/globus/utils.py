@@ -10,9 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 from sregistry.utils import read_file
-import pickle
 import os
-import requests
 import globus_sdk
 from globus_sdk.exc import TransferAPIError
 
@@ -107,8 +105,6 @@ def init_transfer_client(self):
 
     if self._tokens_need_update():
         self._update_tokens()
-
-    access_token = self.transfer['access_token']
 
     # Createe Refresh Token Authorizer
 

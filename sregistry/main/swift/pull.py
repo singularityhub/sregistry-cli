@@ -9,10 +9,11 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from swiftclient.exceptions import ClientException
 from sregistry.utils import ( parse_image_name, remove_uri )
+from swiftclient.exceptions import ClientException
 import os
 import sys
+
 
 def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from storage using Swift. The image is found based on the
@@ -68,7 +69,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             bot.exit('%s does not exist.' % names['storage'])
 
         # Give etag as version if version not defined
-        if names['version'] == None:
+        if names['version'] is None:
             names['version'] = obj_tuple[0]['etag']
         
         # If the user didn't provide a file, make one based on the names
@@ -99,8 +100,8 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 bot.custom(prefix="Success!", message=image_file)
                 finished.append(image_file)
 
-        else:
-            bot.error('%s does not exist. Try sregistry search to see images.' % path)
+            else:
+                bot.error('%s does not exist. Try sregistry search to see images.' % image_file)
 
     if len(finished) == 1:
         finished = finished[0]

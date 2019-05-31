@@ -12,11 +12,9 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 from sregistry.utils import remove_uri
-from dateutil import parser
 
-import json
 import sys
-import os
+
 
 def search(self, query=None, args=None):
     '''query a Singularity registry for a list of images. 
@@ -71,7 +69,7 @@ def container_query(self, query):
 
         # The result here is just the name
         for result in self.conn.get_container(container['name'])[1]:
-            if query in collection['name']:
+            if query in result['name']:
                 results.add('%s/%s' %(container['name'], result['name']))
    
     if len(results) == 0:

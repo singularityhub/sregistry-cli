@@ -8,11 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from sregistry.logger import bot
 from retrying import retry
-import json
-import sys
-import os
 
 from sregistry.logger import bot
 from sregistry.utils import confirm_delete
@@ -32,3 +28,32 @@ def delete(self, image, force=False):
     for file_object in files:
         if confirm_delete(file_object.name, force):
             file_object.delete()
+
+@retry(wait_exponential_multiplier=1000, 
+       wait_exponential_max=10000,
+       stop_max_attempt_number=3)
+
+
+def destroy(self, name):
+    '''destroy an instance, meaning take down the instance and stop the build.
+       Parameters
+       ==========
+       name: the name of the instance to stop building.
+    '''
+
+    instances = self._get_instances()
+    project = self._get_project()
+    zone = self._get_zone()
+    found = False
+
+    if 'items' in instances:
+        for instance in instances['items']:
+            if instance['name'] == name:
+                found = True
+                break
+
+    if found:        
+        bot.info('Killing instance %s' %name)
+        return self._compute_service.instances().delete(project=project, 
+                                                        zone=zone, 
+                                                        instance=name).execute()

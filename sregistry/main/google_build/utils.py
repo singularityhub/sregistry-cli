@@ -9,8 +9,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( read_json, get_installdir )
-import sys
+from sregistry.utils import (read_json, get_installdir)
 import os
 
 

@@ -9,22 +9,19 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.utils import ( 
-    mkdir_p,
     parse_image_name,
     remove_uri,
-    run_command,
     which 
 )
 
 from sregistry.logger import bot
-from sregistry.auth import ( read_client_secrets, update_client_secrets )
 import os
 import json
 
 # Metadata
 
 
-def get_metadata(self, image_file, names={}):
+def get_metadata(self, image_file, names=None):
     '''extract metadata using Singularity inspect, if the executable is found.
        If not, return a reasonable default (the parsed image name)
 
@@ -35,7 +32,10 @@ def get_metadata(self, image_file, names={}):
               variables for the image, likely from utils.parse_image_name
 
     '''
-    metadata = dict()
+    if names is None:
+        names = {}
+
+    metadata = {}
 
     # We can't return anything without image_file or names
     if image_file is not None:

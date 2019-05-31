@@ -11,9 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-import json
 import sys
-import os
 
 
 def search(self, query=None, args=None):

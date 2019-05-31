@@ -9,13 +9,8 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import remove_uri
-from dateutil import parser
 import requests
-
-import json
 import sys
-import os
 
 try:
     from urllib.parse import quote_plus # python 3.*

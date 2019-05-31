@@ -9,11 +9,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from spython.main import Client as Singularity
-from sregistry.utils import ( parse_image_name, remove_uri, extract_tar )
-import shutil
-import os
-import sys
+from sregistry.utils import (parse_image_name, remove_uri)
 
 
 def pull(self, images, file_name=None, save=True, force=False, **kwargs):

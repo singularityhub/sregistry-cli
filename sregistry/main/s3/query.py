@@ -9,10 +9,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( parse_image_name, remove_uri )
-
 import sys
-import os
 
 
 def search(self, query=None, args=None):
@@ -26,7 +23,6 @@ def search(self, query=None, args=None):
     '''
 
     if query is not None:
-
         return self._container_search(query)
 
     # Search collections across all fields
@@ -50,22 +46,22 @@ def search_all(self, quiet=False):
     results = []
 
     for obj in self.bucket.objects.all():
-       subsrc = obj.Object()
+        subsrc = obj.Object()
 
-       # Metadata bug will capitalize all fields, workaround is to lowercase
-       # https://github.com/boto/boto3/issues/1709
-       metadata = dict((k.lower(), v) for k, v in subsrc.metadata.items())
-       size = ''
+        # Metadata bug will capitalize all fields, workaround is to lowercase
+        # https://github.com/boto/boto3/issues/1709
+        metadata = dict((k.lower(), v) for k, v in subsrc.metadata.items())
+        size = ''
 
-       # MM-DD-YYYY
-       datestr = "%s-%s-%s" %(obj.last_modified.month,
-                              obj.last_modified.day,
-                              obj.last_modified.year)
+        # MM-DD-YYYY
+        datestr = "%s-%s-%s" %(obj.last_modified.month,
+                               obj.last_modified.day,
+                               obj.last_modified.year)
 
-       if 'sizemb' in metadata:
-           size = '%sMB' % metadata['sizemb']
+        if 'sizemb' in metadata:
+            size = '%sMB' % metadata['sizemb']
 
-       results.append([obj.key, datestr, size ])
+        results.append([obj.key, datestr, size ])
    
     if len(results) == 0:
         bot.info("No container collections found.")
@@ -95,9 +91,9 @@ def container_search(self, query, across_collections=False):
 
 
     if len(matches) > 0:
-        bot.info("Containers %s" %query)
+        bot.info("Containers %s" % query)
         bot.table(matches)
     else:
-        bot.info('No matches for %s found.' % name)
+        bot.info('No matches for %s found.' % query)
 
     return matches

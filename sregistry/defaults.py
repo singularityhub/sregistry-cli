@@ -9,7 +9,10 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( get_userhome, read_json )
+from sregistry.utils import (
+    get_userhome, 
+    read_json
+)
 import tempfile
 import os
 import sys
@@ -48,7 +51,7 @@ def getenv(variable_key, default=None, required=False, silent=True):
         sys.exit(1)
 
     if not silent and variable is not None:
-            bot.verbose("%s found as %s" %(variable_key,variable))
+        bot.verbose("%s found as %s" %(variable_key,variable))
 
     return variable
 
@@ -103,7 +106,7 @@ SREGISTRY_BASE = None
 
 # If sqlalchemy isn't installed, user doesn't have support for database
 try:
-    from sqlalchemy import or_
+    from sqlalchemy import or_ # pylint: disable=unused-import
 except ImportError:
     bot.warning('Database disabled. Install sqlalchemy for full functionality')
     DISABLE_DATABASE = True

@@ -40,11 +40,9 @@ def push(self, path, name, tag=None):
 
     # Get the size of the file
     file_size = os.path.getsize(path)
-    chunk_size = 4 * 1024 * 1024
-    storage_path = "/%s" %names['storage']
 
     # Create / get the collection
-    collection = self._get_or_create_collection(names['collection'])
+    self._get_or_create_collection(names['collection'])
 
     # The image name is the name followed by tag
     image_name = os.path.basename(names['storage'])

@@ -11,12 +11,8 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.defaults import DISABLE_SSL_CHECK
-from requests.exceptions import HTTPError
-
 from sregistry.logger import bot
-import json
 import os
-import re
 import requests
 import shutil
 import sys
@@ -52,7 +48,7 @@ def download_task(url, headers, download_to, download_type='layer'):
 
     try:
         shutil.move(tar_download, download_to)
-    except Exception:
+    except:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
         bot.exit(msg)
@@ -87,8 +83,7 @@ def download(url, file_name, headers=None, show_progress=True):
     if DISABLE_SSL_CHECK is True:
         bot.warning('Verify of certificates disabled! ::TESTING USE ONLY::')
 
-    verify = not DISABLE_SSL_CHECK
-    response = stream(url, headers=headers, stream_to=tmp_file)
+    stream(url, headers=headers, stream_to=tmp_file)
     shutil.move(tmp_file, file_name)
     return file_name
 
@@ -168,7 +163,7 @@ def update_token(headers):
         token = {"Authorization": "Basic %s" % token}
         headers.update(token)
 
-    except Exception:
+    except:
         bot.exit("Error getting token.")
 
     return headers

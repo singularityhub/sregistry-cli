@@ -23,5 +23,4 @@ def main(args, parser, subparser):
         msg = "delete is not implemented for %s. Why don't you add it?"
         bot.exit(msg % cli.client_name)
 
-    response = cli.delete(image=image,
-                          force=args.force)
+    cli.delete(image=image, force=args.force)

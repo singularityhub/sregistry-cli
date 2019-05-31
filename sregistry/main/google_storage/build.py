@@ -9,19 +9,15 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from googleapiclient.errors import HttpError
 from sregistry.utils import (
-    get_image_hash,
-    get_installdir,
     get_recipe_tag,
     read_json,
     parse_image_name,
     remove_uri
 )
-
 from sregistry.main.google_storage.utils import get_build_template
-
 from sregistry.logger import RobotNamer
+
 from retrying import retry
 from time import sleep
 import json
@@ -207,7 +203,7 @@ def get_ipaddress(self, name, retries=3, delay=3):
        Note from @vsoch: this function is pretty nasty.
 
     '''
-    for rr in range(retries):
+    for _ in range(retries):
 
         # Retrieve list of instances
         instances = self._get_instances()
@@ -260,9 +256,9 @@ def load_build_config(self, config=None):
     # otherwise, try to look it up in library
     configs = self._load_templates(config)
     if configs is None:
-        bot.exit('%s is not a valid config. %s' %name)
+        bot.exit('%s is not a valid config. %s' % config)
 
-    bot.info('Found config %s in library!' %config)
+    bot.info('Found config %s in library!' % config)
     config = configs[0]
 
     return config
@@ -316,7 +312,6 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
     instance_name = "%s-builder %s" %(name.replace('/','-'), selfLink)
     robot_name = RobotNamer().generate()
 
-    project = self._get_project()
     zone = self._get_zone()
 
     # Machine Type
@@ -331,7 +326,6 @@ def setup_build(self, name, repo, config, tag=None, commit=None,
                               project=image_project, 
                               family=image_family).execute()
     source_disk_image = image_response['selfLink']
-    storage_bucket = self._bucket_name
 
     # Add the machine parameters to the config
     config['name'] = robot_name

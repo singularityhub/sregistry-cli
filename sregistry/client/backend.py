@@ -8,12 +8,11 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from sregistry.auth import ( get_secrets_file, read_client_secrets )
+from sregistry.auth import (get_secrets_file, read_client_secrets)
 from sregistry.logger import bot
 from sregistry.utils import write_json
 import json
 import sys
-import os
 
 
 def main(args,parser,subparser):

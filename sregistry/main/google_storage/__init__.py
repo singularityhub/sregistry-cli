@@ -10,11 +10,11 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 from sregistry.main import ApiConnection
-import google
 import json
 import os
 
 from retrying import retry
+import google
 from google.cloud import storage
 from googleapiclient.discovery import build as discovery_build
 from oauth2client.client import GoogleCredentials
@@ -31,11 +31,11 @@ from .build import (
     get_ipaddress,
     get_instances 
 )
-from .delete import delete
-from .logs import ( logs, list_logs, print_log )
+from .delete import delete, destroy
+from .logs import (logs, list_logs, print_log )
 from .pull import pull
-from .push import ( push, upload )
-from .query import ( container_query, list_containers, search, search_all )
+from .push import (push, upload )
+from .query import (container_query, list_containers, search, search_all)
 
 
 class Client(ApiConnection):
@@ -49,7 +49,7 @@ class Client(ApiConnection):
         if init is True:
             self._init_client()
 
-        super(ApiConnection, self).__init__(**kwargs)
+        super(Client, self).__init__(**kwargs)
 
     def _speak(self):
         '''add the bucket name to be printed to the user at appropriate times
@@ -145,6 +145,7 @@ Client.pull = pull
 Client.push = push
 Client._upload = upload
 Client.delete = delete
+Client.destroy = destroy
 
 # Build functions
 Client.build = build

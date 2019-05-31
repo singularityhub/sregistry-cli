@@ -44,7 +44,7 @@ class TestUtils(unittest.TestCase):
         bad_json = {"Wakkawakkawakka'}":[{True},"2",3]}
         tmpfile = tempfile.mkstemp()[1]
         os.remove(tmpfile)        
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             write_json(bad_json,tmpfile)
 
         print("...Case 2: Providing good json")        
@@ -74,7 +74,6 @@ class TestUtils(unittest.TestCase):
         is installed
         '''
         print("Testing utils.get_installdir")
-        from sregistry.utils import get_installdir
         whereami = get_installdir()
         print(whereami)
         self.assertTrue(whereami.endswith('sregistry'))

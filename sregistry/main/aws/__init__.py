@@ -21,9 +21,15 @@ from sregistry.main.docker.api import (
     get_download_cache,
     get_size
 )
-from sregistry.main.aws.api import ( download_layers, update_token, get_digests,
-                                     get_manifest )
-from .pull import ( pull, _pull )
+from sregistry.main.aws.api import (
+    download_layers,
+    update_token,
+    get_digests,
+    get_manifest
+)
+from .pull import (
+    pull, _pull
+)
 
 class Client(ApiConnection):
 
@@ -39,7 +45,7 @@ class Client(ApiConnection):
         self._update_secrets()
         self._set_base()
         self._update_headers()
-        super(ApiConnection, self).__init__(**kwargs)
+        super(Client, self).__init__(**kwargs)
 
 
     def _speak(self):

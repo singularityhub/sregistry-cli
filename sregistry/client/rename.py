@@ -8,6 +8,8 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
+from sregistry.logger import bot
+
 def main(args, parser, subparser):
 
     from sregistry.main import get_client

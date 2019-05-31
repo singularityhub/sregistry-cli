@@ -69,7 +69,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             # Download and update the user with progress bar
             while done is False:
                 status, done = downloader.next_chunk()
-                response = None
 
                 # Create bar on first call
                 if bar is None:
@@ -91,9 +90,9 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             # Update metadata with selfLink
             image['selfLink'] = downloader._uri
 
-            container = self.add(image_path = image_file,
-                                 image_uri = image_uri,
-                                 metadata = image,
+            container = self.add(image_path=file_name,
+                                 image_uri=image_uri,
+                                 metadata=image,
                                  url=downloader._uri)
 
             # When the container is created, this is the path to the image

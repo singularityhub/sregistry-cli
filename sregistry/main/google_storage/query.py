@@ -11,8 +11,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-import sys
-import os
 
 
 def search(self, query=None, args=None):
@@ -84,7 +82,7 @@ def container_query(self, query, quiet=False):
 
     matches = []
     for result in results:
-        for key,val in result.metadata.items():
+        for _, val in result.metadata.items():
             if query in val and result not in matches:
                 matches.append(result)
             elif query in result.name and result not in matches:

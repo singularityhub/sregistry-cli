@@ -8,19 +8,11 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from sregistry.defaults import SINGULARITY_CACHE
 from sregistry.logger import bot
-from sregistry.utils import ( mkdir_p, print_json, get_template, create_tar )
 import json
-import math
 import os
-import re
-import requests
-import shutil
-import tempfile
-from urllib.parse import urlparse
 
-###############################################################################
+################################################################################
 
 def update_token(self):
     '''update_token uses HTTP basic authentication to get a token for
@@ -42,7 +34,7 @@ def update_token(self):
         token = {"Authorization": "Basic %s" % token}
         self.headers.update(token)
 
-    except Exception:
+    except:
         bot.exit("Error getting token.")
 
 
@@ -86,9 +78,7 @@ def download_layers(self, repo_name, digest=None, destination=None):
 
     # Download layers with multiprocess workers
     if len(tasks) > 0:
-
-        download_layers = workers.run(func=download_task,
-                                      tasks=tasks)
+        workers.run(func=download_task, tasks=tasks)
 
     return layers, url
 
@@ -107,7 +97,7 @@ def get_manifest(self, repo_name, tag):
 
     # if the image isn't found, we need to exit
     if image is None:
-        bot.exit('Cannot find %s:%s, is the uri correct?' %(repo_name, digest))
+        bot.exit('Cannot find %s:%s, is the uri correct?' %(repo_name, tag))
 
     digest = image['imageDigest']
     digests = self.aws.batch_get_image(repositoryName=repo_name, 

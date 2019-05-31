@@ -121,7 +121,7 @@ def find_folder_recipes(base_folder,
     if manifest is None:
         manifest = dict()
 
-    for root, dirnames, filenames in os.walk(base_folder):
+    for root, _, filenames in os.walk(base_folder):
 
         for filename in fnmatch.filter(filenames, pattern):
 

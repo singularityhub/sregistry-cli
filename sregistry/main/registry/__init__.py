@@ -17,7 +17,13 @@ from .auth import authorize
 from .pull import pull
 from .push import push
 from .delete import delete
-from .query import *
+from .query import (
+    search,
+    search_all,
+    collection_search,
+    label_search,
+    container_search,
+)
 
 class Client(ApiConnection):
 
@@ -27,7 +33,7 @@ class Client(ApiConnection):
         self._update_secrets()
         self._update_headers()
         self._update_base() 
-        super(ApiConnection, self).__init__(**kwargs)
+        super(Client, self).__init__(**kwargs)
 
     def _update_base(self):
         if self.base is not None:

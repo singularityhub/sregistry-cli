@@ -10,13 +10,10 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from spython.main import Client as Singularity
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_STORAGE
 from sregistry.utils import parse_image_name
 import globus_sdk
-from globus_sdk.exc import TransferAPIError
-import json
 import os
 
 
@@ -30,7 +27,7 @@ def push(self, path, name, tag=None):
 
     # Split the name into endpoint and rest
 
-    endpoint, remote = self._parse_endpoint_name(name)
+    endpoint, _ = self._parse_endpoint_name(name)
 
     path = os.path.abspath(path)
     image = os.path.basename(path)
@@ -57,10 +54,10 @@ def push(self, path, name, tag=None):
     # Take the first endpoint that is active
 
     source_endpoint = None
-    for eid,contender in endpoints['my-endpoints'].items():
-       if contender['gcp_connected'] is True:
-           source_endpoint = contender
-           break
+    for _, contender in endpoints['my-endpoints'].items():
+        if contender['gcp_connected'] is True:
+            source_endpoint = contender
+            break
 
     # Exit if none are active, required!
     if source_endpoint is None:

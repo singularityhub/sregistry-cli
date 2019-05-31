@@ -19,7 +19,6 @@ from sregistry.utils import (
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 import base64
-import json
 import os
 
 
@@ -82,8 +81,6 @@ def push(self, path, name, tag=None):
         print(image['name'])
 
     except HttpError:
-        bot.error('Error uploading %s' %path)
-        pass
+        bot.error('Error uploading %s' % path)
 
     return image
-

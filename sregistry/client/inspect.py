@@ -23,4 +23,3 @@ def main(args,parser,subparser):
         bot.exit(msg % cli.client_name)
 
     cli.inspect(image)
-

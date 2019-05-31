@@ -10,15 +10,15 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 from sregistry.main import ApiConnection
+
 from oauth2client.file import Storage
-from oauth2client import tools
+from oauth2client import tools, client as oclient
+from oauth2client.client import flow_from_clientsecrets
 
 import httplib2
 import os
 
 from googleapiclient.discovery import build
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client import client as oclient
 
 from .utils import ( create_folder, get_or_create_folder )
 from .pull import pull
@@ -33,7 +33,7 @@ class Client(ApiConnection):
         self._update_secrets()
         self._update_headers()
         self._init_client()
-        super(ApiConnection, self).__init__(**kwargs)
+        super(Client, self).__init__(**kwargs)
 
 
     def _speak(self):

@@ -13,17 +13,14 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     parse_image_name,
-    parse_header,
     remove_uri
 )
-from requests_toolbelt.streaming_iterator import StreamingIterator
 from requests_toolbelt import (
     MultipartEncoder,
     MultipartEncoderMonitor
 )
 
 import requests
-import hashlib
 import sys
 import os
 
@@ -32,7 +29,6 @@ def push(self, path, name, tag=None):
     '''push an image to Singularity Registry'''
 
     path = os.path.abspath(path)
-    image = os.path.basename(path)
     bot.debug("PUSH %s" % path)
 
     if not os.path.exists(path):
@@ -43,12 +39,11 @@ def push(self, path, name, tag=None):
 
     # Extract the metadata
     names = parse_image_name(remove_uri(name), tag=tag)
-    image_size = os.path.getsize(path) >> 20
 
 # COLLECTION ###################################################################
 
     # If the registry is provided in the uri, use it
-    if names['registry'] == None:
+    if names['registry'] is None:
         names['registry'] = self.base
 
     # If the base doesn't start with http or https, add it
@@ -109,8 +104,6 @@ def push(self, path, name, tag=None):
         print('\nUpload failed: {0}.'.format(e))
     except KeyboardInterrupt:
         print('\nUpload cancelled.')
-    except Exception as e:
-        print(e)
 
 
 def create_callback(encoder, quiet=False):

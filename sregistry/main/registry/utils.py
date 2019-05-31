@@ -12,7 +12,6 @@ from datetime import datetime, timezone
 import base64
 import hashlib
 import hmac
-import os
 import sys
 
 def _encode(item):

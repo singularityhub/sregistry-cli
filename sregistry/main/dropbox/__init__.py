@@ -9,15 +9,13 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from dropbox import Dropbox
-from dropbox.exceptions import ( ApiError, AuthError )
 from sregistry.logger import bot
 from sregistry.main import ApiConnection
-import sys
 import datetime
 
 from .pull import pull
 from .push import push
-from .query import ( search, search_all, container_query )
+from .query import (search, search_all, container_query)
 from .share import share
 
 class Client(ApiConnection):
@@ -25,8 +23,8 @@ class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
  
         # update token from the environment
-        name = self._update_secrets()
-        super(ApiConnection, self).__init__(**kwargs)
+        self._update_secrets()
+        super(Client, self).__init__(**kwargs)
 
     def _speak(self):
         '''if you want to add an extra print (of a parameter, for example)
@@ -54,7 +52,7 @@ class Client(ApiConnection):
         if dbx_metadata is not None:
             for key in dbx_metadata.__dir__():
                 value = getattr(dbx_metadata, key)
-                if type(value) in [str, datetime.datetime, bool, int, float]:
+                if isinstance(value, (str, datetime.datetime, bool, int, float)):
                     metadata[key.strip('_')] = value
         
         return self.get_metadata(image_file, names=metadata)
@@ -75,9 +73,8 @@ class Client(ApiConnection):
         # Verify that the account is valid
         try:
             self.account = self.dbx.users_get_current_account()
-        except AuthError as err:
-            bot.error('Account invalid. Exiting.')
-            sys.exit(1)
+        except:
+            bot.exit('Account invalid. Exiting.')
 
 
     def __str__(self):

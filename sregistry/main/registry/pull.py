@@ -10,11 +10,10 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from sregistry.logger import bot
 from requests.exceptions import SSLError
 from requests.models import Response
-from sregistry.utils import ( parse_image_name, remove_uri )
-import requests
+from sregistry.utils import (parse_image_name, remove_uri)
+from sregistry.logger import bot
 import os
 
 
@@ -50,7 +49,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         q = parse_image_name(remove_uri(image))
 
         # If a custom registry is not set, use default base
-        if q['registry'] == None:
+        if q['registry'] is None:
             q['registry'] = self.base
 
         # Ensure https is added back to the registry  uri
