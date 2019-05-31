@@ -24,8 +24,6 @@ defaults: &defaults
 install: &install
     name: Install parallel gzip, gettext, python3, and jq
     command: apk add --no-cache pigz python3 gettext jq
-      python3 -m ensurepip
-      pip3 install --upgrade pip setuptools
 
 # Environment
 
