@@ -293,10 +293,9 @@ def main():
     # If the user didn't provide any arguments, show the full help
     if len(sys.argv) == 1:
         help()
-    try:
-        args = parser.parse_args()
-    except:
-        sys.exit(0)
+
+    # If an error occurs while parsing the arguments, the interpreter will exit with value 2
+    args = parser.parse_args()
 
     if args.debug is False:
         os.environ['MESSAGELEVEL'] = "DEBUG"
