@@ -24,6 +24,8 @@ defaults: &defaults
 install: &install
     name: Install parallel gzip, gettext, python3, and jq
     command: apk add --no-cache pigz python3 gettext jq
+      python3 -m ensurepip
+      pip3 install --upgrade pip setuptools
 
 # Environment
 
@@ -110,7 +112,7 @@ dockerbuild: &dockerbuild
 run_linter: &run_linter
   name: run linter
   command: |
-     pip install --upgrade pylint
+     pip3 install --upgrade pylint
      cd ~/repo
      pylint sregistry
 
