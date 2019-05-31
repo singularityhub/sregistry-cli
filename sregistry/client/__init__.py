@@ -202,7 +202,7 @@ def get_parser():
     pull = subparsers.add_parser("pull",
                                  help="pull an image from a registry")
 
-    pull.add_argument("image", nargs=1,
+    pull.add_argument("image",
                        help="full uri of image", 
                        type=str)
 
