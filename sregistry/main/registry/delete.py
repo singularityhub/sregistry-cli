@@ -11,7 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri, confirm_delete )
 
-def remove(self, image, force=False):
+def delete(self, image, force=False):
     '''delete an image to Singularity Registry'''
 
     q = parse_image_name(remove_uri(image))
@@ -32,7 +32,7 @@ def remove(self, image, force=False):
     headers = {'Authorization': SREGISTRY_EVENT }
     self._update_headers(fields=headers)
 
-    if confirm_delete(force, q['uri']) is True:
+    if confirm_delete(q['uri'], force) is True:
         response = self._delete(url)
         message = self._read_response(response)
         bot.info("Response %s, %s" %(response.status_code, message))

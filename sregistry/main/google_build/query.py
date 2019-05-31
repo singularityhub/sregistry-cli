@@ -87,6 +87,8 @@ def container_query(self, query, quiet=False):
         for key,val in result.metadata.items():
             if query in val and result not in matches:
                 matches.append(result)
+            elif query in result.name and result not in matches:
+                matches.append(result)
 
     if not quiet:
         bot.info("[gs://%s] Found %s containers" %(self._bucket_name,len(matches)))

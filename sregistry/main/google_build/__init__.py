@@ -24,7 +24,7 @@ from .build import (
     run_build,
     load_build_config
 )
-from .delete import ( delete, destroy )
+from .delete import delete
 from .logs import ( logs, list_logs, print_log )
 from .pull import pull
 from .push import ( push, upload )
@@ -149,7 +149,6 @@ Client.pull = pull
 Client.push = push
 Client._upload = upload
 Client.delete = delete
-Client.destroy = destroy
 
 # Build functions
 Client.build = build
