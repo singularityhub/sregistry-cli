@@ -14,18 +14,18 @@ def main(args, parser, subparser):
 
     from sregistry.main import get_client
 
-    images = args.image
-    if not isinstance(images, list):
-        images = [images]
+    image = args.image
 
-    for image in images:
-        cli = get_client(image, quiet=args.quiet)
-        cli.announce(args.command)
+    cli = get_client(image, quiet=args.quiet)
+    cli.announce(args.command)
 
-        if not hasattr(cli, 'rm'):
-            msg = "remove is not implemented for %s. Why don't you add it?"
-            bot.exit(msg % cli.client_name)
+    if not hasattr(cli, 'rm'):
+        msg = "remove is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
 
-        cli.rm(image)
+    result = cli.rm(image)
+
+    if result is None:
+        bot.exit("No {} record found in the database".format(image))
 
 

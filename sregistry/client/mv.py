@@ -19,5 +19,5 @@ def main(args, parser, subparser):
         msg = "move is not implemented for %s. Why don't you add it?"
         bot.exit(msg % cli.client_name)
 
-    cli.mv(image_name=args.name[0],
-           path=args.path[0])
+    cli.mv(image_name=args.name,
+           path=args.path)

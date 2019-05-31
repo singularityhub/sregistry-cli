@@ -14,17 +14,15 @@ def main(args, parser, subparser):
 
     from sregistry.main import get_client
 
-    images = args.image
-    if not isinstance(images, list):
-        images = [images]
+    image = args.image
 
-    for image in images:
-        cli = get_client(image, quiet=args.quiet)
+    cli = get_client(image, quiet=args.quiet)
 
-        # If the client doesn't have the command, exit
-        if not hasattr(cli, 'add'):
-            bot.exit("add is only available when using the database")
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'add'):
+        bot.exit("add is only available when using the database")
 
-        cli.add(image_path=image,
-                image_uri=args.name,
-                copy=args.copy)
+    cli.add(image_path=image,
+            image_uri=args.name,
+            copy=args.copy)
+

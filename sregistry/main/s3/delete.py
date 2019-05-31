@@ -11,9 +11,9 @@ Written by Tom Schoonjans (Tom.Schoonjans@diamond.ac.uk)
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( parse_image_name, remove_uri )
+from sregistry.utils import (parse_image_name, remove_uri, confirm_delete)
 
-def remove(self, image, force=False):
+def delete(self, image, force=False):
     '''delete an image from an S3 bucket'''
 
     q = parse_image_name(remove_uri(image))
@@ -23,8 +23,15 @@ def remove(self, image, force=False):
     try:
         _object = self.bucket.Object(uri)
         _object.load() # this throws an exception if the object does not exist! -> if delete() fails no exception is thrown...
-        _object.delete()
+
+        if confirm_delete(uri, force) is True:
+            _object.delete()
+        else:
+            bot.info("Delete cancelled.")
     except Exception as e:
         bot.error('Could not delete object {}: {}'.format(uri, str(e)))
+        return None
+
+    return image
 
 

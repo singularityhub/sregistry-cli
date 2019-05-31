@@ -60,10 +60,10 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             if e.response['Error']['Code'] == "404":
 
                 # Case 1, image not found, but not error with API
-                bot.error('Cannot find %s!' % name)      
+                bot.error('Cannot find %s!' % file_name)
 
                 # Try to help the user with suggestions
-                results = self._search_all(query=image)
+                results = self._search_all()
                 if len(results) > 0:
                     bot.info('Did you mean:\n' % '\n'.join(results))      
                 sys.exit(1)

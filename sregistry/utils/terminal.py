@@ -141,3 +141,24 @@ def run_command(cmd, sudo=False):
         output['message'] = output['message'].decode('utf-8')
 
     return output
+
+
+def confirm_delete(file_name, force):
+    '''confirm delete of an image, as an extra precation.
+
+       Parameters
+       ==========
+       file_name: the file_name to ask about deleting
+       force: if the user wants to skip the prompt
+    '''
+    if force is True:
+        return True
+
+    response = input("Are you sure you want to delete %s?" % file_name)
+    while len(response) < 1 or response[0].lower().strip() not in "ynyesno":
+        response = input("Please answer yes or no: ")
+
+    if response[0].lower().strip() in "no":
+        return False
+
+    return True

@@ -145,7 +145,6 @@ def inspect(self, name):
        basic fields in the model.
 
     '''
-    print(name)
     container = self.get(name)
     if container is not None:
         collection = container.collection.name
@@ -156,6 +155,7 @@ def inspect(self, name):
         fields['created_at'] = str(fields['created_at'])
         print(json.dumps(fields, indent=4, sort_keys=True))
         return fields
+    bot.exit("image {} was not found in the database".format(name))
 
 
 def rename(self, image_name, path):
@@ -310,7 +310,10 @@ def rm(self, image_name):
         self.session.commit()
         if image is not None:
             if os.path.exists(image):
-                os.remove(container.image)
+                os.remove(image)
+            else:
+                bot.warning("image file {} does not exist on the file system!".format(image))
+                return None
             return image
         bot.info("[rm] %s" % name)
 

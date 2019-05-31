@@ -18,5 +18,5 @@ def main(args, parser, subparser):
         msg = "rename is not implemented for %s. Why don't you add it?"
         bot.exit(msg % cli.client_name)
 
-    cli.rename(image_name=args.name[0],
-               path=args.path[0])
+    cli.rename(image_name=args.name,
+               path=args.path)
