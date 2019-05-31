@@ -173,7 +173,7 @@ def get_parser():
     push = subparsers.add_parser("push",
                                  help="push one or more images to a registry")
 
-    push.add_argument("image", nargs=1,
+    push.add_argument("image",
                        help="full path to image file", 
                        type=str)
 
