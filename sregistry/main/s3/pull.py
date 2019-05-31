@@ -80,7 +80,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # If we find the object, get metadata
         metadata = {}
-        if found != None:
+        if found is not None:
             metadata = found.get()['Metadata']
 
             # Metadata bug will capitalize all fields, workaround is to lowercase
