@@ -189,7 +189,7 @@ def get_parser():
     share = subparsers.add_parser("share",
                                    help="share a remote image")
 
-    share.add_argument("image", nargs=1,
+    share.add_argument("image",
                        help="full uri of image", 
                        type=str)
 
