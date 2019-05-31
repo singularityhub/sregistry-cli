@@ -104,11 +104,11 @@ def get_parser():
     mv = subparsers.add_parser("mv",
                                help="move an image and update database")
 
-    mv.add_argument("name", nargs=1, 
+    mv.add_argument("name",
                      help="image name or uri to move from database", 
                      type=str)
 
-    mv.add_argument("path", nargs=1, 
+    mv.add_argument("path",
                      help="directory or image file to move image.", 
                      type=str)
 
