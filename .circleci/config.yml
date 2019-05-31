@@ -113,7 +113,7 @@ run_linter: &run_linter
   name: run linter
   command: |
      sudo pip3 install --upgrade pylint
-     cd ~/repo
+     cd /tmp/src
      pylint sregistry
 
 
