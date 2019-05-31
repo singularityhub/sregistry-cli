@@ -310,7 +310,10 @@ def rm(self, image_name):
         self.session.commit()
         if image is not None:
             if os.path.exists(image):
-                os.remove(container.image)
+                os.remove(image)
+            else:
+                bot.warning("image file {} does not exist on the file system!".format(image))
+                return None
             return image
         bot.info("[rm] %s" % name)
 

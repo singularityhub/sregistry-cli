@@ -127,7 +127,7 @@ def get_parser():
     rm = subparsers.add_parser("rm",
                                help="remove an image from the local database")
 
-    rm.add_argument("image", nargs=1,
+    rm.add_argument("image",
                     help='name of image, in format "library/image"', 
                     type=str)
 
