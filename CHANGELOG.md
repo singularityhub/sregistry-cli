@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - fixing bug with deleting container for Google Storage and Google Build (0.2.14)
  - ensure non-zero return values are returned when necessary (0.2.13)
  - add support for deleting images in S3 buckets (0.2.12)
  - removing complicated (multiple) imports for client, removing redundant "rmi" command (0.2.11)

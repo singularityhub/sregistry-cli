@@ -10,7 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 
-def main(args,parser,subparser):
+def main(args, parser, subparser):
 
     from sregistry.main import get_client
 
@@ -19,10 +19,9 @@ def main(args,parser,subparser):
     cli.announce(args.command)
 
     # If the client doesn't have the command, exit
-    if not hasattr(cli, 'remove'):
-        bot.exit("delete is only available when using the database")
+    if not hasattr(cli, 'delete'):
+        msg = "delete is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
 
-    response = cli.remove(image=image,
+    response = cli.delete(image=image,
                           force=args.force)
-    if response is None:
-        bot.exit("could not remove {} from the remote".format(image))

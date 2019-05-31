@@ -16,7 +16,7 @@ import os
 from .auth import authorize
 from .pull import pull
 from .push import push
-from .delete import remove
+from .delete import delete
 from .query import *
 
 class Client(ApiConnection):
@@ -99,7 +99,7 @@ class Client(ApiConnection):
     
 
 Client.authorize = authorize
-Client.remove = remove
+Client.delete = delete
 Client.pull = pull
 Client.push = push
 Client.search = search

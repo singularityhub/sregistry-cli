@@ -142,7 +142,15 @@ def run_command(cmd, sudo=False):
 
     return output
 
-def confirm_delete(force, file_name):
+
+def confirm_delete(file_name, force):
+    '''confirm delete of an image, as an extra precation.
+
+       Parameters
+       ==========
+       file_name: the file_name to ask about deleting
+       force: if the user wants to skip the prompt
+    '''
     if force is True:
         return True
 
