@@ -10,14 +10,12 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 from sregistry.utils import ( 
-    check_install, 
     copyfile,
     get_image_hash,
     parse_image_name, 
     remove_uri
 )
 from sqlalchemy import or_
-from glob import glob
 import os
 import json
 import shutil
@@ -81,8 +79,7 @@ def get(self, name, quiet=False):
           name with the collection. A query is done first for the collection,
           and then the container, and the path to the image file returned.
     '''
-    from sregistry.database.models import Collection, Container
-    names = parse_image_name( remove_uri (name) )
+    names = parse_image_name(remove_uri(name))
  
     # First look for a collection (required)
     collection = self.get_collection(name=names['collection'])
@@ -117,7 +114,7 @@ def images(self, query=None):
        query: a string to search for in the container or collection name|tag|uri
 
     '''
-    from sregistry.database.models import Collection, Container
+    from sregistry.database.models import Container
 
     rows = []
     if query is not None:   
@@ -220,7 +217,6 @@ def mv(self, image_name, path):
 
     if container is not None:
 
-        name = container.uri or container.get_uri()
         image = container.image or ''
 
         # Only continue if image file exists
@@ -245,7 +241,7 @@ def mv(self, image_name, path):
                            container=container,
                            command="move")
     
-    bot.warning('%s not found' %(image_name))
+    bot.warning('%s not found' % image_name)
 
 
 def cp(self, move_to, image_name=None, container=None, command="copy"):
@@ -357,10 +353,7 @@ def add(self, image_path=None,
     If no version is found, the file hash is used.
     '''
 
-    from sregistry.database.models import (
-        Container,
-        Collection
-    )
+    from sregistry.database.models import Container
 
     # We can only save if the image is provided
     if image_path is not None:
@@ -371,7 +364,7 @@ def add(self, image_path=None,
     if image_uri is None:
         bot.exit('You must provide an image uri <collection>/<namespace>')
 
-    names = parse_image_name( remove_uri(image_uri) )
+    names = parse_image_name(remove_uri(image_uri))
     bot.debug('Adding %s to registry' % names['uri'])    
 
     # If Singularity is installed, inspect image for metadata
@@ -380,12 +373,12 @@ def add(self, image_path=None,
 
     # Get a hash of the file for the version, or use provided
     version = names.get('version')
-    if version == None:
-        if image_path != None:
+    if version is None:
+        if image_path is not None:
             version = get_image_hash(image_path)
         else:
             version = ''  # we can't determine a version, not in API/no file
-        names = parse_image_name( remove_uri(image_uri), version=version )
+        names = parse_image_name(remove_uri(image_uri), version=version)
 
     # If save, move to registry storage first
     if save is True and image_path is not None:

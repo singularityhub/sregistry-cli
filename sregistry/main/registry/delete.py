@@ -17,7 +17,7 @@ def delete(self, image, force=False):
     q = parse_image_name(remove_uri(image))
 
     # If the registry is provided in the uri, use it
-    if q['registry'] == None:
+    if q['registry'] is None:
         q['registry'] = self.base
 
     # If the base doesn't start with http or https, add it

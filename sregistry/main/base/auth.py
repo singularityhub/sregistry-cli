@@ -62,17 +62,12 @@ def require_secrets(self, params=None):
 
             # The parameter is not a key for the client
             if param not in self.secrets[name]: 
-                has_secrets = False
+                bot.exit('Missing %s in client secrets.' % param)
 
             # The parameter is a key, but empty or undefined
             elif self.secrets[name][param] in [None,'']: 
-                has_secrets=False
+                bot.exit('Undefined param %s in client secrets.' % param)
 
-        # Missing parameter, exit on fail
-        if has_secrets is False:
-            message = 'Missing %s in client secrets.' %param
-            bot.error(message)
-            sys.exit(1)
 
 
 def auth_flow(self, url):

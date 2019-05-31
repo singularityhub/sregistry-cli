@@ -9,7 +9,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-import sys
 import os
 
 def main(args,parser,subparser):
@@ -31,6 +30,6 @@ def main(args,parser,subparser):
         msg = "push is not implemented for %s. Why don't you add it?"
         bot.exit(msg % cli.client_name)
 
-    response = cli.push(path=image,
-                        name=args.name,
-                        tag=args.tag)
+    cli.push(path=image,
+             name=args.name,
+             tag=args.tag)

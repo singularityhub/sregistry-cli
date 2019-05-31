@@ -11,9 +11,9 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
 import botocore
-import requests
 import os
 import sys
+
 
 def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from a s3 storage
@@ -80,7 +80,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # If we find the object, get metadata
         metadata = {}
-        if found != None:
+        if found is not None:
             metadata = found.get()['Metadata']
 
             # Metadata bug will capitalize all fields, workaround is to lowercase

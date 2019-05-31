@@ -16,17 +16,13 @@ from sregistry.utils import (
     remove_uri
 )
 
-from sregistry.main.google_storage.utils import prepare_metadata
 from sregistry.main.google_build.utils import get_build_template
 
-from retrying import retry
 from glob import glob
 import time
-import requests
 import tarfile
 import shutil
 import json
-import sys
 import os
 
 
@@ -79,9 +75,9 @@ def build(self, name,
     # if it doesn't exist, upload it
     if not blob.exists() and preview is False:
         bot.log('Uploading build package!')
-        manifest = self._upload(source=package, 
-                                bucket=self._build_bucket,
-                                destination=destination)
+        self._upload(source=package, 
+                     bucket=self._build_bucket,
+                     destination=destination)
     else:
         bot.log('Build package found in %s.' % self._build_bucket.name)
 
@@ -209,7 +205,7 @@ def run_build(self, config, bucket, names):
         blob = bucket.blob(response['artifacts']['objects']['paths'][0])
         
         # Make Public, if desired
-        if self._get_and_update_setting(env) == None:
+        if self._get_and_update_setting(env) is None:
             blob.make_public()
             response['public_url'] = blob.public_url
 

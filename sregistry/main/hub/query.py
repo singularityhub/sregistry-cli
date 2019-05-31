@@ -11,8 +11,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( parse_image_name, remove_uri )
-import os
 import re
 
 
@@ -76,7 +74,6 @@ def search_collection(self, query):
     collection. We assume query is the name of a collection'''
 
     query = query.lower().strip('/')
-    q = parse_image_name(remove_uri(query), defaults=False)
     
     # Workaround for now - the Singularity Hub search endpoind needs fixing
     containers = self.list(quiet=True)

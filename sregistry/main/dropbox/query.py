@@ -12,11 +12,8 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 from sregistry.utils import remove_uri
-from dateutil import parser
-
-import json
 import sys
-import os
+
 
 def search(self, query=None, args=None):
     '''query a Singularity registry for a list of images. 

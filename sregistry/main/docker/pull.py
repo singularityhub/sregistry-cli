@@ -8,8 +8,8 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from sregistry.logger import bot
 from spython.main import Client as Singularity
+from sregistry.logger import bot
 from sregistry.utils import ( 
     get_tmpdir, 
     parse_image_name, 
@@ -153,7 +153,7 @@ def _pull(self,
     # Fall back to using Singularity
     if image_file is None:
         bot.info('Downloading with native Singularity, please wait...')
-        image = image.replace('docker://', uri)
+        image = file_name.replace('docker://', uri)
         image_file = Singularity.pull(image, pull_folder=sandbox)
 
     # Save to local storage

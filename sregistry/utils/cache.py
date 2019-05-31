@@ -9,11 +9,10 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from .fileio import mkdir_p, get_userhome
+from .fileio import mkdir_p
 import tempfile
 import os
 import pwd
-import sys
 
 
 def clean_path(path):

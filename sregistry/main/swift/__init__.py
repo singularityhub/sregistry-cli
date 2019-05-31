@@ -15,7 +15,7 @@ import sys
 
 from .pull import pull
 from .push import push
-from .query import ( search, search_all, container_query )
+from .query import (search, search_all, container_query)
 
 class Client(ApiConnection):
 
@@ -24,7 +24,7 @@ class Client(ApiConnection):
         self.config = dict()
         self._update_secrets()
         self.name = self.config.get('SREGISTRY_SWIFT_URL', 'Swift Client Storage')
-        super(ApiConnection, self).__init__(**kwargs)
+        super(Client, self).__init__(**kwargs)
 
     def _speak(self):
         '''if you want to add an extra print (of a parameter, for example)

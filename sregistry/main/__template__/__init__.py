@@ -26,14 +26,7 @@ class Client(ApiConnection):
         self.base = base
         self._update_secrets()
         self._update_headers()
-        super(ApiConnection, self).__init__(**kwargs)
-
-    def _speak(self):
-        '''if you want to add an extra print (of a parameter, for example)
-           for the user when the client initalizes, write it here, eg:
-           bot.info('[setting] value')
-        '''
-        pass
+        super(Client, self).__init__(**kwargs)
 
     def _update_secrets(self):
         '''update secrets will take a secrets credential file
@@ -45,11 +38,11 @@ class Client(ApiConnection):
         '''
         # Get a setting for client myclient and some variable name VAR. 
         # returns None if not set
-        setting = self._get_setting('SREGISTRY_MYCLIENT_VAR')
+        # setting = self._get_setting('SREGISTRY_MYCLIENT_VAR')
 
         # Get (and if found in environment (1) settings (2) update the variable
         # It will still return None if not set
-        setting = self._get_and_update_setting('SREGISTRY_MYCLIENT_VAR')
+        # setting = self._get_and_update_setting('SREGISTRY_MYCLIENT_VAR')
 
         # If you have a setting that is required and not found, you should exit.
 

@@ -14,7 +14,6 @@ from sregistry.utils import (
     remove_uri
 )
 
-import sys
 import os
 
 
@@ -22,7 +21,6 @@ def push(self, path, name, tag=None):
     '''push an image to an S3 endpoint'''
 
     path = os.path.abspath(path)
-    image = os.path.basename(path)
     bot.debug("PUSH %s" % path)
 
     if not os.path.exists(path):
@@ -36,6 +34,6 @@ def push(self, path, name, tag=None):
     # *important* bug in boto3 will return these capitalized
     # see https://github.com/boto/boto3/issues/1709
     metadata = {'sizemb': "%s" % image_size,
-                'client': 'sregistry' }
+                'client': 'sregistry'}
 
-    self.bucket.upload_file(path, names['storage_uri'], {"Metadata": metadata })
+    self.bucket.upload_file(path, names['storage_uri'], {"Metadata": metadata})

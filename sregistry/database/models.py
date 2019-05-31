@@ -11,6 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sqlalchemy import (
+    create_engine,
     Column, 
     DateTime,
     Integer, 
@@ -20,18 +21,16 @@ from sqlalchemy import (
     func
 )
 
-from sqlalchemy.schema import UniqueConstraint
-from sregistry.logger import bot
-from sregistry.defaults import ( SREGISTRY_DATABASE, SREGISTRY_STORAGE )
-from sqlalchemy import create_engine
-from sqlalchemy.orm import ( backref,
-                             relationship,  
-                             scoped_session, 
-                             sessionmaker )
-from uuid import uuid4
-
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.orm import (backref,
+                            relationship,  
+                            scoped_session, 
+                            sessionmaker)
 
+from sregistry.logger import bot
+from sregistry.defaults import SREGISTRY_STORAGE
+from uuid import uuid4
  
 Base = declarative_base()
 

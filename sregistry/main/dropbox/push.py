@@ -41,7 +41,6 @@ def push(self, path, name, tag=None):
 
     # here is an exampole of getting metadata for a container
     names = parse_image_name(remove_uri(name), tag=tag)
-    metadata = self.get_metadata(path, names=names)
 
     # Get the size of the file
     file_size = os.path.getsize(path)
@@ -73,7 +72,7 @@ def push(self, path, name, tag=None):
                 progress+=chunk_size
 
                 # Finishing up the file, less than chunk_size to go
-                if ((file_size - F.tell()) <= chunk_size):
+                if file_size - F.tell() <= chunk_size:
                     self.dbx.files_upload_session_finish(F.read(chunk_size),
                                                          cursor,
                                                          commit)

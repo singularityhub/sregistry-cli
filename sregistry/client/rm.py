@@ -27,5 +27,3 @@ def main(args, parser, subparser):
 
     if result is None:
         bot.exit("No {} record found in the database".format(image))
-
-

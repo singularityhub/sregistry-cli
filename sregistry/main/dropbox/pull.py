@@ -11,7 +11,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
 import os
-import sys
 
 
 def pull(self, images, file_name=None, save=True, **kwargs):
@@ -85,7 +84,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                 finished.append(image_file)
 
         else:
-            bot.error('%s does not exist. Try sregistry search to see images.' %path)
+            bot.error('%s does not exist. Try sregistry search to see images.' % dropbox_path)
 
     if len(finished) == 1:
         finished = finished[0]

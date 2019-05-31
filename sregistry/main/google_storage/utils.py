@@ -10,7 +10,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 from sregistry.utils import ( read_file, get_installdir )
-import sys
 import os
 
 def prepare_metadata(metadata):

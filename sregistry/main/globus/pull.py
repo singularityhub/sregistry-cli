@@ -10,14 +10,9 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from spython.main import Client as Singularity
 from sregistry.logger import bot
-from sregistry.defaults import SREGISTRY_STORAGE
-from sregistry.utils import ( parse_image_name, remove_uri )
+from sregistry.utils import parse_image_name
 import globus_sdk
-
-import requests
-import shutil
 import os
 
 
@@ -71,10 +66,10 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         # Take the first endpoint that is active
 
         dest = None
-        for eid,contender in endpoints['my-endpoints'].items():
-           if contender['gcp_connected'] is True:
-               dest = contender
-               break
+        for _, contender in endpoints['my-endpoints'].items():
+            if contender['gcp_connected'] is True:
+                dest = contender
+                break
 
         # Exit if none are active, required!
 

@@ -28,10 +28,8 @@ def delete(self, image, force=False):
             _object.delete()
         else:
             bot.info("Delete cancelled.")
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-except
         bot.error('Could not delete object {}: {}'.format(uri, str(e)))
         return None
 
     return image
-
-

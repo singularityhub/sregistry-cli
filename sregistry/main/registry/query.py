@@ -14,7 +14,6 @@ from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
 
 import sys
-import os
 
 
 def search(self, query=None, args=None):

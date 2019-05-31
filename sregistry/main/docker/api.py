@@ -21,9 +21,7 @@ import json
 import math
 import os
 import re
-import requests
 import shutil
-import sys
 import tempfile
 
 
@@ -66,7 +64,7 @@ def update_token(self, response):
         token = {"Authorization": "Bearer %s" % token}
         self.headers.update(token)
 
-    except Exception:
+    except:
         bot.exit("Error getting token.")
 
 
@@ -196,8 +194,8 @@ def download_layers(self, repo_name, digest=None, destination=None):
 
     # Download layers with multiprocess workers
     if len(tasks) > 0:
-        download_layers = workers.run(func=download_task,
-                                      tasks=tasks)
+        workers.run(func=download_task, tasks=tasks)
+
     # Create the metadata tar
     metadata = self._create_metadata_tar(destination)
     if metadata is not None:
@@ -282,7 +280,7 @@ def get_digests(self):
             bot.exit(msg)
 
     # If all attempts failed
-    if manifest == None:
+    if manifest is None:
         bot.exit("Failed to find manifest. Check image name and login.")
 
     for layer in manifest[layer_key]:
@@ -292,7 +290,7 @@ def get_digests(self):
 
     # Reverse layer order for manifest version 1.0
     if reverseLayers is True:
-        message = 'v%s manifest, reversing layers' % schemaVersion
+        message = 'reversing layers...'
         bot.debug(message)
         digests.reverse()
 
@@ -340,7 +338,7 @@ def get_layer(self, image_id, repo_name, download_folder=None):
 
     try:
         shutil.move(tar_download, download_folder)
-    except Exception:
+    except:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
         bot.exit(msg)
@@ -361,7 +359,7 @@ def get_size(self, add_padding=True, round_up=True, return_mb=True):
         bot.exit('Please retrieve manifests for an image first.')
 
     size = 768  # default size
-    for schemaVersion, manifest in self.manifests.items():
+    for _, manifest in self.manifests.items():
         if "layers" in manifest:
             size = 0
             for layer in manifest["layers"]:
@@ -403,24 +401,23 @@ def get_config(self, key="Entrypoint", delim=None):
     cmd = None
 
     # If we didn't find the config value in version 2
-    for version in ['config', 'v1']:
-        if cmd is None and 'config' in self.manifests:
+    if cmd is None and 'config' in self.manifests:
             
-            # First try, version 2.0 manifest config has upper level config
-            manifest = self.manifests['config']
-            if "config" in manifest:
-                if key in manifest['config']:
-                    cmd = manifest['config'][key]
+        # First try, version 2.0 manifest config has upper level config
+        manifest = self.manifests['config']
+        if "config" in manifest:
+            if key in manifest['config']:
+                cmd = manifest['config'][key]
 
-            # Second try, config manifest (not from verison 2.0 schema blob)
+        # Second try, config manifest (not from verison 2.0 schema blob)
 
-            if cmd is None and "history" in manifest:
-                for entry in manifest['history']:
-                    if 'v1Compatibility' in entry:
-                        entry = json.loads(entry['v1Compatibility'])
-                        if "config" in entry:
-                            if key in entry["config"]:
-                                cmd = entry["config"][key]
+        if cmd is None and "history" in manifest:
+            for entry in manifest['history']:
+                if 'v1Compatibility' in entry:
+                    entry = json.loads(entry['v1Compatibility'])
+                    if "config" in entry:
+                        if key in entry["config"]:
+                            cmd = entry["config"][key]
 
     # Standard is to include commands like ['/bin/sh']
     if isinstance(cmd, list):
@@ -561,7 +558,7 @@ def extract_runscript(self):
     # Only continue if command still isn't None
     if cmd is not None:
         bot.verbose3("Adding Docker %s as Singularity runscript..."
-                     % command.upper())
+                     % cmd.upper())
 
         # If the command is a list, join. (eg ['/usr/bin/python','hello.py']
         bot.debug(cmd)

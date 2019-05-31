@@ -10,8 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.utils import mkdir_p
 from sregistry.logger import bot
-from sregistry.auth import ( read_client_secrets, update_client_secrets )
-import re
+from sregistry.auth import (read_client_secrets, update_client_secrets)
 import os
 
 

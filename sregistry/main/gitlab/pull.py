@@ -12,11 +12,6 @@ from sregistry.logger import bot
 from sregistry.utils import ( parse_image_name, remove_uri )
 import os
 
-try:
-    from urllib.parse import quote_plus # python 3.*
-except:
-    from urllib import quote_plus  # python 2.*
-
 def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from gitlab. The image is found based on the 
        uri that should correspond to a gitlab repository, and then
@@ -79,7 +74,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
                                                                  job_name,
                                                                  job_id))
 
-        project = quote_plus(collection.strip('/'))
+        # project = quote_plus(collection.strip('/'))
         
         # This is supposed to work, but it doesn't
         # url = "%s/projects/%s/jobs/%s/artifacts/file/%s" %(self.api_base, 

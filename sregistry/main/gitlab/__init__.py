@@ -22,7 +22,7 @@ class Client(ApiConnection):
         self._reset_headers()
         self._update_secrets()
         self._update_base()
-        super(ApiConnection, self).__init__(**kwargs)
+        super(Client, self).__init__(**kwargs)
 
     def _update_base(self):
         '''update the base, including the URL for GitLab and the API endpoint.
@@ -43,6 +43,8 @@ class Client(ApiConnection):
         '''update secrets will update metadata needed for pull and search
         '''
         self.token = self._required_get_and_update('SREGISTRY_GITLAB_TOKEN')
+        if self.headers is None:
+            self.headers = {}
         self.headers["Private-Token"] = self.token
 
     def __str__(self):

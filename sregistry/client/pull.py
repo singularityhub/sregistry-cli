@@ -9,9 +9,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-import sys
-import pwd
-import os
 
 
 def main(args,parser,subparser):
@@ -35,7 +32,7 @@ def main(args,parser,subparser):
         msg = "pull is not implemented for %s. Why don't you add it?"
         bot.exit(msg % cli.client_name)
 
-    response = cli.pull(images=image,
-                        file_name=name,
-                        force=args.force,
-                        save=do_save)
+    cli.pull(images=image,
+             file_name=name,
+             force=args.force,
+             save=do_save)

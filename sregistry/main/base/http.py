@@ -11,15 +11,13 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from requests.exceptions import HTTPError
+import requests
 
 from sregistry.utils import get_tmpfile
 from sregistry.logger import bot
 import shutil
-import requests
 import json
 import sys
-import re
-import os
 
 
 def delete(self, url,
@@ -216,7 +214,7 @@ def stream(self, url,
     bot.debug("GET %s" %url)
 
     # Ensure headers are present, update if not
-    if headers == None:
+    if headers is None:
         if self.headers is None:
             self._reset_headers()
         headers = self.headers.copy()

@@ -10,7 +10,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 import hashlib
-import os
 import re
 
 
@@ -62,7 +61,7 @@ def set_default(item, default, use_default):
     '''if an item provided is None and boolean use_default is set to True,
        return the default. Otherwise, return the item.
     '''
-    if item == None and use_default:
+    if item is None and use_default:
         return default
     return item
 
@@ -113,7 +112,7 @@ def parse_image_name(image_name,
             break
 
     if not match:
-        bot.exit('Could not parse image "%s"! Exiting.' % image)
+        bot.exit('Could not parse image "%s"! Exiting.' % image_name)
 
     # Get matches
     registry = match.group('registry')
@@ -123,7 +122,7 @@ def parse_image_name(image_name,
     version = match.group('version')
     
     # A repo_name is required
-    assert(repo_name)
+    assert repo_name
 
     # If a collection isn't provided
     collection = set_default(collection, default_collection, defaults)
@@ -137,11 +136,11 @@ def parse_image_name(image_name,
     else:
         collection = collection.rstrip('/')
 
-    if version != None:
+    if version is not None:
         version = version.lower()
     
     # Piece together the uri base
-    if registry == None:
+    if registry is None:
         uri = "%s/%s" % (collection, repo_name)    
     else:
         uri = "%s/%s/%s" % (registry, collection, repo_name)    
@@ -149,7 +148,7 @@ def parse_image_name(image_name,
     url = uri
 
     # Tag is defined
-    if repo_tag != None:
+    if repo_tag is not None:
         uri = "%s-%s" % (uri, repo_tag)
         tag_uri = "%s:%s" % (url, repo_tag) 
 

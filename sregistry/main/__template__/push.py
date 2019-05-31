@@ -9,18 +9,17 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import (
-    parse_image_name,
-    remove_uri
-)
+# from sregistry.utils import (
+#    parse_image_name,
+#    remove_uri
+#)
 
 # see the registry push for example of how to do this
-from requests_toolbelt import (
-    MultipartEncoder,
-    MultipartEncoderMonitor
-)
+# from requests_toolbelt import (
+#    MultipartEncoder,
+#    MultipartEncoderMonitor
+# )
 
-import requests
 import sys
 import os
 
@@ -40,10 +39,10 @@ def push(self, path, name, tag=None):
         sys.exit(1)
 
     # This returns a data structure with collection, container, based on uri
-    names = parse_image_name(remove_uri(name),tag=tag)
+    # names = parse_image_name(remove_uri(name),tag=tag)
 
     # use Singularity client, if exists, to inspect to extract metadata
-    metadata = self.get_metadata(path, names=names)
+    # metadata = self.get_metadata(path, names=names)
 
     # If you want a spinner
     bot.spinner.start()

@@ -9,13 +9,14 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.defaults import DISABLE_SSL_CHECK
-from requests.exceptions import HTTPError
-
 from sregistry.logger import bot
+
+from requests.exceptions import HTTPError
+import requests
+
 import json
 import os
 import re
-import requests
 import shutil
 import sys
 import tempfile
@@ -50,7 +51,7 @@ def download_task(url, headers, destination, download_type='layer'):
 
     try:
         shutil.move(tar_download, destination)
-    except Exception:
+    except:
         msg = "Cannot untar layer %s," % tar_download
         msg += " was there a problem with download?"
         bot.exit(msg)
@@ -69,7 +70,7 @@ def download_task(url, headers, destination, download_type='layer'):
 ################################################################################
 
 
-def post(url,data=None,return_json=True):
+def post(url, headers=None, data=None, return_json=True):
     '''post will use requests to get a particular url
     '''
     bot.debug("POST %s" %url)
@@ -80,7 +81,7 @@ def post(url,data=None,return_json=True):
                 return_json=return_json)
 
 
-def get(url,headers=None,token=None,data=None,return_json=True):
+def get(url, headers=None, token=None, data=None, return_json=True):
     '''get will use requests to get a particular url
     '''
     bot.debug("GET %s" %url)
@@ -275,7 +276,7 @@ def update_token(response, headers):
         token = {"Authorization": "Bearer %s" % token}
         headers.update(token)
 
-    except Exception:
+    except:
         bot.exit("Error getting token.")
 
     return headers

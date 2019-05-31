@@ -8,10 +8,8 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-import os
 import sys
 
-import sys
 import time
 import threading
 from random import choice
@@ -36,7 +34,7 @@ class Spinner:
             for cursor in '<^>v': yield cursor
 
     def select_generator(self, generator):
-        if generator == None:
+        if generator is None:
             generator = choice(['cursor',
                                 'arrow',
                                 'balloons'])

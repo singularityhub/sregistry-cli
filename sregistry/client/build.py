@@ -11,14 +11,13 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 import json
 import sys
-import os
 
 
-def main(args,parser,subparser):
+def main(args, parser, subparser):
     from sregistry.main import get_client
     
     # No commands provided, show help
-    if len(args.commands) == 0:
+    if not args.commands:
         subparser.print_help()
         sys.exit(0)
 
@@ -32,7 +31,7 @@ def main(args,parser,subparser):
 
     if cli.client_name == 'google-build':
 
-        if args.name == None:
+        if args.name is None:
             bot.exit('Please provide a container identifier with --name')
 
         recipe = args.commands.pop(0)
@@ -55,7 +54,7 @@ def main(args,parser,subparser):
 
         # Option 2: Just list running instances
         elif command == "instances":
-            instances()
+            instances(args)
 
         # Option 3: The user wants to list templates
         elif 'template' in command:
@@ -124,7 +123,7 @@ def print_output(response, output_file=None):
         bot.custom('URL', response['public_url'], 'CYAN')
 
     # Does the user also need writing to an output file?
-    if output_file != None:    
+    if output_file is not None:    
         with open(output_file, 'w') as filey:
             if response['status'] == 'SUCCESS':
                 filey.writelines('MD5HASH %s\n' % response['file_hash'])    
@@ -146,7 +145,7 @@ def kill(args):
             cli.destroy(name)
     sys.exit(0)
 
-def instances():
+def instances(args):
     '''list running instances for a user, including all builders and report
        instance names and statuses.
     '''
@@ -187,7 +186,7 @@ def list_logs(args, container_name=None):
     '''
     from sregistry.main import get_client
     cli = get_client(quiet=args.quiet)
-    if len(args.commands) > 0:
+    if args.commands:
         container_name = args.commands.pop(0)
     cli.logs(container_name)
     sys.exit(0)

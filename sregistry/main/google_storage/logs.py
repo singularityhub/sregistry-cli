@@ -10,10 +10,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 import requests
-import sys
-import re
-import os
-
 
 
 def logs(self, name=None):
@@ -41,7 +37,7 @@ def logs(self, name=None):
                 matches=True
 
             # Case 2: match in metadata
-            for key,val in result.metadata.items():
+            for _, val in result.metadata.items():
                 if name in val:
                     matches = True
 
@@ -58,7 +54,7 @@ def logs(self, name=None):
             for result in results:
                 if result.time_created >= latest.time_created:
                     latest = result                   
-            content = self._print_log(result.name)  
+            content = self._print_log(latest.name)  
 
     return content
 

@@ -15,10 +15,7 @@ from sregistry.utils import (
     write_json
 )
 
-import json
 import os
-import sys
-
 
 def get_credential_cache():
     '''if the user has specified settings to provide a cache for credentials
@@ -27,12 +24,12 @@ def get_credential_cache():
        not assumed to be either a folder or a file (this is up to the
        developer of the client).
     '''
-    from sregistry.defaults import ( CREDENTIAL_CACHE, SREGISTRY_CLIENT )
+    from sregistry.defaults import (CREDENTIAL_CACHE, SREGISTRY_CLIENT)
 
     client_credential_cache = None
 
     # Check 1: user can disable a credential cache on the client level
-    if CREDENTIAL_CACHE is not None: 
+    if CREDENTIAL_CACHE is not None:
         env = 'SREGISTRY_DISABLE_CREDENTIAL_%s' %SREGISTRY_CLIENT.upper()
         if os.environ.get(env) is not None:
             bot.debug('[%s] cache disabled' %SREGISTRY_CLIENT)
@@ -51,7 +48,7 @@ def get_credential_cache():
 def _default_client_secrets():
     '''return default client secrets, including singularity hub base
     '''
-    client_secrets = { 'hub': { 'base': "https://singularity-hub.org/api" } }
+    client_secrets = {'hub': {'base': "https://singularity-hub.org/api" }}
     return client_secrets
 
 
@@ -70,7 +67,7 @@ def update_client_secrets(backend, updates, secrets=None, save=True):
     if save is True:
         secrets_file = get_secrets_file()
         if secrets_file is not None:
-            write_json(secrets,secrets_file)
+            write_json(secrets, secrets_file)
 
     return secrets
 

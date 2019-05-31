@@ -17,8 +17,6 @@ import itertools
 import time
 import signal
 import sys
-import re
-import os
 
 
 class Workers(object):
@@ -103,7 +101,7 @@ class Workers(object):
             pool.terminate()
             sys.exit(1)
 
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-except
             bot.error(e)
 
         return finished

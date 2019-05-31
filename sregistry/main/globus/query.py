@@ -13,7 +13,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from globus_sdk.exc import TransferAPIError
 from sregistry.logger import bot
 import sys
-import os
 
 
 def search(self, query=None, args=None):

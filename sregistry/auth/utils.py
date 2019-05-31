@@ -8,9 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from sregistry.logger import bot
 import base64
-import os
 import sys
 
 

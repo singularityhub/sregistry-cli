@@ -13,17 +13,13 @@ import hashlib
 import errno
 import os
 import pwd
-import re
 import shutil
 import tempfile
 import tarfile
-import requests
 
 import json
-from sregistry.utils import get_installdir
 from sregistry.logger import bot
 import io
-import sys
 
 
 ################################################################################
@@ -190,10 +186,9 @@ def create_tar(files, output_folder=None):
         try:  # python3
             info.size = filey.write(entity['content'])
             content = io.BytesIO(entity['content'].encode('utf8'))
-        except Exception:  # python2
+        except:  # python2
             info.size = int(filey.write(entity['content'].decode('utf-8')))
             content = io.BytesIO(entity['content'].encode('utf8'))
-        pass
 
         if content is not None:
             addition = {'content': content,

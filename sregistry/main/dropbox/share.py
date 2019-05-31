@@ -8,8 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-from dropbox.exceptions import ApiError
-from sregistry.utils import ( parse_image_name, remove_uri )
+from sregistry.utils import (parse_image_name, remove_uri)
 from sregistry.logger import bot
 
 
@@ -31,7 +30,7 @@ def share(self, query, share_to=None):
             share = self.dbx.sharing_create_shared_link_with_settings(dropbox_path)
 
         # Already exists!
-        except ApiError as err:
+        except:
             share = self.dbx.sharing_create_shared_link(dropbox_path)
 
         bot.info(share.url)
