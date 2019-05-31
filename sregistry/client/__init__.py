@@ -81,14 +81,14 @@ def get_parser():
 
     get.add_argument("query",
                      help="image search query to inspect", 
-                     type=str, default=None)
+                     type=str)
 
 
     # Add an image file
     add = subparsers.add_parser("add",
                                 help="add an image to local storage")
 
-    add.add_argument("image", nargs=1,
+    add.add_argument("image",
                      help="full path to image file", 
                      type=str)
 
