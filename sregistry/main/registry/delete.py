@@ -9,7 +9,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( parse_image_name, remove_uri )
+from sregistry.utils import ( parse_image_name, remove_uri, confirm_delete )
 
 def remove(self, image, force=False):
     '''delete an image to Singularity Registry'''
@@ -32,18 +32,12 @@ def remove(self, image, force=False):
     headers = {'Authorization': SREGISTRY_EVENT }
     self._update_headers(fields=headers)
 
-    continue_delete = True
-    if force is False:
-        response = input("Are you sure you want to delete %s?" % q['uri'])
-        while len(response) < 1 or response[0].lower().strip() not in "ynyesno":
-            response = input("Please answer yes or no: ")
-        if response[0].lower().strip() in "no":
-            continue_delete = False
-
-    if continue_delete is True:
+    if confirm_delete(force, q['uri']) is True:
         response = self._delete(url)
         message = self._read_response(response)
         bot.info("Response %s, %s" %(response.status_code, message))
-
+        # add some error handling here??
     else:
         bot.info("Delete cancelled.")
+
+    return image

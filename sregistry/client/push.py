@@ -17,7 +17,7 @@ def main(args,parser,subparser):
     from sregistry.main import get_client
 
     # Does the user have a valid image?
-    image = args.image[0]
+    image = args.image
     if not os.path.exists(image):  
         subparser.print_help()
         bot.exit("Please supply one or more paths to existing images.")

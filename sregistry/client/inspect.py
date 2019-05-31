@@ -13,17 +13,14 @@ from sregistry.logger import bot
 def main(args,parser,subparser):
 
     from sregistry.main import get_client
-    images = args.query
-    if not isinstance(images, list):
-        images = [images]
+    image = args.query
 
-    for image in images:
-        cli = get_client(image, quiet=args.quiet)
+    cli = get_client(image, quiet=args.quiet)
 
-        # If the client doesn't have the command, exit
-        if not hasattr(cli, 'inspect'):
-            msg = "inspect is not implemented for %s. Why don't you add it?"
-            bot.exit(msg % cli.client_name)
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'inspect'):
+        msg = "inspect is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
 
-        cli.inspect(image)
+    cli.inspect(image)
 

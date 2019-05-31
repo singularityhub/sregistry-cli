@@ -18,32 +18,24 @@ def main(args,parser,subparser):
 
     from sregistry.main import get_client
  
-    images = args.image
-    if not isinstance(images, list):
-        images = [images]
-
-    # if the user has given more than one image, not allowed to name
+    image = args.image
     name = args.name
-    if len(images) > 1:
-        name = None
 
-    for image in images:
+    # Customize client based on uri
+    cli = get_client(image, quiet=args.quiet)
+    cli.announce(args.command)
 
-        # Customize client based on uri
-        cli = get_client(image, quiet=args.quiet)
-        cli.announce(args.command)
+    # Does the user want to save the image?
+    do_save = True
+    if args.nocache is True or not hasattr(cli, 'storage'):
+        do_save = False
 
-        # Does the user want to save the image?
-        do_save = True
-        if args.nocache is True or not hasattr(cli, 'storage'):
-            do_save = False
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'pull'):
+        msg = "pull is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
 
-        # If the client doesn't have the command, exit
-        if not hasattr(cli, 'pull'):
-            msg = "pull is not implemented for %s. Why don't you add it?"
-            bot.exit(msg % cli.client_name)
-
-        response = cli.pull(images=image,
-                            file_name=name,
-                            force=args.force,
-                            save=do_save)
+    response = cli.pull(images=image,
+                        file_name=name,
+                        force=args.force,
+                        save=do_save)

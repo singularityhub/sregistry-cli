@@ -71,24 +71,24 @@ def get_parser():
     inspect = subparsers.add_parser("inspect",
                                     help="inspect an image in your database")
 
-    inspect.add_argument("query", nargs=1,
+    inspect.add_argument("query",
                           help="image search query to inspect", 
-                          type=str, default=None)
+                          type=str)
 
     # Get path to an image
     get = subparsers.add_parser("get",
                                 help="get an image path from your storage")
 
-    get.add_argument("query", nargs='*', 
+    get.add_argument("query",
                      help="image search query to inspect", 
-                     type=str, default="*")
+                     type=str)
 
 
     # Add an image file
     add = subparsers.add_parser("add",
                                 help="add an image to local storage")
 
-    add.add_argument("image", nargs=1,
+    add.add_argument("image",
                      help="full path to image file", 
                      type=str)
 
@@ -104,11 +104,11 @@ def get_parser():
     mv = subparsers.add_parser("mv",
                                help="move an image and update database")
 
-    mv.add_argument("name", nargs=1, 
+    mv.add_argument("name",
                      help="image name or uri to move from database", 
                      type=str)
 
-    mv.add_argument("path", nargs=1, 
+    mv.add_argument("path",
                      help="directory or image file to move image.", 
                      type=str)
 
@@ -116,18 +116,18 @@ def get_parser():
     rename = subparsers.add_parser("rename",
                                     help="rename an image in storage")
 
-    rename.add_argument("name", nargs=1, 
+    rename.add_argument("name",
                         help="image name or uri to rename in database", 
                         type=str)
 
-    rename.add_argument("path", nargs=1, 
+    rename.add_argument("path",
                          help="path to rename image (will use basename)", 
                          type=str)
 
     rm = subparsers.add_parser("rm",
                                help="remove an image from the local database")
 
-    rm.add_argument("image", nargs=1,
+    rm.add_argument("image",
                     help='name of image, in format "library/image"', 
                     type=str)
 
@@ -173,7 +173,7 @@ def get_parser():
     push = subparsers.add_parser("push",
                                  help="push one or more images to a registry")
 
-    push.add_argument("image", nargs=1,
+    push.add_argument("image",
                        help="full path to image file", 
                        type=str)
 
@@ -189,7 +189,7 @@ def get_parser():
     share = subparsers.add_parser("share",
                                    help="share a remote image")
 
-    share.add_argument("image", nargs=1,
+    share.add_argument("image",
                        help="full uri of image", 
                        type=str)
 
@@ -202,7 +202,7 @@ def get_parser():
     pull = subparsers.add_parser("pull",
                                  help="pull an image from a registry")
 
-    pull.add_argument("image", nargs=1,
+    pull.add_argument("image",
                        help="full uri of image", 
                        type=str)
 
@@ -239,7 +239,7 @@ def get_parser():
                         help="don't prompt before deletion", 
                         default=False, action='store_true')
 
-    delete.add_argument("image", nargs=1,
+    delete.add_argument("image",
                         help="full path to image file", 
                         type=str)
 
@@ -293,10 +293,9 @@ def main():
     # If the user didn't provide any arguments, show the full help
     if len(sys.argv) == 1:
         help()
-    try:
-        args = parser.parse_args()
-    except:
-        sys.exit(0)
+
+    # If an error occurs while parsing the arguments, the interpreter will exit with value 2
+    args = parser.parse_args()
 
     if args.debug is False:
         os.environ['MESSAGELEVEL'] = "DEBUG"

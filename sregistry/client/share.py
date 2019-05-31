@@ -15,21 +15,15 @@ def main(args, parser, subparser):
        control to a contact, usually an email.
     '''
     from sregistry.main import get_client
-    images = args.image
+    image = args.image
 
-    if not isinstance(images,list):
-        images = [images]
+    # Detect any uri, and refresh client if necessary
+    cli = get_client(image, quiet=args.quiet)
+    cli.announce(args.command)
 
-    for image in images:
-        print(image)
-        
-        # Detect any uri, and refresh client if necessary
-        cli = get_client(image, quiet=args.quiet)
-        cli.announce(args.command)
+    # If the client doesn't have the command, exit
+    if not hasattr(cli, 'share'):
+        msg = "share is not implemented for %s. Why don't you add it?"
+        bot.exit(msg % cli.client_name)
 
-        # If the client doesn't have the command, exit
-        if not hasattr(cli, 'share'):
-            msg = "share is not implemented for %s. Why don't you add it?"
-            bot.exit(msg % cli.client_name)
-
-        cli.share(image, share_to=args.share_to)
+    cli.share(image, share_to=args.share_to)

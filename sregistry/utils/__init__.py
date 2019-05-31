@@ -8,7 +8,8 @@ from .terminal import (
     check_install,
     get_installdir,
     get_thumbnail,
-    which
+    which,
+    confirm_delete
 )
 from .cache import get_cache
 from .names import (
