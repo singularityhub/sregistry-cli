@@ -13,7 +13,7 @@ from sregistry.defaults import SREGISTRY_DATABASE
 from sregistry.logger import bot
 import os
 
-def get_client(quiet=False, **kwargs):
+def get_client(quiet=False, init=True, **kwargs):
     '''
        get the Google Build client.
 
@@ -68,7 +68,7 @@ def get_client(quiet=False, **kwargs):
         Client._init_db = init_db        
 
     # Initialize the database
-    cli = Client()
+    cli = Client(init=init)
 
     if hasattr(Client, '_init_db'):
         cli._init_db(SREGISTRY_DATABASE)
