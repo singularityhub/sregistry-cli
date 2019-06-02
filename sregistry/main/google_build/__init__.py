@@ -33,6 +33,9 @@ from .query import ( container_query, list_containers, search, search_all )
 
 class Client(ApiConnection):
 
+    # Custom variables that can be provided with client.get_client
+    envars = {}
+
     def __init__(self, secrets=None, base=None, init=True, **kwargs):
  
         self._update_secrets()
@@ -55,9 +58,9 @@ class Client(ApiConnection):
            file, but the client exists with error if the variable isn't found.
         '''
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
-        self._secrets = self._get_and_update_setting(env)
+        self._secrets = self._get_and_update_setting(env, self.envars.get(env))
         if self._secrets is None:
-            bot.exit('You must export %s to use Google Storage client' %env)
+            bot.exit('You must export %s to use Google Storage client' % env)
 
 
     def _init_client(self):
@@ -70,11 +73,11 @@ class Client(ApiConnection):
         self._get_services()
 
         env = 'SREGISTRY_GOOGLE_STORAGE_BUCKET'
-        self._bucket_name = self._get_and_update_setting(env)
+        self._bucket_name = self._get_and_update_setting(env, self.envars.get(env))
 
         # If the user didn't set in environment, use default
         if self._bucket_name is None:
-            self._bucket_name = 'sregistry-gcloud-build-%s' %os.environ['USER']
+            self._bucket_name = 'sregistry-gcloud-build-%s' % os.environ['USER']
 
         # The build bucket is for uploading .tar.gz files
         self._build_bucket_name = "%s_cloudbuild" % self._bucket_name
@@ -131,6 +134,9 @@ class Client(ApiConnection):
            zone: a default zone, will be us-west1-a by default
 
         '''
+        if project is None:
+            project = self.envars.get("SREGISTRY_GOOGLE_PROJECT")
+
         return self._required_get_and_update('SREGISTRY_GOOGLE_PROJECT', project)
 
 

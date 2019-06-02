@@ -26,6 +26,9 @@ def get_client(quiet=False, **kwargs):
     Client.client_name = "google-build"
     Client.quiet = quiet
 
+    # The user can provide environment variables via extra arguments here
+    Client.envars = kwargs
+
     # Create credentials cache, if it doesn't exist
     Client._credential_cache = get_credential_cache()
 

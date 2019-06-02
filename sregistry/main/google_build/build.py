@@ -45,7 +45,7 @@ def build(self, name,
        Environment
        ===========
        SREGISTRY_GOOGLE_BUILD_SINGULARITY_VERSION: the version of Singularity
-           to use, defaults to 3.0.2-slim
+           to use, defaults to v3.2.1-slim
        SREGISTRY_GOOGLE_BUILD_CLEANUP: after build, delete intermediate 
            dependencies in cloudbuild bucket.
 
@@ -90,7 +90,8 @@ def build(self, name,
         config = self._run_build(config, self._bucket, names)
 
     # If the user wants to cache cloudbuild files, this will be set
-    if not self._get_and_update_setting('SREGISTRY_GOOGLE_BUILD_CACHE'):
+    env = 'SREGISTRY_GOOGLE_BUILD_CACHE'
+    if not self._get_and_update_setting(env, self.envars.get(env)):
         blob.delete()
 
     # Clean up either way, return config or response
@@ -151,7 +152,7 @@ def load_build_config(self, name, recipe):
 
     '''
     version_envar = 'SREGISTRY_GOOGLE_BUILD_SINGULARITY_VERSION'
-    version = self._get_and_update_setting(version_envar, '3.0.2-slim')
+    version = self._get_and_update_setting(version_envar, 'v3.2.1-slim')
     config = get_build_template()
 
     # Name is in format 'dinosaur/container-latest'
@@ -205,7 +206,7 @@ def run_build(self, config, bucket, names):
         blob = bucket.blob(response['artifacts']['objects']['paths'][0])
         
         # Make Public, if desired
-        if self._get_and_update_setting(env) is None:
+        if self._get_and_update_setting(env, os.envars.get(env)) is None:
             blob.make_public()
             response['public_url'] = blob.public_url
 
