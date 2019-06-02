@@ -190,12 +190,13 @@ def format_container_name(name, special_characters=None):
                    for e in name if e.isalnum() or e in special_characters)
 
 
-def get_uri(image):
+def get_uri(image, validate=True):
     '''get the uri for an image, if within acceptable
  
        Parameters
        ==========
        image: the image uri, in the format <uri>://<registry>/<namespace>:<tag>
+       validate: if True, check if uri is in list of supported (default True)
 
     '''
     # Ensure we have a string
@@ -228,7 +229,7 @@ def get_uri(image):
         # Allow for Singularity compatability
         if "shub" in uri: uri = "hub"
 
-        if uri not in accepted_uris:
+        if validate is True and uri not in accepted_uris:
             bot.warning('%s is not a recognized uri.' % uri)
             uri = None
 

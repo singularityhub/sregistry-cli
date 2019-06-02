@@ -1,8 +1,8 @@
 '''
 
-push.py: push functions for sregistry client
+build.py: push a Singularity recipe to Singularity Registry Server to build
 
-Copyright (C) 2017-2019 Vanessa Sochat.
+Copyright (C) 2019 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -13,8 +13,10 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     parse_image_name,
-    remove_uri
+    remove_uri,
+    get_uri
 )
+
 from requests_toolbelt import (
     MultipartEncoder,
     MultipartEncoderMonitor
@@ -25,20 +27,33 @@ import sys
 import os
 
 
-def push(self, path, name, tag=None):
-    '''push an image to Singularity Registry'''
+def build(self, path, name):
+    '''push a recipe file to Singularity Register server for a Google
+       Cloud (or similar) build
+    '''
 
     path = os.path.abspath(path)
-    bot.debug("PUSH %s" % path)
+    bot.debug("BUILD %s" % path)
 
     if not os.path.exists(path):
         bot.exit('%s does not exist.' % path)
 
+    if not os.path.isfile(path):
+        bot.exit("Build takes a Singularity recipe file")
+
     # Interaction with a registry requires secrets
     self.require_secrets()
 
+    # The prefix (uri) defines the kind of builder
+    builder_type = (get_uri(name, validate=False) or 
+                    os.environ.get('SREGISTRY_BUILD_TYPE'))
+
+    # Only one valid type
+    if builder_type != "google_build":
+        bot.exit('Please include google_build:// to specify Google Cloud Build')
+
     # Extract the metadata
-    names = parse_image_name(remove_uri(name), tag=tag)
+    names = parse_image_name(remove_uri(name))
 
 # COLLECTION ###################################################################
 
@@ -49,46 +64,28 @@ def push(self, path, name, tag=None):
     # If the base doesn't start with http or https, add it
     names = self._add_https(names)
 
-    # Prepare push request, this will return a collection ID if permission
-    url = '%s/push/' % names['registry']
-    auth_url = '%s/upload/chunked_upload' % names['registry']
-    SREGISTRY_EVENT = self.authorize(request_type="push",
-                                     names=names)
+    # Recipe filename to upload to
+    upload_to = "Singularity.%s-%s-%s" % (names['collection'],
+                                          names['image'],
+                                          names['tag'])
 
     # Data fields for collection
     fields = { 'collection': names['collection'],
-               'name':names['image'],
+               'name': names['image'],
                'tag': names['tag']}
 
+    # Prepare build request
+    url = '%s/%s/build/' %(names['registry'].replace('/api', ''), builder_type)
+    SREGISTRY_EVENT = self.authorize(request_type="build", names=names)
     headers = { 'Authorization': SREGISTRY_EVENT }
 
-    r = requests.post(auth_url, json=fields, headers=headers)
-
-    # Always tell the user what's going on!
-    message = self._read_response(r)
-    print('\n[1. Collection return status {0} {1}]'.format(r.status_code, message))
-
-    # Get the collection id, if created, and continue with upload
-    if r.status_code != 200:
-        sys.exit(1)
-
-
-# UPLOAD #######################################################################
-
-    url = '%s/upload' % names['registry'].replace('/api','')
-    bot.debug('Setting upload URL to {0}'.format(url))
-
-    cid = r.json()['cid']
-    upload_to = os.path.basename(names['storage'])
-
-    SREGISTRY_EVENT = self.authorize(request_type="upload",
-                                     names=names)
+    bot.debug('Setting build URL to {0}'.format(url))
 
     encoder = MultipartEncoder(fields={'SREGISTRY_EVENT': SREGISTRY_EVENT,
                                        'name': names['image'],
-                                       'collection': str(cid),
+                                       'collection': names['collection'],
                                        'tag': names['tag'],
-                                       'file1': (upload_to, open(path, 'rb'), 'text/plain')})
+                                       'datafile': (upload_to, open(path, 'rb'), 'text/plain')})
 
     progress_callback = create_callback(encoder, self.quiet)
     monitor = MultipartEncoderMonitor(encoder, progress_callback)
@@ -101,9 +98,9 @@ def push(self, path, name, tag=None):
         message = r.json()['message']
         print('\n[Return status {0} {1}]'.format(r.status_code, message))
     except requests.HTTPError as e:
-        print('\nUpload failed: {0}.'.format(e))
+        print('\nRecipe upload failed: {0}.'.format(e))
     except KeyboardInterrupt:
-        print('\nUpload cancelled.')
+        print('\nRecipe upload cancelled.')
 
 
 def create_callback(encoder, quiet=False):

@@ -29,6 +29,16 @@ def main(args, parser, subparser):
         msg = "build is not implemented for %s. Why don't you add it?"
         bot.exit(msg % cli.client_name)
 
+    # Singularity Registry Server uses build with a recipe
+    if cli.client_name == 'registry':
+
+        if args.name is None:
+            bot.exit('Please provide a container identifier with --name')
+
+        recipe = args.commands.pop(0)
+        response = cli.build(name=args.name,
+                             recipe=recipe)
+
     if cli.client_name == 'google-build':
 
         if args.name is None:
