@@ -38,6 +38,7 @@ class Client(ApiConnection):
 
     def __init__(self, secrets=None, base=None, init=True, **kwargs):
  
+        print(self.envars)
         self._update_secrets()
         self._update_headers()
 
