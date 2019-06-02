@@ -221,7 +221,14 @@ In [1]:
 ```
 
 Here we see straight away that we are using the default bucket name (`sregistry-gcloud-build-vanessa`) and the google-build client. The printing of the bucket on the first line indicates we successfully connected to it,
-and we've also connected to the bucket of the same name ending with _cloudbuild (`sregistry-gcloud-build-vanessa_cloudbuild`). Next, we just need to provide the same arguments to the function to run the build.
+and we've also connected to the bucket of the same name ending with _cloudbuild (`sregistry-gcloud-build-vanessa_cloudbuild`). If you want to import the client within python, you can do that too:
+
+```python
+from sregistry.main.google_build.client import get_client
+client = get_client()
+```
+
+Either way, we just need to provide the same arguments to the function to run the build.
 
 ```python
 
