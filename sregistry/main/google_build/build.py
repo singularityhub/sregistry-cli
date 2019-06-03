@@ -29,26 +29,15 @@ import os
 # Manual Build Logic
 # 1. Intended for run on the command line, simply use the client to run sregistry
 #    build, provide a recipe and a name, and it will update the terminal with
-#    status until finished using the build function here
-
-################################################################################
-# Headless With Webhook Logic
-# 1. Intended for submitting a job and having a web url pinged upon completion.
-#    First you would use run_build with headless = True, and webhook defined to
-#     something not None to run "submit_build"
-# 2. The above returns a response with a build_id to track it
-# 3. You can then get a status with the build_id and "get_status"
-# 4. You can finish the build with "finish_build"
-
-################################################################################
-# Headless Build Logic
-# 1. Intended for submitting a job and checking on it later. This is ideal if
-#    you can't provide any kind of endpoint to receive a webhook. 
-# 2.   First you would use run_build with headless = True to run "submit_build"
-# 3. The above returns a response with a build_id to track it
-# 4. You can then get a status with the build_id and "get_status"
-# 5. You can finish the build with "finish_build"
-
+#    status until finished using the build function here. 
+#     - If you provide a GitHub uri in the recipe, instead we run build_repo 
+#       and get the recipe file from there.
+#     - If headless is False, we assume running from the sregistry client and
+#       wait for the build to finish, returning the URL to the user.
+#     - If headless is True, we assume the function is being run outside of
+#       the client, and build_status and build_finish can be used for updates.
+#     - if a webhook is provided, headless must be True, and a response is
+#       sent here with curl (under development)
 
 def build(self, name,
                 recipe="Singularity",
@@ -159,7 +148,10 @@ def build_repo(self, repo, recipe, headless=False, webhook=None):
     names = parse_image_name(remove_uri(repo))
 
     # In case they added a tag, strip
-    repo = ''.join(repo.split(':')[:-1])
+    if not repo.startswith('http') and not repo.startswith("git@"):
+        repo = "https://%s" % repo
+
+    bot.debug("REPO %s" % repo)
 
     # First preference to command line, then recipe tag
     _, tag = os.path.splitext(recipe)
@@ -170,8 +162,8 @@ def build_repo(self, repo, recipe, headless=False, webhook=None):
                                      name=names['uri'],
                                      recipe=recipe)
 
-    # Add the GitHub repo to the recipe
-    config['steps'][0]['args'].append(repo)
+    # Add the GitHub repo to the recipe, clone to $PWD (.)
+    config['steps'][0]['args'] = config['steps'][0]['args'] + [repo, "."]
 
     # Add the webhook step, if applicable.
     if webhook is not None and headless is True:
@@ -255,7 +247,7 @@ def load_build_config(self, name, recipe,
     config = get_build_template(template)
 
     # Name is in format 'dinosaur/container-latest'
-    container_name = '%s.sif' % name.replace('/','-', 1)
+    container_name = '%s.sif' % name.replace('/','-')
 
     # Local recipes don't have a clone step first
     idx = 1
@@ -280,7 +272,8 @@ def run_build(self, config, bucket, names):
 
     #          prefix,    message, color
     bot.custom('PROJECT', project, "CYAN")
-    bot.custom('BUILD  ', config['steps'][0]['name'], "CYAN")
+    for i, step in enumerate(config['steps']):
+        bot.custom('BUILD %s' % i , step['name'], "CYAN")
 
     response = self._build_service.projects().builds().create(body=config, 
                                               projectId=project).execute()
@@ -321,7 +314,6 @@ def run_build(self, config, bucket, names):
         response['file_hash'] = blob.md5_hash
 
     return response
-
 
 
 def submit_build(self, config, bucket, names):
@@ -400,9 +392,7 @@ def update_blob_metadata(blob, response, config, bucket, names):
 
     metadata = {'file_hash': manifest['file_hash'][0]['file_hash'][0]['value'],
                 'artifactManifest': response['results']['artifactManifest'],
-                'location': manifest['location'],
-                'storageSourceBucket': config['source']['storageSource']['bucket'],
-                'storageSourceObject': config['source']['storageSource']['object'],
+                'location': manifest['location'],              
                 'buildCommand': ' '.join(config['steps'][0]['args']),
                 'builder': config['steps'][0]['name'],
                 'media_link': blob.media_link,
@@ -410,6 +400,11 @@ def update_blob_metadata(blob, response, config, bucket, names):
                 'size': blob.size,
                 'name': names['tag_uri'],
                 'type': "container"} # identifier that the blob is a container
+
+    # If a source was used, add it.
+    if "source" in config:
+        metadata['storageSourceBucket'] = config['source']['storageSource']['bucket']
+        metadata['storageSourceObject'] = config['source']['storageSource']['object']
 
     blob.metadata = metadata   
     blob._properties['metadata'] = metadata

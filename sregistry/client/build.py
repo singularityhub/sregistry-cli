@@ -16,10 +16,6 @@ import re
 def main(args, parser, extra):
     from sregistry.main import get_client
     
-    # No commands provided, show help
-    if not args.commands:
-        bot.exit("See sregistry build --help")
-
     cli = get_client(quiet=args.quiet)
     cli.announce(args.command)
 
@@ -57,12 +53,12 @@ def run_google_build(cli, args):
 
     # Default to recipe "Singularity" unless other is provided
     recipe = "Singularity"
-    if args.command:
+    if args.commands:
         recipe = args.commands.pop(0)
 
     # If Github.com is provided in the name, we are doing a GitHub build
     if re.search("github.com|gitlab.com", args.name):
-        response = cli.build_repo(name=args.name,
+        response = cli.build_repo(repo=args.name,
                                   recipe=recipe)
 
     else:        
