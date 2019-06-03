@@ -65,7 +65,17 @@ SREGISTRY_CLIENT=google-build sregistry shell
 
 ## Build
 
-Let's get off to a running start and build! Note that we have a build recipe in the
+Let's get off to a running start and build! We have two options for building:
+
+ 1. Build from a Local Recipe
+ 2. Build from a GitHub repository
+
+The second is recommended, as it is more reproducible, but there are use cases for
+both.
+
+### 1. Build from a Local Recipe
+
+Note that we have a build recipe in the
 present working directory, and we also want to provide the context (all the recursive files 
 that are alongside and below it).  Let's ask for help first:
 
@@ -96,8 +106,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/application-credentials.json
 Now let's launch a build, and provide the entire present working directory as context. Notice that we
 haven't exported `SREGISTRY_GOOGLE_BUILD_CACHE=yes` so we won't save intermediate build files.
 
-
-### Example Recipe
+#### Example Recipe
 
 Let's say we've created a folder called "test" and added some Singularity recipe in it. 
 If you have local filesystem dependencies (files to add to the container), put them in this folder.
@@ -172,7 +181,7 @@ link to the container (`response['public_url']`) and you are free to put that in
 database you are using to keep track of your containers. This is shown in the next section [Shell](#shell). 
 If you want to search your storage later, see [Pull](#pull).
 
-### Logs
+#### Logs
 
 If you are working in a headless environment, you can capture the final URL, LOGS url,
 size, and hash in an output file with the `--outfile` flag:
@@ -203,6 +212,24 @@ if grep -q SUCCESS output.txt; then
     url=$(cat output.txt | grep URL | cut -d' ' -f2)
 fi
 ```
+
+### 2. Build from a GitHub Recipe
+
+You can also submit a similar job, but have the builder get the recipe file from
+GitHub. The only difference is specifying a name that begins with your GitHub uri, or
+saying it directly:
+
+```bash
+$ sregistry build --name github.com/vanessa/salad:tag Singularity
+```
+You can also say the GitHub url directly:
+
+```bash
+$ sregistry build --name https://www.github.com/vanessa/salad Singularity
+```
+
+The above assumes that the recipe "Singularity" lives in the repository root.
+If you don't provide a recipe, it's assumed to be "Singularity".
 
 ## Shell
 

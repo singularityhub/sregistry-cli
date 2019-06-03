@@ -25,14 +25,41 @@ import shutil
 import json
 import os
 
+################################################################################
+# Manual Build Logic
+# 1. Intended for run on the command line, simply use the client to run sregistry
+#    build, provide a recipe and a name, and it will update the terminal with
+#    status until finished using the build function here
+
+################################################################################
+# Headless With Webhook Logic
+# 1. Intended for submitting a job and having a web url pinged upon completion.
+#    First you would use run_build with headless = True, and webhook defined to
+#     something not None to run "submit_build"
+# 2. The above returns a response with a build_id to track it
+# 3. You can then get a status with the build_id and "get_status"
+# 4. You can finish the build with "finish_build"
+
+################################################################################
+# Headless Build Logic
+# 1. Intended for submitting a job and checking on it later. This is ideal if
+#    you can't provide any kind of endpoint to receive a webhook. 
+# 2.   First you would use run_build with headless = True to run "submit_build"
+# 3. The above returns a response with a build_id to track it
+# 4. You can then get a status with the build_id and "get_status"
+# 5. You can finish the build with "finish_build"
+
 
 def build(self, name,
                 recipe="Singularity",
                 context=None, 
-                preview=False):
+                preview=False,
+                headless=False,
+                webhook=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a name
-       recipe, and Github URI where the recipe can be found.
+       recipe, and Github URI where the recipe can be found. This means
+       creating and uploading a build package to use for the build.
     
        Parameters
        ==========
@@ -41,6 +68,8 @@ def build(self, name,
        context: the dependency files needed for the build. If not defined, only
                 the recipe is uploaded.
        preview: if True, preview but don't run the build
+       headless: If true, don't track the build, but submit and provide
+                 an endpoint to send a response to.
 
        Environment
        ===========
@@ -51,15 +80,9 @@ def build(self, name,
 
     '''
     bot.debug("BUILD %s" % recipe)
-
-    # This returns a data structure with collection, container, based on uri
-    names = parse_image_name(remove_uri(name))
-
-    # Load the build configuration
-    config = self._load_build_config(name=names['uri'], recipe=recipe)
-
     build_package = [recipe]
-    if context not in [None, '', []]:
+
+    if context:
 
         # If the user gives a ., include recursive $PWD
         if '.' in context:
@@ -81,23 +104,86 @@ def build(self, name,
     else:
         bot.log('Build package found in %s.' % self._build_bucket.name)
 
+    # This returns a data structure with collection, container, based on uri
+    names = parse_image_name(remove_uri(name))
+
+    # Load the build configuration (defaults to local)
+    config = self._load_build_config(name=names['uri'], recipe=recipe)
+
+    # Add a webhook, if defined TODO: need to authenticate
+    if webhook is not None and headless is True:
+        config = add_webhook(config, webhook)
+ 
     # The source should point to the bucket with the .tar.gz, latest generation
     config["source"]["storageSource"]['bucket'] = self._build_bucket.name
     config["source"]["storageSource"]['object'] = destination
 
     # If not a preview, run the build and return the response
     if preview is False:
-        config = self._run_build(config, self._bucket, names)
+        if headless is False:
+            config = self._run_build(config, self._bucket, names)
+        else:
+            config = self._submit_build(config, self._bucket, names)
 
     # If the user wants to cache cloudbuild files, this will be set
     env = 'SREGISTRY_GOOGLE_BUILD_CACHE'
     if not self._get_and_update_setting(env, self.envars.get(env)):
-        blob.delete()
+        if headless is False:
+            blob.delete()
 
     # Clean up either way, return config or response
     shutil.rmtree(os.path.dirname(package))
     return config
+
+
+################################################################################
+# GitHub Build Logic
+# 1. Intended for run from a server, we submit a job that uses a Github repo#
+#    as a parameter, and if there is a response url provided, the finished
+#    build will send a response to that server with curl (recommended).
     
+
+def build_repo(self, repo, recipe, headless=False, webhook=None):
+    '''trigger a build on Google Cloud (builder then storage) given a
+       Github repo where a recipe can be found. We assume that github.com (or
+       some other Git repo) is provided in the name (repo).
+    
+       Parameters
+       ==========
+       repo: the full repository address
+       recipe: the local recipe to build.
+    '''
+    bot.debug("BUILD %s" % recipe)
+
+    # This returns a data structure with collection, container, based on uri
+    names = parse_image_name(remove_uri(repo))
+
+    # In case they added a tag, strip
+    repo = ''.join(repo.split(':')[:-1])
+
+    # First preference to command line, then recipe tag
+    _, tag = os.path.splitext(recipe)
+    tag = names.get('tag', tag).strip('.')
+
+    # Load the build configuration
+    config = self._load_build_config(template="singularity-cloudbuild-git.json",
+                                     name=names['uri'],
+                                     recipe=recipe)
+
+    # Add the GitHub repo to the recipe
+    config['steps'][0]['args'].append(repo)
+
+    # Add the webhook step, if applicable.
+    if webhook is not None and headless is True:
+        config = add_webhook(config, webhook)
+     
+    # If not a preview, run the build and return the response
+    if headless is False:
+        config = self._run_build(config, self._bucket, names)
+    else:
+        config = self._submit_build(config, self._bucket, names)
+
+    return config
 
 
 def create_build_package(package_files):
@@ -132,7 +218,18 @@ def create_build_package(package_files):
     return hash_tar
 
 
-def load_build_config(self, name, recipe):
+def add_webhook(config, webhook):
+    '''add a webhook to a config.
+    '''
+    config['steps'].append({
+        "name": "gcr.io/cloud-builders/curl",
+        "args":  ["-d", "\"{'id':'$BUILD_ID'}\"", "-X", "POST", webhook]})
+    return config
+
+
+def load_build_config(self, name, recipe, 
+                            template="singularity-cloudbuild-local.json", 
+                            version="v3.2.1-slim"):
     '''load a google compute config, meaning that we start with a template,
        and mimic the following example cloudbuild.yaml:
 
@@ -149,18 +246,25 @@ def load_build_config(self, name, recipe):
         ==========
         recipe: the local recipe file for the builder.
         name: the name of the container, based on the uri
-
+        template: the template to use, will be populated based on name
     '''
     version_envar = 'SREGISTRY_GOOGLE_BUILD_SINGULARITY_VERSION'
-    version = self._get_and_update_setting(version_envar, 'v3.2.1-slim')
-    config = get_build_template()
+    version = self._get_and_update_setting(version_envar, version)
+
+    # Get the build template based on its name
+    config = get_build_template(template)
 
     # Name is in format 'dinosaur/container-latest'
+    container_name = '%s.sif' % name.replace('/','-', 1)
+
+    # Local recipes don't have a clone step first
+    idx = 1
+    if template.startswith("singularity-cloudbuild-local":
+        idx = 0
 
     # The command to give the builder, with image name
-    container_name = '%s.sif' % name.replace('/','-', 1)
-    config['steps'][0]['name'] = 'singularityware/singularity:%s' % version
-    config['steps'][0]['args'] = ['build', container_name, recipe]
+    config['steps'][idx]['name'] = 'singularityware/singularity:%s' % version
+    config['steps'][idx]['args'] = ['build', container_name, recipe]
 
     config["artifacts"]["objects"]["location"] = "gs://%s" % self._bucket_name
     config["artifacts"]["objects"]["paths"] = [container_name]
@@ -218,6 +322,71 @@ def run_build(self, config, bucket, names):
 
     return response
 
+
+
+def submit_build(self, config, bucket, names):
+    '''run a build, meaning creating a build. Retry if there is failure
+    '''
+
+    project = self._get_project()
+
+    #          prefix,    message, color
+    bot.custom('PROJECT', project, "CYAN")
+    bot.custom('BUILD  ', config['steps'][0]['name'], "CYAN")
+
+    response = self._build_service.projects().builds().create(body=config, 
+                                              projectId=project).execute()
+
+    return response
+
+
+def build_status(self, build_id):
+    '''get a build status based on a build id. We return the entire response
+       object for the client to parse.
+    '''
+    project = self._get_project()
+    response = self._build_service.projects().builds().get(id=build_id, 
+                                              projectId=project).execute()
+
+
+    build_id = response['metadata']['build']['id']
+    status = response['metadata']['build']['status']
+    bot.log("build %s: %s" % (build_id, status))
+
+    return response
+   
+
+def finish_build(self, build_id):
+    '''finish a build, meaning if the build was successful, we check the
+       user preference to make it private. If it's set, we leave it 
+       private. Otherwise, we make it public (default).
+
+       Parameters
+       ==========
+       build_id: the build id returned from submission to track the build.
+    '''
+    # Get the build status, we will only complete on SUCCESS
+    response = self._build_status(build_id)
+
+    # If successful, update blob metadata and visibility
+    if response['metadata']['build']['status'] == 'SUCCESS':
+
+        # Does the user want to keep the container private?
+        env = 'SREGISTRY_GOOGLE_STORAGE_PRIVATE'
+        blob = bucket.blob(response['artifacts']['objects']['paths'][0])
+        
+        # Make Public, if desired
+        if self._get_and_update_setting(env, os.envars.get(env)) is None:
+            blob.make_public()
+            response['public_url'] = blob.public_url
+
+        # Add the metadata directly to the object
+        update_blob_metadata(blob, response, config, bucket, names)
+        response['media_link'] = blob.media_link
+        response['size'] = blob.size
+        response['file_hash'] = blob.md5_hash
+
+    return response
 
 
 def update_blob_metadata(blob, response, config, bucket, names):

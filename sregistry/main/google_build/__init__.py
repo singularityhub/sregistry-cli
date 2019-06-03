@@ -15,6 +15,7 @@ import os
 
 from retrying import retry
 import google
+import platform
 from google.cloud import storage
 from googleapiclient.discovery import build as discovery_build
 from oauth2client.client import GoogleCredentials
@@ -22,6 +23,8 @@ from oauth2client.client import GoogleCredentials
 from .build import ( 
     build,
     run_build,
+    build_repo,
+    submit_build,
     load_build_config
 )
 from .delete import delete, destroy
@@ -78,7 +81,8 @@ class Client(ApiConnection):
 
         # If the user didn't set in environment, use default
         if self._bucket_name is None:
-            self._bucket_name = 'sregistry-gcloud-build-%s' % os.environ['USER']
+            fallback_name = os.environ.get('USER', platform.node())
+            self._bucket_name = 'sregistry-gcloud-build-%s' % fallback_name
 
         # The build bucket is for uploading .tar.gz files
         self._build_bucket_name = "%s_cloudbuild" % self._bucket_name
@@ -119,9 +123,9 @@ class Client(ApiConnection):
         except google.cloud.exceptions.NotFound:
             bucket = self._bucket_service.create_bucket(bucket_name)
 
-        # Case 3: The bucket name is already taken
+        # Case 2: The bucket name is already taken
         except:
-            bot.exit('Cannot get or create %s' % bucket_name)
+            bot.exit('Cannot get or create %s, is the name taken?' % bucket_name)
 
         return bucket
 
@@ -138,7 +142,7 @@ class Client(ApiConnection):
         if project is None:
             project = self.envars.get("SREGISTRY_GOOGLE_PROJECT")
 
-        return self._required_get_and_update('SREGISTRY_GOOGLE_PROJECT', project)
+        return self._get_and_update_setting('SREGISTRY_GOOGLE_PROJECT', project)
 
 
     def _get_zone(self, zone='us-west1-a'):
@@ -161,6 +165,10 @@ Client.destroy = destroy
 # Build functions
 Client.build = build
 Client._run_build = run_build
+Client.build_repo = build_repo
+Client._finish_build = finish_build
+Client._build_status = build_status
+Client._submit_build = submit_build
 Client._load_build_config = load_build_config
 
 Client.search = search

@@ -11,15 +11,14 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 import os
 
-def main(args,parser,subparser):
+def main(args, parser, extra):
 
     from sregistry.main import get_client
 
     # Does the user have a valid image?
     image = args.image
     if not os.path.exists(image):  
-        subparser.print_help()
-        bot.exit("Please supply one or more paths to existing images.")
+        bot.exit("%s does not exist" % image)
 
     # Authenticate
     cli = get_client(args.name, quiet=args.quiet)

@@ -24,7 +24,6 @@ import json
 import sys
 import os
 
-    
 
 def build(self, repo, 
                 config=None,

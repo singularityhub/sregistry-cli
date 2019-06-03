@@ -10,7 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 
-def main(args,parser,subparser):
+def main(args, parser, extra):
     '''the list command corresponds with listing images for an external
        resource. This is different from listing images that are local to the
        database, which should be done with "images"

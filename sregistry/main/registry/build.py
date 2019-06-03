@@ -27,13 +27,17 @@ import sys
 import os
 
 
-def build(self, path, name):
-    '''push a recipe file to Singularity Register server for a Google
+def build(self, path, name, extra=None):
+    '''push a recipe file to Singularity Registry server for a Google
        Cloud (or similar) build
     '''
-
     path = os.path.abspath(path)
     bot.debug("BUILD %s" % path)
+
+    if extra == None:
+        extra = {}
+    print(extra)
+    sys.exit(0)
 
     if not os.path.exists(path):
         bot.exit('%s does not exist.' % path)
