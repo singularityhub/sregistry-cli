@@ -22,8 +22,10 @@ from oauth2client.client import GoogleCredentials
 
 from .build import ( 
     build,
-    run_build,
     build_repo,
+    build_status,
+    run_build,
+    finish_build,
     submit_build,
     load_build_config
 )

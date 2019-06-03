@@ -30,13 +30,13 @@ def main(args, parser, extra):
 
     # Singularity Registry Server uses build with a recipe
     if cli.client_name == 'registry':
-        response = run_registry_build(args)
+        response = run_registry_build(cli, args)
 
     if cli.client_name == 'google-build':
-        response = run_google_build(args)
+        response = run_google_build(cli, args)
         
     elif cli.client_name == "google-storage":
-        response = run_compute_build(args)
+        response = run_compute_build(cli, args)
 
     else:
         bot.exit('%s is not supported for build.' % cli.client.name)
@@ -46,7 +46,7 @@ def main(args, parser, extra):
         print(json.dumps(response, indent=4, sort_keys=True))
 
 
-def run_google_build(args):
+def run_google_build(cli, args):
     '''a helper function to control build for the Google Build Client.
        the user can request a local recipe build, or a build from
        a GitHub repo. In both cases, if no recipe is provided, we default
@@ -76,7 +76,7 @@ def run_google_build(args):
     return response
 
 
-def run_compute_build(args):
+def run_compute_build(cli, args):
     '''a compute based build is the oldest versions of build - here we bring
        up our own instance, and then provide control to it. The helper
        functions below (kill, instances, templates) support this version.
@@ -122,7 +122,8 @@ def run_compute_build(args):
                      recipe=recipe,
                      preview=args.preview)
 
-def run_registry_build(args):
+
+def run_registry_build(cli, args):
     '''a registry build pushes a recipe file to Singularity Registry Server,
        or given that a GitHub Url is provided, we build from there. For more
        regular building, the user is suggested to directly connect the 

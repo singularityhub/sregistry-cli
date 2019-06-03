@@ -259,7 +259,7 @@ def load_build_config(self, name, recipe,
 
     # Local recipes don't have a clone step first
     idx = 1
-    if template.startswith("singularity-cloudbuild-local":
+    if template.startswith("singularity-cloudbuild-local"):
         idx = 0
 
     # The command to give the builder, with image name
@@ -310,7 +310,7 @@ def run_build(self, config, bucket, names):
         blob = bucket.blob(response['artifacts']['objects']['paths'][0])
         
         # Make Public, if desired
-        if self._get_and_update_setting(env, os.envars.get(env)) is None:
+        if self._get_and_update_setting(env, self.envars.get(env)) is None:
             blob.make_public()
             response['public_url'] = blob.public_url
 
