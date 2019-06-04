@@ -54,15 +54,15 @@ def get_container(self, name, collection_id, tag="latest", version=None):
     '''get a container, otherwise return None.
     '''
     from sregistry.database.models import Container
-    if version is None:
-        container = Container.query.filter_by(collection_id = collection_id,
-                                              name = name,
-                                              tag = tag).first()
+    if not version:
+        container = Container.query.filter_by(collection_id=collection_id,
+                                              name=name,
+                                              tag=tag).first()
     else:
-        container = Container.query.filter_by(collection_id = collection_id,
-                                              name = name,
-                                              tag = tag,
-                                              version = version).first()
+        container = Container.query.filter_by(collection_id=collection_id,
+                                              name=name,
+                                              tag=tag,
+                                              version=version).first()
     return container
 
 
@@ -85,23 +85,24 @@ def get(self, name, quiet=False):
     collection = self.get_collection(name=names['collection'])
     container = None
 
-    if collection is not None:
+    if collection:
+
         container = self.get_container(collection_id=collection.id,
                                        name=names['image'], 
                                        tag=names['tag'],
                                        version=names['version'])
 
-        if container is not None and quiet is False:
+        if container and not quiet:
 
             # The container image file exists [local]
-            if container.image is not None:
+            if container.image:
                 print(container.image)
 
             # The container has a url (but not local file)
-            elif container.url is not None:
+            elif container.url:
                 print(container.url)
             else:
-                bot.info('No storage file found for %s' %name)
+                bot.info('No storage file found for %s' % name)
 
     return container
 
@@ -166,17 +167,17 @@ def rename(self, image_name, path):
     '''
     container = self.get(image_name, quiet=True)
 
-    if container is not None:
-        if container.image is not None:
+    if container:
+        if container.image:
 
             # The original directory for the container stays the same
             dirname = os.path.dirname(container.image)
 
             # But we derive a new filename and uri
 
-            names = parse_image_name( remove_uri (path) )
-            storage = os.path.join( self.storage,
-                                    os.path.dirname(names['storage']) )
+            names = parse_image_name(remove_uri(path))
+            storage = os.path.join(self.storage,
+                                   os.path.dirname(names['storage']))
 
             # This is the collection folder
 
@@ -255,11 +256,11 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
        move_to: the full path to move it to
 
     '''
-    if container is None and image_name is None:
+    if not container and not image_name:
         bot.exit('A container or image_name must be provided to %s' % command)
 
     # If a container isn't provided, look for it from image_uri
-    if container is None:
+    if not container:
         container = self.get(image_name, quiet=True)
 
     image = container.image or ''
@@ -323,34 +324,34 @@ def add(self, image_path=None,
               copy=False):
 
     '''get or create a container, including the collection to add it to.
-    This function can be used from a file on the local system, or via a URL
-    that has been downloaded. Either way, if one of url, version, or image_file
-    is not provided, the model is created without it. If a version is not
-    provided but a file path is, then the file hash is used.
+       This function can be used from a file on the local system, or via a URL
+       that has been downloaded. Either way, if one of url, version, or image_file
+       is not provided, the model is created without it. If a version is not
+       provided but a file path is, then the file hash is used.
 
-    Parameters
-    ==========
-    image_path: full path to image file
-    image_name: if defined, the user wants a custom name (and not based on uri)
-    metadata: any extra metadata to keep for the image (dict)
-    save: if True, move the image to the cache if it's not there
-    copy: If True, copy the image instead of moving it.
+       Parameters
+       ==========
+       image_path: full path to image file
+       image_name: if defined, the user wants a custom name (and not based on uri)
+       metadata: any extra metadata to keep for the image (dict)
+       save: if True, move the image to the cache if it's not there
+       copy: If True, copy the image instead of moving it.
 
-    image_name: a uri that gets parsed into a names object that looks like:
+       image_name: a uri that gets parsed into a names object that looks like:
 
-    {'collection': 'vsoch',
-     'image': 'hello-world',
-     'storage': 'vsoch/hello-world-latest.img',
-     'tag': 'latest',
-     'version': '12345'
-     'uri': 'vsoch/hello-world:latest@12345'}
+       {'collection': 'vsoch',
+        'image': 'hello-world',
+        'storage': 'vsoch/hello-world-latest.img',
+        'tag': 'latest',
+        'version': '12345'
+        'uri': 'vsoch/hello-world:latest@12345'}
 
-    After running add, the user will take some image in a working
-    directory, add it to the database, and have it available for search
-    and use under SREGISTRY_STORAGE/<collection>/<container>
+       After running add, the user will take some image in a working
+       directory, add it to the database, and have it available for search
+       and use under SREGISTRY_STORAGE/<collection>/<container>
 
-    If the container was retrieved from a webby place, it should have version
-    If no version is found, the file hash is used.
+       If the container was retrieved from a webby place, it should have version
+       If no version is found, the file hash is used.
     '''
 
     from sregistry.database.models import Container
@@ -373,25 +374,23 @@ def add(self, image_path=None,
 
     # Get a hash of the file for the version, or use provided
     version = names.get('version')
-    if version is None:
-        if image_path is not None:
+    if not version:
+        if image_path:
             version = get_image_hash(image_path)
         else:
             version = ''  # we can't determine a version, not in API/no file
         names = parse_image_name(remove_uri(image_uri), version=version)
 
     # If save, move to registry storage first
-    if save is True and image_path is not None:
+    if save and image_path:
 
         # If the user hasn't defined a custom name
         if image_name is None:      
             image_name = self._get_storage_name(names)
-
-        if copy is True:
+        if copy:
             copyfile(image_path, image_name)
         else:
             shutil.move(image_path, image_name)
-         
         image_path = image_name
 
     # Just in case the client didn't provide it, see if we have in metadata
@@ -405,7 +404,7 @@ def add(self, image_path=None,
                                    version=version)
 
     # The container did not exist, create it
-    if container is None:
+    if not container:
         action = "new"
         container = Container(metrics=json.dumps(metadata),
                               name=names['image'],
