@@ -119,7 +119,7 @@ def parse_image_name(image_name,
     collection = match.group('collection')
     repo_name = match.group('repo')
     repo_tag = match.group('tag')
-    version = match.group('version')
+    version = version or match.group('version')
     
     # A repo_name is required
     assert repo_name

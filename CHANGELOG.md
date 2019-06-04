@@ -14,7 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
- - adding sregistry build to push recipes for Google Cloud (or other) builder (0.2.16)
+ - adding sregistry build to push recipes for Google Cloud (or other) builder (0.2.17)
+ - images being added twice (0.2.16)
  - adding pylint, and destroy function back to Google Storage (for instances) (0.2.15)
  - fixing bug with deleting container for Google Storage and Google Build (0.2.14)
  - ensure non-zero return values are returned when necessary (0.2.13)
