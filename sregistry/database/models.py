@@ -29,8 +29,9 @@ from sqlalchemy.orm import (backref,
                             sessionmaker)
 
 from sregistry.logger import bot
-from sregistry.defaults import SREGISTRY_STORAGE
+from sregistry.defaults import (SREGISTRY_STORAGE, SREGISTRY_BASE)
 from uuid import uuid4
+import os
  
 Base = declarative_base()
 
@@ -143,6 +144,12 @@ def init_db(self, db_path):
     # Database Setup, use default if uri not provided
     self.database = 'sqlite:///%s' % db_path
     self.storage = SREGISTRY_STORAGE
+
+    if not os.path.exists(SREGISTRY_BASE):
+        bot.exit("Database location {} does not exist.".format(SREGISTRY_BASE))
+
+    if not os.access(SREGISTRY_BASE, os.W_OK):
+        bot.exit("Insufficient permission to write to {}".format(SREGISTRY_BASE))
 
     bot.debug("Database located at %s" % self.database)
     self.engine = create_engine(self.database, convert_unicode=True)
