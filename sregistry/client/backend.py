@@ -12,7 +12,6 @@ from sregistry.auth import (get_secrets_file, read_client_secrets)
 from sregistry.logger import bot
 from sregistry.utils import write_json
 import json
-import sys
 
 
 def main(args, parser, extra):

@@ -10,8 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.auth import get_credential_cache
 from sregistry.defaults import SREGISTRY_DATABASE
-from sregistry.logger import bot
-import os
+
 
 def get_client(quiet=False, init=True, **kwargs):
     '''

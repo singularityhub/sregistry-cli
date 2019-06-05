@@ -81,24 +81,29 @@ that are alongside and below it).  Let's ask for help first:
 
 ```bash
 $ sregistry build --help
-usage: sregistry build [-h] [--preview] [--name NAME]
+usage: sregistry build [-h] [--preview] [--name NAME] [--outfile OUTFILE]
                        [commands [commands ...]]
 
 positional arguments:
-  commands       Google Build + Storage
-                 --------------------------------------------------------
-                 build [recipe] [context] -------------------------------
-                 build [recipe] . ---------------------------------------
-                 build [recipe] file1 file2 -----------------------------
+  commands           Google Cloud Build + GitHub
+                     --------------------------------------------------------
+                     build [recipe] [repo]
+                     --------------------------------------------------------
+                     Google Build + Storage
+                     --------------------------------------------------------
+                     build [recipe] [context] build [recipe] . build [recipe]
+                     relativefile1 relativefile2
 
 optional arguments:
-  -h, --help     show this help message and exit
-  --preview, -p  preview the parsed configuration file only.
-  --name NAME    name of image, in format "library/image"
+  -h, --help         show this help message and exit
+  --preview, -p      preview the parsed configuration file only.
+  --name NAME        name of image, in format "library/image"
+  --outfile OUTFILE  name of output file to write contents to
 ```
 Don't forget to export these variables:
 
 ```bash
+export SREGISTRY_CLIENT=google-build
 export SREGISTRY_GOOGLE_PROJECT=my-project
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/application-credentials.json
 ```
@@ -147,15 +152,18 @@ $ sregistry build --name vanessa/llama Singularity
 LOG Generating build package for 1 files...
 LOG Uploading build package!
 PROJECT singularity-static-registry0/0 MB - 00:00:00
-BUILD   singularityware/singularity:3.0.2-slim
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: QUEUED
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: WORKING
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: WORKING
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: SUCCESS
-LOG Total build time: 45.74 seconds
-SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa-llama-latest.sif
-LOG https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-llama-latest.sif
-LOG https://console.cloud.google.com/gcr/builds/b73d08bb-2599-4f06-9d01-023d1894638f?project=287055059824
+BUILD 0 singularityware/singularity:v3.2.1-slim
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: QUEUED
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: WORKING
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: WORKING
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: WORKING
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: SUCCESS
+LOG Total build time: 60.98 seconds
+MD5HASH 86m3Y2FSERgq5gy5D9rYOA==
+SIZE 28000256
+SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa/llama-latest/llama.sif
+LOGS https://console.cloud.google.com/gcr/builds/6ddcab9f-22a6-426c-a071-e09970b7ed88?project=287055059824
+URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa%2Fllama-latest%2Fllama.sif
 ```
 
 When the build finishes, if you haven't exported `SREGISTRY_GOOGLE_STORAGE_PRIVATE` and the
@@ -165,11 +173,10 @@ logs page, as there is a lot of meaningful information here, especially if you n
 
 ![img/google-build-logs.png](img/google-build-logs.png)
 
-
 Given the https link, you can directly pull and run the container using Singularity:
 
 ```bash
-$ singularity  pull https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-llama-latest.sif
+$ singularity pull https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa%2Fllama-latest%2Fllama.sif
 WARNING: Authentication token file not found : Only pulls of public images will succeed
  756.00 KiB / 756.00 KiB [================================================================================================================] 100.00% 30.79 MiB/s 0s
 [vsochat@sh-ln06 login /scratch/users/vsochat/share]$ singularity run vanessa-llama-latest.sif 
@@ -196,11 +203,11 @@ easy parse:
 
 ```bash
  cat output.txt 
-MD5HASH B9YrCKofgWvP6BgFgPjxZg==
-SIZE 774144
-SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa-yomamma-latest.sif
-LOGS https://console.cloud.google.com/gcr/builds/503e3836-88c4-4829-b50f-c0d059777961?project=287055059824
-URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-yomamma-latest.sif
+MD5HASH OUXtWTPcEJEYaL4DjoB4fA==
+SIZE 346140672
+SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa/yomamma-latest/yomamma.sif
+LOGS https://console.cloud.google.com/gcr/builds/5421d328-269f-4f68-af9e-2c6f65300f49?project=287055059824
+URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa/yomamma-latest/yomamma.sif
 ```
 
 Here is how you can easily parse these values:
@@ -220,15 +227,17 @@ GitHub. The only difference is specifying a name that begins with your GitHub ur
 saying it directly:
 
 ```bash
-$ sregistry build --name github.com/vanessa/salad:tag Singularity
+$ sregistry build --name github.com/vsoch/singularity-images Singularity
 ```
-You can also say the GitHub url directly:
+
+The tag creation follows the standard of Singularity Hub - you can define
+a tag based on the extension of the recipe.
 
 ```bash
-$ sregistry build --name https://www.github.com/vanessa/salad Singularity
+$ sregistry build --name github.com/vsoch/singularity-images Singularity.tag
 ```
 
-The above assumes that the recipe "Singularity" lives in the repository root.
+The above assumes that the recipe "Singularity" or "Singularity.tag" lives in the repository root.
 If you don't provide a recipe, it's assumed to be "Singularity".
 
 ## Shell

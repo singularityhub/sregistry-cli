@@ -65,7 +65,7 @@ class Client(ApiConnection):
         '''
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
         self._secrets = self._get_and_update_setting(env, self.envars.get(env))
-        if self._secrets is None:
+        if not self._secrets:
             bot.exit('You must export %s to use Google Storage client' % env)
 
 
@@ -82,7 +82,7 @@ class Client(ApiConnection):
         self._bucket_name = self._get_and_update_setting(env, self.envars.get(env))
 
         # If the user didn't set in environment, use default
-        if self._bucket_name is None:
+        if not self._bucket_name:
             fallback_name = os.environ.get('USER', platform.node())
             self._bucket_name = 'sregistry-gcloud-build-%s' % fallback_name
 
@@ -166,8 +166,8 @@ Client.destroy = destroy
 
 # Build functions
 Client.build = build
-Client._run_build = run_build
 Client.build_repo = build_repo
+Client._run_build = run_build
 Client._finish_build = finish_build
 Client._build_status = build_status
 Client._submit_build = submit_build

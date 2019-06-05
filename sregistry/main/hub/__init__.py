@@ -17,29 +17,14 @@ from .query import (
     search_collection
 )
 
-base = 'https://www.singularity-hub.org/api'
-
 class Client(ApiConnection):
 
 
-    def __init__(self, secrets=None, base=None, **kwargs):
+    def __init__(self, secrets=None, **kwargs):
  
-        self.base = base
-        self._update_base() 
         self._update_headers()
         super(Client, self).__init__(**kwargs)
-
-    def _update_base(self, new_base=None):
-
-        if new_base is None:
-            new_base = base
-        self.base = new_base
-
-        if self.base is not None:
-            if not self.base.endswith('api'):
-                self.base = '%s/api' %self.base.strip('/')
-
-    
+        self.base = 'https://www.singularity-hub.org/api'
 
 Client.pull = pull
 Client.search = search

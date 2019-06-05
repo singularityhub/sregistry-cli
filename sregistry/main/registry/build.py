@@ -34,7 +34,7 @@ def build(self, path, name, extra=None):
     path = os.path.abspath(path)
     bot.debug("BUILD %s" % path)
 
-    if extra == None:
+    if extra is None:
         extra = {}
     print(extra)
     sys.exit(0)
@@ -73,11 +73,6 @@ def build(self, path, name, extra=None):
                                           names['image'],
                                           names['tag'])
 
-    # Data fields for collection
-    fields = { 'collection': names['collection'],
-               'name': names['image'],
-               'tag': names['tag']}
-
     # Prepare build request
     url = '%s/%s/build/' %(names['registry'].replace('/api', ''), builder_type)
     SREGISTRY_EVENT = self.authorize(request_type="build", names=names)
@@ -85,12 +80,14 @@ def build(self, path, name, extra=None):
 
     bot.debug('Setting build URL to {0}'.format(url))
 
-    encoder = MultipartEncoder(fields={'SREGISTRY_EVENT': SREGISTRY_EVENT,
-                                       'name': names['image'],
-                                       'collection': names['collection'],
-                                       'tag': names['tag'],
-                                       'datafile': (upload_to, open(path, 'rb'), 'text/plain')})
+    # Fields for build endpoint
+    fields={'SREGISTRY_EVENT': SREGISTRY_EVENT,
+            'name': names['image'],
+            'collection': names['collection'],
+            'tag': names['tag'],
+            'datafile': (upload_to, open(path, 'rb'), 'text/plain')}
 
+    encoder = MultipartEncoder(fields=fields)
     progress_callback = create_callback(encoder, self.quiet)
     monitor = MultipartEncoderMonitor(encoder, progress_callback)
     headers = {'Content-Type': monitor.content_type,

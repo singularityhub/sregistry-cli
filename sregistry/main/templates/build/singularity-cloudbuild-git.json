@@ -1,14 +1,5 @@
 {
-  "steps": [
-        {
-          "name": "gcr.io/cloud-builders/git",
-          "args": ["clone"]
-        },
-        {
-          "name": null,
-          "args": []
-        }
-  ],
+  "steps": [],
   "artifacts": {
     "objects": {
        "location": null,
