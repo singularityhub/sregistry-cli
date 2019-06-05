@@ -101,16 +101,15 @@ def build(self, name,
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(name))
 
-    # Ensure the folder name ends with a slash
-    prefix = names['uri']
-    if not prefix.endswith('/'):
-        prefix = "%s/" % prefix
+    prefix = "%s/" % names['collection']
+
+    # The name should include the complete uri so it's searchable
+    name = os.path.basename(names['tag_uri'])
 
     # Load the build configuration (defaults to local)
-    config = self._load_build_config(name=names['image'],
+    config = self._load_build_config(name=name,
                                      prefix=prefix,
                                      recipe=recipe)
-
     # Add a webhook, if defined
     if webhook and headless:
         config = add_webhook(config, webhook)
@@ -122,19 +121,19 @@ def build(self, name,
     # If not a preview, run the build and return the response
     if not preview:
         if not headless:
-            response = self._run_build(config)
+            config = self._run_build(config)
         else:
-            response = self._submit_build(config)
+            config = self._submit_build(config)
 
-    # If the user wants to cache cloudbuild files, this will be set
-    env = 'SREGISTRY_GOOGLE_BUILD_CACHE'
-    if not self._get_and_update_setting(env, self.envars.get(env)):
-        if headless is False:
-            blob.delete()
+        # If the user wants to cache cloudbuild files, this will be set
+        env = 'SREGISTRY_GOOGLE_BUILD_CACHE'
+        if not self._get_and_update_setting(env, self.envars.get(env)):
+            if headless is False:
+                blob.delete()
 
     # Clean up either way, return config or response
     shutil.rmtree(os.path.dirname(package))
-    return response
+    return config
 
 
 ################################################################################
@@ -149,6 +148,7 @@ def build_repo(self,
                commit=None,
                branch=None,
                headless=False,
+               preview=False,
                webhook=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a
@@ -179,15 +179,22 @@ def build_repo(self,
     _, tag = os.path.splitext(recipe)
     tag = names.get('tag', tag).strip('.')
 
+    # Update the tag, if recipe provides one
+    names = parse_image_name(remove_uri(repo), tag=tag)
+
     # <collection>/<image>/<tag>/<commit|branch>/<container>.sif
-    prefix = "%s/%s/" %(names['url'], tag)
+    prefix = "%s/" % names['collection']
+
+    # The name should include the complete uri so it's searchable
+    name = os.path.basename(names['tag_uri'])
+
     if commit or branch:
-        prefix = "%s%s/" %(prefix, (commit or branch))
+        name = "%s@%s" %(name, (commit or branch))
 
     # Load the build configuration
     config = self._load_build_config(template="singularity-cloudbuild-git.json",
                                      prefix=prefix,
-                                     name=names['image'],
+                                     name=name,
                                      recipe=recipe)
 
     # If we need to checkout a particular commit
@@ -205,11 +212,13 @@ def build_repo(self,
         config = add_webhook(config, webhook)
      
     # If not a preview, run the build and return the response
-    if not headless:
-        return self._run_build(config)
+    if not preview:
+        if not headless:
+            return self._run_build(config)
+        return self._submit_build(config)
 
-    return self._submit_build(config)
-
+    # If preview is True, we return the config
+    return config
 
 def create_build_package(package_files):
     '''given a list of files, copy them to a temporary folder,
@@ -404,7 +413,9 @@ def get_blob_location(response, bucket_name):
     location = (response['artifacts']['objects']['location'] + 
                 response['artifacts']['objects']['paths'][0])
     location = location.replace(bucket_name, '')
-    return location.lstrip('gs:///').lstrip('gs://')
+    location = location.replace('gs:///', '', 1)
+    location = location.replace('gs://', '', 1) # in case included bucket name
+    return location.strip('/')
 
 
 def update_blob_metadata(blob, response, bucket, config=None):

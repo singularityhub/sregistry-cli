@@ -157,7 +157,7 @@ def parse_image_name(image_name,
     if version is not None:
         uri = "%s@%s" % (uri, version)
         tag_uri = "%s@%s" % (tag_uri, version) 
-        storage_version = "%s@%s.%s" % (uri, version, ext)
+        storage_version = "%s.%s" % (uri, ext)
 
     # A second storage URI honors the tag (:) separator
 
