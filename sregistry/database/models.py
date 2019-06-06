@@ -29,7 +29,7 @@ from sqlalchemy.orm import (backref,
                             sessionmaker)
 
 from sregistry.logger import bot
-from sregistry.defaults import (SREGISTRY_STORAGE, SREGISTRY_BASE)
+from sregistry.defaults import SREGISTRY_STORAGE
 from uuid import uuid4
 import os
  
@@ -71,22 +71,23 @@ class Collection(Base):
 class Container(Base):
     '''a container belongs to a collection
 
-    Parameters
-    ==========
-    created_at: the creation date of the image / container
-    metrics: typically the inspection of the image. If not possible, then the
-             basic name (uri) derived from the user is used.
-    tag: the image tag
-    image: the path to the image on the filesystem (can be Null)
-    url: the url where the imate was ultimately retrieved, call be Null
-    client: the client backend associated with the image, the type(client)
-    version: a version string associated with the image
-    :collection_id: the id of the colletion to which the image belongs.
+       Parameters
+       ==========
+       created_at: the creation date of the image / container
+       metrics: typically the inspection of the image. If not possible, then the
+                basic name (uri) derived from the user is used.
+       tag: the image tag
+       image: the path to the image on the filesystem (can be Null)
+       url: the url where the imate was ultimately retrieved, call be Null
+       client: the client backend associated with the image, the type(client)
+       version: a version string associated with the image
+       :collection_id: the id of the colletion to which the image belongs.
 
-    We index / filter containers based on the full uri, which is assembled 
-               from the <collection>/<namespace>:<tag>@<version>, then stored
-               as a variable, and maintained separately for easier query.
+       We index / filter containers based on the full uri, which is assembled 
+                  from the <collection>/<namespace>:<tag>@<version>, then stored
+                  as a variable, and maintained separately for easier query.
     '''
+
     __tablename__ = 'container'
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=func.now())
@@ -121,7 +122,7 @@ class Container(Base):
 
     def get_uri(self):
         '''generate a uri on the fly from database parameters if one is not
-        saved with the initial model (it should be, but might not be possible)
+           saved with the initial model (it should be, but might not be possible)
         '''
         uri = "%s/%s:%s" %(self.collection.name, self.name, self.tag)
         if self.version not in [None,'']:
@@ -133,23 +134,32 @@ class Container(Base):
 def init_db(self, db_path):
     '''initialize the database, with the default database path or custom of
 
-       the format sqlite:////scif/data/expfactory.db
+       the format sqlite:////home/<username>/sregistry.db
 
-    The custom path can be set with the environment variable SREGISTRY_DATABASE
-    when a user creates the client, we must initialize this db
-    the database should use the .singularity cache folder to cache
-    layers and images, and .singularity/sregistry.db as a database
+       The custom path can be set with the environment var SREGISTRY_DATABASE
+       when a user creates the client, we must initialize this db
+       the database should use the .singularity cache folder to cache
+       layers and images, and .singularity/sregistry.db as a database
     '''
 
     # Database Setup, use default if uri not provided
     self.database = 'sqlite:///%s' % db_path
     self.storage = SREGISTRY_STORAGE
 
-    if not os.path.exists(SREGISTRY_BASE):
-        bot.exit("Database location {} does not exist.".format(SREGISTRY_BASE))
+    # If the path isn't defined, cut out early
+    if not db_path:
+        return
+    
+    # Ensure that the parent_folder exists)
+    parent_folder = os.path.dirname(db_path)
 
-    if not os.access(SREGISTRY_BASE, os.W_OK):
-        bot.exit("Insufficient permission to write to {}".format(SREGISTRY_BASE))
+    # Case 1: Does not exist
+    if not os.path.exists(parent_folder):
+        bot.exit("Database location {} does not exist.".format(parent_folder))
+
+    # Case 2: Insufficient permission for write
+    if not os.access(parent_folder, os.W_OK):
+        bot.exit("Insufficient permission to write to {}".format(parent_folder))
 
     bot.debug("Database located at %s" % self.database)
     self.engine = create_engine(self.database, convert_unicode=True)
