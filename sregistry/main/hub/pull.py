@@ -45,6 +45,10 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
                                                    q['image'],
                                                    q['tag'])
 
+        # Add the version, if provided
+        if q['version'] is not None:
+            url = "%s@%s" % (url, q['version'])
+
         bot.debug('Retrieving manifest at %s' % url)
 
         manifest = self._get(url)
@@ -59,7 +63,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
         file_name = os.path.abspath(file_name)
 
         # Determine if the user already has the image
-        if os.path.exists(file_name) and force is False:
+        if os.path.exists(file_name) and not force:
             bot.exit('Image exists! Remove first, or use --force to overwrite')
 
         show_bar = not bool(self.quiet)
