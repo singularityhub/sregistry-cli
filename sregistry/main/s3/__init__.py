@@ -12,6 +12,7 @@ from sregistry.auth import read_client_secrets
 from sregistry.logger import ( RobotNamer, bot )
 from sregistry.main import ApiConnection
 import boto3
+from botocore.client import ClientError
 import json
 import os
 
@@ -77,14 +78,19 @@ class Client(ApiConnection):
                 bot.exit('client is missing attribute %s' %(attr))
 
         self.bucket = self.s3.Bucket(self.bucket_name)
-        # See if the bucket is already existing by checking the creation_date
-        if self.bucket.creation_date is None:
+        # check if the bucket exists and can be accessed
+        try:
+            self.s3.meta.client.head_bucket(Bucket=self.bucket.name)
+        except ClientError:
             self.bucket = None
  
-        # If the bucket doesn't exist, create it
+        # If the bucket doesn't exist, try creating it
         if self.bucket is None:
-            self.bucket = self.s3.create_bucket(Bucket=self.bucket_name)
-            bot.info('Created bucket %s' % self.bucket.name )
+            try:
+                self.bucket = self.s3.create_bucket(Bucket=self.bucket_name)
+                bot.info('Created bucket %s' % self.bucket.name )
+            except ClientError as e:
+                bot.exit('Could not create bucket {}: {}'.format(self.bucket_name, str(e)))
 
         return self.bucket
 
