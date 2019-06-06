@@ -14,7 +14,9 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
- - adding sregistry build to push recipes for Google Cloud (or other) builder (0.2.18)
+ - adding sregistry build to push recipes for Google Cloud (or other) builder (0.2.19)
+ - ensure sregistry exits gracefully when database cannot be created (0.2.18)
+ - fix accessing S3 buckets when IAM credentials don't allow listing buckets
  - setting sregistry hub base to be consistent with singularity-hub.org (0.2.17)
  - images being added twice (0.2.16)
  - adding pylint, and destroy function back to Google Storage (for instances) (0.2.15)
