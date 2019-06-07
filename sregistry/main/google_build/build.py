@@ -425,7 +425,12 @@ def update_blob_metadata(blob, response, bucket, config=None):
     '''
     bucket_prefix = "gs://" + bucket.name + '/'
     manifest_path = response['results']['artifactManifest'].replace(bucket_prefix, '')
-    manifest = json.loads(bucket.blob(manifest_path).download_as_string())
+    manifest_str = bucket.blob(manifest_path).download_as_string()
+
+    try:
+        manifest = json.loads(manifest_str)
+    except:
+        manifest = json.loads(manifest_str.decode('utf-8'))
 
     metadata = {'file_hash': manifest['file_hash'][0]['file_hash'][0]['value'],
                 'artifactManifest': response['results']['artifactManifest'],
