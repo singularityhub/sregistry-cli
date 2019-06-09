@@ -78,6 +78,7 @@ if __name__ == "__main__":
     GLOBUS_BASIC = get_reqs(lookup,'INSTALL_BASIC_GLOBUS')
     GOOGLE_STORAGE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_STORAGE')
     GOOGLE_DRIVE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_DRIVE')
+    GOOGLE_BUILD_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_BUILD')
     GOOGLE_COMPUTE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_COMPUTE')
     SWIFT_BASIC = get_reqs(lookup,'INSTALL_BASIC_SWIFT')
 
@@ -92,6 +93,7 @@ if __name__ == "__main__":
     GOOGLE_STORAGE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_STORAGE')
     GOOGLE_DRIVE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_DRIVE')
     GOOGLE_COMPUTE = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_COMPUTE')
+    GOOGLE_BUILD = get_reqs(lookup,'INSTALL_REQUIRES_GOOGLE_BUILD')
     SWIFT = get_reqs(lookup,'INSTALL_REQUIRES_SWIFT')
 
     setup(name=NAME,
@@ -117,6 +119,7 @@ if __name__ == "__main__":
               'google-compute-basic': [GOOGLE_COMPUTE_BASIC],
               'google-storage-basic': [GOOGLE_STORAGE_BASIC],
               'google-drive-basic': [GOOGLE_DRIVE_BASIC],
+              'google-build-basic': [GOOGLE_BUILD_BASIC],
               'globus-basic': [GLOBUS_BASIC],
               'registry-basic': [REGISTRY_BASIC],
               's3-basic': [S3_BASIC],
@@ -127,6 +130,7 @@ if __name__ == "__main__":
               'google-compute': [GOOGLE_COMPUTE],
               'google-storage': [GOOGLE_STORAGE],
               'google-drive': [GOOGLE_DRIVE],
+              'google-build': [GOOGLE_BUILD],
               'globus': [GLOBUS],
               'registry': [REGISTRY],
               's3': [S3],

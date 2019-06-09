@@ -12,17 +12,15 @@ from sregistry.auth import (get_secrets_file, read_client_secrets)
 from sregistry.logger import bot
 from sregistry.utils import write_json
 import json
-import sys
 
 
-def main(args,parser,subparser):
+def main(args, parser, extra):
     
     # No commands provided, print help, show clients
 
     if len(args.commands) == 0:
-        subparser.print_help()
         usage()
-        sys.exit(0)
+        bot.exit("You must provide a valid command")
 
     # Get the chosen action
     command = args.commands.pop(0)
@@ -73,8 +71,8 @@ def main(args,parser,subparser):
 
 
     else:
+        bot.exit("%s is not a recognized command." % command)
 
-        subparser.print_help()
 
 def usage():
     print('''

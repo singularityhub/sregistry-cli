@@ -67,7 +67,7 @@ def search_all(self):
     for i in results:
         size = round(i.size / (1024*1024.0))
         size = ("%s MB" %size).rjust(10)
-        rows.append([size, i.metadata['name']])
+        rows.append([size, i.name])
 
     bot.table(rows)
     return rows
@@ -89,12 +89,12 @@ def container_query(self, query, quiet=False):
                 matches.append(result)
 
     if not quiet:
-        bot.info("[gs://%s] Found %s containers" %(self._bucket_name,len(matches)))
+        bot.info("[gs://%s] Found %s containers" %(self._bucket_name, len(matches)))
         for image in matches:
             size = round(image.size / (1024*1024.0))
             bot.custom(prefix=image.name, color="CYAN")
             bot.custom(prefix='id:     ', message=image.id)
-            bot.custom(prefix='uri:    ', message=image.metadata['name'])
+            bot.custom(prefix='name:    ', message=image.name)
             bot.custom(prefix='updated:', message=image.updated)
             bot.custom(prefix='size:  ',  message=' %s MB' %(size))
             bot.custom(prefix='md5:    ', message=image.md5_hash)

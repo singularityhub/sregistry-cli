@@ -14,6 +14,7 @@ import json
 import os
 
 from .auth import authorize
+from .build import build
 from .pull import pull
 from .push import push
 from .delete import delete
@@ -88,9 +89,9 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         '''update secrets will take a secrets credential file
-        either located at .sregistry or the environment variable
-        SREGISTRY_CLIENT_SECRETS and update the current client 
-        secrets as well as the associated API base.
+           either located at .sregistry or the environment variable
+           SREGISTRY_CLIENT_SECRETS and update the current client 
+           secrets as well as the associated API base.
         '''
         self.secrets = read_client_secrets()
         if self.secrets is not None:
@@ -102,9 +103,10 @@ class Client(ApiConnection):
     def __str__(self):
         return type(self)
 
-    
+
 
 Client.authorize = authorize
+Client.build = build
 Client.delete = delete
 Client.pull = pull
 Client.push = push

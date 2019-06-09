@@ -38,7 +38,7 @@ def get_metadata(self, image_file, names=None):
     metadata = {}
 
     # We can't return anything without image_file or names
-    if image_file is not None:
+    if image_file:
         if not os.path.exists(image_file):
             bot.error('Cannot find %s.' %image_file)
             return names or metadata
@@ -51,7 +51,7 @@ def get_metadata(self, image_file, names=None):
     singularity = which('singularity')['message']
 
     # Inspect the image, or return names only
-    if os.path.exists(singularity) and image_file is not None:
+    if os.path.exists(singularity) and image_file:
         from spython.main import Client as Singularity
 
         # We try and inspect, but not required (wont work within Docker)

@@ -12,15 +12,21 @@ from sregistry.logger import bot
 from sregistry.utils import (read_json, get_installdir)
 import os
 
-
-def get_build_template():
+def get_build_template(name="singularity-cloudbuild-local.json"):
     '''get default build template.
+
+       Parameters
+       ==========
+       name: singularity-cloudbuild-local.json (default) that will build a
+                 container interactively, waiting for the build to finish.
+             singularity-cloudbuild-git.json build a recipe from a GitHub
+                 repository.
     '''
     base = get_installdir()
-    name = "%s/main/templates/build/singularity-cloudbuild.json" % base
+    name = "%s/main/templates/build/%s" % (base, name)
 
     if os.path.exists(name):
-        bot.debug("Found template %s" %name)
+        bot.debug("Found template %s" % name)
         return read_json(name)
 
     bot.warning("Template %s not found." % name)

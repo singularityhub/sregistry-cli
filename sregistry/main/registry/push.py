@@ -76,7 +76,7 @@ def push(self, path, name, tag=None):
 # UPLOAD #######################################################################
 
     url = '%s/upload' % names['registry'].replace('/api','')
-    bot.debug('Seting upload URL to {0}'.format(url))
+    bot.debug('Setting upload URL to {0}'.format(url))
 
     cid = r.json()['cid']
     upload_to = os.path.basename(names['storage'])

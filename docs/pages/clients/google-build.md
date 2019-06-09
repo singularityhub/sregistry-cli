@@ -65,30 +65,45 @@ SREGISTRY_CLIENT=google-build sregistry shell
 
 ## Build
 
-Let's get off to a running start and build! Note that we have a build recipe in the
+Let's get off to a running start and build! We have two options for building:
+
+ 1. Build from a Local Recipe
+ 2. Build from a GitHub repository
+
+The second is recommended, as it is more reproducible, but there are use cases for
+both.
+
+### 1. Build from a Local Recipe
+
+Note that we have a build recipe in the
 present working directory, and we also want to provide the context (all the recursive files 
 that are alongside and below it).  Let's ask for help first:
 
 ```bash
 $ sregistry build --help
-usage: sregistry build [-h] [--preview] [--name NAME]
+usage: sregistry build [-h] [--preview] [--name NAME] [--outfile OUTFILE]
                        [commands [commands ...]]
 
 positional arguments:
-  commands       Google Build + Storage
-                 --------------------------------------------------------
-                 build [recipe] [context] -------------------------------
-                 build [recipe] . ---------------------------------------
-                 build [recipe] file1 file2 -----------------------------
+  commands           Google Cloud Build + GitHub
+                     --------------------------------------------------------
+                     build [recipe] [repo]
+                     --------------------------------------------------------
+                     Google Build + Storage
+                     --------------------------------------------------------
+                     build [recipe] [context] build [recipe] . build [recipe]
+                     relativefile1 relativefile2
 
 optional arguments:
-  -h, --help     show this help message and exit
-  --preview, -p  preview the parsed configuration file only.
-  --name NAME    name of image, in format "library/image"
+  -h, --help         show this help message and exit
+  --preview, -p      preview the parsed configuration file only.
+  --name NAME        name of image, in format "library/image"
+  --outfile OUTFILE  name of output file to write contents to
 ```
 Don't forget to export these variables:
 
 ```bash
+export SREGISTRY_CLIENT=google-build
 export SREGISTRY_GOOGLE_PROJECT=my-project
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/application-credentials.json
 ```
@@ -96,8 +111,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/application-credentials.json
 Now let's launch a build, and provide the entire present working directory as context. Notice that we
 haven't exported `SREGISTRY_GOOGLE_BUILD_CACHE=yes` so we won't save intermediate build files.
 
-
-### Example Recipe
+#### Example Recipe
 
 Let's say we've created a folder called "test" and added some Singularity recipe in it. 
 If you have local filesystem dependencies (files to add to the container), put them in this folder.
@@ -138,15 +152,18 @@ $ sregistry build --name vanessa/llama Singularity
 LOG Generating build package for 1 files...
 LOG Uploading build package!
 PROJECT singularity-static-registry0/0 MB - 00:00:00
-BUILD   singularityware/singularity:3.0.2-slim
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: QUEUED
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: WORKING
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: WORKING
-LOG build b73d08bb-2599-4f06-9d01-023d1894638f: SUCCESS
-LOG Total build time: 45.74 seconds
-SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa-llama-latest.sif
-LOG https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-llama-latest.sif
-LOG https://console.cloud.google.com/gcr/builds/b73d08bb-2599-4f06-9d01-023d1894638f?project=287055059824
+BUILD 0 singularityware/singularity:v3.2.1-slim
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: QUEUED
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: WORKING
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: WORKING
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: WORKING
+LOG build 6ddcab9f-22a6-426c-a071-e09970b7ed88: SUCCESS
+LOG Total build time: 60.98 seconds
+MD5HASH 86m3Y2FSERgq5gy5D9rYOA==
+SIZE 28000256
+SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa/llama-latest/llama.sif
+LOGS https://console.cloud.google.com/gcr/builds/6ddcab9f-22a6-426c-a071-e09970b7ed88?project=287055059824
+URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa/llama-latest/llama.sif
 ```
 
 When the build finishes, if you haven't exported `SREGISTRY_GOOGLE_STORAGE_PRIVATE` and the
@@ -156,15 +173,19 @@ logs page, as there is a lot of meaningful information here, especially if you n
 
 ![img/google-build-logs.png](img/google-build-logs.png)
 
-
 Given the https link, you can directly pull and run the container using Singularity:
 
 ```bash
-$ singularity  pull https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-llama-latest.sif
+$ singularity pull https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa/llama-latest/llama.sif
 WARNING: Authentication token file not found : Only pulls of public images will succeed
  756.00 KiB / 756.00 KiB [================================================================================================================] 100.00% 30.79 MiB/s 0s
-[vsochat@sh-ln06 login /scratch/users/vsochat/share]$ singularity run vanessa-llama-latest.sif 
-Singularity> 
+$ singularity inspect llama.sif
+==labels==
+org.label-schema.build-date: Wednesday_5_June_2019_17:34:53_UTC
+org.label-schema.schema-version: 1.0
+org.label-schema.usage.singularity.deffile.bootstrap: docker
+org.label-schema.usage.singularity.deffile.from: ubuntu
+org.label-schema.usage.singularity.version: 3.2.1-1
 ```
 
 If you use the interactive (from within Python) method, you are also returned this direct
@@ -172,7 +193,7 @@ link to the container (`response['public_url']`) and you are free to put that in
 database you are using to keep track of your containers. This is shown in the next section [Shell](#shell). 
 If you want to search your storage later, see [Pull](#pull).
 
-### Logs
+#### Logs
 
 If you are working in a headless environment, you can capture the final URL, LOGS url,
 size, and hash in an output file with the `--outfile` flag:
@@ -186,12 +207,12 @@ but also would need to return the results to you, the user. Here is the file tha
 easy parse:
 
 ```bash
- cat output.txt 
-MD5HASH B9YrCKofgWvP6BgFgPjxZg==
-SIZE 774144
-SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa-yomamma-latest.sif
-LOGS https://console.cloud.google.com/gcr/builds/503e3836-88c4-4829-b50f-c0d059777961?project=287055059824
-URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa-yomamma-latest.sif
+$ cat output.txt 
+MD5HASH 4ajv9NRMHCx538ZyjQimvA==
+SIZE 28000256
+SUCCESS gs://sregistry-gcloud-build-vanessa/vanessa/yomamma-latest/yomamma.sif
+LOGS https://console.cloud.google.com/gcr/builds/1821be41-6bce-41f5-9177-319906d12223?project=287055059824
+URL https://storage.googleapis.com/sregistry-gcloud-build-vanessa/vanessa/yomamma-latest/yomamma.sif
 ```
 
 Here is how you can easily parse these values:
@@ -204,12 +225,34 @@ if grep -q SUCCESS output.txt; then
 fi
 ```
 
+### 2. Build from a GitHub Recipe
+
+You can also submit a similar job, but have the builder get the recipe file from
+GitHub. The only difference is specifying a name that begins with your GitHub uri, or
+saying it directly:
+
+```bash
+$ sregistry build --name github.com/vsoch/singularity-images Singularity
+```
+
+The tag creation follows the standard of Singularity Hub - you can define
+a tag based on the extension of the recipe.
+
+```bash
+$ sregistry build --name github.com/vsoch/singularity-images Singularity.tag
+```
+
+The above assumes that the recipe "Singularity" or "Singularity.tag" lives in the repository root.
+If you don't provide a recipe, it's assumed to be "Singularity". Also, *do not forget*
+to have your `GOOGLE_APPLICATION_CREDENTIALS` and `SREGISTRY_GOOGLE_PROJECT`
+export in the environment. It will not work without them.
+
 ## Shell
 
 Next, let's do this from the interactive shell. Note that we have exported `SREGISTRY_CLIENT` above, as we are looking to interact with a shell for the google-build `sregistry` client.
 
 ```bash
-sregistry shell
+sregistry shell google-build://
 
 [client|google-build] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-gcloud-build-vanessa]
@@ -220,13 +263,35 @@ IPython 6.2.1 -- An enhanced Interactive Python. Type '?' for help.
 In [1]: 
 ```
 
-Here we see straight away that we are using the default bucket name (`sregistry-gcloud-build-vanessa`) and the google-build client. The printing of the bucket on the first line indicates we successfully connected to it,
-and we've also connected to the bucket of the same name ending with _cloudbuild (`sregistry-gcloud-build-vanessa_cloudbuild`). Next, we just need to provide the same arguments to the function to run the build.
+Here we see straight away that we are using the default bucket name 
+(`sregistry-gcloud-build-vanessa`) and the google-build client. 
+The printing of the bucket on the first line indicates we successfully connected to it,
+and we've also connected to the bucket of the same name ending with _cloudbuild (`sregistry-gcloud-build-vanessa_cloudbuild`). If you want to import the client within python, you can do that too:
+
+```python
+from sregistry.main.google_build.client import get_client
+client = get_client()
+```
+
+Either way, we just need to provide the same arguments to the function to run the build.
+If you don't have files other than the Singularity recipe, you don't need to define
+a context.
 
 ```python
 
 > recipe = "Singularity"      
-> context = '.'                # All files in present working directory and below
+> name = 'vanessa/avocados'    # The name of the container to build, tag is optional and defaults to latest
+
+> response = client.build(name=name,
+                          recipe=recipe)
+```
+
+If you have a context, just specify it.
+
+```python
+
+> recipe = "Singularity"      
+> context = '.'                # All files in present working directory and below (optional)
 > name = 'vanessa/avocados'    # The name of the container to build, tag is optional and defaults to latest
 
 > response = client.build(name=name,
@@ -241,37 +306,80 @@ link if the build isnt' a success. With the interactive shell mode, you can also
 
 > config = client.build(name=name,
                         recipe=recipe,
-                        context=context,
                         preview=True)
 ```
 ```
 {
     "steps": [
         {
-            "name": "singularityware/singularity:3.0.2-slim",
             "args": [
                 "build",
-                "vanessa-pusheen-latest.sif",
+                "avocados.sif",
                 "Singularity"
-            ]
+            ],
+            "name": "singularityware/singularity:v3.2.1-slim"
         }
     ],
     "source": {
         "storageSource": {
             "bucket": "sregistry-gcloud-build-vanessa_cloudbuild",
-            "object": "source/8937958aa81fa7b81d8b6fc6eb89daca6c176cd99895c903517d74fc575a9dc9.tar.gz"
+            "object": "source/90442580933f3a3c3f90c0ed392266cb792255654296b8f386229b36b3c3037b.tar.gz"
         }
     },
     "artifacts": {
         "objects": {
-            "location": "gs://sregistry-gcloud-build-vanessa",
+            "location": "gs://sregistry-gcloud-build-vanessa/vanessa/avocados-latest/",
             "paths": [
-                "vanessa-pusheen-latest.sif"
+                "avocados.sif"
             ]
         }
     }
 }
 ```
+
+Check out how the configuration changes when we use the function to build
+from Github:
+
+```bash
+> config = client.build_repo(repo='github.com/vsoch/singularity-images',
+                             recipe="Singularity",
+                             preview=True)
+```
+```bash
+{
+    "steps": [
+        {
+            "args": [
+                "clone",
+                "https://github.com/vsoch/singularity-images",
+                "."
+            ],
+            "name": "gcr.io/cloud-builders/git"
+        },
+        {
+            "args": [
+                "build",
+                "singularity-images.sif",
+                "Singularity"
+            ],
+            "name": "singularityware/singularity:v3.2.1-slim"
+        }
+    ],
+    "artifacts": {
+        "objects": {
+            "location": "gs://sregistry-gcloud-build-vanessa/github.com/vsoch/singularity-images/latest/",
+            "paths": [
+                "singularity-images.sif"
+            ]
+        }
+    }
+}
+```
+
+You'll notice that the first step is to clone the repository. If we provided a branch
+or commit as argument, the following step would be to check it out. We then build again,
+and save the image to storage.
+
 
 ## Pull and Search
 
@@ -292,22 +400,24 @@ $ sregistry search
 [client|google-build] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-gcloud-build-vanessa]
 [gs://sregistry-gcloud-build-vanessa] Containers
-1        1 MB	vanessa/avocados-latest
+1       27 MB	vanessa/avocados:latest.sif
+2       35 MB	vsoch/singularity-images:latest.sif
 ```
 
 There it is! Then to look at details for a more specific search, let's try searching for "vanessa/avocados"
 
 ```bash
-$ sregistry search vanessa/avocados
+$ sregistry search vanessa/avocados:latest
+{}
 [client|google-build] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
 [bucket][sregistry-gcloud-build-vanessa]
 [gs://sregistry-gcloud-build-vanessa] Found 1 containers
-vanessa-avocados-latest.sif 
-id:      sregistry-gcloud-build-vanessa/vanessa-avocados-latest.sif/1550267799739163
-uri:     vanessa/avocados-latest
-updated: 2019-02-15 21:56:52.139000+00:00
-size:    1 MB
-md5:     GJ4jl2mFfaa+ckZhJuOwJg==
+vanessa/avocados:latest.sif 
+id:      sregistry-gcloud-build-vanessa/vanessa/avocados:latest.sif/1559766957015664
+name:     vanessa/avocados:latest.sif
+updated: 2019-06-05 20:36:13.444000+00:00
+size:    27 MB
+md5:     j8psLCakQeKfw6xqcy0kqA==
 ```
 
 ### Pull
@@ -321,21 +431,21 @@ $ sregistry pull vanessa/avocados:latest
 Searching for vanessa/avocados:latest in gs://sregistry-gcloud-build-vanessa
 Progress |===================================| 100.0% 
 [container][update] vanessa/avocados-latest@1e38ac7437da5afbfd89937115f052e0
-Success! /home/vanessa/.singularity/shub/vanessa-avocados-latest@1e38ac7437da5afbfd89937115f052e0.sif
+Success! /home/vanessa/.singularity/shub/vanessa/avocados/latest@8fca6c2c26a441e29fc3ac6a732d24a8.sif
 ```
 and if we list images, we see our container:
 
 ```bash
 $ sregistry images
 Containers:   [date]   [client]	[uri]
-1  February 15, 2019	   [google-build]	vanessa/avocados:latest@1e38ac7437da5afbfd89937115f052e0
+1  February 15, 2019	   [google-build]	vanessa/avocados:latest@8fca6c2c26a441e29fc3ac6a732d24a8
 ```
 
 The different versions (of the same name and tag) are listed. To get a path to any of the files:
 
 ```bash
-$ sregistry get vanessa/avocados:latest@1e38ac7437da5afbfd89937115f052e0
-/home/vanessa/.singularity/shub/vanessa-avocados-latest@1e38ac7437da5afbfd89937115f052e0.sif
+$ sregistry get vanessa/avocados:latest@8fca6c2c26a441e29fc3ac6a732d24a8
+/home/vanessa/.singularity/shub/vanessa/avocados/latest@8fca6c2c26a441e29fc3ac6a732d24a8.sif
 ```
 
 You can also see in the pull output that on the backend of pull is the same search as you did before. This means that if you want to be precise, you should ask for the complete uri (version included). If you aren't precise, it will do a search across name fields and give you the first match. Be careful, my linux penguins.

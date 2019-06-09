@@ -10,7 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 
-def main(args,parser,subparser):
+def main(args, parser, extra):
     '''the images entrypoint is intended to list images locally in the user
        database, optionally taking one or more query string to subset the 
        search

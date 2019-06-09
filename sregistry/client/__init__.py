@@ -152,11 +152,15 @@ def get_parser():
                        default=False, action='store_true')
 
     build.add_argument("commands", nargs='*',
-                       help='''Google Build + Storage
+                       help='''Google Cloud Build + GitHub
                                --------------------------------------------------------
-                               build [recipe] [context] -------------------------------
-                               build [recipe] . ---------------------------------------
-                               build [recipe] file1 file2 -----------------------------
+                               build [recipe] [repo] 
+                               --------------------------------------------------------
+                               Google Build + Storage
+                               --------------------------------------------------------
+                               build [recipe] [context]
+                               build [recipe] . 
+                               build [recipe] relativefile1 relativefile2
                                ''', 
                        type=str)
 
@@ -246,23 +250,6 @@ def get_parser():
     return parser
 
 
-def get_subparsers(parser):
-    '''get_subparser will get a dictionary of subparsers, to help with printing help
-    '''
-
-    actions = [action for action in parser._actions 
-               if isinstance(action, argparse._SubParsersAction)]
-
-    subparsers = dict()
-    for action in actions:
-        # get all subparsers and print help
-        for choice, subparser in action.choices.items():
-            subparsers[choice] = subparser
-
-    return subparsers
-
-
-
 def main():
     '''main is the entrypoint to the sregistry client. The flow works to first
     to determine the subparser in use based on the command. The command then
@@ -277,7 +264,6 @@ def main():
     '''
 
     parser = get_parser()
-    subparsers = get_subparsers(parser)
 
     def help(return_code=0):
         '''print help, including the software version and active client 
@@ -295,7 +281,7 @@ def main():
         help()
 
     # If an error occurs while parsing the arguments, the interpreter will exit with value 2
-    args = parser.parse_args()
+    args, extra = parser.parse_known_args()
 
     if args.debug is True:
         os.environ['MESSAGELEVEL'] = "DEBUG"
@@ -330,7 +316,7 @@ def main():
     try:
         main(args=args,
              parser=parser,
-             subparser=subparsers[args.command])
+             extra=extra)
         sys.exit(return_code)
     except UnboundLocalError:
         return_code = 1

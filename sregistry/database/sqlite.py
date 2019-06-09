@@ -431,5 +431,5 @@ def add(self, image_path=None,
         container.metrics=json.dumps(metrics)
 
     self.session.commit()
-    bot.info("[container][%s] %s" % (action,names['uri']))
+    bot.info("[container][%s] %s" % (action, names['uri']))
     return container

@@ -15,13 +15,18 @@ import os
 
 from retrying import retry
 import google
+import platform
 from google.cloud import storage
 from googleapiclient.discovery import build as discovery_build
 from oauth2client.client import GoogleCredentials
 
 from .build import ( 
     build,
+    build_repo,
+    build_status,
     run_build,
+    finish_build,
+    submit_build,
     load_build_config
 )
 from .delete import delete, destroy
@@ -32,6 +37,9 @@ from .query import ( container_query, list_containers, search, search_all )
 
 
 class Client(ApiConnection):
+
+    # Custom variables that can be provided with client.get_client
+    envars = {}
 
     def __init__(self, secrets=None, base=None, init=True, **kwargs):
  
@@ -55,9 +63,9 @@ class Client(ApiConnection):
            file, but the client exists with error if the variable isn't found.
         '''
         env = 'GOOGLE_APPLICATION_CREDENTIALS'
-        self._secrets = self._get_and_update_setting(env)
-        if self._secrets is None:
-            bot.exit('You must export %s to use Google Storage client' %env)
+        self._secrets = self._get_and_update_setting(env, self.envars.get(env))
+        if not self._secrets:
+            bot.exit('You must export %s to use Google Storage client' % env)
 
 
     def _init_client(self):
@@ -70,11 +78,12 @@ class Client(ApiConnection):
         self._get_services()
 
         env = 'SREGISTRY_GOOGLE_STORAGE_BUCKET'
-        self._bucket_name = self._get_and_update_setting(env)
+        self._bucket_name = self._get_and_update_setting(env, self.envars.get(env))
 
         # If the user didn't set in environment, use default
-        if self._bucket_name is None:
-            self._bucket_name = 'sregistry-gcloud-build-%s' %os.environ['USER']
+        if not self._bucket_name:
+            fallback_name = os.environ.get('USER', platform.node())
+            self._bucket_name = 'sregistry-gcloud-build-%s' % fallback_name
 
         # The build bucket is for uploading .tar.gz files
         self._build_bucket_name = "%s_cloudbuild" % self._bucket_name
@@ -115,9 +124,9 @@ class Client(ApiConnection):
         except google.cloud.exceptions.NotFound:
             bucket = self._bucket_service.create_bucket(bucket_name)
 
-        # Case 3: The bucket name is already taken
+        # Case 2: The bucket name is already taken
         except:
-            bot.exit('Cannot get or create %s' % bucket_name)
+            bot.exit('Cannot get or create %s, is the name taken?' % bucket_name)
 
         return bucket
 
@@ -131,7 +140,10 @@ class Client(ApiConnection):
            zone: a default zone, will be us-west1-a by default
 
         '''
-        return self._required_get_and_update('SREGISTRY_GOOGLE_PROJECT', project)
+        if project is None:
+            project = self.envars.get("SREGISTRY_GOOGLE_PROJECT")
+
+        return self._get_and_update_setting('SREGISTRY_GOOGLE_PROJECT', project)
 
 
     def _get_zone(self, zone='us-west1-a'):
@@ -153,7 +165,11 @@ Client.destroy = destroy
 
 # Build functions
 Client.build = build
+Client.build_repo = build_repo
 Client._run_build = run_build
+Client._finish_build = finish_build
+Client._build_status = build_status
+Client._submit_build = submit_build
 Client._load_build_config = load_build_config
 
 Client.search = search

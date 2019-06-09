@@ -10,7 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 
-def main(args, parser, subparser):
+def main(args, parser, extra):
     '''sharing an image means sending a remote share from an image you
        control to a contact, usually an email.
     '''

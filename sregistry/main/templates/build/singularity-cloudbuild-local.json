@@ -1,10 +1,5 @@
 {
-  "steps": [
-        {
-          "name": null,
-          "args": []
-        }
-  ],
+  "steps": [],
   "source": {
     "storageSource": {
           "bucket": null,

@@ -11,16 +11,11 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 import json
 import sys
+import re
 
-
-def main(args, parser, subparser):
+def main(args, parser, extra):
     from sregistry.main import get_client
     
-    # No commands provided, show help
-    if not args.commands:
-        subparser.print_help()
-        sys.exit(0)
-
     cli = get_client(quiet=args.quiet)
     cli.announce(args.command)
 
@@ -29,70 +24,120 @@ def main(args, parser, subparser):
         msg = "build is not implemented for %s. Why don't you add it?"
         bot.exit(msg % cli.client_name)
 
+    # Singularity Registry Server uses build with a recipe
+    if cli.client_name == 'registry':
+        response = run_registry_build(cli, args)
+
     if cli.client_name == 'google-build':
+        response = run_google_build(cli, args)
+        
+    elif cli.client_name == "google-storage":
+        response = run_compute_build(cli, args)
 
-        if args.name is None:
-            bot.exit('Please provide a container identifier with --name')
+    else:
+        bot.exit('%s is not supported for build.' % cli.client.name)
 
+    # If the client wants to preview, the config is returned
+    if args.preview is True:
+        print(json.dumps(response, indent=4, sort_keys=True))
+
+
+def run_google_build(cli, args):
+    '''a helper function to control build for the Google Build Client.
+       the user can request a local recipe build, or a build from
+       a GitHub repo. In both cases, if no recipe is provided, we default
+       to Singularity at the root of the PWD or GitHub repository.
+    '''
+    if args.name is None:
+        bot.exit('Please provide a container identifier with --name')
+
+    # Default to recipe "Singularity" unless other is provided
+    recipe = "Singularity"
+    if args.commands:
         recipe = args.commands.pop(0)
+
+    # If Github.com is provided in the name, we are doing a GitHub build
+    if re.search("github.com|gitlab.com", args.name):
+        response = cli.build_repo(repo=args.name,
+                                  recipe=recipe,
+                                  preview=args.preview)
+
+    else:        
         response = cli.build(name=args.name,
                              recipe=recipe,
                              context=args.commands,
                              preview=args.preview)
 
-        # Print output to the console
-        print_output(response, args.outfile)
-        
+    # Print output to the console
+    print_output(response, args.outfile)
+    return response
+
+
+def run_compute_build(cli, args):
+    '''a compute based build is the oldest versions of build - here we bring
+       up our own instance, and then provide control to it. The helper
+       functions below (kill, instances, templates) support this version.
+    '''
+    # Does the user want to save the image?    
+    command = args.commands.pop(0)
+
+    # Option 1: The user wants to kill an instance
+    if command == "kill":
+        kill(args)    
+
+    # Option 2: Just list running instances
+    elif command == "instances":
+        instances(args)
+
+    # Option 3: The user wants to list templates
+    elif 'template' in command:
+        templates(args)
+
+    # Option 4: View a specific or latest log
+    elif command == 'logs':
+        list_logs(args)
+
+    # Option 3: The user is providing a Github repo!
+    recipe = "Singularity"
+
+    if "github" in command:
+
+        # One argument indicates a recipe
+        if len(args.commands) == 1:
+            recipe = args.commands.pop(0)       
+
     else:
+        # If a command is provided, but not a Github repo
+        bot.exit('%s is not a recognized option.' % command)
 
-        # Does the user want to save the image?    
-        command = args.commands.pop(0)
+    # Does the user want to specify a name for the collection?
+    name = args.name
 
-        # Option 1: The user wants to kill an instance
-        if command == "kill":
-            kill(args)    
-
-        # Option 2: Just list running instances
-        elif command == "instances":
-            instances(args)
-
-        # Option 3: The user wants to list templates
-        elif 'template' in command:
-            templates(args)
-
-        # Option 4: View a specific or latest log
-        elif command == 'logs':
-            list_logs(args)
-
-        # Option 3: The user is providing a Github repo!
-        recipe = "Singularity"
-
-        if "github" in command:
-
-            # One argument indicates a recipe
-            if len(args.commands) == 1:
-                recipe = args.commands.pop(0)       
-
-        else:
-
-            # If a command is provided, but not a Github repo
-            bot.error('%s is not a recognized option.' %command)
-            subparser.print_help()
-            sys.exit(1)
+    # No image is needed, we are creating in the cloud
+    return cli.build(repo=command, 
+                     name=name,
+                     recipe=recipe,
+                     preview=args.preview)
 
 
-        # Does the user want to specify a name for the collection?
-        name = args.name
+def run_registry_build(cli, args):
+    '''a registry build pushes a recipe file to Singularity Registry Server,
+       or given that a GitHub Url is provided, we build from there. For more
+       regular building, the user is suggested to directly connect the 
+       repository to Singularity Registry server. This can serve as a one time
+       build.
+    '''
+    # The uri can also contain github, which indicates a Github build
+    if args.name is None:
+        bot.exit('Please provide a container identifier with --name')
 
-        # No image is needed, we are creating in the cloud
-        response = cli.build(repo=command, 
-                             name=name,
-                             recipe=recipe,
-                             preview=args.preview)
+    recipe = args.commands.pop(0)
+    response = cli.build(name=args.name,
+                         recipe=recipe)
 
-    # If the client wants to preview, the config is returned
-    if args.preview is True:
-        print(json.dumps(response, indent=4, sort_keys=True))
+    # Print output to the console
+    print_output(response, args.outfile)
+    return response
 
 
 def print_output(response, output_file=None):
