@@ -132,8 +132,14 @@ $ sregistry build --name vanessa/llama Singularity
 ```
 
 The above says "Build a container with name vanessa/llama using the Singularity recipe." 
-The tags defaults to latest. If we had other dependencies to upload in the folder, you could do either:
+We are assuming that you've exported the `SREGISTRY_CLIENT` to be "google-build",
+but if you haven't done this, you can specify it on the fly:
 
+```bash
+$ sregistry build --name google-build://vanessa/llama Singularity
+```
+
+The tags defaults to latest. If we had other dependencies to upload in the folder, you could do either:
 
 ```bash
 $ sregistry build --name vanessa/llama Singularity .
