@@ -13,8 +13,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
     parse_image_name,
-    remove_uri,
-    get_uri
+    remove_uri
 )
 
 from requests_toolbelt import (
@@ -23,7 +22,6 @@ from requests_toolbelt import (
 )
 
 import requests
-import sys
 import os
 
 
@@ -52,9 +50,14 @@ def build(self, path, name, extra=None):
     if "google_build" not in extra:
         bot.exit('Please include --builder google_build as the last extra arugment for Google Cloud Build')
 
+    builder_type = None
     for builder_type in extra:
         if builder_type in valid:
             break
+
+    # Must have valid builder type
+    if builder_type is None:
+        bot.exit("Invalid builder type.")
 
     # Extract the metadata
     names = parse_image_name(remove_uri(name))
