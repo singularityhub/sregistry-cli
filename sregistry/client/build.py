@@ -16,7 +16,7 @@ import re
 def main(args, parser, extra):
     from sregistry.main import get_client
     
-    cli = get_client(quiet=args.quiet)
+    cli = get_client(image=args.name, quiet=args.quiet)
     cli.announce(args.command)
 
     # If the client doesn't have the command, exit
@@ -25,17 +25,16 @@ def main(args, parser, extra):
         bot.exit(msg % cli.client_name)
 
     # Singularity Registry Server uses build with a recipe
-    if cli.client_name == 'registry':
-        response = run_registry_build(cli, args)
-
     if cli.client_name == 'google-build':
         response = run_google_build(cli, args)
         
     elif cli.client_name == "google-storage":
         response = run_compute_build(cli, args)
 
+    # Currently allows for google_build
     else:
-        bot.exit('%s is not supported for build.' % cli.client.name)
+        bot.warning("No URI specified, assuming Singularity Registry with Builder")
+        response = run_registry_build(cli, args, extra)
 
     # If the client wants to preview, the config is returned
     if args.preview is True:
@@ -120,7 +119,7 @@ def run_compute_build(cli, args):
                      preview=args.preview)
 
 
-def run_registry_build(cli, args):
+def run_registry_build(cli, args, extra):
     '''a registry build pushes a recipe file to Singularity Registry Server,
        or given that a GitHub Url is provided, we build from there. For more
        regular building, the user is suggested to directly connect the 
@@ -133,10 +132,12 @@ def run_registry_build(cli, args):
 
     recipe = args.commands.pop(0)
     response = cli.build(name=args.name,
-                         recipe=recipe)
+                         path=recipe,
+                         extra=extra)
 
     # Print output to the console
-    print_output(response, args.outfile)
+    if response is not None:
+        print_output(response, args.outfile)
     return response
 
 

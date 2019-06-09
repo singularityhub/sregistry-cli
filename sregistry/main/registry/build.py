@@ -36,8 +36,6 @@ def build(self, path, name, extra=None):
 
     if extra is None:
         extra = {}
-    print(extra)
-    sys.exit(0)
 
     if not os.path.exists(path):
         bot.exit('%s does not exist.' % path)
@@ -48,13 +46,15 @@ def build(self, path, name, extra=None):
     # Interaction with a registry requires secrets
     self.require_secrets()
 
-    # The prefix (uri) defines the kind of builder
-    builder_type = (get_uri(name, validate=False) or 
-                    os.environ.get('SREGISTRY_BUILD_TYPE'))
+    valid = ['google_build']
 
     # Only one valid type
-    if builder_type != "google_build":
-        bot.exit('Please include google_build:// to specify Google Cloud Build')
+    if "google_build" not in extra:
+        bot.exit('Please include --builder google_build as the last extra arugment for Google Cloud Build')
+
+    for builder_type in extra:
+        if builder_type in valid:
+            break
 
     # Extract the metadata
     names = parse_image_name(remove_uri(name))
@@ -96,8 +96,7 @@ def build(self, path, name, extra=None):
     try:
         r = requests.post(url, data=monitor, headers=headers)
         r.raise_for_status()
-        message = r.json()['message']
-        print('\n[Return status {0} {1}]'.format(r.status_code, message))
+        print('\n[Return status {0} Created]'.format(r.status_code))
     except requests.HTTPError as e:
         print('\nRecipe upload failed: {0}.'.format(e))
     except KeyboardInterrupt:
