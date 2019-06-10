@@ -133,7 +133,7 @@ def run_registry_build(cli, args, extra):
 
     recipe = args.commands.pop(0)
     response = cli.build(name=args.name,
-                         path=recipe,
+                         recipe=recipe,
                          extra=extra)
 
     # Print output to the console

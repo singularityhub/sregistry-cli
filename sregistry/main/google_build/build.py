@@ -184,7 +184,7 @@ def build_repo(self,
 
     # First preference to command line, then recipe tag
     _, tag = os.path.splitext(recipe)
-    tag = names.get('tag', tag).strip('.')
+    tag = (tag or names.get('tag')).strip('.')
 
     # Update the tag, if recipe provides one
     names = parse_image_name(remove_uri(repo), tag=tag)
