@@ -37,7 +37,7 @@ def main(args, parser, extra):
         response = run_registry_build(cli, args, extra)
 
     # If the client wants to preview, the config is returned
-    if args.preview is True:
+    if args.preview:
         print(json.dumps(response, indent=4, sort_keys=True))
 
 
@@ -68,7 +68,8 @@ def run_google_build(cli, args):
                              preview=args.preview)
 
     # Print output to the console
-    print_output(response, args.outfile)
+    if not args.preview:
+        print_output(response, args.outfile)
     return response
 
 
@@ -152,22 +153,23 @@ def print_output(response, output_file=None):
 
     '''
     # If successful built, show container uri
-    if response['status'] == 'SUCCESS':
-        bucket = response['artifacts']['objects']['location']
-        obj = response['artifacts']['objects']['paths'][0]
-        bot.custom("MD5HASH", response['file_hash'], 'CYAN')
-        bot.custom("SIZE", response['size'], 'CYAN')
-        bot.custom(response['status'], bucket + obj , 'CYAN')
-    else:
-        bot.custom(response['status'], 'see logs for details', 'CYAN')
+    if "status" in response:
+        if response['status'] == 'SUCCESS':
+            bucket = response['artifacts']['objects']['location']
+            obj = response['artifacts']['objects']['paths'][0]
+            bot.custom("MD5HASH", response['file_hash'], 'CYAN')
+            bot.custom("SIZE", response['size'], 'CYAN')
+            bot.custom(response['status'], bucket + obj , 'CYAN')
+        else:
+            bot.custom(response['status'], 'see logs for details', 'CYAN')
 
-    # Show the logs no matter what
-    bot.custom("LOGS", response['logUrl'], 'CYAN')
+        # Show the logs no matter what
+        bot.custom("LOGS", response['logUrl'], 'CYAN')
 
-    # Did the user make the container public?
-    if "public_url" in response:
-        bot.custom('URL', response['public_url'], 'CYAN')
-
+        # Did the user make the container public?
+        if "public_url" in response:
+            bot.custom('URL', response['public_url'], 'CYAN')
+  
     # Does the user also need writing to an output file?
     if output_file is not None:    
         with open(output_file, 'w') as filey:

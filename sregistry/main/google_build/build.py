@@ -49,6 +49,7 @@ def build(self, name,
                 context=None, 
                 preview=False,
                 headless=False,
+                working_dir=None,
                 webhook=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a name
@@ -62,6 +63,7 @@ def build(self, name,
        context: the dependency files needed for the build. If not defined, only
                 the recipe is uploaded.
        preview: if True, preview but don't run the build
+       working_dir: The working directory for the build. Defaults to pwd.
        headless: If true, don't track the build, but submit and provide
                  an endpoint to send a response to.
 
@@ -74,6 +76,7 @@ def build(self, name,
 
     '''
     bot.debug("BUILD %s" % recipe)
+
     build_package = [recipe]
 
     if context:
@@ -83,7 +86,8 @@ def build(self, name,
             context = glob(os.getcwd() + '/**/*', recursive=True)
         build_package = build_package + context
         
-    package = create_build_package(build_package)
+    # We need to get and save relative paths for the config.
+    package = create_build_package(build_package, working_dir)
 
     # Does the package already exist? If the user cached, it might
     destination='source/%s' % os.path.basename(package)
@@ -105,6 +109,9 @@ def build(self, name,
 
     # The name should include the complete uri so it's searchable
     name = os.path.basename(names['tag_uri'])
+
+    # Update the recipe name to use a relative path
+    recipe = get_relative_path(recipe, working_dir)
 
     # Load the build configuration (defaults to local)
     config = self._load_build_config(name=name,
@@ -220,7 +227,7 @@ def build_repo(self,
     # If preview is True, we return the config
     return config
 
-def create_build_package(package_files):
+def create_build_package(package_files, working_dir=None):
     '''given a list of files, copy them to a temporary folder,
        compress into a .tar.gz, and rename based on the file hash.
        Return the full path to the .tar.gz in the temporary folder.
@@ -228,6 +235,8 @@ def create_build_package(package_files):
        Parameters
        ==========
        package_files: a list of files to include in the tar.gz
+       working_dir: If set, the path derived for the recipe and
+                    files is relative to this.
 
     '''
     # Ensure package files all exist
@@ -240,9 +249,12 @@ def create_build_package(package_files):
     build_tar = '%s/build.tar.gz' % build_dir
     tar = tarfile.open(build_tar, "w:gz")
 
-    # Create the tar.gz
+    # Create the tar.gz, making sure relative to working_dir
     for package_file in package_files:
-        tar.add(package_file)
+ 
+        # Get a relative path
+        relative_path = get_relative_path(package_file, working_dir)
+        tar.add(package_file, arcname=relative_path)
     tar.close()
 
     # Get hash (sha256), and rename file
@@ -250,6 +262,28 @@ def create_build_package(package_files):
     hash_tar =  "%s/%s.tar.gz" %(build_dir, sha256)
     shutil.move(build_tar, hash_tar)
     return hash_tar
+
+
+def get_relative_path(filename, working_dir=None):
+    '''given a filename and a working directory, return
+       a relative path for the builder to use. This means
+       removing the working directory from the filename
+
+       Parameters
+       ==========
+       filename: the name of the file to get a path for
+       working_dir: if not None, remove from paths.
+    '''
+    relative_path = filename
+
+    # If a working directory is provided, it must end with / 
+    if working_dir is not None:
+        if not working_dir.endswith(os.sep):
+            working_dir = "%s%s" %(working_dir, os.sep)
+
+    if working_dir is not None:
+        relative_path = filename.replace(working_dir, '') 
+    return relative_path
 
 
 def add_webhook(config, webhook):
