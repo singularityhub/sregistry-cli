@@ -422,7 +422,7 @@ environment variables and provide them in a dictionary.
 ```python
 # Provide all envars directly to client instead of environment
 context = {'GOOGLE_APPLICATION_CREDENTIALS': GOOGLE_APPLICATION_CREDENTIALS,
-           'SREGISTRY_GOOGLE_PROJECT': settings.SREGISTRY_GOOGLE_PROJECT}
+           'SREGISTRY_GOOGLE_PROJECT': SREGISTRY_GOOGLE_PROJECT}
 ```
 
 And then provide them to the get_client function:
@@ -431,22 +431,6 @@ And then provide them to the get_client function:
 from sregistry.main.google_build.client import get_client
 client = get_client(debug=True, **context)
 ```
-
-#### Working Directory
-
-If you web application runs from a particular context that you cannot
-change, a server using the client will not work properly 
-if you change directory to where the recipe is. For this reason,
-you can supply a working directory. For this working directory,
-we will remove it from the full paths (so the Google Build
-will happen relative to it). By default, the working directory
-is not set, indicative that the build context is the present working
-directory.
-
-```bash
-
-```
-
 
 
 ## Pull and Search
