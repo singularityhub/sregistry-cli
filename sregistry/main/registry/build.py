@@ -25,11 +25,11 @@ import requests
 import os
 
 
-def build(self, path, name, extra=None):
+def build(self, recipe, name, extra=None):
     '''push a recipe file to Singularity Registry server for a Google
        Cloud (or similar) build
     '''
-    path = os.path.abspath(path)
+    path = os.path.abspath(recipe)
     bot.debug("BUILD %s" % path)
 
     if extra is None:

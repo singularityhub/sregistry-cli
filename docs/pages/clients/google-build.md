@@ -69,6 +69,7 @@ Let's get off to a running start and build! We have two options for building:
 
  1. Build from a Local Recipe
  2. Build from a GitHub repository
+ 3. More Complicated Builds
 
 The second is recommended, as it is more reproducible, but there are use cases for
 both.
@@ -305,7 +306,26 @@ If you have a context, just specify it.
                           context=context)
 ```
 
-The output will be the same as shown previously. You are again encouraged to look at the logs
+Or if you want to specify a different working directory (that is removed
+from the path of the recipe and any files provided with "context" you can do
+that too:
+
+
+```python
+
+> recipe = "/tmp/test/Singularity"      
+> name = 'vanessa/avocados'
+
+> response = client.build(name=name,
+                          recipe=recipe,
+                          working_dir="/tmp/test")
+
+```
+
+In the above example, we want the builder's present working directory to be
+`/tmp/test`, so the recipe will be stripped of this path. If you are building
+with a recipe that is a relative path or in the present working directory,
+you shouldn't need to do this given that the builder expects the same path. The output will be the same as shown previously. You are again encouraged to look at the logs
 link if the build isnt' a success. With the interactive shell mode, you can also provide the `preview` argument to just inspect the configuration for the build: 
 
 ```bash
@@ -385,6 +405,32 @@ from Github:
 You'll notice that the first step is to clone the repository. If we provided a branch
 or commit as argument, the following step would be to check it out. We then build again,
 and save the image to storage.
+
+
+### 3. More Complicated Builds
+
+If you are working on a server environment, you may not want to
+build from the present working directory (the active directory of
+your application) and you might not want to rely on the environment 
+for discovering variables. In this case, you have other options.
+
+#### Client Envars
+
+Before instantiating a client, you can provide as many of the
+environment variables and provide them in a dictionary.
+
+```python
+# Provide all envars directly to client instead of environment
+context = {'GOOGLE_APPLICATION_CREDENTIALS': GOOGLE_APPLICATION_CREDENTIALS,
+           'SREGISTRY_GOOGLE_PROJECT': SREGISTRY_GOOGLE_PROJECT}
+```
+
+And then provide them to the get_client function:
+
+```python
+from sregistry.main.google_build.client import get_client
+client = get_client(debug=True, **context)
+```
 
 
 ## Pull and Search
