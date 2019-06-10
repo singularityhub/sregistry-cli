@@ -210,8 +210,7 @@ def stream(self, url,
         retry: should the client retry? (intended for use after token refresh)
                by default we retry once after token refresh, then fail.
     '''
-
-    bot.debug("GET %s" %url)
+    bot.debug("GET %s" % url)
 
     # Ensure headers are present, update if not
     if headers is None:

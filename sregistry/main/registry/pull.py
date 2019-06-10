@@ -20,19 +20,19 @@ import os
 def pull(self, images, file_name=None, save=True, **kwargs):
     '''pull an image from a singularity registry
  
-    Parameters
-    ==========
-    images: refers to the uri given by the user to pull in the format
-    <collection>/<namespace>. You should have an API that is able to 
-    retrieve a container based on parsing this uri.
-    file_name: the user's requested name for the file. It can 
-               optionally be None if the user wants a default.
-    save: if True, you should save the container to the database
-          using self.add()
+        Parameters
+        ==========
+        images: refers to the uri given by the user to pull in the format
+        <collection>/<namespace>. You should have an API that is able to 
+        retrieve a container based on parsing this uri.
+        file_name: the user's requested name for the file. It can 
+                   optionally be None if the user wants a default.
+        save: if True, you should save the container to the database
+              using self.add()
     
-    Returns
-    =======
-    finished: a single container path, or list of paths
+        Returns
+        =======
+        finished: a single container path, or list of paths
     '''
 
     if not isinstance(images,list):
@@ -41,7 +41,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     # Interaction with a registry requires secrets
     self.require_secrets()
 
-    bot.debug('Execution of PULL for %s images' %len(images))
+    bot.debug('Execution of PULL for %s images' % len(images))
 
     finished = []
     for image in images:
@@ -76,11 +76,11 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         if isinstance(manifest, Response):
 
             # Requires token
-            if manifest.status_code == 403:
+            if manifest.status_code in [403, 401]:
 
                 SREGISTRY_EVENT = self.authorize(request_type="pull",
                                                  names=q)
-                headers = {'Authorization': SREGISTRY_EVENT }
+                headers = {'Authorization': SREGISTRY_EVENT}
                 self._update_headers(headers)
                 manifest = self._get(url)
 
@@ -105,6 +105,9 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
             if file_name is None:
                 file_name = q['storage'].replace('/','-')
+
+            # Clear headers of previous token
+            self._reset_headers()
     
             # Show progress if not quiet
             image_file = self.download(url=manifest['image'],
