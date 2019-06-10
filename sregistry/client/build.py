@@ -57,7 +57,8 @@ def run_google_build(cli, args):
 
     # If Github.com is provided in the name, we are doing a GitHub build
     if re.search("github.com|gitlab.com", args.name):
-        response = cli.build_repo(repo=args.name,
+        name = args.name.replace('google-build://', '')
+        response = cli.build_repo(repo=name,
                                   recipe=recipe,
                                   preview=args.preview)
 

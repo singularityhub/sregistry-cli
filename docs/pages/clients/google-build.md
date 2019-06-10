@@ -72,7 +72,9 @@ Let's get off to a running start and build! We have two options for building:
  3. More Complicated Builds
 
 The second is recommended, as it is more reproducible, but there are use cases for
-both.
+both. You can continue reading below, or watch the tutorial here:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Mm0Hs6NTvMc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### 1. Build from a Local Recipe
 
