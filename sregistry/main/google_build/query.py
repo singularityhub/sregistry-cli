@@ -18,11 +18,9 @@ def search(self, query=None, args=None):
        query is provided, all images in the bucket are listed that have type
        "container" in the metadata and client "sregistry"
     '''
-
     if query is not None:
         return self._container_query(query)
     return self._search_all()
-
 
 
 def list_containers(self):

@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+ - Fixing sregistry search to honor a URI (0.2.22)
  - adding ability to specify working_dir for Google Cloud Build (0.2.21)
  - finalizing registry Google Cloud Builder (0.2.20)
  - adding sregistry build to push recipes for Google Cloud (or other) builder (0.2.19)
