@@ -170,36 +170,50 @@ def rename(self, image_name, path):
     if container:
         if container.image:
 
-            # The original directory for the container stays the same
-            dirname = os.path.dirname(container.image)
-
-            # But we derive a new filename and uri
-
+            # Derive a new filename and url in storage
             names = parse_image_name(remove_uri(path))
-            storage = os.path.join(self.storage,
-                                   os.path.dirname(names['storage']))
+            storage = self._get_storage_name(names)
+            dirname = os.path.dirname(storage)
 
             # This is the collection folder
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
 
-            if not os.path.exists(storage):
-                os.mkdir(storage)
-
-            # Here we get the new full path, rename the container file
-
-            fullpath = os.path.abspath(os.path.join(dirname, names['storage']))
-            container = self.cp(move_to=fullpath,
+            container = self.cp(move_to=storage,
                                 container=container,
                                 command="rename")
 
             # On successful rename of file, update the uri
-
             if container is not None:
-                container.uri = names['uri']
+
+                # Create the collection if doesn't exist
+                collection = self.get_or_create_collection(names['collection'])
+                self.session.commit()
+ 
+                # Then update the container
+                container = update_container_metadata(container, collection, names)
                 self.session.commit()
                 return container
 
-    bot.warning('%s not found' %(image_name))
+    bot.warning('%s not found' % image_name)
 
+
+def update_container_metadata(container, collection, names):
+    '''update container metadata, done for a move or rename. The session
+       is not saved, and needs to be done so by the calling function.
+
+       Parameters
+       ==========
+       container: the container object to update with names
+       collection: the collection to move it to (might be the same)
+       names: the result of parse_image_names
+    '''
+    # Update all metadata for the container
+    container.uri=names['tag_uri']
+    container.name=names['image']
+    container.tag=names['tag']
+    container.collection_id=collection.id
+    return container
 
 
 def mv(self, image_name, path):
@@ -237,7 +251,7 @@ def mv(self, image_name, path):
                 filedir = os.getcwd()
        
             # Copy to the fullpath from the storage
-            fullpath = os.path.abspath(os.path.join(filedir,filename))
+            fullpath = os.path.abspath(os.path.join(filedir, filename))
             return self.cp(move_to=fullpath, 
                            container=container,
                            command="move")
@@ -363,7 +377,7 @@ def add(self, image_path=None,
 
     # An image uri is required for version, tag, etc.
     if image_uri is None:
-        bot.exit('You must provide an image uri <collection>/<namespace>')
+        bot.exit('You must provide an image uri --name <collection>/<namespace>')
 
     names = parse_image_name(remove_uri(image_uri))
     bot.debug('Adding %s to registry' % names['uri'])    
@@ -424,12 +438,12 @@ def add(self, image_path=None,
         action="update"
         metrics=json.loads(container.metrics)
         metrics.update(metadata)
-        container.url= url
-        container.client=self.client_name
+        container.url = url
+        container.client = self.client_name
         if image_path is not None:
             container.image=image_path
         container.metrics=json.dumps(metrics)
 
     self.session.commit()
-    bot.info("[container][%s] %s" % (action, names['uri']))
+    bot.info("[container][%s] %s" % (action, names['tag_uri']))
     return container
