@@ -169,7 +169,7 @@ def rename(self, image_name, path):
         if container.image:
 
             # Derive a new filename and url in storage
-            names = parse_image_name(remove_uri(path))
+            names = parse_image_name(remove_uri(path), version=container.version)
             storage = self._get_storage_name(names)
             dirname = os.path.dirname(storage)
 
