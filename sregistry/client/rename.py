@@ -13,8 +13,8 @@ from sregistry.logger import bot
 def main(args, parser, extra):
 
     from sregistry.main import get_client
-    cli = get_client(debug=args.debug)
-    cli.announce(args.command, quiet=args.quiet)
+    cli = get_client(debug=args.debug, quiet=args.quiet)
+    cli.announce(args.command)
 
     if not hasattr(cli, 'rename'):
         msg = "rename is not implemented for %s. Why don't you add it?"
