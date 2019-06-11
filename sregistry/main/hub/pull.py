@@ -9,7 +9,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
-from sregistry.utils import ( parse_image_name, remove_uri )
+from sregistry.utils import (parse_image_name, remove_uri)
 import os
 
 def pull(self, images, file_name=None, save=True, force=False, **kwargs):
@@ -56,7 +56,7 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         # If the manifest reveals a version, update names 
         if "version" in manifest:
-            q = parse_image_name('%s@%s' %(q['uri'], manifest['version']))
+            q = parse_image_name(remove_uri(image), version=manifest['version'])
 
         if file_name is None:
             file_name = self._get_storage_name(q)
@@ -73,7 +73,9 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
         # If the user is saving to local storage
         if save is True:
+            image_uri = "%s:%s@%s" %(manifest['name'], manifest['tag'], manifest['version'])
             container = self.add(image_path=image_file,
+                                 image_uri=image_uri,
                                  image_name=file_name,
                                  metadata=manifest,
                                  url=manifest['image'])

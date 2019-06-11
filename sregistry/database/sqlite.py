@@ -26,10 +26,9 @@ import shutil
 def get_or_create_collection(self, name):
     '''get a collection if it exists. If it doesn't exist, create it first.
 
-    Parameters
-    ==========
-    name: the collection name, usually parsed from get_image_names()['name']
-
+       Parameters
+       ==========
+       name: the collection name, usually parsed from get_image_names()['name']
     '''
     from sregistry.database.models import Collection
     collection = self.get_collection(name)
@@ -47,10 +46,14 @@ def get_collection(self, name):
     '''get a collection, if it exists, otherwise return None.
     '''
     from sregistry.database.models import Collection
-    return Collection.query.filter(Collection.name == name).first()
+    return Collection.query.filter(Collection.name==name).first()
 
 
-def get_container(self, name, collection_id, tag="latest", version=None):
+def get_container(self, name,
+                        collection_id,
+                        tag="latest",
+                        version=None):
+
     '''get a container, otherwise return None.
     '''
     from sregistry.database.models import Container
@@ -64,8 +67,6 @@ def get_container(self, name, collection_id, tag="latest", version=None):
                                               tag=tag,
                                               version=version).first()
     return container
-
-
 
 
 # ACTIONS ######################################################################
@@ -86,7 +87,6 @@ def get(self, name, quiet=False):
     container = None
 
     if collection:
-
         container = self.get_container(collection_id=collection.id,
                                        name=names['image'], 
                                        tag=names['tag'],
@@ -113,7 +113,6 @@ def images(self, query=None):
        Paramters
        =========
        query: a string to search for in the container or collection name|tag|uri
-
     '''
     from sregistry.database.models import Container
 
@@ -163,7 +162,6 @@ def rename(self, image_name, path):
        ==========
        image_name: the image name (uri) to rename to.
        path: the name to rename (basename is taken)
-
     '''
     container = self.get(image_name, quiet=True)
 
@@ -225,9 +223,7 @@ def mv(self, image_name, path):
        ==========
        image_name: the parsed image name.
        path: the location to move the image to
-
     '''
-
     container = self.get(image_name, quiet=True)
 
     if container is not None:
@@ -268,7 +264,6 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
        image_name: an image_uri to look up a container in the database
        container: the container object to move (must have a container.image
        move_to: the full path to move it to
-
     '''
     if not container and not image_name:
         bot.exit('A container or image_name must be provided to %s' % command)
