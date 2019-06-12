@@ -53,16 +53,14 @@ def test_check_install():
     If no command is provided, singularity is assumed to be the test case'''
     print("Testing utils.check_install")
     from sregistry.utils import check_install
-    is_installed = check_install()
+    is_installed = check_install('echo')
     assert is_installed
     is_not_installed = check_install('fakesoftwarename')
     assert not is_not_installed
-    assert check_install('echo')
-    assert not check_install('echoooo')
 
 def test_get_installdir():
-    '''get install directory should return the base of where singularity
-    is installed
+    '''get install directory should return the base of where sregistry
+       is installed
     '''
     print("Testing utils.get_installdir")
     from sregistry.utils import get_installdir
@@ -139,8 +137,8 @@ def test_get_thumbnail():
 def test_which():
     print("Testing utils.which")
     from sregistry.utils import which
-    result = which('singularity')
-    assert result['message'].endswith('singularity')
+    result = which('echo')
+    assert result['message'].endswith('echo')
     assert result['return_code'] == 0
     result = which('singularityaaaa')
     assert result['message'] == ''
