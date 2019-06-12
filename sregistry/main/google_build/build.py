@@ -287,11 +287,12 @@ def get_relative_path(filename, working_dir=None):
 
 
 def add_webhook(config, webhook):
-    '''add a webhook to a config.
+    '''add a webhook to a config. We assume that the sha256 is calculated in 
+       the present working directory.
     '''
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", "\"{'id':'$BUILD_ID'}\"", "-X", "POST", webhook]})
+        "args":  ["-d", "\"{'id':'$BUILD_ID', 'hash': '$(cat SHA256SUM)'}\"", "-X", "POST", webhook]})
     return config
 
 
@@ -330,6 +331,12 @@ def load_build_config(self, name, recipe,
 
     # We need to create the equivalent directory for the image
     folder_name = os.path.dirname(storage_name)
+
+    # Insert the step to calculate a hash (happens after build)
+    sha256_command = 'sha256sum %s | cut -c 1-64 > SHA256SUM' % container_name
+    config['steps'].insert(0, {'args': ['-c', sha256_command],
+                               'entrypoint': '/bin/bash',
+                               'name': 'ubuntu'})
 
     # Insert the build step (second step)
     config['steps'].insert(0, {'args': ['build', container_name, recipe],
