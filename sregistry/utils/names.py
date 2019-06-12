@@ -13,22 +13,6 @@ import hashlib
 import re
 
 
-def get_image_hash(image_path):
-    '''return an md5 hash of the file based on a criteria level. This
-       is intended to give the file a reasonable version.
-    
-       Parameters
-       ==========
-       image_path: full path to the singularity image
-
-    '''
-    hasher = hashlib.md5()
-    with open(image_path, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hasher.update(chunk)
-    return hasher.hexdigest()
-
-
 # Regular expressions to parse registry, collection, repo, tag and version
 _docker_uri = re.compile(
     "(?:(?P<registry>[^/@]+[.:][^/@]*)/)?"
@@ -149,20 +133,17 @@ def parse_image_name(image_name,
 
     # Tag is defined
     if repo_tag is not None:
-        uri = "%s-%s" % (uri, repo_tag)
-        tag_uri = "%s:%s" % (url, repo_tag) 
+        uri = "%s:%s" % (url, repo_tag) 
 
     # Version is defined
     storage_version = None
     if version is not None:
         uri = "%s@%s" % (uri, version)
-        tag_uri = "%s@%s" % (tag_uri, version) 
         storage_version = "%s.%s" % (uri, ext)
 
     # A second storage URI honors the tag (:) separator
 
     storage = "%s.%s" %(uri, ext)
-    storage_uri = "%s.%s" %(tag_uri, ext)
     result = {"collection": collection,
               "original": original,
               "registry": registry,
@@ -170,25 +151,10 @@ def parse_image_name(image_name,
               "url": url,
               "tag": repo_tag,
               "version": version,
-              "storage": storage,
-              "storage_uri": storage_uri,
-              "storage_version": storage_version or storage_uri,
-              "tag_uri": tag_uri,
+              "storage": storage_version or storage,
               "uri": uri}
 
     return result
-
-
-def format_container_name(name, special_characters=None):
-    '''format_container_name will take a name supplied by the user,
-    remove all special characters (except for those defined by "special-characters"
-    and return the new image name.
-    '''
-    if special_characters is None:
-        special_characters = []
-    return ''.join(e.lower()
-                   for e in name if e.isalnum() or e in special_characters)
-
 
 def get_uri(image, validate=True):
     '''get the uri for an image, if within acceptable
@@ -245,3 +211,20 @@ def remove_uri(image):
 
     '''
     return re.sub('^.+://','', image)
+
+
+def get_recipe_tag(path):
+    '''get a recipe tag (the extension of a Singularity file). The extension
+       determines the tag. If no extension is found, latest is used.
+
+       Parameters
+       ==========
+       path: the path to the recipe file (e.g. /opt/Singularity.tag)
+
+    '''
+    tag = None
+    if re.search("Singularity", path):
+        tag = re.sub('(.+)?Singularity[.]?','', path)
+        if tag in ['', None]:
+            tag = 'latest'
+    return tag

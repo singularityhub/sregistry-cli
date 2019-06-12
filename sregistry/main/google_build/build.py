@@ -11,6 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import (
     get_file_hash,
+    get_recipe_tag,
     get_tmpdir,
     parse_image_name,
     remove_uri
@@ -108,7 +109,7 @@ def build(self, name,
     prefix = "%s/" % names['collection']
 
     # The name should include the complete uri so it's searchable
-    name = os.path.basename(names['tag_uri'])
+    name = os.path.basename(names['uri'])
 
     # Update the recipe name to use a relative path
     recipe = get_relative_path(recipe, working_dir)
@@ -183,8 +184,7 @@ def build_repo(self,
     bot.debug("REPO %s" % repo)
 
     # First preference to command line, then recipe tag
-    _, tag = os.path.splitext(recipe)
-    tag = (tag or names.get('tag')).strip('.')
+    tag = get_recipe_tag(recipe) or names.get('tag')
 
     # Update the tag, if recipe provides one
     names = parse_image_name(remove_uri(repo), tag=tag)
@@ -193,7 +193,7 @@ def build_repo(self,
     prefix = "%s/" % names['collection']
 
     # The name should include the complete uri so it's searchable
-    name = os.path.basename(names['tag_uri'])
+    name = os.path.basename(names['uri'])
 
     if commit or branch:
         name = "%s@%s" %(name, (commit or branch))
