@@ -106,11 +106,11 @@ dockerbuild: &dockerbuild
 
 
 install_python: &install_python
-    name: Install pylint and pytest
-    command: |
-        which python
-        python --version
-        sudo pip3 install --upgrade pylint pytest
+  name: Install pylint and pytest
+  command: |
+      which python
+      python --version
+      sudo pip3 install --upgrade pylint pytest
 
 # Test Singularity Registry Client
 
