@@ -8,18 +8,15 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-import datetime
 import hashlib
 import errno
 import os
 import pwd
 import shutil
 import tempfile
-import tarfile
 
 import json
 from sregistry.logger import bot
-import io
 
 
 ################################################################################
@@ -155,19 +152,6 @@ def _extract_tar(archive, output_folder):
         print("Extracting %s" % archive)
 
     return run_command(command)
-
-
-def get_content_hash(contents):
-    '''get_content_hash will return a hash for a list of content (bytes/other)
-    '''
-    hasher = hashlib.sha256()
-    for content in contents:
-        if isinstance(content, io.BytesIO):
-            content = content.getvalue()
-        if not isinstance(content, bytes):
-            content = bytes(content)
-        hasher.update(content)
-    return hasher.hexdigest()
 
 
 def get_file_hash(image_path, algorithm='sha256'):

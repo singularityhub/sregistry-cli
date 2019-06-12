@@ -9,6 +9,12 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 '''
 
 from sregistry.logger import bot
+import datetime
+import hashlib
+import io
+import os
+import tempfile
+import tarfile
 
 def get_template(name):
     '''return a default template for some function in sregistry
@@ -97,3 +103,16 @@ def create_tar(files, output_folder=None):
         bot.debug(msg)
 
     return finished_tar
+
+
+def get_content_hash(contents):
+    '''get_content_hash will return a hash for a list of content (bytes/other)
+    '''
+    hasher = hashlib.sha256()
+    for content in contents:
+        if isinstance(content, io.BytesIO):
+            content = content.getvalue()
+        if not isinstance(content, bytes):
+            content = bytes(content)
+        hasher.update(content)
+    return hasher.hexdigest()
