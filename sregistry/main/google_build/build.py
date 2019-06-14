@@ -334,7 +334,6 @@ def load_build_config(self, name, recipe,
 
     # Insert the step to calculate a hash (happens after build)
     sha256 = '%s.sha256' % name                  # relative path
-    sha256_storage = "%s%s" %(prefix, sha256)    # storage path
     sha256_command = 'sha256sum %s | cut -c 1-64 > %s' %(container_name, sha256)
     config['steps'].insert(0, {'args': ['-c', sha256_command],
                                'entrypoint': '/bin/bash',
@@ -348,7 +347,7 @@ def load_build_config(self, name, recipe,
     bucket_location = "gs://%s/%s/" % (self._bucket_name, folder_name)
 
     config["artifacts"]["objects"]["location"] = bucket_location
-    config["artifacts"]["objects"]["paths"] = [container_name, sha256_storage]
+    config["artifacts"]["objects"]["paths"] = [container_name, sha256]
 
     return config
                 
