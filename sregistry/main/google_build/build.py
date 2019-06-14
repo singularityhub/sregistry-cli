@@ -440,7 +440,7 @@ def finish_build(self, build_id,
         # Does the user want to keep the container private?
         env = 'SREGISTRY_GOOGLE_STORAGE_PRIVATE'
         blob_location = get_blob_location(response, self._bucket_name)
-        blob = self._bucket.blob(blob_location)
+        blob = self._bucket.get_blob(blob_location)
         
         # Make Public, if desired
         if not self._get_and_update_setting(env, self.envars.get(env)):
