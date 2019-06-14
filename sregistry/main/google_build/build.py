@@ -292,7 +292,7 @@ def add_webhook(config, webhook):
     '''
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", "\"{'id':'$BUILD_ID', 'hash': \"$(cat SHA256SUM)\"}\"", "-X", "POST", webhook]})
+        "args":  ["-d", "\"{'id':'$BUILD_ID'}\"", "-X", "POST", webhook]})
     return config
 
 
@@ -325,9 +325,10 @@ def load_build_config(self, name, recipe,
     # Get the build template based on its name
     config = get_build_template(template)
 
-    # Name is in format 'dinosaur/container-latest'
+    # Name is in format 'dinosaur/container:latest'
     storage_name = '%s%s.sif' %(prefix, name)
     container_name = os.path.basename(storage_name)
+    sha256_name = '%sSHA256SUM' % prefix
 
     # We need to create the equivalent directory for the image
     folder_name = os.path.dirname(storage_name)
@@ -346,7 +347,7 @@ def load_build_config(self, name, recipe,
     bucket_location = "gs://%s/%s/" % (self._bucket_name, folder_name)
 
     config["artifacts"]["objects"]["location"] = bucket_location
-    config["artifacts"]["objects"]["paths"] = [container_name]
+    config["artifacts"]["objects"]["paths"] = [container_name, sha256_name]
 
     return config
                 
