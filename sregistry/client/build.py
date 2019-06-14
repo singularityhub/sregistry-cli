@@ -15,7 +15,11 @@ import re
 
 def main(args, parser, extra):
     from sregistry.main import get_client
-    
+
+    if args.name is None:
+        msg = "You must add the --name of a container uri to build."
+        bot.exit(msg)
+
     cli = get_client(image=args.name, quiet=args.quiet)
     cli.announce(args.command)
 

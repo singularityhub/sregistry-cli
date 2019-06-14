@@ -292,7 +292,7 @@ def add_webhook(config, webhook):
     '''
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", "\"{'id':'$BUILD_ID', 'hash': '$(cat SHA256SUM)'}\"", "-X", "POST", webhook]})
+        "args":  ["-d", "\"{'id':'$BUILD_ID', 'hash': \"$(cat SHA256SUM)\"}\"", "-X", "POST", webhook]})
     return config
 
 

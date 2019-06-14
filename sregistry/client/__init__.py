@@ -28,6 +28,10 @@ def get_parser():
                         help="suppress additional output.", 
                         default=False, action='store_true')
 
+    parser.add_argument('--version', dest="version", 
+                        help="suppress additional output.", 
+                        default=False, action='store_true')
+
     description = 'actions for Singularity Registry Global Client'
     subparsers = parser.add_subparsers(help='sregistry actions',
                                        title='actions',
@@ -287,7 +291,7 @@ def main():
         os.environ['MESSAGELEVEL'] = "DEBUG"
 
     # Show the version and exit
-    if args.command == "version":
+    if args.command == "version" or args.version:
         print(sregistry.__version__)
         sys.exit(0)
 
