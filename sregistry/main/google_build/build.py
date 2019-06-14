@@ -337,7 +337,9 @@ def load_build_config(self, name, recipe,
 
     # Last step: tag the blog with the sha256 sum
     bucket_sif = '%s%s' %(bucket_location, container_name)
-    config['steps'].insert(0, {'args': ["setmeta", "-h", "x-goog-meta-sha256sum:$(cat SHA256SUM)", bucket_sif],
+    metadata_command = "gsutil setmeta -h x-goog-meta-sha256sum:$(cat SHA256SUM) %s" % bucket_sif
+    config['steps'].insert(0, {'args': ["-c", metadata_command],
+                               'entrypoint': "/bin/bash",
                                'name': 'gcr.io/cloud-builders/gsutil'})
 
     # Second to last step: manually upload the blob
