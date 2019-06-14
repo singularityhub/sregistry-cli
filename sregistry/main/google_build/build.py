@@ -487,7 +487,6 @@ def update_blob_metadata(blob, response, bucket, config=None):
     metadata = blob.metadata or {}
 
     metadata.update({'crc32c': blob.crc32c,
-                     'sha256sum': blob_metadata.get('sha256sum'),
                      'media_link': blob.media_link,
                      'self_link': blob.self_link,
                      'md5sum': blob.md5_hash,
