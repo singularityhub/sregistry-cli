@@ -30,6 +30,7 @@ import tarfile
 import shutil
 import json
 import os
+import re
 
 ################################################################################
 # Manual Build Logic
@@ -356,6 +357,9 @@ def load_build_config(self, name, recipe,
     config['steps'].insert(0, {'args': ['build', container_name, recipe],
                                'name': 'singularityware/singularity:%s' % version})
 
+    # We need to "double upload" to create the manifest.
+    config["artifacts"]["objects"]["location"] = bucket_location
+    config["artifacts"]["objects"]["paths"] = [container_name]
 
     return config
                 
@@ -416,7 +420,10 @@ def build_status(self, build_id):
     return response
    
 
-def finish_build(self, build_id, config=None, response=None):
+def finish_build(self, build_id, 
+                       config=None, 
+                       response=None):
+
     '''finish a build, meaning if the build was successful, we check the
        user preference to make it private. If it's set, we leave it 
        private. Otherwise, we make it public (default).
@@ -424,6 +431,8 @@ def finish_build(self, build_id, config=None, response=None):
        Parameters
        ==========
        build_id: the build id returned from submission to track the build.
+       config: optionally provide a config to get metadata from for the blob
+       response: if we've already gotten a response status, include here
     '''
     # Get the build status, we will only complete on SUCCESS
     if not response:
@@ -442,30 +451,35 @@ def finish_build(self, build_id, config=None, response=None):
             blob.make_public()
             response['public_url'] = unquote(blob.public_url)
 
-        # Add the metadata directly to the object
-        update_blob_metadata(blob=blob, 
-                             response=response,
-                             config=config, 
-                             bucket=self._bucket)
-
-        response['media_link'] = blob.media_link
-        response['size'] = blob.size
-        response['file_hash'] = blob.md5_hash
+        # Add the metadata directly to the object, return updaated response
+        response = update_blob_metadata(blob=blob, 
+                                        response=response,
+                                        config=config, 
+                                        bucket=self._bucket)
 
     return response
 
 
-def get_blob_location(response, bucket_name):
-    '''return a relative path for a blob, meaning we:
-       1. remove the bucket name
-       2. strip the gs:// address
+def get_blob_location(response, bucket):
+    '''return a relative path for a blob based on finding the build step,
+       and the container built from it.
+
+       Parameters
+       ==========
+       response: the response from client._build_status(build_id)
+       bucket: the name of the build bucket.
+
     '''
-    location = (response['artifacts']['objects']['location'] + 
-                response['artifacts']['objects']['paths'][0])
-    location = location.replace(bucket_name, '')
-    location = location.replace('gs:///', '', 1)
-    location = location.replace('gs://', '', 1) # in case included bucket name
-    return location.strip('/')
+    # Find the build step, it uses singularityware as a builder
+    build_step = [x for x in response['steps'] 
+                    if x['name'] == 'gcr.io/cloud-builders/gsutil' and
+                    x['args'][0] == 'cp']
+
+    # This is fragile, but we have to get the container name
+    if len(build_step) > 0:
+        location = build_step[0]['args'][-1]
+        return re.sub('(gs://%s|%s)' %(bucket, bucket), '', location).strip('/')
+    bot.exit("Cannot find build step with %s" % base_image)
 
 
 def update_blob_metadata(blob, response, bucket, config=None):
@@ -485,8 +499,10 @@ def update_blob_metadata(blob, response, bucket, config=None):
     metadata = {'file_hash': manifest['file_hash'][0]['file_hash'][0]['value'],
                 'artifactManifest': response['results']['artifactManifest'],
                 'location': manifest['location'],              
+                'sha256sum': manifest['sha256sum'],
                 'media_link': blob.media_link,
                 'self_link': blob.self_link,
+                'md5sum': blob.md5_hash,
                 'size': blob.size,
                 'type': "container"} # identifier that the blob is a container
 
@@ -500,6 +516,9 @@ def update_blob_metadata(blob, response, bucket, config=None):
             metadata['storageSourceBucket'] = config['source']['storageSource']['bucket']
             metadata['storageSourceObject'] = config['source']['storageSource']['object']
 
-    blob.metadata = metadata   
+    # Update the response, keeping data structure flat (and we don't overwrite)
+    response.update(metadata)
+    blob.metadata = metadata
     blob._properties['metadata'] = metadata
     blob.patch()
+    return response

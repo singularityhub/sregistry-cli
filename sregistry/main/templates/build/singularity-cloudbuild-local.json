@@ -5,5 +5,11 @@
           "bucket": null,
           "object": null
     }
+  },
+  "artifacts": {
+    "objects": {
+       "location": null,
+        "paths": []
+     }
   }
 }
