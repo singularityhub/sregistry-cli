@@ -332,9 +332,20 @@ def load_build_config(self, name, recipe,
     # We need to create the equivalent directory for the image
     folder_name = os.path.dirname(storage_name)
 
-    # Insert the step to calculate a hash (happens after build)
-    sha256 = '%s.sha256' % name                  # relative path
-    sha256_command = 'sha256sum %s | cut -c 1-64 > %s' %(container_name, sha256)
+    # The bucket location should have the uri
+    bucket_location = "gs://%s/%s/" % (self._bucket_name, folder_name)
+
+    # Last step: tag the blog with the sha256 sum
+    bucket_sif = 'gs://%s/%s' %(bucket_location, container_name)
+    config['steps'].insert(0, {'args': ["setmeta", "-h", "sha256sum:$(cat SHA256SUM)", bucket_sif],
+                               'name': 'gcr.io/cloud-builders/gsutil'})
+
+    # Second to last step: manually upload the blob
+    config['steps'].insert(0, {'args': ['cp', container_name, bucket_sif ],
+                               'name': 'gcr.io/cloud-builders/gsutil'})
+
+    # Calculate a hash (happens after build)
+    sha256_command = 'sha256sum %s | cut -c 1-64 > SHA256SUM' % container_name
     config['steps'].insert(0, {'args': ['-c', sha256_command],
                                'entrypoint': '/bin/bash',
                                'name': 'ubuntu'})
@@ -343,11 +354,6 @@ def load_build_config(self, name, recipe,
     config['steps'].insert(0, {'args': ['build', container_name, recipe],
                                'name': 'singularityware/singularity:%s' % version})
 
-    # The bucket location should have the uri
-    bucket_location = "gs://%s/%s/" % (self._bucket_name, folder_name)
-
-    config["artifacts"]["objects"]["location"] = bucket_location
-    config["artifacts"]["objects"]["paths"] = [container_name, sha256]
 
     return config
                 
