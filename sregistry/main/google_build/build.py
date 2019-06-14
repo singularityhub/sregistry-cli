@@ -326,9 +326,9 @@ def load_build_config(self, name, recipe,
     config = get_build_template(template)
 
     # Name is in format 'dinosaur/container:latest'
-    storage_name = '%s/%s.sif' %(prefix, name)
+    storage_name = '%s%s.sif' %(prefix, name)
     container_name = os.path.basename(storage_name)
-    sha256 = '%s/%s.sha256' %(prefix, name)
+    sha256 = '%s%s.sha256' %(prefix, name)
 
     # We need to create the equivalent directory for the image
     folder_name = os.path.dirname(storage_name)
