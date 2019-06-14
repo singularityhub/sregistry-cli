@@ -101,7 +101,7 @@ def parse_image_name(image_name,
     registry = match.group('registry')
     collection = match.group('collection')
     repo_name = match.group('repo')
-    repo_tag = match.group('tag')
+    repo_tag = tag or match.group('tag')
     version = version or match.group('version')
     
     # A repo_name is required
