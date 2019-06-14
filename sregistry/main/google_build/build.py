@@ -484,14 +484,15 @@ def update_blob_metadata(blob, response, bucket, config=None):
        metadata with the artifact file name, dependencies, and image hash.
     '''
     bucket_prefix = "gs://" + bucket.name + '/'
+    metadata = blob.metadata or {}
 
-    metadata = {'crc32c': blob.crc32c,
-                'sha256sum': blob.metadata.get('sha256sum'),
-                'media_link': blob.media_link,
-                'self_link': blob.self_link,
-                'md5sum': blob.md5_hash,
-                'size': blob.size,
-                'type': "container"} # identifier that the blob is a container
+    metadata.update({'crc32c': blob.crc32c,
+                     'sha256sum': blob_metadata.get('sha256sum'),
+                     'media_link': blob.media_link,
+                     'self_link': blob.self_link,
+                     'md5sum': blob.md5_hash,
+                     'size': blob.size,
+                     'type': "container"}) # identify that the blob is container
 
     # If a configuration is provided
     if config:
