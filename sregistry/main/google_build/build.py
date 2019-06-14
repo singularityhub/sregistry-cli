@@ -357,10 +357,6 @@ def load_build_config(self, name, recipe,
     config['steps'].insert(0, {'args': ['build', container_name, recipe],
                                'name': 'singularityware/singularity:%s' % version})
 
-    # We need to "double upload" to create the manifest.
-    config["artifacts"]["objects"]["location"] = bucket_location
-    config["artifacts"]["objects"]["paths"] = [container_name]
-
     return config
                 
 
@@ -488,18 +484,9 @@ def update_blob_metadata(blob, response, bucket, config=None):
        metadata with the artifact file name, dependencies, and image hash.
     '''
     bucket_prefix = "gs://" + bucket.name + '/'
-    manifest_path = response['results']['artifactManifest'].replace(bucket_prefix, '')
-    manifest_str = bucket.blob(manifest_path).download_as_string()
 
-    try:
-        manifest = json.loads(manifest_str)
-    except:
-        manifest = json.loads(manifest_str.decode('utf-8'))
-
-    metadata = {'file_hash': manifest['file_hash'][0]['file_hash'][0]['value'],
-                'artifactManifest': response['results']['artifactManifest'],
-                'location': manifest['location'],              
-                'sha256sum': manifest['sha256sum'],
+    metadata = {'crc32c': blob.crc32c,
+                'sha256sum': blob.metadata.get('sha256sum'),
                 'media_link': blob.media_link,
                 'self_link': blob.self_link,
                 'md5sum': blob.md5_hash,
