@@ -300,7 +300,7 @@ def add_webhook(config, webhook, headers=None):
        the present working directory. Optionally, the user can provide
        one or more headers to post back with the build_id.
     '''
-    data = {"id":"$BUILD_ID"}
+    data = {'id':'$BUILD_ID'}
     envars = []
 
     if headers is not None:
@@ -308,7 +308,7 @@ def add_webhook(config, webhook, headers=None):
         # Keep a list of envars to add
         for key, val in headers.items(): 
             env = "SREGISTRY_%s" % key.upper()
-            data[key] = "$%s" % env
+            data[key] = "$$%s" % env
             envars.append("%s=%s" %(env, val))
 
     config['steps'].append({
