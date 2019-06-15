@@ -300,20 +300,20 @@ def add_webhook(config, webhook, headers=None):
        the present working directory. Optionally, the user can provide
        one or more headers to post back with the build_id.
     '''
-    data = {'id':'$BUILD_ID'}
     envars = []
 
+    header_str = ""
     if headers is not None:
 
         # Keep a list of envars to add
         for key, val in headers.items(): 
             env = "SREGISTRY_%s" % key.upper()
-            data[key] = "$$%s" % env
+            header_str = header_str + ' --header "%s: $$env" ' %(key, val)
             envars.append("%s=%s" %(env, val))
 
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", json.dumps(data), "-X", "POST", webhook],
+        "args":  ["-d", "\"{'id':'$BUILD_ID'}\"", header_str, "-X", "POST", webhook],
         "env": envars})
 
     return config
