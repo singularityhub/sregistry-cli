@@ -316,9 +316,9 @@ def add_webhook(config, webhook, extra_data=None):
 
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", json.dumps(data), "-X", "POST", webhook],
-        "substitutions": substitutions})
+        "args":  ["-d", json.dumps(data), "-X", "POST", webhook]})
 
+    config['substitutions'] = substitutions
     return config
 
 
