@@ -52,7 +52,8 @@ def build(self, name,
                 preview=False,
                 headless=False,
                 working_dir=None,
-                webhook=None):
+                webhook=None,
+                headers=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a name
        recipe, and Github URI where the recipe can be found. This means
@@ -121,7 +122,9 @@ def build(self, name,
                                      recipe=recipe)
     # Add a webhook, if defined
     if webhook and headless:
-        config = add_webhook(config, webhook)
+        config = add_webhook(config=config, 
+                             webhook=webhook, 
+                             headers=headers)
  
     # The source should point to the bucket with the .tar.gz, latest generation
     config["source"]["storageSource"]['bucket'] = self._build_bucket.name
@@ -158,7 +161,8 @@ def build_repo(self,
                branch=None,
                headless=False,
                preview=False,
-               webhook=None):
+               webhook=None,
+               headers=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a
        Github repo where a recipe can be found. We assume that github.com (or
@@ -172,6 +176,8 @@ def build_repo(self,
        webhook: if not None, add a curl POST to finish the build. 
        commit: if not None, check out a commit after clone.
        branch: if defined, checkout a branch.
+       headers: a dictionary of headers to send back to the webhook (they
+                are passed in the environment)
     '''
     bot.debug("BUILD %s" % recipe)
 
@@ -217,7 +223,9 @@ def build_repo(self,
 
     # Add the webhook step, if applicable.
     if webhook and headless:
-        config = add_webhook(config, webhook)
+        config = add_webhook(config=config, 
+                             webhook=webhook, 
+                             headers=headers)
      
     # If not a preview, run the build and return the response
     if not preview:
@@ -287,13 +295,27 @@ def get_relative_path(filename, working_dir=None):
     return relative_path
 
 
-def add_webhook(config, webhook):
+def add_webhook(config, webhook, headers=None):
     '''add a webhook to a config. We assume that the sha256 is calculated in 
-       the present working directory.
+       the present working directory. Optionally, the user can provide
+       one or more headers to post back with the build_id.
     '''
+    data = {"id":"$BUILD_ID"}
+    envars = []
+
+    if headers is not None:
+
+        # Keep a list of envars to add
+        for key, val in headers.items(): 
+            env = "SREGISTRY_%s" % key.upper()
+            data[key] = "$%s" % env
+            envars.append("%s=%s" %(env, val))
+
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", "\"{'id':'$BUILD_ID'}\"", "-X", "POST", webhook]})
+        "args":  ["-d", json.dumps(data), "-X", "POST", webhook],
+        "env": envars})
+
     return config
 
 
