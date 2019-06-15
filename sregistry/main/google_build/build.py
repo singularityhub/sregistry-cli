@@ -314,7 +314,7 @@ def add_webhook(config, webhook, headers=None):
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
         "entrypoint": "/bin/bash",
-        "args":  ["-c", "\"curl -d" \"{'id':'$BUILD_ID'}\" %s -X POST %s\"" %(header_str, webhook)],
+        "args":  ["-c", "\"curl -d \"{'id':'$BUILD_ID'}\" %s -X POST %s\"" %(header_str, webhook)],
         "env": envars})
 
     return config
