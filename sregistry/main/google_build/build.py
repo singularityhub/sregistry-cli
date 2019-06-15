@@ -311,7 +311,7 @@ def add_webhook(config, webhook, extra_data=None):
         # Keep a list of envars to add
         for key, val in extra_data.items(): 
             env = "SREGISTRY_%s" % key.upper()
-            data[key] = "$$%s" % env
+            data[key] = "$${%s}" % env
             envars.append("%s=%s" %(env, val))
 
     config['steps'].append({
