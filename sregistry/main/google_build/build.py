@@ -304,20 +304,20 @@ def add_webhook(config, webhook, extra_data=None):
        extra_data to post back with the build_id.
     '''
     data = {'id':'$BUILD_ID'}
-    envars = []
+    substitutions = {}
 
     if extra_data is not None:
 
         # Keep a list of envars to add
         for key, val in extra_data.items(): 
-            env = "SREGISTRY_%s" % key.upper()
-            data[key] = "$${%s}" % env
-            envars.append("%s=%s" %(env, val))
+            sub = "_SREGISTRY_%s" % key.upper()
+            data[key] = "${%s}" % sub
+            substitutions[sub] = val
 
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
         "args":  ["-d", json.dumps(data), "-X", "POST", webhook],
-        "env": envars})
+        "substitutions": substitutions})
 
     return config
 
