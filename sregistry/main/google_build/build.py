@@ -53,7 +53,7 @@ def build(self, name,
                 headless=False,
                 working_dir=None,
                 webhook=None,
-                headers=None):
+                extra_data=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a name
        recipe, and Github URI where the recipe can be found. This means
@@ -67,8 +67,11 @@ def build(self, name,
                 the recipe is uploaded.
        preview: if True, preview but don't run the build
        working_dir: The working directory for the build. Defaults to pwd.
+       webhook: if not None, add a curl POST to finish the build. 
        headless: If true, don't track the build, but submit and provide
                  an endpoint to send a response to.
+       extra_data: a dictionary of extra_data to send back to the webhook (they
+                   are passed in the environment)
 
        Environment
        ===========
@@ -124,7 +127,7 @@ def build(self, name,
     if webhook and headless:
         config = add_webhook(config=config, 
                              webhook=webhook, 
-                             headers=headers)
+                             extra_data=extra_data)
  
     # The source should point to the bucket with the .tar.gz, latest generation
     config["source"]["storageSource"]['bucket'] = self._build_bucket.name
@@ -162,7 +165,7 @@ def build_repo(self,
                headless=False,
                preview=False,
                webhook=None,
-               headers=None):
+               extra_data=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a
        Github repo where a recipe can be found. We assume that github.com (or
@@ -173,11 +176,11 @@ def build_repo(self,
        repo: the full repository address
        recipe: the local recipe to build.
        headless: if True, return the first response (and don't wait to finish)
-       webhook: if not None, add a curl POST to finish the build. 
        commit: if not None, check out a commit after clone.
        branch: if defined, checkout a branch.
-       headers: a dictionary of headers to send back to the webhook (they
-                are passed in the environment)
+       webhook: if not None, add a curl POST to finish the build. 
+       extra_data: a dictionary of extra_data to send back to the webhook (they
+                   are passed in the environment)
     '''
     bot.debug("BUILD %s" % recipe)
 
@@ -225,7 +228,7 @@ def build_repo(self,
     if webhook and headless:
         config = add_webhook(config=config, 
                              webhook=webhook, 
-                             headers=headers)
+                             extra_data=extra_data)
      
     # If not a preview, run the build and return the response
     if not preview:
@@ -295,26 +298,25 @@ def get_relative_path(filename, working_dir=None):
     return relative_path
 
 
-def add_webhook(config, webhook, headers=None):
+def add_webhook(config, webhook, extra_data=None):
     '''add a webhook to a config. We assume that the sha256 is calculated in 
        the present working directory. Optionally, the user can provide
-       one or more headers to post back with the build_id.
+       extra_data to post back with the build_id.
     '''
+    data = {'id':'$BUILD_ID'}
     envars = []
 
-    header_str = ""
-    if headers is not None:
+    if extra_data is not None:
 
         # Keep a list of envars to add
-        for key, val in headers.items(): 
+        for key, val in extra_data.items(): 
             env = "SREGISTRY_%s" % key.upper()
-            header_str = header_str + '--header "%s: $$%s" ' %(key, env)
+            data[key] = "$$%s" % env
             envars.append("%s=%s" %(env, val))
 
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "entrypoint": "/bin/bash",
-        "args":  ["-c", "\"curl -d \"{'id':'$BUILD_ID'}\" %s -X POST %s\"" %(header_str, webhook)],
+        "args":  ["-d", json.dumps(data), "-X", "POST", webhook],
         "env": envars})
 
     return config
