@@ -308,12 +308,13 @@ def add_webhook(config, webhook, headers=None):
         # Keep a list of envars to add
         for key, val in headers.items(): 
             env = "SREGISTRY_%s" % key.upper()
-            header_str = header_str + ' --header "%s: $$%s" ' %(key, env)
+            header_str = header_str + '--header "%s: $$%s" ' %(key, env)
             envars.append("%s=%s" %(env, val))
 
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", "\"{'id':'$BUILD_ID'}\"", header_str, "-X", "POST", webhook],
+        "entrypoint": "/bin/bash",
+        "args":  ["-c", "\"curl -d" \"{'id':'$BUILD_ID'}\" %s -X POST %s\"" %(header_str, webhook)],
         "env": envars})
 
     return config
