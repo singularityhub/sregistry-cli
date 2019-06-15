@@ -308,7 +308,7 @@ def add_webhook(config, webhook, headers=None):
         # Keep a list of envars to add
         for key, val in headers.items(): 
             env = "SREGISTRY_%s" % key.upper()
-            header_str = header_str + ' --header "%s: $$env" ' %(key, val)
+            header_str = header_str + ' --header "%s: $$%s" ' %(key, env)
             envars.append("%s=%s" %(env, val))
 
     config['steps'].append({
