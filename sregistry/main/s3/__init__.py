@@ -13,6 +13,7 @@ from sregistry.logger import ( RobotNamer, bot )
 from sregistry.main import ApiConnection
 import boto3
 from botocore.client import ClientError
+from botocore import UNSIGNED
 import json
 import os
 
@@ -111,7 +112,7 @@ class Client(ApiConnection):
                                  endpoint_url=self.base,
                                  aws_access_key_id=self._id,
                                  aws_secret_access_key=self._key,
-                                 config=boto3.session.Config(signature_version=self._signature))
+                                 config=boto3.session.Config(signature_version=UNSIGNED if not self._id or not self._key else self._signature))
 
 
     def _update_secrets(self, base=None):
@@ -120,8 +121,11 @@ class Client(ApiConnection):
         '''
         # We are required to have a base, either from environment or terminal
         self.base = self._get_and_update_setting('SREGISTRY_S3_BASE', self.base)
-        self._id = self._required_get_and_update('AWS_ACCESS_KEY_ID')
-        self._key = self._required_get_and_update('AWS_SECRET_ACCESS_KEY')
+        self._id = self._get_and_update_setting('AWS_ACCESS_KEY_ID')
+        self._key = self._get_and_update_setting('AWS_SECRET_ACCESS_KEY')
+
+        if not self._id or not self._key:
+            bot.warning("Accessing the bucket anonymously. Consider defining AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY if access fails.")
 
         # Get the desired S3 signature.  Default is the current "s3v4" signature.
         # If specified, user can request "s3" (v2 old) signature
