@@ -11,6 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.auth import read_client_secrets
 from sregistry.logger import ( RobotNamer, bot )
 from sregistry.main import ApiConnection
+from sregistry.utils import confirm_action
 import boto3
 from botocore.client import ClientError
 from botocore import UNSIGNED
@@ -80,18 +81,31 @@ class Client(ApiConnection):
 
         self.bucket = self.s3.Bucket(self.bucket_name)
         # check if the bucket exists and can be accessed
+        # based on https://stackoverflow.com/a/47565719/1253230
         try:
             self.s3.meta.client.head_bucket(Bucket=self.bucket.name)
-        except ClientError:
+        except ClientError as e:
             self.bucket = None
- 
-        # If the bucket doesn't exist, try creating it
-        if self.bucket is None:
-            try:
-                self.bucket = self.s3.create_bucket(Bucket=self.bucket_name)
-                bot.info('Created bucket %s' % self.bucket.name )
-            except ClientError as e:
-                bot.exit('Could not create bucket {}: {}'.format(self.bucket_name, str(e)))
+            error_code = int(e.response['Error']['Code'])
+            if error_code == 403:
+                if not self._id or not self._key:
+                    bot.exit('The {} bucket is not public and needs AWS credentials to be accessed'.format(self.bucket_name))
+                bot.exit('The {} bucket cannot be accessed with the provided AWS credentials'.format(self.bucket_name))
+            elif error_code == 404:
+                # If the bucket doesn't exist, ask the user if he/she wants to try creating it
+                if confirm_action('Are you sure you want to create the {} bucket?'.format(self.bucket_name)):
+                    if not self._id or not self._key:
+                        bot.exit('Buckets need AWS credentials to be created')
+                    try:
+                        self.bucket = self.s3.create_bucket(Bucket=self.bucket_name)
+                        bot.info('Created bucket %s' % self.bucket.name )
+                    except ClientError as e:
+                        bot.exit('Could not create bucket {}: {}'.format(self.bucket_name, str(e)))
+                else:
+                    bot.exit('Aborting due to not creating bucket')
+            else:
+                bot.exit('Unrecognized error code {}: {}'.format(error_code, str(e)))
+
 
         return self.bucket
 
