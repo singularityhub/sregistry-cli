@@ -11,8 +11,10 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.auth import read_client_secrets
 from sregistry.logger import ( RobotNamer, bot )
 from sregistry.main import ApiConnection
+from sregistry.utils import confirm_action
 import boto3
 from botocore.client import ClientError
+from botocore import UNSIGNED
 import json
 import os
 
@@ -79,18 +81,31 @@ class Client(ApiConnection):
 
         self.bucket = self.s3.Bucket(self.bucket_name)
         # check if the bucket exists and can be accessed
+        # based on https://stackoverflow.com/a/47565719/1253230
         try:
             self.s3.meta.client.head_bucket(Bucket=self.bucket.name)
-        except ClientError:
+        except ClientError as e:
             self.bucket = None
- 
-        # If the bucket doesn't exist, try creating it
-        if self.bucket is None:
-            try:
-                self.bucket = self.s3.create_bucket(Bucket=self.bucket_name)
-                bot.info('Created bucket %s' % self.bucket.name )
-            except ClientError as e:
-                bot.exit('Could not create bucket {}: {}'.format(self.bucket_name, str(e)))
+            error_code = int(e.response['Error']['Code'])
+            if error_code == 403:
+                if not self._id or not self._key:
+                    bot.exit('The {} bucket is not public and needs AWS credentials to be accessed'.format(self.bucket_name))
+                bot.exit('The {} bucket cannot be accessed with the provided AWS credentials'.format(self.bucket_name))
+            elif error_code == 404:
+                # If the bucket doesn't exist, ask the user if he/she wants to try creating it
+                if confirm_action('Are you sure you want to create the {} bucket?'.format(self.bucket_name)):
+                    if not self._id or not self._key:
+                        bot.exit('Buckets need AWS credentials to be created')
+                    try:
+                        self.bucket = self.s3.create_bucket(Bucket=self.bucket_name)
+                        bot.info('Created bucket %s' % self.bucket.name )
+                    except ClientError as e:
+                        bot.exit('Could not create bucket {}: {}'.format(self.bucket_name, str(e)))
+                else:
+                    bot.exit('Aborting due to not creating bucket')
+            else:
+                bot.exit('Unrecognized error code {}: {}'.format(error_code, str(e)))
+
 
         return self.bucket
 
@@ -111,7 +126,7 @@ class Client(ApiConnection):
                                  endpoint_url=self.base,
                                  aws_access_key_id=self._id,
                                  aws_secret_access_key=self._key,
-                                 config=boto3.session.Config(signature_version=self._signature))
+                                 config=boto3.session.Config(signature_version=UNSIGNED if not self._id or not self._key else self._signature))
 
 
     def _update_secrets(self, base=None):
@@ -120,8 +135,11 @@ class Client(ApiConnection):
         '''
         # We are required to have a base, either from environment or terminal
         self.base = self._get_and_update_setting('SREGISTRY_S3_BASE', self.base)
-        self._id = self._required_get_and_update('AWS_ACCESS_KEY_ID')
-        self._key = self._required_get_and_update('AWS_SECRET_ACCESS_KEY')
+        self._id = self._get_and_update_setting('AWS_ACCESS_KEY_ID')
+        self._key = self._get_and_update_setting('AWS_SECRET_ACCESS_KEY')
+
+        if not self._id or not self._key:
+            bot.warning("Accessing the bucket anonymously. Consider defining AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY if access fails.")
 
         # Get the desired S3 signature.  Default is the current "s3v4" signature.
         # If specified, user can request "s3" (v2 old) signature
