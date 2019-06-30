@@ -131,7 +131,7 @@ def build(self, name,
 
     # If the user wants a timeout
     if timeout is not None:
-        config['timeout'] = "%ss" timeout
+        config['timeout'] = "%ss" % timeout
 
     # If not a preview, run the build and return the response
     if not preview:
@@ -232,7 +232,7 @@ def build_repo(self,
 
     # If the user wants a timeout
     if timeout is not None:
-        config['timeout'] = "%ss" timeout
+        config['timeout'] = "%ss" % timeout
      
     # If not a preview, run the build and return the response
     if not preview:
