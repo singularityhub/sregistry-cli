@@ -63,7 +63,6 @@ with open('README.md') as filey:
 # MAIN #########################################################################
 ################################################################################
 
-
 if __name__ == "__main__":
 
     INSTALL_REQUIRES = get_reqs(lookup)
@@ -81,6 +80,7 @@ if __name__ == "__main__":
     GOOGLE_BUILD_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_BUILD')
     GOOGLE_COMPUTE_BASIC = get_reqs(lookup,'INSTALL_BASIC_GOOGLE_COMPUTE')
     SWIFT_BASIC = get_reqs(lookup,'INSTALL_BASIC_SWIFT')
+    TESTS_REQUIRES = get_reqs(lookup, 'TESTS_REQUIRES')
 
     # These requirement sets include sqlalchemy, for client+storage
 
@@ -111,7 +111,9 @@ if __name__ == "__main__":
           long_description=LONG_DESCRIPTION,
           long_description_content_type="text/markdown",
           keywords=KEYWORDS,
+          setup_requires=["pytest-runner"],
           install_requires = INSTALL_REQUIRES,
+          tests_require=TESTS_REQUIRES,
           extras_require={
               'all-basic': [INSTALL_BASIC_ALL],
               'aws-basic': [AWS_BASIC],
@@ -149,4 +151,4 @@ if __name__ == "__main__":
               'Operating System :: Unix',
               'Programming Language :: Python :: 3.3',
           ],
-          entry_points = {'console_scripts': [ 'sregistry=sregistry.client:main' ] })
+          entry_points = {'console_scripts': ['sregistry=sregistry.client:main']})

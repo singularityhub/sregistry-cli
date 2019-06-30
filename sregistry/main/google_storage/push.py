@@ -10,7 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot, ProgressBar
 from sregistry.utils import (
-    get_image_hash,
+    get_file_hash,
     parse_image_name,
     remove_uri
 )
@@ -37,7 +37,7 @@ def push(self, path, name, tag=None):
     names = parse_image_name(remove_uri(name),tag=tag)
 
     if names['version'] is None:
-        version = get_image_hash(path)
+        version = get_file_hash(path, "sha256")
         names = parse_image_name(remove_uri(name), tag=tag, version=version)    
 
     # Update metadata with names

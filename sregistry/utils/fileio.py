@@ -8,18 +8,15 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-import datetime
 import hashlib
 import errno
 import os
 import pwd
 import shutil
 import tempfile
-import tarfile
 
 import json
 from sregistry.logger import bot
-import io
 
 
 ################################################################################
@@ -157,92 +154,25 @@ def _extract_tar(archive, output_folder):
     return run_command(command)
 
 
-def create_tar(files, output_folder=None):
-    '''create_memory_tar will take a list of files (each a dictionary
-        with name, permission, and content) and write the tarfile
-        (a sha256 sum name is used) to the output_folder.
-        If there is no output folde specified, the
-        tar is written to a temporary folder.
+def get_file_hash(image_path, algorithm='sha256'):
+    '''return an md5 hash of the file based on a criteria level. This
+       is intended to give the file a reasonable version.
+    
+       Parameters
+       ==========
+       image_path: full path to the singularity image
+
     '''
-    if output_folder is None:
-        output_folder = tempfile.mkdtemp()
+    try:
+        hasher = getattr(hashlib, algorithm)()
+    except AttributeError:
+        bot.error("%s is an invalid algorithm.")
+        bot.exit(' '.join(hashlib.algorithms_guaranteed))
 
-    finished_tar = None
-    additions = []
-    contents = []
-
-    for entity in files:
-        info = tarfile.TarInfo(name=entity['name'])
-        info.mode = entity['mode']
-        info.mtime = int(datetime.datetime.now().strftime('%s'))
-        info.uid = entity["uid"]
-        info.gid = entity["gid"]
-        info.uname = entity["uname"]
-        info.gname = entity["gname"]
-
-        # Get size from stringIO write
-        filey = io.StringIO()
-        content = None
-        try:  # python3
-            info.size = filey.write(entity['content'])
-            content = io.BytesIO(entity['content'].encode('utf8'))
-        except:  # python2
-            info.size = int(filey.write(entity['content'].decode('utf-8')))
-            content = io.BytesIO(entity['content'].encode('utf8'))
-
-        if content is not None:
-            addition = {'content': content,
-                        'info': info}
-            additions.append(addition)
-            contents.append(content)
-
-    # Now generate the sha256 name based on content
-    if len(additions) > 0:
-        hashy = get_content_hash(contents)
-        finished_tar = "%s/sha256:%s.tar.gz" % (output_folder, hashy)
-
-        # Warn the user if it already exists
-        if os.path.exists(finished_tar):
-            msg = "metadata file %s already exists " % finished_tar
-            msg += "will over-write."
-            bot.debug(msg)
-
-        # Add all content objects to file
-        tar = tarfile.open(finished_tar, "w:gz")
-        for a in additions:
-            tar.addfile(a["info"], a["content"])
-        tar.close()
-
-    else:
-        msg = "No contents, environment or labels"
-        msg += " for tarfile, will not generate."
-        bot.debug(msg)
-
-    return finished_tar
-
-
-def get_content_hash(contents):
-    '''get_content_hash will return a hash for a list of content (bytes/other)
-    '''
-    hasher = hashlib.sha256()
-    for content in contents:
-        if isinstance(content, io.BytesIO):
-            content = content.getvalue()
-        if not isinstance(content, bytes):
-            content = bytes(content)
-        hasher.update(content)
-    return hasher.hexdigest()
-
-
-def get_file_hash(filename):
-    '''find the SHA256 hash string of a file
-    '''
-    hasher = hashlib.sha256()
-    with open(filename, "rb") as f:
+    with open(image_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hasher.update(chunk)
     return hasher.hexdigest()
-
 
 
 ################################################################################
@@ -320,15 +250,3 @@ def read_json(filename, mode='r'):
     with open(filename, mode) as filey:
         data = json.load(filey)
     return data
-
-
-def clean_up(files):
-    '''clean up will delete a list of files, only if they exist
-    '''
-    if not isinstance(files, list):
-        files = [files]
-
-    for f in files:
-        if os.path.exists(f):
-            bot.verbose3("Cleaning up %s" % f)
-            os.remove(f)

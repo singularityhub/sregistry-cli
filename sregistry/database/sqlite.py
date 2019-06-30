@@ -11,7 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import ( 
     copyfile,
-    get_image_hash,
+    get_file_hash,
     parse_image_name, 
     remove_uri
 )
@@ -28,7 +28,7 @@ def get_or_create_collection(self, name):
 
        Parameters
        ==========
-       name: the collection name, usually parsed from get_image_names()['name']
+       name: the collection name parsed from parse_image_names()['collection']
     '''
     from sregistry.database.models import Collection
     collection = self.get_collection(name)
@@ -207,7 +207,7 @@ def update_container_metadata(container, collection, names):
        names: the result of parse_image_names
     '''
     # Update all metadata for the container
-    container.uri=names['tag_uri']
+    container.uri=names['uri']
     container.name=names['image']
     container.tag=names['tag']
     container.collection_id=collection.id
@@ -385,7 +385,7 @@ def add(self, image_path=None,
     version = names.get('version')
     if not version:
         if image_path:
-            version = get_image_hash(image_path)
+            version = get_file_hash(image_path, "sha256")
         else:
             version = ''  # we can't determine a version, not in API/no file
         names = parse_image_name(remove_uri(image_uri), version=version)
@@ -440,5 +440,5 @@ def add(self, image_path=None,
         container.metrics=json.dumps(metrics)
 
     self.session.commit()
-    bot.info("[container][%s] %s" % (action, names['tag_uri']))
+    bot.info("[container][%s] %s" % (action, names['uri']))
     return container

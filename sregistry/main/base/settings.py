@@ -117,11 +117,11 @@ def get_storage_name(self, names, remove_dir=False):
        names: the output from parse_image_name
     '''   
     storage_folder = os.path.join(names['collection'], names['image'])
-    storage_filename = names['storage_uri'].replace(storage_folder, '', 1).strip(':')
+    storage_filename = names['storage'].replace(storage_folder, '', 1).strip(':')
 
     # If the client doesn't have a database, default to PWD
     if not hasattr(self, 'storage'):
-        return os.path.basename(names['storage_uri'])
+        return os.path.basename(names['storage'])
         
     storage_folder = os.path.join(self.storage, storage_folder)
     mkdir_p(storage_folder)
