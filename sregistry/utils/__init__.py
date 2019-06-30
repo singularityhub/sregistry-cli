@@ -4,6 +4,7 @@ from .terminal import (
     get_installdir,
     get_thumbnail,
     which,
+    confirm_action,
     confirm_delete
 )
 from .names import (
