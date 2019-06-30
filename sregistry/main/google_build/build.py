@@ -156,6 +156,8 @@ def build(self, name,
 # 1. Intended for run from a server, we submit a job that uses a Github repo#
 #    as a parameter, and if there is a response url provided, the finished
 #    build will send a response to that server with curl (recommended).
+#    If a private repository is provided, it must be prefixed with a token
+#    e.g., "https://xxxxxxxxxxxxxxxxx@github.com/<username>/<repo>.git"
     
 def build_repo(self, 
                repo,
@@ -165,7 +167,8 @@ def build_repo(self,
                headless=False,
                preview=False,
                webhook=None,
-               timeout=10800):
+               timeout=10800,
+               token=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a
        Github repo where a recipe can be found. We assume that github.com (or
@@ -179,6 +182,7 @@ def build_repo(self,
        webhook: if not None, add a curl POST to finish the build. 
        commit: if not None, check out a commit after clone.
        branch: if defined, checkout a branch.
+       token: if an authentication token is provided, add to GitHub clone url.
        timeout: the number of seconds for the build to timeout. The default 
                 is 3 hours, and the maximum is 24 hours. If unset (None)
                 it will be 10 minutes.
@@ -187,6 +191,10 @@ def build_repo(self,
 
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(repo))
+
+    # Strip git from the end
+    if repo.endswith('git'):
+        repo = repo.rstrip('.git')
 
     # In case they added a tag, strip
     if not repo.startswith('http') and not repo.startswith("git@"):
@@ -222,8 +230,13 @@ def build_repo(self,
         config['steps'].insert(0, {'args': ['checkout', commit],
                                    'name': 'gcr.io/cloud-builders/git'})
 
+    # If the repo is private, add the token
+    clone_url = repo
+    if token is not None:
+        clone_url = "https://%s@%s" %(token, remove_uri(repo))
+
     # Add the GitHub repo to the recipe, clone to $PWD (.)
-    config['steps'].insert(0, {'args': ['clone', repo, "."],
+    config['steps'].insert(0, {'args': ['clone', clone_url, "."],
                                'name': 'gcr.io/cloud-builders/git'})
 
     # Add the webhook step, if applicable.
