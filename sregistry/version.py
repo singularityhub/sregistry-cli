@@ -8,7 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-__version__ = "0.2.24"
+__version__ = "0.2.25"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'

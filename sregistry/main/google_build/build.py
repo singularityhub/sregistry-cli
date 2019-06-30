@@ -50,7 +50,8 @@ def build(self, name,
                 preview=False,
                 headless=False,
                 working_dir=None,
-                webhook=None):
+                webhook=None,
+                timeout=10800):
 
     '''trigger a build on Google Cloud (builder then storage) given a name
        recipe, and Github URI where the recipe can be found. This means
@@ -64,6 +65,9 @@ def build(self, name,
                 the recipe is uploaded.
        preview: if True, preview but don't run the build
        working_dir: The working directory for the build. Defaults to pwd.
+       timeout: the number of seconds for the build to timeout. The default 
+                is 3 hours, and the maximum is 24 hours. If unset (None)
+                it will be 10 minutes.
        headless: If true, don't track the build, but submit and provide
                  an endpoint to send a response to.
 
@@ -125,6 +129,10 @@ def build(self, name,
     config["source"]["storageSource"]['bucket'] = self._build_bucket.name
     config["source"]["storageSource"]['object'] = destination
 
+    # If the user wants a timeout
+    if timeout is not None:
+        config['timeout'] = "%ss" timeout
+
     # If not a preview, run the build and return the response
     if not preview:
         if not headless:
@@ -156,7 +164,8 @@ def build_repo(self,
                branch=None,
                headless=False,
                preview=False,
-               webhook=None):
+               webhook=None,
+               timeout=10800):
 
     '''trigger a build on Google Cloud (builder then storage) given a
        Github repo where a recipe can be found. We assume that github.com (or
@@ -170,6 +179,9 @@ def build_repo(self,
        webhook: if not None, add a curl POST to finish the build. 
        commit: if not None, check out a commit after clone.
        branch: if defined, checkout a branch.
+       timeout: the number of seconds for the build to timeout. The default 
+                is 3 hours, and the maximum is 24 hours. If unset (None)
+                it will be 10 minutes.
     '''
     bot.debug("BUILD %s" % recipe)
 
@@ -217,6 +229,10 @@ def build_repo(self,
     # Add the webhook step, if applicable.
     if webhook and headless:
         config = add_webhook(config, webhook)
+
+    # If the user wants a timeout
+    if timeout is not None:
+        config['timeout'] = "%ss" timeout
      
     # If not a preview, run the build and return the response
     if not preview:
@@ -353,7 +369,7 @@ def run_build(self, config):
     build_id = response['metadata']['build']['id']
 
     start = time.time()
-    while status not in ['COMPLETE', 'FAILURE', 'SUCCESS']:
+    while status not in ['COMPLETE', 'FAILURE', 'SUCCESS', 'TIMEOUT']:
         time.sleep(15)
         response = self._build_status(build_id)
         status = response['status']
