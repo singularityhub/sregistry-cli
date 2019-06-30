@@ -18,7 +18,7 @@ def delete(self, image, force=False):
 
     q = parse_image_name(remove_uri(image))
 
-    uri = q['storage_uri']
+    uri = q['storage']
 
     try:
         _object = self.bucket.Object(uri)

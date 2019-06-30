@@ -8,7 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-__version__ = "0.2.24"
+__version__ = "0.2.25"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -25,6 +25,10 @@ INSTALL_REQUIRES = (
     ('spython', {'min_version': '0.0.63'}),
     ('requests', {'min_version': '2.18.4'}),
     ('pygments', {'min_version': '2.1.3'}),
+)
+
+TESTS_REQUIRES = (
+    ('pytest', {'min_version': '4.6.2'}),
 )
 
 ################################################################################

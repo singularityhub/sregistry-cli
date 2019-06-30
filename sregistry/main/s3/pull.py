@@ -49,7 +49,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             file_name = names['storage'].replace('/','-')
 
         # Assume the user provided the correct uri to start
-        uri = names['storage_uri']
+        uri = names['storage']
 
         # First try to get the storage uri directly.
         try:
@@ -92,7 +92,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         # If the user is saving to local storage
         if save is True and os.path.exists(file_name):
             container = self.add(image_path = file_name,
-                                 image_uri = names['tag_uri'],
+                                 image_uri = names['uri'],
                                  metadata = metadata)
             file_name = container.image
 
