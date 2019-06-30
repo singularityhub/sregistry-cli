@@ -500,7 +500,7 @@ def get_blob_location(response, bucket):
     if len(build_step) > 0:
         location = build_step[0]['args'][-1]
         return re.sub('(gs://%s|%s)' %(bucket, bucket), '', location).strip('/')
-    bot.exit("Cannot find build step with %s" % base_image)
+    bot.exit("Cannot find build step with image name.")
 
 
 def update_blob_metadata(blob, response, bucket, config=None):
@@ -508,7 +508,6 @@ def update_blob_metadata(blob, response, bucket, config=None):
        from Google build, the original config, and update the blob 
        metadata with the artifact file name, dependencies, and image hash.
     '''
-    bucket_prefix = "gs://" + bucket.name + '/'
     metadata = blob.metadata or {}
 
     metadata.update({'crc32c': blob.crc32c,
