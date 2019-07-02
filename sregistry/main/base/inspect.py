@@ -61,10 +61,12 @@ def get_metadata(self, image_file, names=None):
         try:
             Singularity.quiet = True
             updates = Singularity.inspect(image=image_file)
-            Singularity.quiet = is_quiet
         except:
             bot.warning('Inspect command not supported, metadata not included.')
             updates = None
+
+        # Restore the original quiet setting
+        Singularity.quiet = is_quiet
 
         # Try loading the metadata
         if updates is not None:
