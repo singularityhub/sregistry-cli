@@ -36,7 +36,7 @@ def add(self, image_path=None,
     if image_uri is None:
         bot.exit('You must provide an image uri <collection>/<namespace>')
 
-    names = parse_image_name( remove_uri(image_uri) )
+    names = parse_image_name(remove_uri(image_uri))
     bot.debug('Added %s to filesystem' % names['uri'])    
 
     # Create a dummy container on the fly

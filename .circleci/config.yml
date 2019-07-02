@@ -105,12 +105,18 @@ dockerbuild: &dockerbuild
       docker build -f ${DOCKERFILE} -t ${CONTAINER_NAME} .
 
 
+install_python: &install_python
+  name: Install pylint and pytest
+  command: |
+      which python
+      python --version
+      sudo pip3 install --upgrade pylint pytest
+
 # Test Singularity Registry Client
 
 run_linter: &run_linter
   name: run linter
   command: |
-     sudo pip3 install --upgrade pylint
      cd /tmp/src
      pylint sregistry
 
@@ -118,14 +124,10 @@ run_linter: &run_linter
 test_sregistry: &test_sregistry
   name: Test Singularity Registry Client
   command: |
-        which python
-        python --version
         cd /tmp/src
         sudo python setup.py install
-        cd sregistry/tests
-        python -m unittest test_utils
-
-
+        pytest sregistry
+        
 
 ################################################################################
 # Jobs
@@ -142,6 +144,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker     
+      - run: *install_python
       - run: *run_linter
       - run: *test_sregistry
 
