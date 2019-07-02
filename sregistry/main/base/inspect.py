@@ -54,10 +54,14 @@ def get_metadata(self, image_file, names=None):
     if os.path.exists(singularity) and image_file:
         from spython.main import Client as Singularity
 
+        # Store the original quiet setting
+        is_quiet = Singularity.quiet
+
         # We try and inspect, but not required (wont work within Docker)
         try:
             Singularity.quiet = True
             updates = Singularity.inspect(image=image_file)
+            Singularity.quiet = is_quiet
         except:
             bot.warning('Inspect command not supported, metadata not included.')
             updates = None
