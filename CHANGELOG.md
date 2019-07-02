@@ -14,7 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
- - bugfix for rename (0.2.25)
+ - restore quiet to False after initial setting to True in inspect (0.2.25)
+   - bugfix for rename
  - allow anonymously accessing S3 buckets (0.2.24)
    - add sregistry.utils.confirm_action
  - Fixing sregistry search to honor a URI (0.2.22)
