@@ -14,7 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
- - adding timeout parameter for Google Cloud Build (0.2.25)
+ - adding timeout parameter for Google Cloud Build (0.2.26)
+ - restore quiet to False after initial setting to True in inspect (0.2.25)
    - bugfix for rename, and refactored testing with pytest and pylint
  - allow anonymously accessing S3 buckets (0.2.24)
    - add sregistry.utils.confirm_action
