@@ -36,4 +36,4 @@ def push(self, path, name, tag=None):
     metadata = {'sizemb': "%s" % image_size,
                 'client': 'sregistry'}
 
-    self.bucket.upload_file(path, names['storage_uri'], {"Metadata": metadata})
+    self.bucket.upload_file(path, names['storage'], {"Metadata": metadata})

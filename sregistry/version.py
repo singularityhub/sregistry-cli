@@ -27,6 +27,10 @@ INSTALL_REQUIRES = (
     ('pygments', {'min_version': '2.1.3'}),
 )
 
+TESTS_REQUIRES = (
+    ('pytest', {'min_version': '4.6.2'}),
+)
+
 ################################################################################
 # Submodule Requirements (no database, just client)
 

@@ -11,6 +11,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import (
     get_file_hash,
+    get_recipe_tag,
     get_tmpdir,
     parse_image_name,
     remove_uri
@@ -29,6 +30,7 @@ import tarfile
 import shutil
 import json
 import os
+import re
 
 ################################################################################
 # Manual Build Logic
@@ -50,7 +52,8 @@ def build(self, name,
                 preview=False,
                 headless=False,
                 working_dir=None,
-                webhook=None):
+                webhook=None,
+                extra_data=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a name
        recipe, and Github URI where the recipe can be found. This means
@@ -64,8 +67,11 @@ def build(self, name,
                 the recipe is uploaded.
        preview: if True, preview but don't run the build
        working_dir: The working directory for the build. Defaults to pwd.
+       webhook: if not None, add a curl POST to finish the build. 
        headless: If true, don't track the build, but submit and provide
                  an endpoint to send a response to.
+       extra_data: a dictionary of extra_data to send back to the webhook (they
+                   are passed in the environment)
 
        Environment
        ===========
@@ -108,7 +114,7 @@ def build(self, name,
     prefix = "%s/" % names['collection']
 
     # The name should include the complete uri so it's searchable
-    name = os.path.basename(names['tag_uri'])
+    name = os.path.basename(names['uri'])
 
     # Update the recipe name to use a relative path
     recipe = get_relative_path(recipe, working_dir)
@@ -119,7 +125,9 @@ def build(self, name,
                                      recipe=recipe)
     # Add a webhook, if defined
     if webhook and headless:
-        config = add_webhook(config, webhook)
+        config = add_webhook(config=config, 
+                             webhook=webhook, 
+                             extra_data=extra_data)
  
     # The source should point to the bucket with the .tar.gz, latest generation
     config["source"]["storageSource"]['bucket'] = self._build_bucket.name
@@ -156,7 +164,8 @@ def build_repo(self,
                branch=None,
                headless=False,
                preview=False,
-               webhook=None):
+               webhook=None,
+               extra_data=None):
 
     '''trigger a build on Google Cloud (builder then storage) given a
        Github repo where a recipe can be found. We assume that github.com (or
@@ -167,9 +176,11 @@ def build_repo(self,
        repo: the full repository address
        recipe: the local recipe to build.
        headless: if True, return the first response (and don't wait to finish)
-       webhook: if not None, add a curl POST to finish the build. 
        commit: if not None, check out a commit after clone.
        branch: if defined, checkout a branch.
+       webhook: if not None, add a curl POST to finish the build. 
+       extra_data: a dictionary of extra_data to send back to the webhook (they
+                   are passed in the environment)
     '''
     bot.debug("BUILD %s" % recipe)
 
@@ -183,8 +194,7 @@ def build_repo(self,
     bot.debug("REPO %s" % repo)
 
     # First preference to command line, then recipe tag
-    _, tag = os.path.splitext(recipe)
-    tag = (tag or names.get('tag')).strip('.')
+    tag = get_recipe_tag(recipe) or names.get('tag')
 
     # Update the tag, if recipe provides one
     names = parse_image_name(remove_uri(repo), tag=tag)
@@ -193,7 +203,7 @@ def build_repo(self,
     prefix = "%s/" % names['collection']
 
     # The name should include the complete uri so it's searchable
-    name = os.path.basename(names['tag_uri'])
+    name = os.path.basename(names['uri'])
 
     if commit or branch:
         name = "%s@%s" %(name, (commit or branch))
@@ -216,7 +226,9 @@ def build_repo(self,
 
     # Add the webhook step, if applicable.
     if webhook and headless:
-        config = add_webhook(config, webhook)
+        config = add_webhook(config=config, 
+                             webhook=webhook, 
+                             extra_data=extra_data)
      
     # If not a preview, run the build and return the response
     if not preview:
@@ -286,12 +298,27 @@ def get_relative_path(filename, working_dir=None):
     return relative_path
 
 
-def add_webhook(config, webhook):
-    '''add a webhook to a config.
+def add_webhook(config, webhook, extra_data=None):
+    '''add a webhook to a config. We assume that the sha256 is calculated in 
+       the present working directory. Optionally, the user can provide
+       extra_data to post back with the build_id.
     '''
+    data = {'id':'$BUILD_ID'}
+    substitutions = {}
+
+    if extra_data is not None:
+
+        # Keep a list of envars to add
+        for key, val in extra_data.items(): 
+            sub = "_SREGISTRY_%s" % key.upper()
+            data[key] = "${%s}" % sub
+            substitutions[sub] = val
+
     config['steps'].append({
         "name": "gcr.io/cloud-builders/curl",
-        "args":  ["-d", "\"{'id':'$BUILD_ID'}\"", "-X", "POST", webhook]})
+        "args":  ["-d", json.dumps(data), "-X", "POST", webhook]})
+
+    config['substitutions'] = substitutions
     return config
 
 
@@ -324,22 +351,36 @@ def load_build_config(self, name, recipe,
     # Get the build template based on its name
     config = get_build_template(template)
 
-    # Name is in format 'dinosaur/container-latest'
+    # Name is in format 'dinosaur/container:latest'
     storage_name = '%s%s.sif' %(prefix, name)
     container_name = os.path.basename(storage_name)
 
     # We need to create the equivalent directory for the image
     folder_name = os.path.dirname(storage_name)
 
-    # Insert the build step (second step)
-    config['steps'].insert(0, {'args': ['build', container_name, recipe],
-                               'name': 'singularityware/singularity:%s' % version})
-
     # The bucket location should have the uri
     bucket_location = "gs://%s/%s/" % (self._bucket_name, folder_name)
 
-    config["artifacts"]["objects"]["location"] = bucket_location
-    config["artifacts"]["objects"]["paths"] = [container_name]
+    # Last step: tag the blog with the sha256 sum
+    bucket_sif = '%s%s' %(bucket_location, container_name)
+    metadata_command = "gsutil setmeta -h x-goog-meta-sha256sum:$(cat SHA256SUM) %s" % bucket_sif
+    config['steps'].insert(0, {'args': ["-c", metadata_command],
+                               'entrypoint': "/bin/bash",
+                               'name': 'gcr.io/cloud-builders/gsutil'})
+
+    # Second to last step: manually upload the blob
+    config['steps'].insert(0, {'args': ['cp', container_name, bucket_sif ],
+                               'name': 'gcr.io/cloud-builders/gsutil'})
+
+    # Calculate a hash (happens after build)
+    sha256_command = 'sha256sum %s | cut -c 1-64 > SHA256SUM' % container_name
+    config['steps'].insert(0, {'args': ['-c', sha256_command],
+                               'entrypoint': '/bin/bash',
+                               'name': 'ubuntu'})
+
+    # Insert the build step (second step)
+    config['steps'].insert(0, {'args': ['build', container_name, recipe],
+                               'name': 'singularityware/singularity:%s' % version})
 
     return config
                 
@@ -400,7 +441,10 @@ def build_status(self, build_id):
     return response
    
 
-def finish_build(self, build_id, config=None, response=None):
+def finish_build(self, build_id, 
+                       config=None, 
+                       response=None):
+
     '''finish a build, meaning if the build was successful, we check the
        user preference to make it private. If it's set, we leave it 
        private. Otherwise, we make it public (default).
@@ -408,6 +452,8 @@ def finish_build(self, build_id, config=None, response=None):
        Parameters
        ==========
        build_id: the build id returned from submission to track the build.
+       config: optionally provide a config to get metadata from for the blob
+       response: if we've already gotten a response status, include here
     '''
     # Get the build status, we will only complete on SUCCESS
     if not response:
@@ -419,37 +465,42 @@ def finish_build(self, build_id, config=None, response=None):
         # Does the user want to keep the container private?
         env = 'SREGISTRY_GOOGLE_STORAGE_PRIVATE'
         blob_location = get_blob_location(response, self._bucket_name)
-        blob = self._bucket.blob(blob_location)
+        blob = self._bucket.get_blob(blob_location)
         
         # Make Public, if desired
         if not self._get_and_update_setting(env, self.envars.get(env)):
             blob.make_public()
             response['public_url'] = unquote(blob.public_url)
 
-        # Add the metadata directly to the object
-        update_blob_metadata(blob=blob, 
-                             response=response,
-                             config=config, 
-                             bucket=self._bucket)
-
-        response['media_link'] = blob.media_link
-        response['size'] = blob.size
-        response['file_hash'] = blob.md5_hash
+        # Add the metadata directly to the object, return updaated response
+        response = update_blob_metadata(blob=blob, 
+                                        response=response,
+                                        config=config, 
+                                        bucket=self._bucket)
 
     return response
 
 
-def get_blob_location(response, bucket_name):
-    '''return a relative path for a blob, meaning we:
-       1. remove the bucket name
-       2. strip the gs:// address
+def get_blob_location(response, bucket):
+    '''return a relative path for a blob based on finding the build step,
+       and the container built from it.
+
+       Parameters
+       ==========
+       response: the response from client._build_status(build_id)
+       bucket: the name of the build bucket.
+
     '''
-    location = (response['artifacts']['objects']['location'] + 
-                response['artifacts']['objects']['paths'][0])
-    location = location.replace(bucket_name, '')
-    location = location.replace('gs:///', '', 1)
-    location = location.replace('gs://', '', 1) # in case included bucket name
-    return location.strip('/')
+    # Find the build step, it uses singularityware as a builder
+    build_step = [x for x in response['steps'] 
+                    if x['name'] == 'gcr.io/cloud-builders/gsutil' and
+                    x['args'][0] == 'cp']
+
+    # This is fragile, but we have to get the container name
+    if len(build_step) > 0:
+        location = build_step[0]['args'][-1]
+        return re.sub('(gs://%s|%s)' %(bucket, bucket), '', location).strip('/')
+    bot.exit("Cannot find build step with image name.")
 
 
 def update_blob_metadata(blob, response, bucket, config=None):
@@ -457,22 +508,14 @@ def update_blob_metadata(blob, response, bucket, config=None):
        from Google build, the original config, and update the blob 
        metadata with the artifact file name, dependencies, and image hash.
     '''
-    bucket_prefix = "gs://" + bucket.name + '/'
-    manifest_path = response['results']['artifactManifest'].replace(bucket_prefix, '')
-    manifest_str = bucket.blob(manifest_path).download_as_string()
+    metadata = blob.metadata or {}
 
-    try:
-        manifest = json.loads(manifest_str)
-    except:
-        manifest = json.loads(manifest_str.decode('utf-8'))
-
-    metadata = {'file_hash': manifest['file_hash'][0]['file_hash'][0]['value'],
-                'artifactManifest': response['results']['artifactManifest'],
-                'location': manifest['location'],              
-                'media_link': blob.media_link,
-                'self_link': blob.self_link,
-                'size': blob.size,
-                'type': "container"} # identifier that the blob is a container
+    metadata.update({'crc32c': blob.crc32c,
+                     'media_link': blob.media_link,
+                     'self_link': blob.self_link,
+                     'md5sum': blob.md5_hash,
+                     'size': blob.size,
+                     'type': "container"}) # identify that the blob is container
 
     # If a configuration is provided
     if config:
@@ -484,6 +527,9 @@ def update_blob_metadata(blob, response, bucket, config=None):
             metadata['storageSourceBucket'] = config['source']['storageSource']['bucket']
             metadata['storageSourceObject'] = config['source']['storageSource']['object']
 
-    blob.metadata = metadata   
+    # Update the response, keeping data structure flat (and we don't overwrite)
+    response.update(metadata)
+    blob.metadata = metadata
     blob._properties['metadata'] = metadata
     blob.patch()
+    return response

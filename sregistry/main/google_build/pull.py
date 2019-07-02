@@ -44,8 +44,8 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         q = parse_image_name(remove_uri(image))
 
         # Use container search to find the container based on uri
-        bot.info('Searching for %s in gs://%s' %(q['tag_uri'],self._bucket_name))
-        matches = self._container_query(q['tag_uri'], quiet=True)
+        bot.info('Searching for %s in gs://%s' %(q['uri'],self._bucket_name))
+        matches = self._container_query(q['uri'], quiet=True)
 
         if len(matches) == 0:
             bot.info('No matching containers found.')
@@ -64,7 +64,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         # If the user is saving to local storage, you need to assumble the uri
         # here in the expected format <collection>/<namespace>:<tag>@<version>
         if save is True:
-            image_uri = q['tag_uri']
+            image_uri = q['uri']
 
             # Update metadata with selfLink
             metadata = image.metadata
