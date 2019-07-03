@@ -10,6 +10,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from sregistry.logger import bot
 import sys
+import botocore
 
 
 def search(self, query=None, args=None):
@@ -50,7 +51,12 @@ def search_all(self, quiet=False):
 
         # Metadata bug will capitalize all fields, workaround is to lowercase
         # https://github.com/boto/boto3/issues/1709
-        metadata = dict((k.lower(), v) for k, v in subsrc.metadata.items())
+        try:
+            metadata = dict((k.lower(), v) for k, v in subsrc.metadata.items())
+        except botocore.exceptions.ClientError as e:
+            bot.warning("Could not get metadata for {}: {}".format(subsrc.key, str(e)))
+            continue
+
         size = ''
 
         # MM-DD-YYYY
