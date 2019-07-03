@@ -53,8 +53,8 @@ def build(self, name,
                 headless=False,
                 working_dir=None,
                 webhook=None,
+                timeout=10800,
                 extra_data=None):
-
     '''trigger a build on Google Cloud (builder then storage) given a name
        recipe, and Github URI where the recipe can be found. This means
        creating and uploading a build package to use for the build.
@@ -67,6 +67,9 @@ def build(self, name,
                 the recipe is uploaded.
        preview: if True, preview but don't run the build
        working_dir: The working directory for the build. Defaults to pwd.
+       timeout: the number of seconds for the build to timeout. The default 
+                is 3 hours, and the maximum is 24 hours. If unset (None)
+                it will be 10 minutes.
        webhook: if not None, add a curl POST to finish the build. 
        headless: If true, don't track the build, but submit and provide
                  an endpoint to send a response to.
@@ -133,6 +136,10 @@ def build(self, name,
     config["source"]["storageSource"]['bucket'] = self._build_bucket.name
     config["source"]["storageSource"]['object'] = destination
 
+    # If the user wants a timeout
+    if timeout is not None:
+        config['timeout'] = "%ss" % timeout
+
     # If not a preview, run the build and return the response
     if not preview:
         if not headless:
@@ -156,6 +163,7 @@ def build(self, name,
 # 1. Intended for run from a server, we submit a job that uses a Github repo#
 #    as a parameter, and if there is a response url provided, the finished
 #    build will send a response to that server with curl (recommended).
+#    If a private repository is provided, it must be prefixed with a token
     
 def build_repo(self, 
                repo,
@@ -165,8 +173,9 @@ def build_repo(self,
                headless=False,
                preview=False,
                webhook=None,
+               timeout=10800,
+               token=None,
                extra_data=None):
-
     '''trigger a build on Google Cloud (builder then storage) given a
        Github repo where a recipe can be found. We assume that github.com (or
        some other Git repo) is provided in the name (repo).
@@ -178,6 +187,10 @@ def build_repo(self,
        headless: if True, return the first response (and don't wait to finish)
        commit: if not None, check out a commit after clone.
        branch: if defined, checkout a branch.
+       token: if an authentication token is provided, add to GitHub clone url.
+       timeout: the number of seconds for the build to timeout. The default 
+                is 3 hours, and the maximum is 24 hours. If unset (None)
+                it will be 10 minutes.
        webhook: if not None, add a curl POST to finish the build. 
        extra_data: a dictionary of extra_data to send back to the webhook (they
                    are passed in the environment)
@@ -186,6 +199,10 @@ def build_repo(self,
 
     # This returns a data structure with collection, container, based on uri
     names = parse_image_name(remove_uri(repo))
+
+    # Strip git from the end
+    if repo.endswith('git'):
+        repo = repo.rstrip('.git')
 
     # In case they added a tag, strip
     if not repo.startswith('http') and not repo.startswith("git@"):
@@ -220,16 +237,25 @@ def build_repo(self,
         config['steps'].insert(0, {'args': ['checkout', commit],
                                    'name': 'gcr.io/cloud-builders/git'})
 
+    # If the repo is private, add the token
+    clone_url = repo
+    if token is not None:
+        clone_url = "https://%s@%s" %(token, remove_uri(repo))
+
     # Add the GitHub repo to the recipe, clone to $PWD (.)
-    config['steps'].insert(0, {'args': ['clone', repo, "."],
+    config['steps'].insert(0, {'args': ['clone', clone_url, "."],
                                'name': 'gcr.io/cloud-builders/git'})
+
+    # If the user wants a timeout
+    if timeout is not None:
+        config['timeout'] = "%ss" % timeout
 
     # Add the webhook step, if applicable.
     if webhook and headless:
         config = add_webhook(config=config, 
                              webhook=webhook, 
                              extra_data=extra_data)
-     
+
     # If not a preview, run the build and return the response
     if not preview:
         if not headless:
@@ -394,7 +420,7 @@ def run_build(self, config):
     build_id = response['metadata']['build']['id']
 
     start = time.time()
-    while status not in ['COMPLETE', 'FAILURE', 'SUCCESS']:
+    while status not in ['COMPLETE', 'FAILURE', 'SUCCESS', 'TIMEOUT']:
         time.sleep(15)
         response = self._build_status(build_id)
         status = response['status']

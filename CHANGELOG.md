@@ -13,9 +13,10 @@ and **Merged pull requests**. Critical items to know are:
 
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
-## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
+## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
+ - adding timeout parameter for Google Cloud Build (0.2.26)
  - restore quiet to False after initial setting to True in inspect (0.2.25)
-   - bugfix for rename
+   - bugfix for rename, and refactored testing with pytest and pylint
  - allow anonymously accessing S3 buckets (0.2.24)
    - add sregistry.utils.confirm_action
  - Fixing sregistry search to honor a URI (0.2.22)
@@ -33,6 +34,8 @@ The versions coincide with releases on pip. Only major versions will be released
  - removing complicated (multiple) imports for client, removing redundant "rmi" command (0.2.11)
  - fix s3 client support when SREGISTRY_S3_BASE is not specified, and allow for IAM accounts that do not permit listing buckets (0.2.1)
  - remove dateutils to allow conda support, 0.1.41 will be last supported for Python 2 (0.2.0)
+ 
+ ## [0.1.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.1.x)
  - bug with sregistry push api endpoint, needs to end with api (0.1.41)
  - docker auth is undefined, and storage attribute needs to be checked for naming (0.1.40)
  - fixing bug with tag specification for registry pull (0.1.39)
@@ -47,6 +50,8 @@ The versions coincide with releases on pip. Only major versions will be released
  - adding GitLab Backend  (0.1.01)
  - adding `SREGISTRY_TMPDIR` to customize temporary folder  (0.1.00)
  - not moving image if storage `SREGISTRY_STORAGE` is same as pull folder
+ 
+  ## [0.0.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.0.x)
  - storage name should use - instead of : to mirror Singularity  (0.0.99)
  - client missing quiet level  (0.0.98)
  - progress bar should respect quiet level  (0.0.97)
