@@ -3,8 +3,12 @@ recursive-include sregistry *.png
 recursive-include sregistry *.sh
 recursive-include sregistry *
 recursive-include * *.png
+global-exclude test_client.py
+global-exclude .env
 global-exclude *.py[co]
 recursive-exclude .git *
 global-exclude *.img
 global-exclude *.simg
+global-exclude *.sif
 global-exclude __pycache__
+prune docs*
