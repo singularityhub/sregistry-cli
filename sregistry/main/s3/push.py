@@ -15,6 +15,7 @@ from sregistry.utils import (
 )
 
 import os
+import botocore
 
 
 def push(self, path, name, tag=None):
@@ -36,4 +37,14 @@ def push(self, path, name, tag=None):
     metadata = {'sizemb': "%s" % image_size,
                 'client': 'sregistry'}
 
-    self.bucket.upload_file(path, names['storage'], {"Metadata": metadata})
+    ExtraArgs = {"Metadata": metadata}
+
+    acl = self._get_and_update_setting('SREGISTRY_S3_OBJECT_ACL')
+
+    if acl is not None:
+        ExtraArgs['ACL'] = acl
+
+    try:
+        self.bucket.upload_file(path, names['storage'], ExtraArgs)
+    except botocore.exceptions.ClientError as e:
+        bot.exit("Could not upload {} to bucket. Ensure you have sufficient permissions to put objects in the bucket (s3:PutObject), as well as modify the object ACL if SREGISTRY_S3_OBJECT_ACL is set (s3:PutObjectAcl): {}".format(path, str(e)))

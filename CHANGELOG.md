@@ -14,6 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
+ - sregistry.main.s3.pull: add support for setting object ACL (0.2.27)
+   - sregistry.main.s3.query: catch exceptions when objects are not readable
  - adding timeout parameter for Google Cloud Build (0.2.26)
  - restore quiet to False after initial setting to True in inspect (0.2.25)
    - bugfix for rename, and refactored testing with pytest and pylint
