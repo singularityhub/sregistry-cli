@@ -34,9 +34,6 @@ def push(self, path, name, tag=None):
     if not os.path.exists(path):
         bot.exit('%s does not exist.' % path)
 
-    # Interaction with a registry requires secrets
-    self.require_secrets()
-
     # Extract the metadata
     names = parse_image_name(remove_uri(name), tag=tag)
 

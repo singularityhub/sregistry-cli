@@ -16,25 +16,46 @@ from sregistry.main.registry.utils import (
     generate_timestamp
 )
 
+from sregistry.logger import bot
+
 def authorize(self, names, payload=None, request_type="push"):
     '''Authorize a client based on encrypting the payload with the client
        token, which should be matched on the receiving server'''
 
-    if self.secrets is not None:
+    self.username = self._get_and_update_setting('SREGISTRY_REGISTRY_USERNAME')
 
-        if "registry" in self.secrets:
+    if self.username is None:
+        # backwards compatibility
+        self.username = self._get_and_update_setting('username')
 
-            # Use the payload to generate a digest   push|collection|name|tag|user
-            timestamp = generate_timestamp()
-            credential = generate_credential(self.secrets['registry']['username'])
-            credential = "%s/%s/%s" %(request_type,credential,timestamp)
+        if self.username is None:
+            bot.exit('Failed to authorize: please set SREGISTRY_REGISTRY_USERNAME to an appropriate value')
+        else:
+            self._update_setting('SREGISTRY_REGISTRY_USERNAME', self.username)
 
-            if payload is None:
-                payload = "%s|%s|%s|%s|%s|" %(request_type,
-                                              names['collection'],
-                                              timestamp,
-                                              names['image'],
-                                              names['tag'])
+    self.token = self._get_and_update_setting('SREGISTRY_REGISTRY_TOKEN')
 
-            signature = generate_signature(payload,self.secrets['registry']['token'])
-            return "SREGISTRY-HMAC-SHA256 Credential=%s,Signature=%s" %(credential,signature)
+    if self.token is None:
+        # backwards compatibility
+        self.token = self._get_and_update_setting('token')
+
+        if self.token is None:
+            bot.exit('Failed to authorize: please set SREGISTRY_REGISTRY_TOKEN to an appropriate value')
+        else:
+            self._update_setting('SREGISTRY_REGISTRY_TOKEN', self.token)
+
+
+    # Use the payload to generate a digest   push|collection|name|tag|user
+    timestamp = generate_timestamp()
+    credential = generate_credential(self.username)
+    credential = "%s/%s/%s" %(request_type,credential,timestamp)
+
+    if payload is None:
+        payload = "%s|%s|%s|%s|%s|" %(request_type,
+            names['collection'],
+            timestamp,
+            names['image'],
+            names['tag'])
+
+    signature = generate_signature(payload, self.token)
+    return "SREGISTRY-HMAC-SHA256 Credential=%s,Signature=%s" %(credential,signature)

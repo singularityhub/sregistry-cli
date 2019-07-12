@@ -41,9 +41,6 @@ def build(self, recipe, name, extra=None):
     if not os.path.isfile(path):
         bot.exit("Build takes a Singularity recipe file")
 
-    # Interaction with a registry requires secrets
-    self.require_secrets()
-
     valid = ['google_build']
 
     # Only one valid type

@@ -38,9 +38,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     if not isinstance(images,list):
         images = [images]
 
-    # Interaction with a registry requires secrets
-    self.require_secrets()
-
     bot.debug('Execution of PULL for %s images' % len(images))
 
     finished = []
