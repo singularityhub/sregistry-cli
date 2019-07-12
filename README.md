@@ -8,6 +8,22 @@ Singularity Global Client is an interface to interact with Singularity container
 
 If used for the Singularity Registry client, Python 3 is required. See our [installation guide](https://singularityhub.github.io/sregistry-cli/install) to get started. For more details, please refer to our [documentation](docs).
 
+## Installation instructions
+
+With pip:
+
+```bash
+pip install sregistry[all]
+```
+
+With conda:
+
+```bash
+conda install -c conda-forge sregistry
+```
+
+More detailed instructions can be found [here](https://singularityhub.github.io/sregistry-cli/install)
+
 ## Python Versions Under 3
 
 If you are looking for a version that works with Python 2.* see [this branch](https://github.com/singularityhub/sregistry-cli/releases/tag/v0.1.41), or all releases / branches prior to 0.2.0.
