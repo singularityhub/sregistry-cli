@@ -13,10 +13,7 @@ A Singularity Registry backend is optimized to interact with a Singularit Regist
  - *pull*: `[remote->local]` is a common use case. It says "get this remote registry image and pull it from there to my storage."
  - *push*: `[local->remote]` takes an image on your host and pushes to the registry (if you have permission).
  - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
-
-The following commands are not yet developed or implemented, but can be (please [post an issue](https://www.singularityhub.github.io/sregistry/issues)):
-
- - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential (note this isn't implemented yet for the registry, but is noted here as a todo).
+ - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential.
 
 If you are using `sregistry` for a Singularity Registry, Python 3.3+ is required.
 
@@ -254,7 +251,7 @@ Progress |===================================| 100.0%
 [container][new] milkshakes/pudding:banana
 Success! /home/vanessa/.singularity/shub/milkshakes-pudding:banana.simg
 ```
-```python
+```bash
 $ sregistry images | grep banana
 27 January 24, 2018	[registry]	milkshakes/pudding:banana
 28 January 24, 2018	[registry]	milkshakes/pudding:banana@846442ecd7487f99fce3b8fb68ae15af
@@ -300,6 +297,18 @@ rows = client.search()
 >>> client.search('vanessa/tacos')
 # [['vanessa/tacos', 'latest', 'Dec 28, 2017 02:56AM']]
 ```
+
+## Delete
+When authorized to do so (see [Push](#push), it is possible to delete images from the registry. Don't forget to confirm with `y`, or pass `--force` to avoid being prompted:
+
+```bash
+$ sregistry delete vanessa/tacolicious:gobacktosleep
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Are you sure you want to remove vanessa/tacolicious:gobacktosleep?y
+Response 204, No Content
+```
+
+
 
 ## Custom Registry URI
 
