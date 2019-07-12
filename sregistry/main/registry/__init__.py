@@ -87,17 +87,20 @@ class Client(ApiConnection):
 
 
     def _update_secrets(self):
-        '''update secrets will take a secrets credential file
-           either located at .sregistry or the environment variable
-           SREGISTRY_CLIENT_SECRETS and update the current client 
-           secrets as well as the associated API base.
+        '''update secrets will use the SREGISTRY_REGISTRY_BASE to determine which API base url
+           to use for the registry. If not present, the .sregistry secrets credential file
+           either located at $HOME/.sregistry or the environment variable
+           SREGISTRY_CLIENT_SECRETS will be used instead.
         '''
-        self.secrets = read_client_secrets()
-        if self.secrets is not None:
-            if "registry" in self.secrets:
-                if "base" in self.secrets['registry']:
-                    self.base = self.secrets['registry']['base']
-                    self._update_base()
+        self.base = self._get_and_update_setting('SREGISTRY_REGISTRY_BASE')
+
+        if self.base is None:
+            self.base = self._get_and_update_setting('base')
+
+            if self.base is not None:
+                self._update_setting('SREGISTRY_REGISTRY_BASE', self.base)
+
+        self._update_base()
 
     def __str__(self):
         return type(self)

@@ -8,20 +8,16 @@ toc: false
 
 # Singularity Registry Client
 
-A Singularity Registry backend is optimized to interact with a Singularit Registry, the configuration which is set in a credentials file typically located at `$SREGISTRY_CLIENT_SECRETS` that defaults to `$HOME/.sregistry`. If you aren't familiar with a Singularity Registry, it is an open source effort to empower institutions to host their own registries. It's more substantial then this `sregistry` client as it involves a bit of set up and configuration, and must run on a server with Docker. To read more, [view the documentation here](https://singularityhub.github.io/sregistry). You should check out the [getting started](../getting-started) pages for a list of environment variables that you can configure, and the [global commands](../getting-started/commands.md) for commands that are useful for all clients. Here we will review the set of commands that are specific to the Singularity Registry client:
+A Singularity Registry backend is optimized to interact with a Singularity Registry, whose configuration is determined by the `SREGISTRY_REGISTRY_BASE`, `SREGISTRY_REGISTRY_USERNAME` and `SREGISTRY_REGISTRY_USERTOKEN` environment variables. If you aren't familiar with a Singularity Registry, it is an open source effort to empower institutions to host their own registries. It's more substantial then this `sregistry` client as it involves a bit of set up and configuration, and must run on a server with Docker. To read more, [view the documentation here](https://singularityhub.github.io/sregistry). You should check out the [getting started](../getting-started) pages for a list of environment variables that you can configure, and the [global commands](../getting-started/commands.md) for commands that are useful for all clients. Here we will review the set of commands that are specific to the Singularity Registry client:
 
  - *pull*: `[remote->local]` is a common use case. It says "get this remote registry image and pull it from there to my storage."
  - *push*: `[local->remote]` takes an image on your host and pushes to the registry (if you have permission).
  - *search*: `[remote]`: list containers for a remote endpoint, optionally with a search term.
+ - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential.
 
-The following commands are not yet developed or implemented, but can be (please [post an issue](https://www.singularityhub.github.io/sregistry/issues)):
-
- - *delete*: `[remote]`: delete an image from a remote endpoint if you have the correct credential (note this isn't implemented yet for the registry, but is noted here as a todo).
-
-If you are using `sregistry` for a Singularity Registry, Python 3.3+ is required.
 
 ## Install
-The Singularity Registry client for sregistry is recommended for use with Python 3, since it uses the datetime package to help with the credential header (if you have a workaround for this, please contribute since it causes issues for many). To install the dependencies:
+To install `sregistry-cli` with the necessary dependencies to use the registry client:
 
 ```bash
 $ pip install sregistry[registry]
@@ -30,7 +26,7 @@ $ pip install sregistry[registry]
 $ pip install -e .[registry]
 ```
 
-And this will install the extra requirements
+And this will install the extra requirements.
 
 ## Sanity Checks
 You will want to make sure that when you interact with `sregistry` that the Singularity Registry client is loaded. Note how when you use the shell, the default is Singularity hub:
@@ -82,7 +78,7 @@ usage: sregistry [-h] [--debug]
 
 ## Pull
 To pull an image, you would equivalently use "pull" with the registry client active. The base of your registry
-will be read in from your `SREGISTRY_CLIENT_SECRETS`, and if this isn't found, it assumes local host.
+will be read in from the `SREGISTRY_REGISTRY_BASE` environment variable, and if this isn't found, it assumes local host.
 
 The most likely thing that you would want to do with the client is pull an image. And
 if you have just installed sregistry and done nothing else, this is the default client
@@ -122,6 +118,8 @@ $ client.pull('vanessa/tacos:latest')
 
 See the [custom registry uri](#custom-registry-uri) instructions on this page for how to specify
 the registry in the unique resource identifier, and not completely rely on the base of your credentials.
+
+Singularity registries support hosting private container collections. Pulling an image from such a collection require authorization. See [Push](#push) for more details about this.
 
 ## Inspect
 Inspect isn't a command specific to any client, but we can use it here to look at the local image:
@@ -214,7 +212,7 @@ client.inspect('vanessa/tacos:latest')
 
 ## Push
 
-Singularity Registry is one of the few clients that has "push," meaning that we can take an image that we have locally and push it to a registry. First, make sure that you have generated your [credentials file](https://singularityhub.github.io/sregistry/credentials.html). You **must** be an admin and/or manager of a Singularity Registry to push to it! If it's not running locally, also make sure that your credentials file has the correct url base (the file that you copy paste usually defaults to localhost, and this would be fine given that you are running the registry locally on your machine, and would need to be changed otherwise). Then, find a local image to push. In the example below, we will push an image called "expfactory.simg."
+Singularity Registry is one of the few clients that has "push," meaning that we can take an image that we have locally and push it to a registry. First, make sure that you have properly defined your [credentials](https://singularityhub.github.io/sregistry/credentials.html). You **must** be an admin and/or manager of a Singularity Registry to push to it! If it's not running locally, also make sure that your credentials file has the correct url base (the file that you copy paste usually defaults to localhost, and this would be fine given that you are running the registry locally on your machine, and would need to be changed otherwise). Then, find a local image to push. In the example below, we will push an image called "expfactory.simg."
 
 You can export the `SREGISTRY_CLIENT=registry` one time (on the same line before the command)
 
@@ -254,7 +252,7 @@ Progress |===================================| 100.0%
 [container][new] milkshakes/pudding:banana
 Success! /home/vanessa/.singularity/shub/milkshakes-pudding:banana.simg
 ```
-```python
+```bash
 $ sregistry images | grep banana
 27 January 24, 2018	[registry]	milkshakes/pudding:banana
 28 January 24, 2018	[registry]	milkshakes/pudding:banana@846442ecd7487f99fce3b8fb68ae15af
@@ -301,12 +299,22 @@ rows = client.search()
 # [['vanessa/tacos', 'latest', 'Dec 28, 2017 02:56AM']]
 ```
 
+## Delete
+When authorized to do so (see [Push](#push), it is possible to delete images from the registry. Don't forget to confirm with `y`, or pass `--force` to avoid being prompted:
+
+```bash
+$ sregistry delete vanessa/tacolicious:gobacktosleep
+[client|registry] [database|sqlite:////home/vanessa/.singularity/sregistry.db]
+Are you sure you want to remove vanessa/tacolicious:gobacktosleep?y
+Response 204, No Content
+```
+
+
+
 ## Custom Registry URI
 
 If you want to specify a custom registry (other than localhost) then you have two options. You
-can either change the "base" variable in your configuration file at $HOME/.sregistry (this
-is ideal for a more permanent situation where you are setting a host to consistently use
-a particular Singularity Registry Server), or you can specify the registry as part of the uri.
+can either change set and export the `SREGISTRY_REGISTRY_BASE` environment variable, or you can specify the registry as part of the uri.
 
 For example, here is how I might first try to interact with a registry that I just deployed.
 
@@ -331,7 +339,7 @@ Progress ||----------------------------------|   0.0% ^
 
 The container pulls successfully! I can use this technique of specifying the registry
 in the unique resource identifier to interact with many different registries at once,
-and the default will still go to the one in my $HOME/.sregistry, given that it's not set
+and the default will still go to the one defined by `SREGISTRY_REGISTRY_BASE`, given that it's not set
 in identifier.
 
 This has been a general review of the custom commands for Singularity Registry. Don't forget that the Singularity Registry client also supports the [global client commands](../getting-started/commands.md) such as `inspect`, `images`, and `get`.
