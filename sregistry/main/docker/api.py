@@ -560,7 +560,7 @@ def extract_runscript(self):
     # Only continue if command still isn't None
     if cmd is not None:
         bot.verbose3("Adding Docker %s as Singularity runscript..."
-                     % cmd.upper())
+                     % command.upper())
 
         # If the command is a list, join. (eg ['/usr/bin/python','hello.py']
         bot.debug(cmd)
