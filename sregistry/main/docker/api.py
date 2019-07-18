@@ -55,7 +55,6 @@ def update_token(self, response):
     realm = match.group(1)
     service = match.group(2)
     scope = match.group(3).split(',')[0]
-
     token_url = realm + '?service=' + service + '&expires_in=900&scope=' + scope
 
     # Default headers must be False so that client's current headers not used
@@ -560,7 +559,7 @@ def extract_runscript(self):
     # Only continue if command still isn't None
     if cmd is not None:
         bot.verbose3("Adding Docker %s as Singularity runscript..."
-                     % cmd.upper())
+                     % command.upper())
 
         # If the command is a list, join. (eg ['/usr/bin/python','hello.py']
         bot.debug(cmd)
