@@ -38,8 +38,8 @@ class Client(ApiConnection):
         '''
         self.reverseLayers = False
         self._reset_headers()
-        self._update_secrets()
         super(Client, self).__init__(**kwargs)
+        self._update_secrets()
         self._update_headers()
         self._set_base()
 
