@@ -35,7 +35,8 @@ def push(self, path, name, tag=None):
     # *important* bug in boto3 will return these capitalized
     # see https://github.com/boto/boto3/issues/1709
     metadata = {'sizemb': "%s" % image_size,
-                'client': 'sregistry'}
+                'client': 'sregistry',
+                'type': 'container'}
 
     ExtraArgs = {"Metadata": metadata}
 
