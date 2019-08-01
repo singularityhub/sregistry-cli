@@ -27,9 +27,7 @@ from sregistry.main.base.http import (
     stream_response, verify
 )
 
-from sregistry.main.base.inspect import (
-    get_metadata
-)
+from sregistry.main.base.inspect import get_metadata
 
 from sregistry.main.base.settings import (
     get_setting,

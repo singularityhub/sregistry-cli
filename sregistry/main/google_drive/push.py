@@ -47,10 +47,6 @@ def push(self, path, name, tag=None):
 
     # Update metadata with names, flatten to only include labels
     metadata = self.get_metadata(path, names=names)
-    metadata = metadata['data']
-    metadata.update(names)
-    metadata.update(metadata['attributes']['labels'])
-    del metadata['attributes']
 
     file_metadata = {
         'name': names['storage'],
