@@ -23,9 +23,11 @@ import os
 def push(self, path, name, tag=None):
     '''push an image to Google Cloud Storage, meaning uploading it
     
-    path: should correspond to an absolte image path (or derive it)
-    name: should be the complete uri that the user has requested to push.
-    tag: should correspond with an image tag. This is provided to mirror Docker
+       Parameters
+       ==========
+       path: should correspond to an absolte image path (or derive it)
+       name: should be the complete uri that the user has requested to push.
+       tag: should correspond with an image tag. This is provided to mirror Docker
     '''
     path = os.path.abspath(path)
     bot.debug("PUSH %s" % path)
@@ -42,9 +44,6 @@ def push(self, path, name, tag=None):
 
     # Update metadata with names
     metadata = self.get_metadata(path, names=names)
-    if "data" in metadata:
-        metadata = metadata['data']
-    metadata.update(names)
 
     manifest = self._upload(source=path, 
                             destination=names['storage'],

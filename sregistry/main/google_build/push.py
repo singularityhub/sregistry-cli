@@ -42,9 +42,6 @@ def push(self, path, name, tag=None):
 
     # Update metadata with names
     metadata = self.get_metadata(path, names=names)
-    if "data" in metadata:
-        metadata = metadata['data']
-    metadata.update(names)
 
     manifest = self._upload(source=path, 
                             destination=names['storage'],

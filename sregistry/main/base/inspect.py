@@ -72,9 +72,24 @@ def get_metadata(self, image_file, names=None):
         if updates is not None:
             try:
                 updates = json.loads(updates)
+
+                # Singularity 3.x bug with missing top level
+                if "data" in updates:
+                    updates = updates['data']
                 metadata.update(updates)
+
+                # Flatten labels
+                if "attributes" in metadata:
+                    if "labels" in metadata['attributes']:
+                        metadata.update(metadata['attributes']['labels'])
+                    del metadata['attributes']
+
             except:
                 pass
 
     metadata.update(names)
+
+    # Add the type to the container
+    metadata['type'] = 'container'
+
     return metadata

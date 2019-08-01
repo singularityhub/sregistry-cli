@@ -14,6 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
+ - Metadata must include type of container (0.2.30)
+   - accounting for Singularity 3.x bugs with metadata fields 
  - Fixing bug with setting docker base to None with super (0.2.29)
  - sregistry.main.registry: use env variables for authorization (0.2.28)
    - docs.pages.clients.registry: add delete docs
