@@ -80,7 +80,7 @@ def get_metadata(self, image_file, names=None):
 
                 # Flatten labels
                 if "attributes" in metadata:
-                    if "labels" in metadata['attributes']
+                    if "labels" in metadata['attributes']:
                         metadata.update(metadata['attributes']['labels'])
                     del metadata['attributes']
 
