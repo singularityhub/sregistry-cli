@@ -212,7 +212,8 @@ workflows:
       - test-python-3:
           filters:
             branches:
-              ignore: master
+              ignore: 
+                - master
 
       - build:
           requires:
@@ -242,6 +243,7 @@ workflows:
             - update_cache
           filters:
             branches:
-              only: master
+              only: 
+                - master
             tags:
               only: /.*/
