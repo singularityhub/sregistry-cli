@@ -12,19 +12,20 @@ cd sregistry-cli
 **build**
 
 ```
-docker build -t sregistrycli .
+docker build -t quay.io/vanessa/sregistry-cli .
 ```
 
 **usage**
+
 ```
-docker run vanessa/sregistrycli
+docker run quay.io/vanessa/sregistry-cli
 ```
 
 # Docker Compose
 
 The [docker-compose.yml](docker-compose.yml) is an example of bringing up
 an sregistry-cli and a Minio Storage server. We used this for testing. The docker 
-image is from [Docker Hub](https://cloud.docker.com/repository/docker/vanessa/sregistry-cli).
+image is from [Quay.io](https://quay.io/organization/vanessa?tab=tags).
 You should have [docker-compose](https://docs.docker.com/compose/install/) installed.
 
 ```

@@ -1,5 +1,6 @@
 examples/*
 examples
+.env
 build
 *.simg
 *.img
