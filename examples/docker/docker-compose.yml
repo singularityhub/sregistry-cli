@@ -13,7 +13,7 @@ services:
       links:
         - sregistrycli
     sregistrycli:
-      image: singularityhub/sregistry-cli:0.1.32
+      image: quay.io/vanessa/sregistry-cli
       container_name: sregistrycli
       privileged: true
       command: -F /dev/null

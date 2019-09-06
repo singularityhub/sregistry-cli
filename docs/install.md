@@ -53,13 +53,13 @@ You can use Singularity Registry Global clients via Docker. Importantly, you nee
 run the commands with the `--privileged` flag.
 
 ```bash
-$ docker run --privileged vanessa/sregistry-cli pull shub://vsoch/hello-world
+$ docker run --privileged quay.io/vanessa/sregistry-cli pull shub://vsoch/hello-world
 ```
 
 If you need to build the container locally:
 
 ```bash
-$ docker build -t vanessa/sregistry-cli .
+$ docker build -t quay.io/vanessa/sregistry-cli .
 ```
 
 # Singularity

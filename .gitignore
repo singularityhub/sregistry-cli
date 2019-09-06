@@ -1,4 +1,5 @@
 sregistry.egg-info/
+.env
 _site
 dist/
 OLD

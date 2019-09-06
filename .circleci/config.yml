@@ -90,7 +90,7 @@ dockerdeploy: &dockerdeploy
       docker images
       echo "Container name set to ${CONTAINER_NAME}"
       if [[ -n "$DOCKER_PASS" ]]; then
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
             SREGISTRY_VERSION=$(docker run "${CONTAINER_NAME}:latest" version)
             echo "Tagging latest image..."
             docker tag ${CONTAINER_NAME}:latest ${CONTAINER_NAME}:${SREGISTRY_VERSION}

@@ -3,8 +3,8 @@ FROM continuumio/miniconda3
 #########################################
 # Singularity Registry Global Client
 # 
-# docker build -t vanessa/sregistry-cli .
-# docker run vanessa/sregistry-cli
+# docker build -t quay.io/vanessa/sregistry-cli .
+# docker run quay.io/vanessa/sregistry-cli
 #########################################
 
 LABEL maintainer vsochat@stanford.edu
