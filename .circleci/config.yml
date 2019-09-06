@@ -236,7 +236,6 @@ workflows:
             tags:
               only: /.*/
 
-      # Upload the container to Docker Hub
       - deploy:
           requires:
             - build
