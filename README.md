@@ -6,7 +6,7 @@ Hi Friends! Are your containers lonely? Singularity containers thrive in happine
 
 ## What is this?
 
-Singularity Global Client is an interface to interact with Singularity containers in many different storage locations. We are able to use modern APIs by way of providing and using the software within a Singularity container! For older architectures, we provide a [Singularity container](Singularity) for you to use instead. You can build it from this repository, or use the provided container on [Singularity Hub](https://www.singularity-hub.org/collections/379).
+Singularity Global Client is an interface to interact with Singularity containers in many different storage locations. We can use modern APIs by way of providing and using the software within a Singularity container! For older architectures, we provide a [Singularity container](Singularity) for you to use instead. You can build it from this repository, or use the provided container on [Singularity Hub](https://www.singularity-hub.org/collections/379).
 
 If used for the Singularity Registry client, Python 3 is required. See our [installation guide](https://singularityhub.github.io/sregistry-cli/install) to get started. For more details, please refer to our [documentation](docs).
 
@@ -28,7 +28,7 @@ More detailed instructions can be found [here](https://singularityhub.github.io/
 
 ## Python Versions Under 3
 
-If you are looking for a version that works with Python 2.* see [this branch](https://github.com/singularityhub/sregistry-cli/releases/tag/v0.1.41), or all releases / branches prior to 0.2.0.
+If you are looking for a version that works with Python 2.* see [this branch](https://github.com/singularityhub/sregistry-cli/releases/tag/v0.1.41), or all releases/branches prior to 0.2.0.
 
 ## Building the RPM
 
