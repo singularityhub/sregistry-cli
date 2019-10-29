@@ -140,7 +140,7 @@ INSTALL_REQUIRES_GOOGLE_STORAGE = (
 INSTALL_REQUIRES_GOOGLE_BUILD = (
     ('oauth2client', {'min_version': '3.0'}),
     ('google-cloud-storage', {'min_version': '1.4.0'}),
-    ('google-api-python-client', {'min_version': '1.6.4'})
+    ('google-api-python-client', {'min_version': '1.6.4'}),
     ('retrying', {'exact_version': '1.3.3'}),
     ('sqlalchemy', {'min_version': None})
 )
