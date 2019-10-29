@@ -1,6 +1,6 @@
 '''
 
-Copyright (C) 2017-2019 Vanessa Sochat.
+Copyright (C) 2017-2020 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -8,7 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 '''
 
-__version__ = "0.2.30"
+__version__ = "0.2.31"
 AUTHOR = 'Vanessa Sochat'
 AUTHOR_EMAIL = 'vsochat@stanford.edu'
 NAME = 'sregistry'
@@ -67,12 +67,13 @@ INSTALL_BASIC_GOOGLE_STORAGE = (
 INSTALL_BASIC_GOOGLE_BUILD = (
     ('oauth2client', {'min_version': '3.0'}),
     ('google-cloud-storage', {'min_version': '1.4.0'}),
+    ('google-api-python-client', {'min_version': '1.6.4'}),
     ('retrying', {'min_version': '1.3.3'})
 )
 
 INSTALL_BASIC_GOOGLE_DRIVE = (
     ('oauth2client', {'min_version': '3.0'}),
-    ('google-api-python-client', {'min_version': '1.6.4'})
+
 )
 
 INSTALL_BASIC_GOOGLE_COMPUTE = (
@@ -139,6 +140,7 @@ INSTALL_REQUIRES_GOOGLE_STORAGE = (
 INSTALL_REQUIRES_GOOGLE_BUILD = (
     ('oauth2client', {'min_version': '3.0'}),
     ('google-cloud-storage', {'min_version': '1.4.0'}),
+    ('google-api-python-client', {'min_version': '1.6.4'})
     ('retrying', {'exact_version': '1.3.3'}),
     ('sqlalchemy', {'min_version': None})
 )
