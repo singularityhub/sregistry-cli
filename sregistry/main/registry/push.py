@@ -43,6 +43,10 @@ def push(self, path, name, tag=None):
     if names['registry'] is None:
         names['registry'] = self.base
 
+    # If the registry is still None, no go
+    if names['registry'] is None:
+        bot.exit('You must define a base in secrets, image uri, or environment')
+
     # If the base doesn't start with http or https, add it
     names = self._add_https(names)
 

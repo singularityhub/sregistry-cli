@@ -49,6 +49,10 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         if q['registry'] is None:
             q['registry'] = self.base
 
+        # If the registry is still None, no go
+        if q['registry'] is None:
+            bot.exit('You must define a base in secrets, image uri, or environment')
+
         # Ensure https is added back to the registry  uri
         q = self._add_https(q)
 
