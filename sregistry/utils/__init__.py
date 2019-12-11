@@ -5,14 +5,9 @@ from .terminal import (
     get_thumbnail,
     which,
     confirm_action,
-    confirm_delete
+    confirm_delete,
 )
-from .names import (
-    get_recipe_tag,
-    get_uri,
-    parse_image_name,
-    remove_uri
-)
+from .names import get_recipe_tag, get_uri, parse_image_name, remove_uri
 from .fileio import (
     copyfile,
     extract_tar,
@@ -25,5 +20,5 @@ from .fileio import (
     read_file,
     read_json,
     write_file,
-    write_json
+    write_json,
 )

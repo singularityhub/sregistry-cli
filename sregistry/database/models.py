@@ -1,4 +1,4 @@
-'''
+"""
 
 Copyright (C) 2017-2020 Vanessa Sochat.
 
@@ -6,48 +6,48 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
 from sqlalchemy import (
     create_engine,
-    Column, 
+    Column,
     DateTime,
-    Integer, 
-    String, 
+    Integer,
+    String,
     Text,
     ForeignKey,
-    func
+    func,
 )
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import UniqueConstraint
-from sqlalchemy.orm import (backref,
-                            relationship,  
-                            scoped_session, 
-                            sessionmaker)
+from sqlalchemy.orm import backref, relationship, scoped_session, sessionmaker
 
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_STORAGE
 from uuid import uuid4
 import os
- 
+
 Base = declarative_base()
 
-  
+
 class Collection(Base):
-    '''A participant in a local assessment. id must be unique. If a token is
+    """A participant in a local assessment. id must be unique. If a token is
        revoked or finished, it will end with `_revoked` or `_finished`. A
        user generated without a token will have value of None
-    '''
-    __tablename__ = 'collection'
+    """
+
+    __tablename__ = "collection"
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True)
     token = Column(String(50))
     created_at = Column(DateTime, default=func.now())
-    containers = relationship('Container',
-                              lazy='select',
-                              cascade='delete,all',
-                              backref=backref('collection', lazy='joined'))
+    containers = relationship(
+        "Container",
+        lazy="select",
+        cascade="delete,all",
+        backref=backref("collection", lazy="joined"),
+    )
 
     def __init__(self, name=None, token=None):
         self.name = name
@@ -56,18 +56,18 @@ class Collection(Base):
         self.token = token
 
     def __repr__(self):
-        return '<Collection %r>' % (self.name)
+        return "<Collection %r>" % (self.name)
 
     def __str__(self):
-        return '<Collection %r>' % (self.name)
+        return "<Collection %r>" % (self.name)
 
     def url(self):
-        '''return the collection url'''
-        return "file://"        
+        """return the collection url"""
+        return "file://"
 
 
 class Container(Base):
-    '''a container belongs to a collection
+    """a container belongs to a collection
 
        Parameters
        ==========
@@ -84,9 +84,9 @@ class Container(Base):
        We index / filter containers based on the full uri, which is assembled 
                   from the <collection>/<namespace>:<tag>@<version>, then stored
                   as a variable, and maintained separately for easier query.
-    '''
+    """
 
-    __tablename__ = 'container'
+    __tablename__ = "container"
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=func.now())
     metrics = Column(Text, nullable=False)
@@ -97,40 +97,36 @@ class Container(Base):
     uri = Column(String(500), nullable=True)
     client = Column(String(50), nullable=False)
     version = Column(String(250), nullable=True)
-    collection_id = Column(Integer,
-                           ForeignKey('collection.id'),
-                           nullable=False)
+    collection_id = Column(Integer, ForeignKey("collection.id"), nullable=False)
 
-    __table_args__ = (UniqueConstraint('collection_id', 
-                                       'name',
-                                       'tag',
-                                       'client', 
-                                       'version', name='_container_uc'),)
+    __table_args__ = (
+        UniqueConstraint(
+            "collection_id", "name", "tag", "client", "version", name="_container_uc"
+        ),
+    )
 
     def __repr__(self):
         if self.uri is None:
-            return '<Container %r>' % (self.name)
-        return '<Container %r>' % (self.uri)
+            return "<Container %r>" % (self.name)
+        return "<Container %r>" % (self.uri)
 
     def __str__(self):
         if self.uri is None:
-            return '<Container %r>' % (self.name)
-        return '<Container %r>' % (self.uri)
-
+            return "<Container %r>" % (self.name)
+        return "<Container %r>" % (self.uri)
 
     def get_uri(self):
-        '''generate a uri on the fly from database parameters if one is not
+        """generate a uri on the fly from database parameters if one is not
            saved with the initial model (it should be, but might not be possible)
-        '''
-        uri = "%s/%s:%s" %(self.collection.name, self.name, self.tag)
-        if self.version not in [None,'']:
-            uri = "%s@%s" %(uri, self.version)
+        """
+        uri = "%s/%s:%s" % (self.collection.name, self.name, self.tag)
+        if self.version not in [None, ""]:
+            uri = "%s@%s" % (uri, self.version)
         return uri
 
 
-
 def init_db(self, db_path):
-    '''initialize the database, with the default database path or custom of
+    """initialize the database, with the default database path or custom of
 
        the format sqlite:////home/<username>/sregistry.db
 
@@ -138,16 +134,16 @@ def init_db(self, db_path):
        when a user creates the client, we must initialize this db
        the database should use the .singularity cache folder to cache
        layers and images, and .singularity/sregistry.db as a database
-    '''
+    """
 
     # Database Setup, use default if uri not provided
-    self.database = 'sqlite:///%s' % db_path
+    self.database = "sqlite:///%s" % db_path
     self.storage = SREGISTRY_STORAGE
 
     # If the path isn't defined, cut out early
     if not db_path:
         return
-    
+
     # Ensure that the parent_folder exists)
     parent_folder = os.path.dirname(db_path)
 
@@ -161,10 +157,10 @@ def init_db(self, db_path):
 
     bot.debug("Database located at %s" % self.database)
     self.engine = create_engine(self.database, convert_unicode=True)
-    self.session = scoped_session(sessionmaker(autocommit=False,
-                                               autoflush=False,
-                                               bind=self.engine))
-    
+    self.session = scoped_session(
+        sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+    )
+
     Base.query = self.session.query_property()
 
     # import all modules here that might define models so that

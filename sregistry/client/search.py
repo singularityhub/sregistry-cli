@@ -1,4 +1,4 @@
-'''
+"""
 
 Copyright (C) 2017-2020 Vanessa Sochat.
 
@@ -6,10 +6,11 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
 from sregistry.logger import bot
 from sregistry.utils import remove_uri
+
 
 def main(args, parser, extra):
 
@@ -19,7 +20,7 @@ def main(args, parser, extra):
         original = query
         query = remove_uri(query)
 
-        if query in ['','*']:
+        if query in ["", "*"]:
             query = None
 
         try:

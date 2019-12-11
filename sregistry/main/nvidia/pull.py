@@ -1,4 +1,4 @@
-'''
+"""
 
 Copyright (C) 2017-2020 Vanessa Sochat.
 
@@ -6,14 +6,14 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
 from sregistry.logger import bot
-from sregistry.utils import (parse_image_name, remove_uri)
+from sregistry.utils import parse_image_name, remove_uri
 
 
 def pull(self, images, file_name=None, save=True, force=False, **kwargs):
-    '''pull an image from a docker hub. This is a (less than ideal) workaround
+    """pull an image from a docker hub. This is a (less than ideal) workaround
        that actually does the following:
 
        - creates a sandbox folder
@@ -35,27 +35,28 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
     Returns
     =======
     finished: a single container path, or list of paths
-    '''
+    """
 
-    if not isinstance(images,list):
+    if not isinstance(images, list):
         images = [images]
 
-    bot.debug('Execution of PULL for %s images' %len(images))
+    bot.debug("Execution of PULL for %s images" % len(images))
 
     # If used internally we want to return a list to the user.
 
     finished = []
     for image in images:
 
-        q = parse_image_name( remove_uri(image), 
-                              default_collection='nvidia' )
+        q = parse_image_name(remove_uri(image), default_collection="nvidia")
 
-        image_file = self._pull(file_name=file_name, 
-                                uri='nvidia://',
-                                save=save, 
-                                force=force, 
-                                names=q,
-                                kwargs=kwargs)
+        image_file = self._pull(
+            file_name=file_name,
+            uri="nvidia://",
+            save=save,
+            force=force,
+            names=q,
+            kwargs=kwargs,
+        )
 
         finished.append(image_file)
 
