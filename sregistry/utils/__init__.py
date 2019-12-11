@@ -17,6 +17,7 @@ from .fileio import (
     copyfile,
     extract_tar,
     get_userhome,
+    get_username,
     get_file_hash,
     get_tmpdir,
     get_tmpfile,
@@ -25,5 +26,5 @@ from .fileio import (
     read_file,
     read_json,
     write_file,
-    write_json
+    write_json,
 )
