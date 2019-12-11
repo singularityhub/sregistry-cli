@@ -1,6 +1,7 @@
 # Singularity Global Client
 
 [![https://img.shields.io/badge/software%20checklist-100%25-59BF40](https://img.shields.io/badge/software%20checklist-100%25-59BF40)](https://stanford-rc.github.io//rse-services/docs/tools/software-checklist/badge?label=100%25&color=#59BF40&ids=r1,r2,r3,r4,r5,r6,d1,d2,d3,d4,d5,d6,d7,a1,a2,a3,ci1,ci2&title=singularityhub/sregistry-cli)
+[![GitHub actions status](https://github.com/singularityhub/sregistry-cli/workflows/sregistry-ci/badge.svg?branch=master)](https://github.com/singularityhub/sregistry-cli/actions?query=branch%3Amaster+workflow%3Asregistry-ci)
 
 Hi Friends! Are your containers lonely? Singularity containers thrive in happiness when they are shared. This means that wherever you might have them in these cloudy places, they are easy to find and move around.
 

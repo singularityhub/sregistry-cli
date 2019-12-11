@@ -1,4 +1,4 @@
-'''
+"""
 
 Copyright (C) 2017-2020 Vanessa Sochat.
 
@@ -6,7 +6,7 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
 from sregistry.logger import bot
 import datetime
@@ -16,23 +16,26 @@ import os
 import tempfile
 import tarfile
 
+
 def get_template(name):
-    '''return a default template for some function in sregistry
+    """return a default template for some function in sregistry
        If there is no template, None is returned.
 
        Parameters
        ==========
        name: the name of the template to retrieve
 
-    '''
+    """
     name = name.lower()
     templates = dict()
 
-    templates['tarinfo'] = {"gid": 0,
-                            "uid": 0,
-                            "uname": "root",
-                            "gname": "root",
-                            "mode": 493}
+    templates["tarinfo"] = {
+        "gid": 0,
+        "uid": 0,
+        "uname": "root",
+        "gname": "root",
+        "mode": 493,
+    }
 
     if name in templates:
         bot.debug("Found template for %s" % (name))
@@ -42,12 +45,12 @@ def get_template(name):
 
 
 def create_tar(files, output_folder=None):
-    '''create_memory_tar will take a list of files (each a dictionary
+    """create_memory_tar will take a list of files (each a dictionary
         with name, permission, and content) and write the tarfile
         (a sha256 sum name is used) to the output_folder.
         If there is no output folde specified, the
         tar is written to a temporary folder.
-    '''
+    """
     if output_folder is None:
         output_folder = tempfile.mkdtemp()
 
@@ -56,9 +59,9 @@ def create_tar(files, output_folder=None):
     contents = []
 
     for entity in files:
-        info = tarfile.TarInfo(name=entity['name'])
-        info.mode = entity['mode']
-        info.mtime = int(datetime.datetime.now().strftime('%s'))
+        info = tarfile.TarInfo(name=entity["name"])
+        info.mode = entity["mode"]
+        info.mtime = int(datetime.datetime.now().strftime("%s"))
         info.uid = entity["uid"]
         info.gid = entity["gid"]
         info.uname = entity["uname"]
@@ -68,15 +71,14 @@ def create_tar(files, output_folder=None):
         filey = io.StringIO()
         content = None
         try:  # python3
-            info.size = filey.write(entity['content'])
-            content = io.BytesIO(entity['content'].encode('utf8'))
+            info.size = filey.write(entity["content"])
+            content = io.BytesIO(entity["content"].encode("utf8"))
         except:  # python2
-            info.size = int(filey.write(entity['content'].decode('utf-8')))
-            content = io.BytesIO(entity['content'].encode('utf8'))
+            info.size = int(filey.write(entity["content"].decode("utf-8")))
+            content = io.BytesIO(entity["content"].encode("utf8"))
 
         if content is not None:
-            addition = {'content': content,
-                        'info': info}
+            addition = {"content": content, "info": info}
             additions.append(addition)
             contents.append(content)
 
@@ -106,8 +108,8 @@ def create_tar(files, output_folder=None):
 
 
 def get_content_hash(contents):
-    '''get_content_hash will return a hash for a list of content (bytes/other)
-    '''
+    """get_content_hash will return a hash for a list of content (bytes/other)
+    """
     hasher = hashlib.sha256()
     for content in contents:
         if isinstance(content, io.BytesIO):

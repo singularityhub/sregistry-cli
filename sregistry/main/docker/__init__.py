@@ -1,4 +1,4 @@
-'''
+"""
 
 Copyright (C) 2017-2020 Vanessa Sochat.
 
@@ -6,7 +6,7 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
 from sregistry.logger import bot
 from sregistry.auth import basic_auth_header
@@ -17,17 +17,30 @@ import os
 
 # here you should import the functions from the files in this
 # folder that you add to your client (at the bottom)
-from .api import ( create_metadata_tar, download_layers, get_manifest_selfLink,
-                   get_config, get_digests, get_layer, get_layerLink, 
-                   get_manifest, get_manifests, get_download_cache, get_size,
-                   extract_env, extract_labels, extract_runscript,
-                   update_token, get_environment_tar )
-from .pull import ( _pull, pull )
+from .api import (
+    create_metadata_tar,
+    download_layers,
+    get_manifest_selfLink,
+    get_config,
+    get_digests,
+    get_layer,
+    get_layerLink,
+    get_manifest,
+    get_manifests,
+    get_download_cache,
+    get_size,
+    extract_env,
+    extract_labels,
+    extract_runscript,
+    update_token,
+    get_environment_tar,
+)
+from .pull import _pull, pull
+
 
 class Client(ApiConnection):
-
     def __init__(self, secrets=None, **kwargs):
-        '''to work with docker hub, we do the following:
+        """to work with docker hub, we do the following:
 
         1. set the base to index.docker.io, or defined in environment 
         2. assume starting with v2 schema, we won't reverse layers 
@@ -35,7 +48,7 @@ class Client(ApiConnection):
         4. update secrets, 1st priority environment, then .docker/config.json 
         5. update headers based on secrets
  
-        '''
+        """
         self.reverseLayers = False
         self._reset_headers()
         super(Client, self).__init__(**kwargs)
@@ -43,37 +56,37 @@ class Client(ApiConnection):
         self._update_headers()
         self._set_base()
 
-
     def _reset_headers(self):
-        '''reset headers is called from update_headers, and will update the
+        """reset headers is called from update_headers, and will update the
            headers based on what is found with the client secrets.
 
            Note: that Docker expects different headers depending on the 
                  manifest desired. See:
                  https://docs.docker.com/registry/spec/manifest-v2-2/
 
-        '''        
-        self.headers = {"Accept": 'application/json',
-                        'Content-Type': 'application/json; charset=utf-8'}
+        """
+        self.headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json; charset=utf-8",
+        }
 
     def _update_base(self, image):
-        ''' update a base based on an image name, meaning detecting a particular
+        """ update a base based on an image name, meaning detecting a particular
             registry and if necessary, updating the self.base. When the image
             name is parsed, the base will be given to remove the registry.
-        '''
+        """
         base = None
 
         # Google Container Cloud
         if "gcr.io" in image:
-            base = 'gcr.io'
+            base = "gcr.io"
             self._set_base(default_base=base)
             self._update_secrets()
 
         return base
 
-
     def _set_base(self, default_base=None):
-        '''set the API base or default to use Docker Hub. The user is able
+        """set the API base or default to use Docker Hub. The user is able
            to set the base, api version, and protocol via a settings file
            of environment variables:
  
@@ -81,10 +94,10 @@ class Client(ApiConnection):
            SREGISTRY_DOCKERHUB_VERSION: defaults to v1
            SREGISTRY_DOCKERHUB_NO_HTTPS: defaults to not set (so https)
 
-        '''
+        """
 
-        base = self._get_setting('SREGISTRY_DOCKERHUB_BASE')
-        version = self._get_setting('SREGISTRY_DOCKERHUB_VERSION')
+        base = self._get_setting("SREGISTRY_DOCKERHUB_BASE")
+        version = self._get_setting("SREGISTRY_DOCKERHUB_VERSION")
 
         # If we re-set the base after reading the image
         if base is None:
@@ -96,7 +109,7 @@ class Client(ApiConnection):
         if version is None:
             version = "v2"
 
-        nohttps = self._get_setting('SREGISTRY_DOCKERHUB_NOHTTPS')
+        nohttps = self._get_setting("SREGISTRY_DOCKERHUB_NOHTTPS")
         if nohttps is None:
             nohttps = "https://"
         else:
@@ -104,35 +117,34 @@ class Client(ApiConnection):
 
         # <protocol>://<base>/<version>
 
-        self._base = "%s%s" %(nohttps, base)
+        self._base = "%s%s" % (nohttps, base)
         self._version = version
-        self.base = "%s%s/%s" %(nohttps, base.strip('/'), version)
-
+        self.base = "%s%s/%s" % (nohttps, base.strip("/"), version)
 
     def _update_secrets(self):
-        '''update secrets will take a secrets credential file
+        """update secrets will take a secrets credential file
            either located at .sregistry or the environment variable
            SREGISTRY_CLIENT_SECRETS and update the current client 
            secrets as well as the associated API base. For the case of
            using Docker Hub, if we find a .docker secrets file, we update
            from there.
-        '''
+        """
 
         # If the user has defined secrets, use them
-        credentials = self._get_setting('SREGISTRY_DOCKERHUB_SECRETS')
+        credentials = self._get_setting("SREGISTRY_DOCKERHUB_SECRETS")
 
         # First try for SINGULARITY exported, then try sregistry
-        username = self._get_setting('SINGULARITY_DOCKER_USERNAME')
-        password = self._get_setting('SINGULARITY_DOCKER_PASSWORD')
-        username = self._get_setting('SREGISTRY_DOCKERHUB_USERNAME', username)
-        password = self._get_setting('SREGISTRY_DOCKERHUB_PASSWORD', password)
+        username = self._get_setting("SINGULARITY_DOCKER_USERNAME")
+        password = self._get_setting("SINGULARITY_DOCKER_PASSWORD")
+        username = self._get_setting("SREGISTRY_DOCKERHUB_USERNAME", username)
+        password = self._get_setting("SREGISTRY_DOCKERHUB_PASSWORD", password)
 
         # Option 1: the user exports username and password
         auth = None
         if username is not None and password is not None:
             auth = basic_auth_header(username, password)
             self.headers.update(auth)
-        
+
         # Option 2: look in .docker config file
         if credentials is not None and auth is None:
             if os.path.exists(credentials):
@@ -140,22 +152,19 @@ class Client(ApiConnection):
 
                 # Find a matching auth in .docker config
                 if "auths" in credentials:
-                    for auths, params in credentials['auths'].items():
+                    for auths, params in credentials["auths"].items():
                         if self._base in auths:
-                            if 'auth' in params:
-                                auth = "Basic %s" % params['auth']
-                                self.headers['Authorization'] = auth
-
+                            if "auth" in params:
+                                auth = "Basic %s" % params["auth"]
+                                self.headers["Authorization"] = auth
 
                 # Also update headers
-                if 'HttpHeaders' in credentials:
-                    for key, value in credentials['HttpHeaders'].items():
+                if "HttpHeaders" in credentials:
+                    for key, value in credentials["HttpHeaders"].items():
                         self.headers[key] = value
 
             else:
-                bot.warning('Credentials file set to %s, but does not exist.')
-
-
+                bot.warning("Credentials file set to %s, but does not exist.")
 
     def __str__(self):
         return type(self)

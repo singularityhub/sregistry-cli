@@ -1,4 +1,4 @@
-'''
+"""
 
 Copyright (C) 2017-2020 Vanessa Sochat.
 
@@ -6,7 +6,7 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
 from sregistry.logger import bot
 from sregistry.defaults import SREGISTRY_WORKERS
@@ -18,7 +18,6 @@ import sys
 
 
 class Workers(object):
-
     def __init__(self, workers=None):
 
         if workers is None:
@@ -36,7 +35,7 @@ class Workers(object):
         bot.debug("Ending multiprocess, runtime: %s sec" % (self.runtime))
 
     def run(self, func, tasks, func2=None):
-        '''run will send a list of tasks,
+        """run will send a list of tasks,
         a tuple with arguments, through a function.
         the arguments should be ordered correctly.
         :param func: the function to run with multiprocessing.pool
@@ -44,7 +43,7 @@ class Workers(object):
                       of arguments to process
         :param func2: filter function to run result
                       from func through (optional)
-        '''
+        """
 
         # Keep track of some progress for the user
         progress = 1
@@ -69,8 +68,7 @@ class Workers(object):
 
             self.start()
             for task in tasks:
-                result = pool.apply_async(multi_wrapper,
-                                          multi_package(func, [task]))
+                result = pool.apply_async(multi_wrapper, multi_package(func, [task]))
                 results.append(result)
                 level1.append(result._job)
 
@@ -83,9 +81,9 @@ class Workers(object):
 
                 # Pass the result through a second function?
                 if func2 is not None and result._job in level1:
-                    result = pool.apply_async(multi_wrapper,
-                                              multi_package(func2,
-                                                            [(result.get(),)]))
+                    result = pool.apply_async(
+                        multi_wrapper, multi_package(func2, [(result.get(),)])
+                    )
                     results.append(result)
                 else:
                     finished.append(result.get())
@@ -99,7 +97,7 @@ class Workers(object):
             pool.terminate()
             sys.exit(1)
 
-        except Exception as e: # pylint: disable=broad-except
+        except Exception as e:  # pylint: disable=broad-except
             bot.error(e)
 
         return finished

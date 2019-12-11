@@ -1,4 +1,4 @@
-'''
+"""
 
 pull.py: pull function for singularity registry
 
@@ -8,17 +8,17 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
 from requests.exceptions import SSLError
 from requests.models import Response
-from sregistry.utils import (parse_image_name, remove_uri)
+from sregistry.utils import parse_image_name, remove_uri
 from sregistry.logger import bot
 import os
 
 
 def pull(self, images, file_name=None, save=True, **kwargs):
-    '''pull an image from a singularity registry
+    """pull an image from a singularity registry
  
         Parameters
         ==========
@@ -33,12 +33,12 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         Returns
         =======
         finished: a single container path, or list of paths
-    '''
+    """
 
-    if not isinstance(images,list):
+    if not isinstance(images, list):
         images = [images]
 
-    bot.debug('Execution of PULL for %s images' % len(images))
+    bot.debug("Execution of PULL for %s images" % len(images))
 
     finished = []
     for image in images:
@@ -46,32 +46,34 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         q = parse_image_name(remove_uri(image))
 
         # If a custom registry is not set, use default base
-        if q['registry'] is None:
-            q['registry'] = self.base
+        if q["registry"] is None:
+            q["registry"] = self.base
 
         # If the registry is still None, no go
-        if q['registry'] is None:
-            bot.exit('You must define a base in secrets, image uri, or environment')
+        if q["registry"] is None:
+            bot.exit("You must define a base in secrets, image uri, or environment")
 
         # Ensure https is added back to the registry  uri
         q = self._add_https(q)
 
         # All custom registries need api appended
-        if not q['registry'].endswith('api'):
-            q['registry'] = '%s/api' % q['registry']
+        if not q["registry"].endswith("api"):
+            q["registry"] = "%s/api" % q["registry"]
 
         # Verify image existence, and obtain id
-        url = "%s/container/%s/%s:%s" %(q['registry'], 
-                                        q['collection'], 
-                                        q['image'], 
-                                        q['tag'])
+        url = "%s/container/%s/%s:%s" % (
+            q["registry"],
+            q["collection"],
+            q["image"],
+            q["tag"],
+        )
 
-        bot.debug('Retrieving manifest at %s' % url)
+        bot.debug("Retrieving manifest at %s" % url)
 
         try:
             manifest = self._get(url)
         except SSLError:
-            bot.exit('Issue with %s, try exporting SREGISTRY_REGISTRY_NOHTTPS.' % url)
+            bot.exit("Issue with %s, try exporting SREGISTRY_REGISTRY_NOHTTPS." % url)
 
         # Private container collection
         if isinstance(manifest, Response):
@@ -79,9 +81,8 @@ def pull(self, images, file_name=None, save=True, **kwargs):
             # Requires token
             if manifest.status_code in [403, 401]:
 
-                SREGISTRY_EVENT = self.authorize(request_type="pull",
-                                                 names=q)
-                headers = {'Authorization': SREGISTRY_EVENT}
+                SREGISTRY_EVENT = self.authorize(request_type="pull", names=q)
+                headers = {"Authorization": SREGISTRY_EVENT}
                 self._update_headers(headers)
                 manifest = self._get(url)
 
@@ -92,42 +93,46 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         if isinstance(manifest, int):
             if manifest == 400:
-                bot.exit('Bad request (400). Is this a private container?')
+                bot.exit("Bad request (400). Is this a private container?")
             elif manifest == 404:
-                bot.exit('Container not found (404)')
+                bot.exit("Container not found (404)")
             elif manifest == 403:
-                bot.exit('Unauthorized (403)')
+                bot.exit("Unauthorized (403)")
 
         # Successful pull
         if "image" in manifest:
 
             # Add self link to manifest
-            manifest['selfLink'] = url
+            manifest["selfLink"] = url
 
             if file_name is None:
-                file_name = q['storage'].replace('/','-')
+                file_name = q["storage"].replace("/", "-")
 
             # Clear headers of previous token
             self._reset_headers()
-    
+
             # Show progress if not quiet
-            image_file = self.download(url=manifest['image'],
-                                       file_name=file_name,
-                                       show_progress=not self.quiet)
+            image_file = self.download(
+                url=manifest["image"], file_name=file_name, show_progress=not self.quiet
+            )
 
             # If the user is saving to local storage
             if save is True:
-                image_uri = "%s/%s:%s" %(manifest['collection'], 
-                                         manifest['name'],
-                                         manifest['tag'])
-                container = self.add(image_path = image_file,
-                                     image_uri = image_uri,
-                                     metadata = manifest,
-                                     url = manifest['image'])
+                image_uri = "%s/%s:%s" % (
+                    manifest["collection"],
+                    manifest["name"],
+                    manifest["tag"],
+                )
+                container = self.add(
+                    image_path=image_file,
+                    image_uri=image_uri,
+                    metadata=manifest,
+                    url=manifest["image"],
+                )
                 image_file = container.image
 
             if os.path.exists(image_file):
-                bot.debug('Retrieved image file %s' %image_file)
+                bot.debug("Retrieved image file %s" % image_file)
                 bot.custom(prefix="Success!", message=image_file)
                 finished.append(image_file)
 

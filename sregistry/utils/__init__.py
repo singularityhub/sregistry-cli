@@ -5,19 +5,13 @@ from .terminal import (
     get_thumbnail,
     which,
     confirm_action,
-    confirm_delete
+    confirm_delete,
 )
-from .names import (
-    get_recipe_tag,
-    get_uri,
-    parse_image_name,
-    remove_uri
-)
+from .names import get_recipe_tag, get_uri, parse_image_name, remove_uri
 from .fileio import (
     copyfile,
     extract_tar,
     get_userhome,
-    get_username,
     get_file_hash,
     get_tmpdir,
     get_tmpfile,

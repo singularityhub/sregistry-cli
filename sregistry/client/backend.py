@@ -1,4 +1,4 @@
-'''
+"""
 
 Copyright (C) 2018-2020 Vanessa Sochat.
 
@@ -6,16 +6,16 @@ This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
 with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-'''
+"""
 
-from sregistry.auth import (get_secrets_file, read_client_secrets)
+from sregistry.auth import get_secrets_file, read_client_secrets
 from sregistry.logger import bot
 from sregistry.utils import write_json
 import json
 
 
 def main(args, parser, extra):
-    
+
     # No commands provided, print help, show clients
 
     if len(args.commands) == 0:
@@ -32,7 +32,7 @@ def main(args, parser, extra):
 
     # Option 1: The user wants to list all or a specific command
     if command == "ls":
-        list_backends(backend) 
+        list_backends(backend)
 
     # Option 2: Remove a configuration
     elif command == "delete":
@@ -43,7 +43,7 @@ def main(args, parser, extra):
         activate(backend)
 
     # Option 4: Deactivate a backend
-    elif command == 'deactivate':
+    elif command == "deactivate":
         deactivate()
 
     # Option 5: get a status
@@ -51,7 +51,7 @@ def main(args, parser, extra):
     elif command == "status":
         status(backend)
 
-    # Option 6: add a config value 
+    # Option 6: add a config value
 
     elif command == "add":
         if len(args.commands) > 1:
@@ -59,7 +59,7 @@ def main(args, parser, extra):
             value = args.commands.pop(0)
             add(backend, variable, value, force=args.force)
         else:
-            print('Usage: sregistry backend add <backend> <variable> <value>')
+            print("Usage: sregistry backend add <backend> <variable> <value>")
 
     # Option 7: Remove a config value
     elif command in ["remove", "rm"]:
@@ -67,15 +67,15 @@ def main(args, parser, extra):
             variable = args.commands.pop(0)
             remove(backend, variable)
         else:
-            print('Usage: sregistry backend remove <backend> <variable>')
-
+            print("Usage: sregistry backend remove <backend> <variable>")
 
     else:
         bot.exit("%s is not a recognized command." % command)
 
 
 def usage():
-    print('''
+    print(
+        """
              sregistry backend ls:     list backends found in secrets
              sregistry backend ls hub
              sregistry backend status: get status
@@ -85,84 +85,88 @@ def usage():
              sregistry backend add nvidia token 123455
                
              SREGISTRY_NVIDIA_TOKEN 123455
-          ''')
+          """
+    )
+
 
 def status(backend):
-    '''print the status for all or one of the backends.
-    '''
-    print('[backend status]')
+    """print the status for all or one of the backends.
+    """
+    print("[backend status]")
     settings = read_client_secrets()
-    print('There are %s clients found in secrets.' %len(settings))
-    if 'SREGISTRY_CLIENT' in settings:
-        print('active: %s' %settings['SREGISTRY_CLIENT'])
+    print("There are %s clients found in secrets." % len(settings))
+    if "SREGISTRY_CLIENT" in settings:
+        print("active: %s" % settings["SREGISTRY_CLIENT"])
         update_secrets(settings)
     else:
-        print('There is no active client.')
+        print("There is no active client.")
 
 
 def add(backend, variable, value, force=False):
-    '''add the variable to the config
-    '''
-    print('[add]')
+    """add the variable to the config
+    """
+    print("[add]")
     settings = read_client_secrets()
 
     # If the variable begins with the SREGISTRY_<CLIENT> don't add it
-    prefix = 'SREGISTRY_%s_' %backend.upper()
+    prefix = "SREGISTRY_%s_" % backend.upper()
     if not variable.startswith(prefix):
-        variable = '%s%s' %(prefix, variable)
+        variable = "%s%s" % (prefix, variable)
 
     # All must be uppercase
     variable = variable.upper()
-    bot.info("%s %s" %(variable, value))
-    
+    bot.info("%s %s" % (variable, value))
+
     # Does the setting already exist?
 
     if backend in settings:
         if variable in settings[backend] and force is False:
             previous = settings[backend][variable]
-            bot.exit('%s is already set as %s. Use --force to override.' %(variable, previous))
+            bot.exit(
+                "%s is already set as %s. Use --force to override."
+                % (variable, previous)
+            )
 
     if backend not in settings:
         settings[backend] = {}
 
     settings[backend][variable] = value
     update_secrets(settings)
-    
 
 
 def remove(backend, variable):
-    '''remove a variable from the config, if found.
-    '''
-    print('[remove]')
+    """remove a variable from the config, if found.
+    """
+    print("[remove]")
     settings = read_client_secrets()
 
     # If the variable begins with the SREGISTRY_<CLIENT> don't add it
     prefixed = variable
-    prefix = 'SREGISTRY_%s_' %backend.upper()
+    prefix = "SREGISTRY_%s_" % backend.upper()
     if not variable.startswith(prefix):
-        prefixed = '%s%s' %(prefix, variable)
+        prefixed = "%s%s" % (prefix, variable)
 
     # All must be uppercase
     variable = variable.upper()
     bot.info(variable)
-    
+
     # Does the setting already exist?
     if backend in settings:
         if variable in settings[backend]:
-            del settings[backend][variable]           
+            del settings[backend][variable]
         if prefixed in settings[backend]:
-            del settings[backend][prefixed]           
+            del settings[backend][prefixed]
         update_secrets(settings)
 
 
 def activate(backend):
-    '''activate a backend by adding it to the .sregistry configuration file.
-    '''
+    """activate a backend by adding it to the .sregistry configuration file.
+    """
     settings = read_client_secrets()
     if backend is not None:
-        settings['SREGISTRY_CLIENT'] = backend
+        settings["SREGISTRY_CLIENT"] = backend
         update_secrets(settings)
-        print('[activate] %s' %backend)
+        print("[activate] %s" % backend)
 
 
 def update_secrets(secrets):
@@ -171,59 +175,59 @@ def update_secrets(secrets):
 
 
 def delete_backend(backend):
-    '''delete a backend, and update the secrets file
-    '''
+    """delete a backend, and update the secrets file
+    """
     settings = read_client_secrets()
     if backend in settings:
         del settings[backend]
 
         # If the backend was the active client, remove too
-        if 'SREGISTRY_CLIENT' in settings:
-            if settings['SREGISTRY_CLIENT'] == backend:
-                del settings['SREGISTRY_CLIENT']
+        if "SREGISTRY_CLIENT" in settings:
+            if settings["SREGISTRY_CLIENT"] == backend:
+                del settings["SREGISTRY_CLIENT"]
 
         update_secrets(settings)
-        print('[delete] %s' %backend)
+        print("[delete] %s" % backend)
     else:
         if backend is not None:
-            print('%s is not a known client.' %backend)
+            print("%s is not a known client." % backend)
         else:
-            print('Please specify a backend to delete.')
+            print("Please specify a backend to delete.")
 
 
-def deactivate():    
-    '''deactivate any active backend by removing it from the .sregistry
+def deactivate():
+    """deactivate any active backend by removing it from the .sregistry
        configuration file
-    '''
+    """
     settings = read_client_secrets()
     if "SREGISTRY_CLIENT" in settings:
-        del settings['SREGISTRY_CLIENT']
+        del settings["SREGISTRY_CLIENT"]
         update_secrets(settings)
-        print('[deactivated]')
+        print("[deactivated]")
     else:
-        print('There is no active client')
+        print("There is no active client")
 
 
 def list_backends(backend=None):
-    '''return a list of backends installed for the user, which is based on
+    """return a list of backends installed for the user, which is based on
        the config file keys found present
  
        Parameters
        ==========
        backend: a specific backend to list. If defined, just list parameters.
 
-    '''
+    """
     settings = read_client_secrets()
 
     # Backend names are the keys
-    backends = list(settings.keys())    
-    backends = [b for b in backends if b!='SREGISTRY_CLIENT']
+    backends = list(settings.keys())
+    backends = [b for b in backends if b != "SREGISTRY_CLIENT"]
 
     if backend in backends:
         bot.info(backend)
         print(json.dumps(settings[backend], indent=4, sort_keys=True))
     else:
         if backend is not None:
-            print('%s is not a known client.' %backend)
+            print("%s is not a known client." % backend)
         bot.info("Backends Installed")
-        print('\n'.join(backends))
+        print("\n".join(backends))
