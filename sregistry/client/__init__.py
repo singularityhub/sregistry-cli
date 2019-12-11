@@ -53,7 +53,7 @@ def get_parser():
     )
 
     # print version and exit
-    version = subparsers.add_parser(
+    subparsers.add_parser(
         "version", help="show software version"  # pylint: disable=unused-variable
     )
 
