@@ -11,7 +11,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from sregistry.logger import bot
 from sregistry.utils import parse_image_name, remove_uri
 import os
-import sys
 
 
 def pull(self, images, file_name=None, save=True, **kwargs):

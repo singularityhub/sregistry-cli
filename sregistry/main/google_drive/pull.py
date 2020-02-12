@@ -12,7 +12,6 @@ from sregistry.logger import bot, ProgressBar
 from sregistry.utils import parse_image_name, remove_uri
 from googleapiclient.http import MediaIoBaseDownload
 import os
-import sys
 
 
 def pull(self, images, file_name=None, save=True, **kwargs):
