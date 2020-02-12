@@ -49,8 +49,7 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         matches = self._container_query(q["uri"], quiet=True)
 
         if len(matches) == 0:
-            bot.info("No matching containers found.")
-            sys.exit(0)
+            bot.exit("No matching containers found.")
 
         # If the user didn't provide a file, make one based on the names
         if file_name is None:
