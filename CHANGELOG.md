@@ -14,6 +14,8 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
+ - Fix google backend pull exit return values (0.2.34)
+   - Pin httplib2 to 0.15.0 for all google backends
  - adding black for lint formatting (0.2.33)
  - Don't allow user to forget credentials and base registry client (0.2.32)
  - Adding missing dependency for Google Build (0.2.31)
