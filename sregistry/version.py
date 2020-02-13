@@ -57,6 +57,7 @@ INSTALL_BASIC_GOOGLE_STORAGE = (
     ("google-cloud-storage", {"min_version": "1.4.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"min_version": "1.3.3"}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_BASIC_GOOGLE_BUILD = (
@@ -64,17 +65,20 @@ INSTALL_BASIC_GOOGLE_BUILD = (
     ("google-cloud-storage", {"min_version": "1.4.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"min_version": "1.3.3"}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_BASIC_GOOGLE_DRIVE = (
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("oauth2client", {"min_version": "3.0"}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_BASIC_GOOGLE_COMPUTE = (
     ("oauth2client", {"min_version": "3.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("google-cloud-storage", {"min_version": "1.4.0"}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_BASIC_S3 = (("boto3", {"min_version": "1.7.83"}),)
@@ -131,6 +135,7 @@ INSTALL_REQUIRES_GOOGLE_STORAGE = (
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"exact_version": "1.3.3"}),
     ("sqlalchemy", {"min_version": None}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_BUILD = (
@@ -139,12 +144,14 @@ INSTALL_REQUIRES_GOOGLE_BUILD = (
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"exact_version": "1.3.3"}),
     ("sqlalchemy", {"min_version": None}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_DRIVE = (
     ("oauth2client", {"min_version": "3.0"}),
     ("sqlalchemy", {"min_version": None}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_COMPUTE = (
@@ -152,6 +159,7 @@ INSTALL_REQUIRES_GOOGLE_COMPUTE = (
     ("sqlalchemy", {"min_version": None}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("google-cloud-storage", {"min_version": "1.4.0"}),
+    ("httplib2", {"exact_version": "0.15.0"}),
 )
 
 INSTALL_REQUIRES_S3 = (
