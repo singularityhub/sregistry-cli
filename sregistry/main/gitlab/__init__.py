@@ -19,10 +19,10 @@ from .query import search, search_all
 class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
 
+        super(Client, self).__init__(**kwargs)
         self._reset_headers()
         self._update_secrets()
         self._update_base()
-        super(Client, self).__init__(**kwargs)
 
     def _update_base(self):
         """update the base, including the URL for GitLab and the API endpoint.

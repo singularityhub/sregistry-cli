@@ -1,7 +1,7 @@
 # CHANGELOG
 
-This is a manually generated log to track changes to the repository for each release. 
-Each section should include general headers such as **Implemented enhancements** 
+This is a manually generated log to track changes to the repository for each release.
+Each section should include general headers such as **Implemented enhancements**
 and **Merged pull requests**. Critical items to know are:
 
  - renamed commands
@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
+ - bugfix for gitlab base url overwrite (0.2.35)
  - Fix google backend pull exit return values (0.2.34)
    - Pin httplib2 to 0.15.0 for all google backends
  - adding black for lint formatting (0.2.33)
