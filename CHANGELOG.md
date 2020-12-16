@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
+ - unpinning httplib2 version (0.2.36)
  - bugfix for gitlab base url overwrite (0.2.35)
  - Fix google backend pull exit return values (0.2.34)
    - Pin httplib2 to 0.15.0 for all google backends

@@ -4,7 +4,7 @@ This is a base client that imports functions depending on the API it is
     using. Currently, it supports singularity hub and registry, with default
     to use Singularity Hub.
 
-Copyright (C) 2017-2020 Vanessa Sochat.
+Copyright (C) 2017-2021 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
