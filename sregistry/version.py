@@ -1,6 +1,6 @@
 """
 
-Copyright (C) 2017-2020 Vanessa Sochat.
+Copyright (C) 2017-2021 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -8,7 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
 
-__version__ = "0.2.35"
+__version__ = "0.2.36"
 AUTHOR = "Vanessa Sochat"
 AUTHOR_EMAIL = "vsochat@stanford.edu"
 NAME = "sregistry"
@@ -57,7 +57,7 @@ INSTALL_BASIC_GOOGLE_STORAGE = (
     ("google-cloud-storage", {"min_version": "1.4.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"min_version": "1.3.3"}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_BASIC_GOOGLE_BUILD = (
@@ -65,20 +65,20 @@ INSTALL_BASIC_GOOGLE_BUILD = (
     ("google-cloud-storage", {"min_version": "1.4.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"min_version": "1.3.3"}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_BASIC_GOOGLE_DRIVE = (
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("oauth2client", {"min_version": "3.0"}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_BASIC_GOOGLE_COMPUTE = (
     ("oauth2client", {"min_version": "3.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("google-cloud-storage", {"min_version": "1.4.0"}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_BASIC_S3 = (("boto3", {"min_version": "1.7.83"}),)
@@ -135,7 +135,7 @@ INSTALL_REQUIRES_GOOGLE_STORAGE = (
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"exact_version": "1.3.3"}),
     ("sqlalchemy", {"min_version": None}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_BUILD = (
@@ -144,14 +144,14 @@ INSTALL_REQUIRES_GOOGLE_BUILD = (
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"exact_version": "1.3.3"}),
     ("sqlalchemy", {"min_version": None}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_DRIVE = (
     ("oauth2client", {"min_version": "3.0"}),
     ("sqlalchemy", {"min_version": None}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_COMPUTE = (
@@ -159,7 +159,7 @@ INSTALL_REQUIRES_GOOGLE_COMPUTE = (
     ("sqlalchemy", {"min_version": None}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("google-cloud-storage", {"min_version": "1.4.0"}),
-    ("httplib2", {"exact_version": "0.15.0"}),
+    ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_REQUIRES_S3 = (

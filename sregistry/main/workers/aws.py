@@ -1,6 +1,6 @@
 """
 
-Copyright (C) 2018-2020 Vanessa Sochat.
+Copyright (C) 2018-2021 Vanessa Sochat.
 
 These are aws tasks.
 
