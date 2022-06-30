@@ -22,3 +22,10 @@ jobs:
           source activate black
           pip install black
           black --check sregistry
+          
+      - name: Test Client
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          source activate black
+          pip install .
+          pytest -xs sregistry
