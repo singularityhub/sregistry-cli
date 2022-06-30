@@ -27,7 +27,7 @@ import os
 
 def push(self, path, name, tag=None):
     """push an image to Singularity Registry
-    
+
     path: should correspond to an absolte image path (or derive it)
     name: should be the complete uri that the user has requested to push.
     tag: should correspond with an image tag. This is provided to mirror Docker

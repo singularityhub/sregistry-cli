@@ -17,9 +17,9 @@ import os
 
 def push(self, path, name, tag=None):
     """push an image to Globus endpoint. In this case, the name is the
-       globus endpoint id and path.
+    globus endpoint id and path.
 
-       --name <endpointid>:/path/for/image
+    --name <endpointid>:/path/for/image
 
     """
 

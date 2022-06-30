@@ -30,11 +30,11 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         """update secrets will take a secrets credential file
-           either located at .sregistry or the environment variable
-           SREGISTRY_CLIENT_SECRETS and update the current client 
-           secrets as well as the associated API base. This is where you
-           should do any customization of the secrets flie, or using
-           it to update your client, if needed.
+        either located at .sregistry or the environment variable
+        SREGISTRY_CLIENT_SECRETS and update the current client
+        secrets as well as the associated API base. This is where you
+        should do any customization of the secrets flie, or using
+        it to update your client, if needed.
         """
         # Get a setting for client myclient and some variable name VAR.
         # returns None if not set

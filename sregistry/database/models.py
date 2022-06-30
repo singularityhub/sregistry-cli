@@ -33,8 +33,8 @@ Base = declarative_base()
 
 class Collection(Base):
     """A participant in a local assessment. id must be unique. If a token is
-       revoked or finished, it will end with `_revoked` or `_finished`. A
-       user generated without a token will have value of None
+    revoked or finished, it will end with `_revoked` or `_finished`. A
+    user generated without a token will have value of None
     """
 
     __tablename__ = "collection"
@@ -69,21 +69,21 @@ class Collection(Base):
 class Container(Base):
     """a container belongs to a collection
 
-       Parameters
-       ==========
-       created_at: the creation date of the image / container
-       metrics: typically the inspection of the image. If not possible, then the
-                basic name (uri) derived from the user is used.
-       tag: the image tag
-       image: the path to the image on the filesystem (can be Null)
-       url: the url where the imate was ultimately retrieved, call be Null
-       client: the client backend associated with the image, the type(client)
-       version: a version string associated with the image
-       :collection_id: the id of the colletion to which the image belongs.
+    Parameters
+    ==========
+    created_at: the creation date of the image / container
+    metrics: typically the inspection of the image. If not possible, then the
+             basic name (uri) derived from the user is used.
+    tag: the image tag
+    image: the path to the image on the filesystem (can be Null)
+    url: the url where the imate was ultimately retrieved, call be Null
+    client: the client backend associated with the image, the type(client)
+    version: a version string associated with the image
+    :collection_id: the id of the colletion to which the image belongs.
 
-       We index / filter containers based on the full uri, which is assembled 
-                  from the <collection>/<namespace>:<tag>@<version>, then stored
-                  as a variable, and maintained separately for easier query.
+    We index / filter containers based on the full uri, which is assembled
+               from the <collection>/<namespace>:<tag>@<version>, then stored
+               as a variable, and maintained separately for easier query.
     """
 
     __tablename__ = "container"
@@ -117,7 +117,7 @@ class Container(Base):
 
     def get_uri(self):
         """generate a uri on the fly from database parameters if one is not
-           saved with the initial model (it should be, but might not be possible)
+        saved with the initial model (it should be, but might not be possible)
         """
         uri = "%s/%s:%s" % (self.collection.name, self.name, self.tag)
         if self.version not in [None, ""]:
@@ -128,12 +128,12 @@ class Container(Base):
 def init_db(self, db_path):
     """initialize the database, with the default database path or custom of
 
-       the format sqlite:////home/<username>/sregistry.db
+    the format sqlite:////home/<username>/sregistry.db
 
-       The custom path can be set with the environment var SREGISTRY_DATABASE
-       when a user creates the client, we must initialize this db
-       the database should use the .singularity cache folder to cache
-       layers and images, and .singularity/sregistry.db as a database
+    The custom path can be set with the environment var SREGISTRY_DATABASE
+    when a user creates the client, we must initialize this db
+    the database should use the .singularity cache folder to cache
+    layers and images, and .singularity/sregistry.db as a database
     """
 
     # Database Setup, use default if uri not provided

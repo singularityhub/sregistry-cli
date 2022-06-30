@@ -25,8 +25,8 @@ def add(
 ):
 
     """dummy add simple returns an object that mimics a database entry, so the
-       calling function (in push or pull) can interact with it equally. Most 
-       variables (other than image_path) are not used."""
+    calling function (in push or pull) can interact with it equally. Most
+    variables (other than image_path) are not used."""
 
     # We can only save if the image is provided
     if image_path is not None:
@@ -56,8 +56,7 @@ def add(
 
 
 def init_db(self, db_path=None):
-    """initialize the database, meaning we just set the name to be dummy
-    """
+    """initialize the database, meaning we just set the name to be dummy"""
 
     # Database Setup, use default if uri not provided
     self.database = "dummy"

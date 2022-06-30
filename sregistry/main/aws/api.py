@@ -23,7 +23,7 @@ def update_token(self):
     Parameters
     ==========
     response: the http request response to parse for the challenge.
-    
+
     https://docs.docker.com/registry/spec/auth/token/
     """
     # Add Amazon headers
@@ -40,14 +40,14 @@ def update_token(self):
 
 
 def download_layers(self, repo_name, digest=None, destination=None):
-    """ download layers is a wrapper to do the following for a client loaded
-        with a manifest for an image:
-      
-        1. use the manifests to retrieve list of digests (get_digests)
-        2. atomically download the list to destination (get_layers)
+    """download layers is a wrapper to do the following for a client loaded
+    with a manifest for an image:
 
-        This function uses the MultiProcess client to download layers
-        at the same time.
+    1. use the manifests to retrieve list of digests (get_digests)
+    2. atomically download the list to destination (get_layers)
+
+    This function uses the MultiProcess client to download layers
+    at the same time.
     """
     from sregistry.main.workers import Workers
     from sregistry.main.workers.aws import download_task
@@ -85,8 +85,7 @@ def download_layers(self, repo_name, digest=None, destination=None):
 
 
 def get_manifest(self, repo_name, tag):
-    """return the image manifest via the aws client, saved in self.manifest
-    """
+    """return the image manifest via the aws client, saved in self.manifest"""
 
     image = None
     repo = self.aws.describe_images(repositoryName=repo_name)
@@ -111,17 +110,17 @@ def get_manifest(self, repo_name, tag):
 
 def get_digests(self, repo_name, tag):
     """
-       return a list of layers from a manifest.
-       The function is intended to work with both version
-       1 and 2 of the schema. All layers (including redundant)
-       are returned. By default, we try version 2 first,
-       then fall back to version 1.
+    return a list of layers from a manifest.
+    The function is intended to work with both version
+    1 and 2 of the schema. All layers (including redundant)
+    are returned. By default, we try version 2 first,
+    then fall back to version 1.
 
-       For version 1 manifests: extraction is reversed
+    For version 1 manifests: extraction is reversed
 
-       Parameters
-       ==========
-       manifest: the manifest to read_layers from
+    Parameters
+    ==========
+    manifest: the manifest to read_layers from
 
     """
     if not hasattr(self, "manifest"):

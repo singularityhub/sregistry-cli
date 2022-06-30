@@ -23,17 +23,17 @@ import os
 
 def get_client(image=None, quiet=False, **kwargs):
     """
-       get the correct client depending on the driver of interest. The
-       selected client can be chosen based on the environment variable
-       SREGISTRY_CLIENT, and later changed based on the image uri parsed
-       If there is no preference, the default is to load the singularity 
-       hub client.
+    get the correct client depending on the driver of interest. The
+    selected client can be chosen based on the environment variable
+    SREGISTRY_CLIENT, and later changed based on the image uri parsed
+    If there is no preference, the default is to load the singularity
+    hub client.
 
-       Parameters
-       ==========
-       image: if provided, we derive the correct client based on the uri
-       of an image. If not provided, we default to environment, then hub.
-       quiet: if True, suppress most output about the client (e.g. speak)
+    Parameters
+    ==========
+    image: if provided, we derive the correct client based on the uri
+    of an image. If not provided, we default to environment, then hub.
+    quiet: if True, suppress most output about the client (e.g. speak)
 
     """
     from sregistry.defaults import SREGISTRY_CLIENT

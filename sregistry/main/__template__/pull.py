@@ -15,17 +15,17 @@ import os
 
 def pull(self, images, file_name=None, save=True, **kwargs):
     """pull an image from a singularity registry
- 
+
     Parameters
     ==========
     images: refers to the uri given by the user to pull in the format
-    <collection>/<namespace>. You should have an API that is able to 
+    <collection>/<namespace>. You should have an API that is able to
     retrieve a container based on parsing this uri.
-    file_name: the user's requested name for the file. It can 
+    file_name: the user's requested name for the file. It can
                optionally be None if the user wants a default.
     save: if True, you should save the container to the database
           using self.add()
-    
+
     Returns
     =======
     finished: a single container path, or list of paths

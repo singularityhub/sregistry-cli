@@ -32,17 +32,17 @@ def build(
 ):
 
     """trigger a build on Google Cloud (storage then compute) given a name
-       recipe, and Github URI where the recipe can be found.
-    
-       Parameters
-       ==========
-       name: should be the complete uri that the user has requested to push.
-       commit: a commit to use, not required, and can be parsed from URI
-       repo: should correspond to a Github URL or (if undefined) used local repo.
-       tag: a user specified tag, to take preference over tag in name
-       config: The local config file to use. If the file doesn't exist, then
-               we attempt looking up the config based on the name.
-       recipe: If defined, limit builder to build a single recipe
+    recipe, and Github URI where the recipe can be found.
+
+    Parameters
+    ==========
+    name: should be the complete uri that the user has requested to push.
+    commit: a commit to use, not required, and can be parsed from URI
+    repo: should correspond to a Github URL or (if undefined) used local repo.
+    tag: a user specified tag, to take preference over tag in name
+    config: The local config file to use. If the file doesn't exist, then
+            we attempt looking up the config based on the name.
+    recipe: If defined, limit builder to build a single recipe
 
     """
 
@@ -92,12 +92,12 @@ def build(
 
 def list_builders(self, project=None, zone="us-west1-a"):
     """list builders, or instances for the project. They should start with
-       sregistry-builder
+    sregistry-builder
 
-       Parameters
-       ==========
-       project: specify a project, will default to environment first
-       zone: the zone to use, defaults to us-west1-a if environment not set
+    Parameters
+    ==========
+    project: specify a project, will default to environment first
+    zone: the zone to use, defaults to us-west1-a if environment not set
 
     """
     builders = []
@@ -113,11 +113,11 @@ def list_builders(self, project=None, zone="us-west1-a"):
 
 def list_templates(self, name=None):
     """list templates in the builder bundle library. If a name is provided,
-       look it up
+    look it up
 
-       Parameters
-       ==========
-       name: the name of a template to look up
+    Parameters
+    ==========
+    name: the name of a template to look up
     """
     configs = self._get_templates()
     rows = []
@@ -138,7 +138,7 @@ def list_templates(self, name=None):
 
 def get_templates(self):
     """list templates in the builder bundle library. If a name is provided,
-       look it up
+    look it up
 
     """
 
@@ -150,11 +150,11 @@ def get_templates(self):
 
 def load_templates(self, name):
     """load a particular template based on a name. We look for a name IN data,
-       so the query name can be a partial string of the full name.
+    so the query name can be a partial string of the full name.
 
-       Parameters
-       ==========
-       name: the name of a template to look up
+    Parameters
+    ==========
+    name: the name of a template to look up
     """
     configs = self._get_templates()
     templates = []
@@ -172,13 +172,13 @@ def load_templates(self, name):
 
 def get_instances(self, project=None, zone="us-west1-a"):
     """get instances will return the (unparsed) list of instances, for
-       functions for the user. This is primarily used by get_builders
-       to print a list of builder instances.
+    functions for the user. This is primarily used by get_builders
+    to print a list of builder instances.
 
-       Parameters
-       ==========
-       project: specify a project, will default to environment first
-       zone: the zone to use, defaults to us-west1-a if environment not set
+    Parameters
+    ==========
+    project: specify a project, will default to environment first
+    zone: the zone to use, defaults to us-west1-a if environment not set
 
     """
     project = self._get_project(project)
@@ -189,15 +189,15 @@ def get_instances(self, project=None, zone="us-west1-a"):
 
 def get_ipaddress(self, name, retries=3, delay=3):
     """get the ip_address of an inserted instance. Will try three times with
-       delay to give the instance time to start up.
+    delay to give the instance time to start up.
 
-       Parameters
-       ==========
-       name: the name of the instance to get the ip address for.
-       retries: the number of retries before giving up
-       delay: the delay between retry
+    Parameters
+    ==========
+    name: the name of the instance to get the ip address for.
+    retries: the number of retries before giving up
+    delay: the delay between retry
 
-       Note from @vsoch: this function is pretty nasty.
+    Note from @vsoch: this function is pretty nasty.
 
     """
     for _ in range(retries):
@@ -225,14 +225,14 @@ def get_ipaddress(self, name, retries=3, delay=3):
 def load_build_config(self, config=None):
     """load a google compute config, meaning that we have the following cases:
 
-       1. the user has not provided a config file directly, we look in env.
-       2. the environment is not set, so we use a reasonable default
-       3. if the final string is not found as a file, we look for it in library
-       4. we load the library name, or the user file, else error
+    1. the user has not provided a config file directly, we look in env.
+    2. the environment is not set, so we use a reasonable default
+    3. if the final string is not found as a file, we look for it in library
+    4. we load the library name, or the user file, else error
 
-       Parameters
-       ==========
-       config: the config file the user has provided, or the library URI
+    Parameters
+    ==========
+    config: the config file the user has provided, or the library URI
 
     """
     # If the config is already a dictionary, it's loaded
@@ -273,17 +273,17 @@ def setup_build(
 ):
 
     """setup the build based on the selected configuration file, meaning
-       producing the configuration file filled in based on the user's input
- 
-       Parameters
-       ==========
-       config: the complete configuration file provided by the client
-       template: an optional custom start script to use
-       tag: a user specified tag for the build, derived from uri or manual
-       recipe: a recipe, if defined, overrides recipe set in config.
-       commit: a commit to check out, if needed
-       start_script: the start script to use, if not defined 
-                     defaults to apt (or manager) base in main/templates/build
+    producing the configuration file filled in based on the user's input
+
+    Parameters
+    ==========
+    config: the complete configuration file provided by the client
+    template: an optional custom start script to use
+    tag: a user specified tag for the build, derived from uri or manual
+    recipe: a recipe, if defined, overrides recipe set in config.
+    commit: a commit to check out, if needed
+    start_script: the start script to use, if not defined
+                  defaults to apt (or manager) base in main/templates/build
 
     """
 
@@ -432,11 +432,11 @@ def setup_build(
 
 def setconfig(lookup, key, value=None):
     """setconfig will update a lookup to give priority based on the following:
- 
-       1. If both values are None, we set the value to None
-       2. If the currently set (the config.json) is set but not runtime, use config
-       3. If the runtime is set but not config.json, we use runtime
-       4. If both are set, we use runtime
+
+    1. If both values are None, we set the value to None
+    2. If the currently set (the config.json) is set but not runtime, use config
+    3. If the runtime is set but not config.json, we use runtime
+    4. If both are set, we use runtime
 
     """
     lookup[key] = value or lookup.get(key)
@@ -451,9 +451,9 @@ def setconfig(lookup, key, value=None):
 def run_build(self, config):
     """run a build, meaning inserting an instance. Retry if there is failure
 
-       Parameters
-       ==========
-       config: the configuration dictionary generated by setup_build
+    Parameters
+    ==========
+    config: the configuration dictionary generated by setup_build
 
     """
     project = self._get_project()

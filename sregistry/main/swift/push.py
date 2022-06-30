@@ -17,13 +17,13 @@ import os
 
 def push(self, path, name, tag=None):
     """push an image to your Storage. If the collection doesn't exist,
-       it is created.
-   
-       Parameters
-       ==========
-       path: should correspond to an absolute image path (or derive it)
-       name: should be the complete uri that the user has requested to push.
-       tag: should correspond with an image tag. This is provided to mirror Docker
+    it is created.
+
+    Parameters
+    ==========
+    path: should correspond to an absolute image path (or derive it)
+    name: should be the complete uri that the user has requested to push.
+    tag: should correspond with an image tag. This is provided to mirror Docker
 
     """
     path = os.path.abspath(path)

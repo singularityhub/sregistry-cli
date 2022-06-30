@@ -28,35 +28,34 @@ class Client(ApiConnection):
 
     def _speak(self):
         """if you want to add an extra print (of a parameter, for example)
-           for the user when the client initalizes, write it here, eg:
-           bot.info('[setting] value')
+        for the user when the client initalizes, write it here, eg:
+        bot.info('[setting] value')
         """
         if hasattr(self, "account"):
             bot.info("connected to %s" % self.name)
 
     def get_collections(self):
-        """get a listing of collections that the user has access to.
-        """
+        """get a listing of collections that the user has access to."""
         collections = []
         for container in self.conn.get_account()[1]:
             collections.append(container["name"])
         return collections
 
     def _get_collection(self, name):
-        """get a collection name, which corresponds to an upper level 
-           "container" in ceph storage. If we find and get it, return it.
-           If it doesn't exist, return None. To get and create, use
-           get_and_create_collection()
+        """get a collection name, which corresponds to an upper level
+        "container" in ceph storage. If we find and get it, return it.
+        If it doesn't exist, return None. To get and create, use
+        get_and_create_collection()
         """
         return self.conn.get_container(name)
 
     def _get_or_create_collection(self, name):
         """get or create a collection, meaning that if the get returns
-           None, create and return the response to the user.
- 
-           Parameters
-           ==========
-           name: the name of the collection to get (and create)
+        None, create and return the response to the user.
+
+        Parameters
+        ==========
+        name: the name of the collection to get (and create)
         """
         try:
             collection = self._get_collection(name)
@@ -67,7 +66,7 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         """update secrets will look for a user and token in the environment
-           If we find the values, cache and continue. Otherwise, exit with error
+        If we find the values, cache and continue. Otherwise, exit with error
         """
 
         # Get the swift authentication type first.  That will determine what we

@@ -14,11 +14,11 @@ from sregistry.defaults import SREGISTRY_DATABASE
 
 def get_client(quiet=False, init=True, **kwargs):
     """
-       get the Google Build client.
+    get the Google Build client.
 
-       Parameters
-       ==========
-       quiet: if True, suppress most output about the client (e.g. speak)
+    Parameters
+    ==========
+    quiet: if True, suppress most output about the client (e.g. speak)
 
     """
     from . import Client

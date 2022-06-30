@@ -42,12 +42,12 @@ class Client(ApiConnection):
     def __init__(self, secrets=None, **kwargs):
         """to work with docker hub, we do the following:
 
-        1. set the base to index.docker.io, or defined in environment 
-        2. assume starting with v2 schema, we won't reverse layers 
+        1. set the base to index.docker.io, or defined in environment
+        2. assume starting with v2 schema, we won't reverse layers
         3. set headers to ask for version 2 schema first
-        4. update secrets, 1st priority environment, then .docker/config.json 
+        4. update secrets, 1st priority environment, then .docker/config.json
         5. update headers based on secrets
- 
+
         """
         self.reverseLayers = False
         self._reset_headers()
@@ -58,11 +58,11 @@ class Client(ApiConnection):
 
     def _reset_headers(self):
         """reset headers is called from update_headers, and will update the
-           headers based on what is found with the client secrets.
+        headers based on what is found with the client secrets.
 
-           Note: that Docker expects different headers depending on the 
-                 manifest desired. See:
-                 https://docs.docker.com/registry/spec/manifest-v2-2/
+        Note: that Docker expects different headers depending on the
+              manifest desired. See:
+              https://docs.docker.com/registry/spec/manifest-v2-2/
 
         """
         self.headers = {
@@ -71,9 +71,9 @@ class Client(ApiConnection):
         }
 
     def _update_base(self, image):
-        """ update a base based on an image name, meaning detecting a particular
-            registry and if necessary, updating the self.base. When the image
-            name is parsed, the base will be given to remove the registry.
+        """update a base based on an image name, meaning detecting a particular
+        registry and if necessary, updating the self.base. When the image
+        name is parsed, the base will be given to remove the registry.
         """
         base = None
 
@@ -87,12 +87,12 @@ class Client(ApiConnection):
 
     def _set_base(self, default_base=None):
         """set the API base or default to use Docker Hub. The user is able
-           to set the base, api version, and protocol via a settings file
-           of environment variables:
- 
-           SREGISTRY_DOCKERHUB_BASE: defaults to index.docker.io
-           SREGISTRY_DOCKERHUB_VERSION: defaults to v1
-           SREGISTRY_DOCKERHUB_NO_HTTPS: defaults to not set (so https)
+        to set the base, api version, and protocol via a settings file
+        of environment variables:
+
+        SREGISTRY_DOCKERHUB_BASE: defaults to index.docker.io
+        SREGISTRY_DOCKERHUB_VERSION: defaults to v1
+        SREGISTRY_DOCKERHUB_NO_HTTPS: defaults to not set (so https)
 
         """
 
@@ -123,11 +123,11 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         """update secrets will take a secrets credential file
-           either located at .sregistry or the environment variable
-           SREGISTRY_CLIENT_SECRETS and update the current client 
-           secrets as well as the associated API base. For the case of
-           using Docker Hub, if we find a .docker secrets file, we update
-           from there.
+        either located at .sregistry or the environment variable
+        SREGISTRY_CLIENT_SECRETS and update the current client
+        secrets as well as the associated API base. For the case of
+        using Docker Hub, if we find a .docker secrets file, we update
+        from there.
         """
 
         # If the user has defined secrets, use them

@@ -1,6 +1,6 @@
 """
 
-Copyright (C) 2017-2021 Vanessa Sochat.
+Copyright (C) 2017-2022 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -12,17 +12,16 @@ from sregistry.logger import bot
 from sregistry.utils import read_file
 import os
 import globus_sdk
-from globus_sdk.exc import TransferAPIError
 
 
 def parse_endpoint_name(self, endpoint):
     """split an endpoint name by colon, as the user can provide an
-       endpoint name separated from a path:
+    endpoint name separated from a path:
 
-       Parameters
-       ==========
-       endpoint 12345:/path/on/remote
-    
+    Parameters
+    ==========
+    endpoint 12345:/path/on/remote
+
     """
     parts = [x for x in endpoint.split(":") if x]
     endpoint = parts[0]
@@ -36,14 +35,14 @@ def parse_endpoint_name(self, endpoint):
 
 def create_endpoint_cache(self, endpoint_id, cache=".singularity/shub"):
 
-    """create a directory for sregistry in the user's 
-       base folder to share images.
+    """create a directory for sregistry in the user's
+    base folder to share images.
 
-       Parameters
-       ==========
-       endpoint_id: the endpoint id parameters
-       cache: the relative path for the images cache folder at the
-              root of the endpoint
+    Parameters
+    ==========
+    endpoint_id: the endpoint id parameters
+    cache: the relative path for the images cache folder at the
+           root of the endpoint
 
     """
     self._create_endpoint_folder(endpoint_id, cache)
@@ -52,27 +51,25 @@ def create_endpoint_cache(self, endpoint_id, cache=".singularity/shub"):
 def create_endpoint_folder(self, endpoint_id, folder):
     """create an endpoint folder, catching the error if it exists.
 
-       Parameters
-       ==========
-       endpoint_id: the endpoint id parameters
-       folder: the relative path of the folder to create
+    Parameters
+    ==========
+    endpoint_id: the endpoint id parameters
+    folder: the relative path of the folder to create
 
     """
-    try:
-        res = self.transfer_client.operation_mkdir(endpoint_id, folder)
-        bot.info("%s --> %s" % (res["message"], folder))
-    except TransferAPIError:
-        bot.info("%s already exists at endpoint" % folder)
+    res = self.transfer_client.operation_mkdir(endpoint_id, folder)
+    bot.info("%s --> %s" % (res["message"], folder))
+    return res
 
 
 def get_endpoint_path(self, endpoint_id):
     """return the first fullpath to a folder in the endpoint based on
-       expanding the user's home from the globus config file. This
-       function is fragile but I don't see any other way to do it.
-    
-       Parameters
-       ==========
-       endpoint_id: the endpoint id to look up the path for
+    expanding the user's home from the globus config file. This
+    function is fragile but I don't see any other way to do it.
+
+    Parameters
+    ==========
+    endpoint_id: the endpoint id to look up the path for
 
     """
     config = os.path.expanduser("~/.globusonline/lta/config-paths")
@@ -116,10 +113,10 @@ def init_transfer_client(self):
 
 def get_endpoint(self, endpoint_id):
     """use a transfer client to get a specific endpoint based on an endpoint id.
-       
-       Parameters
-       ==========
-       endpoint_id: the endpoint_id to retrieve
+
+    Parameters
+    ==========
+    endpoint_id: the endpoint_id to retrieve
 
     """
     endpoint = None
@@ -129,7 +126,7 @@ def get_endpoint(self, endpoint_id):
 
     try:
         endpoint = self.transfer_client.get_endpoint(endpoint_id).data
-    except TransferAPIError:
+    except:
         bot.info("%s does not exist." % endpoint_id)
 
     return endpoint
@@ -137,14 +134,14 @@ def get_endpoint(self, endpoint_id):
 
 def get_endpoints(self, query=None):
     """use a transfer client to get endpoints. If a search term is included,
-       we use it to search a scope of "all" in addition to personal and shared
-       endpoints. Endpoints are organized
-       by type (my-endpoints, shared-with-me, optionally all) and then id.
+    we use it to search a scope of "all" in addition to personal and shared
+    endpoints. Endpoints are organized
+    by type (my-endpoints, shared-with-me, optionally all) and then id.
 
-       Parameters
-       ==========
-       query: an endpoint search term to add to a scope "all" search. If not 
-              defined, no searches are done with "all"
+    Parameters
+    ==========
+    query: an endpoint search term to add to a scope "all" search. If not
+           defined, no searches are done with "all"
 
     """
     self.endpoints = {}

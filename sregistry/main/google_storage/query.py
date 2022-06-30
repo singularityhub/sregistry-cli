@@ -13,8 +13,8 @@ from sregistry.logger import bot
 
 def search(self, query=None, args=None):
     """query a bucket for images that match a particular pattern. If no
-       query is provided, all images in the bucket are listed that have type
-       "container" in the metadata and client "sregistry"
+    query is provided, all images in the bucket are listed that have type
+    "container" in the metadata and client "sregistry"
     """
 
     if query is not None:
@@ -24,15 +24,15 @@ def search(self, query=None, args=None):
 
 def list_containers(self):
     """return a list of containers, determined by finding the metadata field
-       "type" with value "container." We alert the user to no containers 
-       if results is empty, and exit
+    "type" with value "container." We alert the user to no containers
+    if results is empty, and exit
 
-       {'metadata': {'items': 
-                              [
-                               {'key': 'type', 'value': 'container'}, ... 
-                              ]
-                    }
-       }
+    {'metadata': {'items':
+                           [
+                            {'key': 'type', 'value': 'container'}, ...
+                           ]
+                 }
+    }
 
     """
     results = []
@@ -50,10 +50,10 @@ def list_containers(self):
 
 def search_all(self):
     """a "list all" search that doesn't require a query. Here we return to
-       the user all objects that have custom metadata value of "container"
+    the user all objects that have custom metadata value of "container"
 
-       IMPORTANT: the upload function adds this metadata. For a container to
-       be found by the client, it must have the type as container in metadata.
+    IMPORTANT: the upload function adds this metadata. For a container to
+    be found by the client, it must have the type as container in metadata.
     """
 
     results = self._list_containers()

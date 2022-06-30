@@ -15,8 +15,8 @@ import sys
 
 
 def search(self, query=None, args=None):
-    """query a Singularity registry for a list of images. 
-     If query is None, collections are listed. 
+    """query a Singularity registry for a list of images.
+    If query is None, collections are listed.
 
     """
 

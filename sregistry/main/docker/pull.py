@@ -25,18 +25,18 @@ def pull(self, images, file_name=None, save=True, force=False, base=None, **kwar
        - converts to a squashfs image with build
 
     the docker manifests are stored with registry metadata.
- 
+
     Parameters
     ==========
     images: refers to the uri given by the user to pull in the format
-    <collection>/<namespace>. You should have an API that is able to 
+    <collection>/<namespace>. You should have an API that is able to
     retrieve a container based on parsing this uri.
-    file_name: the user's requested name for the file. It can 
+    file_name: the user's requested name for the file. It can
                optionally be None if the user wants a default.
     save: if True, you should save the container to the database
           using self.add()
     base: the registry base, in case the client doesn't want to set in env.
-    
+
     Returns
     =======
     finished: a single container path, or list of paths
@@ -77,17 +77,17 @@ def _pull(self, file_name, names, save=True, force=False, uri="docker://", **kwa
        - converts to a squashfs image with build
 
     the docker manifests are stored with registry metadata.
- 
+
     Parameters
     ==========
     images: refers to the uri given by the user to pull in the format
-    <collection>/<namespace>. You should have an API that is able to 
+    <collection>/<namespace>. You should have an API that is able to
     retrieve a container based on parsing this uri.
-    file_name: the user's requested name for the file. It can 
+    file_name: the user's requested name for the file. It can
                optionally be None if the user wants a default.
     save: if True, you should save the container to the database
           using self.add()
-    
+
     Returns
     =======
     finished: a single container path, or list of paths

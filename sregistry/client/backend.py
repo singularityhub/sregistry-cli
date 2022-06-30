@@ -90,8 +90,7 @@ def usage():
 
 
 def status(backend):
-    """print the status for all or one of the backends.
-    """
+    """print the status for all or one of the backends."""
     print("[backend status]")
     settings = read_client_secrets()
     print("There are %s clients found in secrets." % len(settings))
@@ -103,8 +102,7 @@ def status(backend):
 
 
 def add(backend, variable, value, force=False):
-    """add the variable to the config
-    """
+    """add the variable to the config"""
     print("[add]")
     settings = read_client_secrets()
 
@@ -135,8 +133,7 @@ def add(backend, variable, value, force=False):
 
 
 def remove(backend, variable):
-    """remove a variable from the config, if found.
-    """
+    """remove a variable from the config, if found."""
     print("[remove]")
     settings = read_client_secrets()
 
@@ -160,8 +157,7 @@ def remove(backend, variable):
 
 
 def activate(backend):
-    """activate a backend by adding it to the .sregistry configuration file.
-    """
+    """activate a backend by adding it to the .sregistry configuration file."""
     settings = read_client_secrets()
     if backend is not None:
         settings["SREGISTRY_CLIENT"] = backend
@@ -175,8 +171,7 @@ def update_secrets(secrets):
 
 
 def delete_backend(backend):
-    """delete a backend, and update the secrets file
-    """
+    """delete a backend, and update the secrets file"""
     settings = read_client_secrets()
     if backend in settings:
         del settings[backend]
@@ -197,7 +192,7 @@ def delete_backend(backend):
 
 def deactivate():
     """deactivate any active backend by removing it from the .sregistry
-       configuration file
+    configuration file
     """
     settings = read_client_secrets()
     if "SREGISTRY_CLIENT" in settings:
@@ -210,11 +205,11 @@ def deactivate():
 
 def list_backends(backend=None):
     """return a list of backends installed for the user, which is based on
-       the config file keys found present
- 
-       Parameters
-       ==========
-       backend: a specific backend to list. If defined, just list parameters.
+    the config file keys found present
+
+    Parameters
+    ==========
+    backend: a specific backend to list. If defined, just list parameters.
 
     """
     settings = read_client_secrets()

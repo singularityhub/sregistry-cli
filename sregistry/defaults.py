@@ -1,6 +1,6 @@
 """
 
-Copyright (C) 2017-2021 Vanessa Sochat.
+Copyright (C) 2017-2022 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -21,12 +21,12 @@ import sys
 
 def convert2boolean(arg):
     """convert2boolean is used for environmental variables
-       that must be returned as boolean
+    that must be returned as boolean
 
-       Parameters
-       ==========
-       arg: the argument to convert to boolean. Must be a string given
-       grabbed from environment.
+    Parameters
+    ==========
+    arg: the argument to convert to boolean. Must be a string given
+    grabbed from environment.
     """
     if not isinstance(arg, bool):
         return arg.lower() in ("yes", "true", "t", "1", "y")
@@ -35,13 +35,13 @@ def convert2boolean(arg):
 
 def getenv(variable_key, default=None, required=False, silent=True):
     """getenv will attempt to get an environment variable. If the variable
-       is not found, None is returned.
- 
-       Parameters
-       ==========   
-       variable_key: the variable name
-       required: exit with error if not found
-        silent: Do not print debugging information for variable
+    is not found, None is returned.
+
+    Parameters
+    ==========
+    variable_key: the variable name
+    required: exit with error if not found
+     silent: Do not print debugging information for variable
     """
     variable = os.environ.get(variable_key, default)
     if variable is None and required:

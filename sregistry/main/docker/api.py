@@ -31,7 +31,7 @@ def update_token(self, response):
     Parameters
     ==========
     response: the http request response to parse for the challenge.
-    
+
     https://docs.docker.com/registry/spec/auth/token/
     """
 
@@ -65,15 +65,15 @@ def update_token(self, response):
 
 def get_manifests(self, repo_name, digest=None):
     """get_manifests calls get_manifest for each of the schema versions,
-       including v2 and v1. Version 1 includes image layers and metadata,
-       and version 2 must be parsed for a specific manifest, and the 2nd
-       call includes the layers. If a digest is not provided
-       latest is used.
+    including v2 and v1. Version 1 includes image layers and metadata,
+    and version 2 must be parsed for a specific manifest, and the 2nd
+    call includes the layers. If a digest is not provided
+    latest is used.
 
-       Parameters
-       ==========
-       repo_name: reference to the <username>/<repository>:<tag> to obtain
-       digest: a tag or shasum version
+    Parameters
+    ==========
+    repo_name: reference to the <username>/<repository>:<tag> to obtain
+    digest: a tag or shasum version
 
     """
 
@@ -99,13 +99,13 @@ def get_manifests(self, repo_name, digest=None):
 
 
 def get_manifest_selfLink(self, repo_name, digest=None):
-    """ get a selfLink for the manifest, for use by the client get_manifest
-        function, along with the parents pull
- 
-       Parameters
-       ==========
-       repo_name: reference to the <username>/<repository>:<tag> to obtain
-       digest: a tag or shasum version
+    """get a selfLink for the manifest, for use by the client get_manifest
+     function, along with the parents pull
+
+    Parameters
+    ==========
+    repo_name: reference to the <username>/<repository>:<tag> to obtain
+    digest: a tag or shasum version
 
     """
     url = "%s/%s/manifests" % (self.base, repo_name)
@@ -118,15 +118,15 @@ def get_manifest_selfLink(self, repo_name, digest=None):
 
 def get_manifest(self, repo_name, digest=None, version="v1"):
     """
-       get_manifest should return an image manifest
-       for a particular repo and tag.  The image details
-       are extracted when the client is generated.
+    get_manifest should return an image manifest
+    for a particular repo and tag.  The image details
+    are extracted when the client is generated.
 
-       Parameters
-       ==========
-       repo_name: reference to the <username>/<repository>:<tag> to obtain
-       digest: a tag or shasum version
-       version: one of v1, v2, and config (for image config)
+    Parameters
+    ==========
+    repo_name: reference to the <username>/<repository>:<tag> to obtain
+    digest: a tag or shasum version
+    version: one of v1, v2, and config (for image config)
 
     """
 
@@ -151,14 +151,14 @@ def get_manifest(self, repo_name, digest=None, version="v1"):
 
 
 def download_layers(self, repo_name, digest=None, destination=None):
-    """ download layers is a wrapper to do the following for a client loaded
-        with a manifest for an image:
-      
-        1. use the manifests to retrieve list of digests (get_digests)
-        2. atomically download the list to destination (get_layers)
+    """download layers is a wrapper to do the following for a client loaded
+    with a manifest for an image:
 
-        This function uses the MultiProcess client to download layers
-        at the same time.
+    1. use the manifests to retrieve list of digests (get_digests)
+    2. atomically download the list to destination (get_layers)
+
+    This function uses the MultiProcess client to download layers
+    at the same time.
     """
     from sregistry.main.workers import Workers, download_task
 
@@ -200,8 +200,8 @@ def download_layers(self, repo_name, digest=None, destination=None):
 
 def get_download_cache(self, destination, subfolder="docker"):
     """determine the user preference for atomic download of layers. If
-       the user has set a singularity cache directory, honor it. Otherwise,
-       use the Singularity default.
+    the user has set a singularity cache directory, honor it. Otherwise,
+    use the Singularity default.
     """
     # First priority after user specification is Singularity Cache
     if destination is None:
@@ -220,16 +220,16 @@ def get_download_cache(self, destination, subfolder="docker"):
 
 def get_digests(self):
     """return a list of layers from a manifest.
-       The function is intended to work with both version
-       1 and 2 of the schema. All layers (including redundant)
-       are returned. By default, we try version 2 first,
-       then fall back to version 1.
+    The function is intended to work with both version
+    1 and 2 of the schema. All layers (including redundant)
+    are returned. By default, we try version 2 first,
+    then fall back to version 1.
 
-       For version 1 manifests: extraction is reversed
+    For version 1 manifests: extraction is reversed
 
-       Parameters
-       ==========
-       manifest: the manifest to read_layers from
+    Parameters
+    ==========
+    manifest: the manifest to read_layers from
 
     """
     if not hasattr(self, "manifests"):
@@ -292,10 +292,10 @@ def get_digests(self):
 def get_layerLink(self, repo_name, digest):
     """get the url for a layer based on a digest and repo name
 
-       Parameters
-       ==========
-       digest: The image digest to obtain
-       repo_name: the image name (library/ubuntu) to retrieve
+    Parameters
+    ==========
+    digest: The image digest to obtain
+    repo_name: the image name (library/ubuntu) to retrieve
 
     """
     return "%s/%s/blobs/%s" % (self.base, repo_name, digest)
@@ -304,10 +304,10 @@ def get_layerLink(self, repo_name, digest):
 def get_layer(self, image_id, repo_name, download_folder=None):
     """download an image layer (.tar.gz) to a specified download folder.
 
-       Parameters
-       ==========
-       download_folder: download to this folder. If not set, uses temp.
-       repo_name: the image name (library/ubuntu) to retrieve
+    Parameters
+    ==========
+    download_folder: download to this folder. If not set, uses temp.
+    repo_name: the image name (library/ubuntu) to retrieve
 
     """
     url = self._get_layerLink(repo_name, image_id)
@@ -336,13 +336,13 @@ def get_layer(self, image_id, repo_name, download_folder=None):
 
 def get_size(self, add_padding=True, round_up=True, return_mb=True):
     """get_size will return the image size (must use v.2.0 manifest)
-        
-       Parameters
-       ==========
-       add_padding: if true, return reported size * 5
-       round_up: if true, round up to nearest integer
-       return_mb: if true, defaults bytes are converted to MB
-    
+
+    Parameters
+    ==========
+    add_padding: if true, return reported size * 5
+    round_up: if true, round up to nearest integer
+    return_mb: if true, defaults bytes are converted to MB
+
     """
     if not hasattr(self, "manifests"):
         bot.exit("Please retrieve manifests for an image first.")
@@ -375,13 +375,13 @@ def get_size(self, add_padding=True, round_up=True, return_mb=True):
 
 def get_config(self, key="Entrypoint", delim=None):
     """get_config returns a particular key (default is Entrypoint)
-        from a VERSION 1 manifest obtained with get_manifest.
+    from a VERSION 1 manifest obtained with get_manifest.
 
-        Parameters
-        ==========
-        key: the key to return from the manifest config
-        delim: Given a list, the delim to use to join the entries.
-        Default is newline
+    Parameters
+    ==========
+    key: the key to return from the manifest config
+    delim: Given a list, the delim to use to join the entries.
+    Default is newline
 
     """
     if not hasattr(self, "manifests"):
@@ -418,10 +418,10 @@ def get_config(self, key="Entrypoint", delim=None):
 
 def get_environment_tar(self):
     """return the environment.tar generated with the Singularity software.
-       We first try the Linux Filesystem expected location in /usr/libexec
-       If not found, we detect the system archicture
+    We first try the Linux Filesystem expected location in /usr/libexec
+    If not found, we detect the system archicture
 
-       dirname $(singularity selftest 2>&1 | grep 'lib' | awk '{print $4}' | sed -e 's@\(.*/singularity\).*@\1@')
+    dirname $(singularity selftest 2>&1 | grep 'lib' | awk '{print $4}' | sed -e 's@\(.*/singularity\).*@\1@')
     """
     from sregistry.utils import which, run_command
 
@@ -453,14 +453,14 @@ def get_environment_tar(self):
 
 def create_metadata_tar(self, destination=None, metadata_folder=".singularity.d"):
     """create a metadata tar (runscript and environment) to add to the
-       downloaded image. This function uses all functions in this section
-       to obtain key--> values from the manifest config, and write
-       to a .tar.gz
+    downloaded image. This function uses all functions in this section
+    to obtain key--> values from the manifest config, and write
+    to a .tar.gz
 
-       Parameters
-       ==========
-       metadata_folder: the metadata folder in the singularity image.
-                        default is .singularity.d
+    Parameters
+    ==========
+    metadata_folder: the metadata folder in the singularity image.
+                     default is .singularity.d
     """
     tar_file = None
 
@@ -505,7 +505,7 @@ def create_metadata_tar(self, destination=None, metadata_folder=".singularity.d"
 
 def extract_env(self):
     """extract the environment from the manifest, or return None.
-       Used by functions env_extract_image, and env_extract_tar
+    Used by functions env_extract_image, and env_extract_tar
     """
     environ = self._get_config("Env")
     if environ is not None:
@@ -525,12 +525,12 @@ def extract_env(self):
 
 def extract_runscript(self):
     """extract the runscript (EntryPoint) as first priority, unless the
-       user has specified to use the CMD. If Entrypoint is not defined,
-       we default to None:
- 
-       1. IF SREGISTRY_DOCKERHUB_CMD is set, use Cmd
-       2. If not set, or Cmd is None/blank, try Entrypoint
-       3. If Entrypoint is not set, use default /bin/bash
+    user has specified to use the CMD. If Entrypoint is not defined,
+    we default to None:
+
+    1. IF SREGISTRY_DOCKERHUB_CMD is set, use Cmd
+    2. If not set, or Cmd is None/blank, try Entrypoint
+    3. If Entrypoint is not set, use default /bin/bash
 
     """
     use_cmd = self._get_setting("SREGISTRY_DOCKER_CMD")
@@ -568,11 +568,11 @@ def extract_runscript(self):
 def extract_labels(self):
     """extract_labels will write a file of key value pairs including
        maintainer, and labels.
-    
+
     Parameters
     ==========
     manifest: the manifest to use
-    
+
     """
     labels = self._get_config("Labels")
     if labels in [[], "", None]:

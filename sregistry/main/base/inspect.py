@@ -19,13 +19,13 @@ import json
 
 def get_metadata(self, image_file, names=None):
     """extract metadata using Singularity inspect, if the executable is found.
-       If not, return a reasonable default (the parsed image name)
+    If not, return a reasonable default (the parsed image name)
 
-       Parameters
-       ==========
-       image_file: the full path to a Singularity image
-       names: optional, an extracted or otherwise created dictionary of
-              variables for the image, likely from utils.parse_image_name
+    Parameters
+    ==========
+    image_file: the full path to a Singularity image
+    names: optional, an extracted or otherwise created dictionary of
+           variables for the image, likely from utils.parse_image_name
 
     """
     if names is None:

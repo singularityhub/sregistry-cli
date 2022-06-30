@@ -14,12 +14,12 @@ import requests
 
 def logs(self, name=None):
     """return logs for a particular container. The logs file is equivalent to
-       the name, but with extension .log. If there is no name, the most recent
-       log is returned.
+    the name, but with extension .log. If there is no name, the most recent
+    log is returned.
 
-       Parameters
-       ==========
-       name: the container name to print logs for.
+    Parameters
+    ==========
+    name: the container name to print logs for.
 
     """
     content = None
@@ -60,8 +60,7 @@ def logs(self, name=None):
 
 
 def list_logs(self):
-    """return a list of logs. We return any file that ends in .log
-    """
+    """return a list of logs. We return any file that ends in .log"""
     results = []
     for image in self._bucket.list_blobs():
         if image.name.endswith("log"):
@@ -75,10 +74,10 @@ def list_logs(self):
 
 def print_log(self, logname):
     """helper function to retrieve a particular log, and print.
-       
-       Parameters
-       ==========
-       name: the name of the log to retrieve
+
+    Parameters
+    ==========
+    name: the name of the log to retrieve
 
     """
     content = None

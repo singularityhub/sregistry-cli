@@ -21,7 +21,7 @@ from sregistry.logger import bot
 
 def authorize(self, names, payload=None, request_type="push"):
     """Authorize a client based on encrypting the payload with the client
-       token, which should be matched on the receiving server"""
+    token, which should be matched on the receiving server"""
 
     self.username = self._get_and_update_setting("SREGISTRY_REGISTRY_USERNAME")
 

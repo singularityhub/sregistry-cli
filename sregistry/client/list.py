@@ -13,8 +13,8 @@ from sregistry.logger import bot
 
 def main(args, parser, extra):
     """the list command corresponds with listing images for an external
-       resource. This is different from listing images that are local to the
-       database, which should be done with "images"
+    resource. This is different from listing images that are local to the
+    database, which should be done with "images"
     """
     from sregistry.main import get_client
 

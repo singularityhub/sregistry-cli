@@ -16,9 +16,9 @@ from retrying import retry
 def delete(self, image, force=False):
     """delete an image from Google Storage.
 
-       Parameters
-       ==========
-       name: the name of the file (or image) to delete
+    Parameters
+    ==========
+    name: the name of the file (or image) to delete
 
     """
 
@@ -37,9 +37,9 @@ def delete(self, image, force=False):
 )
 def destroy(self, name):
     """destroy an instance, meaning take down the instance and stop the build.
-       Parameters
-       ==========
-       name: the name of the instance to stop building.
+    Parameters
+    ==========
+    name: the name of the instance to stop building.
     """
 
     instances = self._get_instances()

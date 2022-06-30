@@ -14,7 +14,7 @@ import sys
 
 def share(self, query, share_to):
     """share will use the client to get an image based on a query, and then
-       the link with an email or endpoint (share_to) of choice.
+    the link with an email or endpoint (share_to) of choice.
     """
 
     images = self._container_query(query, quiet=True)

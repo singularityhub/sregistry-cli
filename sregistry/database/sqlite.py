@@ -22,9 +22,9 @@ import shutil
 def get_or_create_collection(self, name):
     """get a collection if it exists. If it doesn't exist, create it first.
 
-       Parameters
-       ==========
-       name: the collection name parsed from parse_image_names()['collection']
+    Parameters
+    ==========
+    name: the collection name parsed from parse_image_names()['collection']
     """
     from sregistry.database.models import Collection
 
@@ -40,8 +40,7 @@ def get_or_create_collection(self, name):
 
 
 def get_collection(self, name):
-    """get a collection, if it exists, otherwise return None.
-    """
+    """get a collection, if it exists, otherwise return None."""
     from sregistry.database.models import Collection
 
     return Collection.query.filter(Collection.name == name).first()
@@ -49,8 +48,7 @@ def get_collection(self, name):
 
 def get_container(self, name, collection_id, tag="latest", version=None):
 
-    """get a container, otherwise return None.
-    """
+    """get a container, otherwise return None."""
     from sregistry.database.models import Container
 
     if not version:
@@ -108,9 +106,9 @@ def get(self, name, quiet=False):
 def images(self, query=None):
     """List local images in the database, optionally with a query.
 
-       Paramters
-       =========
-       query: a string to search for in the container or collection name|tag|uri
+    Paramters
+    =========
+    query: a string to search for in the container or collection name|tag|uri
     """
     from sregistry.database.models import Container
 
@@ -141,7 +139,7 @@ def images(self, query=None):
 
 def inspect(self, name):
     """Inspect a local image in the database, which typically includes the
-       basic fields in the model.
+    basic fields in the model.
 
     """
     container = self.get(name)
@@ -160,10 +158,10 @@ def inspect(self, name):
 def rename(self, image_name, path):
     """rename performs a move, but ensures the path is maintained in storage
 
-       Parameters
-       ==========
-       image_name: the image name (uri) to rename to.
-       path: the name to rename (basename is taken)
+    Parameters
+    ==========
+    image_name: the image name (uri) to rename to.
+    path: the name to rename (basename is taken)
     """
     container = self.get(image_name, quiet=True)
 
@@ -198,13 +196,13 @@ def rename(self, image_name, path):
 
 def update_container_metadata(container, collection, names):
     """update container metadata, done for a move or rename. The session
-       is not saved, and needs to be done so by the calling function.
+    is not saved, and needs to be done so by the calling function.
 
-       Parameters
-       ==========
-       container: the container object to update with names
-       collection: the collection to move it to (might be the same)
-       names: the result of parse_image_names
+    Parameters
+    ==========
+    container: the container object to update with names
+    collection: the collection to move it to (might be the same)
+    names: the result of parse_image_names
     """
     # Update all metadata for the container
     container.uri = names["uri"]
@@ -216,13 +214,13 @@ def update_container_metadata(container, collection, names):
 
 def mv(self, image_name, path):
     """Move an image from it's current location to a new path.
-       Removing the image from organized storage is not the recommended approach
-       however is still a function wanted by some.
+    Removing the image from organized storage is not the recommended approach
+    however is still a function wanted by some.
 
-       Parameters
-       ==========
-       image_name: the parsed image name.
-       path: the location to move the image to
+    Parameters
+    ==========
+    image_name: the parsed image name.
+    path: the location to move the image to
     """
     container = self.get(image_name, quiet=True)
 
@@ -255,13 +253,13 @@ def mv(self, image_name, path):
 
 def cp(self, move_to, image_name=None, container=None, command="copy"):
     """_cp is the shared function between mv (move) and rename, and performs
-       the move, and returns the updated container
-    
-       Parameters
-       ==========
-       image_name: an image_uri to look up a container in the database
-       container: the container object to move (must have a container.image
-       move_to: the full path to move it to
+    the move, and returns the updated container
+
+    Parameters
+    ==========
+    image_name: an image_uri to look up a container in the database
+    container: the container object to move (must have a container.image
+    move_to: the full path to move it to
     """
     if not container and not image_name:
         bot.exit("A container or image_name must be provided to %s" % command)
@@ -307,8 +305,7 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
 
 
 def rm(self, image_name):
-    """Delete an image record and file from the database.
-    """
+    """Delete an image record and file from the database."""
     container = self.get(image_name)
     if container is not None:
         name = container.uri or container.get_uri()
@@ -339,34 +336,34 @@ def add(
 ):
 
     """get or create a container, including the collection to add it to.
-       This function can be used from a file on the local system, or via a URL
-       that has been downloaded. Either way, if one of url, version, or image_file
-       is not provided, the model is created without it. If a version is not
-       provided but a file path is, then the file hash is used.
+    This function can be used from a file on the local system, or via a URL
+    that has been downloaded. Either way, if one of url, version, or image_file
+    is not provided, the model is created without it. If a version is not
+    provided but a file path is, then the file hash is used.
 
-       Parameters
-       ==========
-       image_path: full path to image file
-       image_name: if defined, the user wants a custom name (and not based on uri)
-       metadata: any extra metadata to keep for the image (dict)
-       save: if True, move the image to the cache if it's not there
-       copy: If True, copy the image instead of moving it.
+    Parameters
+    ==========
+    image_path: full path to image file
+    image_name: if defined, the user wants a custom name (and not based on uri)
+    metadata: any extra metadata to keep for the image (dict)
+    save: if True, move the image to the cache if it's not there
+    copy: If True, copy the image instead of moving it.
 
-       image_name: a uri that gets parsed into a names object that looks like:
+    image_name: a uri that gets parsed into a names object that looks like:
 
-       {'collection': 'vsoch',
-        'image': 'hello-world',
-        'storage': 'vsoch/hello-world-latest.img',
-        'tag': 'latest',
-        'version': '12345'
-        'uri': 'vsoch/hello-world:latest@12345'}
+    {'collection': 'vsoch',
+     'image': 'hello-world',
+     'storage': 'vsoch/hello-world-latest.img',
+     'tag': 'latest',
+     'version': '12345'
+     'uri': 'vsoch/hello-world:latest@12345'}
 
-       After running add, the user will take some image in a working
-       directory, add it to the database, and have it available for search
-       and use under SREGISTRY_STORAGE/<collection>/<container>
+    After running add, the user will take some image in a working
+    directory, add it to the database, and have it available for search
+    and use under SREGISTRY_STORAGE/<collection>/<container>
 
-       If the container was retrieved from a webby place, it should have version
-       If no version is found, the file hash is used.
+    If the container was retrieved from a webby place, it should have version
+    If no version is found, the file hash is used.
     """
 
     from sregistry.database.models import Container

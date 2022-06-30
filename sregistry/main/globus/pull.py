@@ -23,12 +23,12 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     Parameters
     ==========
     images: refers to the globus endpoint id and image path.
-    file_name: the user's requested name for the file. It can 
+    file_name: the user's requested name for the file. It can
                optionally be None if the user wants a default.
     save: if True, you should save the container to the database
           using self.add(). For globus this is the only option, and
           we don't have control over when this happens.
-    
+
     Returns
     =======
     finished: a single container path, or list of paths

@@ -14,8 +14,8 @@ import sys
 
 def search(self, query=None, args=None):
     """query a bucket for images that match a particular pattern. If no
-       query is provided, all images in the bucket are listed that have type
-       "container" in the metadata and client "sregistry"
+    query is provided, all images in the bucket are listed that have type
+    "container" in the metadata and client "sregistry"
     """
 
     if query is not None:
@@ -25,9 +25,9 @@ def search(self, query=None, args=None):
 
 def list_containers(self):
     """return a list of containers. Since Google Drive definitely has other
-       kinds of files, we look for containers in a special sregistry folder,
-       (meaning the parent folder is sregistry) and with properties of type
-       as container.
+    kinds of files, we look for containers in a special sregistry folder,
+    (meaning the parent folder is sregistry) and with properties of type
+    as container.
     """
     # Get or create the base
     folder = self._get_or_create_folder(self._base)
@@ -67,13 +67,13 @@ def list_containers(self):
 
 def search_all(self):
     """a "list all" search that doesn't require a query. Here we return to
-       the user all objects that have custom properties value type set to
-       container, which is set when the image is pushed. 
+    the user all objects that have custom properties value type set to
+    container, which is set when the image is pushed.
 
-       IMPORTANT: the upload function adds this metadata. For a container to
-       be found by the client, it must have the properties value with type
-       as container. It also should have a "uri" in properties to show the 
-       user, otherwise the user will have to query / download based on the id
+    IMPORTANT: the upload function adds this metadata. For a container to
+    be found by the client, it must have the properties value with type
+    as container. It also should have a "uri" in properties to show the
+    user, otherwise the user will have to query / download based on the id
     """
 
     results = self._list_containers()

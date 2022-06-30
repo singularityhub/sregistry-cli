@@ -324,8 +324,8 @@ def main():
     parser = get_parser()
 
     def help(return_code=0):
-        """print help, including the software version and active client 
-           and exit with return code.
+        """print help, including the software version and active client
+        and exit with return code.
         """
 
         version = sregistry.__version__

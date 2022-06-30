@@ -43,8 +43,7 @@ def main(args, parser, extra):
 
 
 def ipython(args):
-    """give the user an ipython shell, optionally with an endpoint of choice.
-    """
+    """give the user an ipython shell, optionally with an endpoint of choice."""
 
     # The client will announce itself (backend/database) unless it's get
     from sregistry.main import get_client

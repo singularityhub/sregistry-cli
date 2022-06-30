@@ -14,26 +14,26 @@ import os
 
 
 def pull(self, images, file_name=None, save=True, **kwargs):
-    """pull an image from gitlab. The image is found based on the 
-       uri that should correspond to a gitlab repository, and then
-       the branch, job name, artifact folder, and tag of the container.
-       The minimum that we need are the job id, collection, and job name. Eg:
+    """pull an image from gitlab. The image is found based on the
+    uri that should correspond to a gitlab repository, and then
+    the branch, job name, artifact folder, and tag of the container.
+    The minimum that we need are the job id, collection, and job name. Eg:
 
-       job_id|collection|job_name   (or)
-       job_id|collection
+    job_id|collection|job_name   (or)
+    job_id|collection
 
-       Parameters
-       ==========
-       images: refers to the uri given by the user to pull in the format
-               specified above
-       file_name: the user's requested name for the file. It can 
-                  optionally be None if the user wants a default.
-       save: if True, you should save the container to the database
-             using self.add()
-    
-       Returns
-       =======
-       finished: a single container path, or list of paths
+    Parameters
+    ==========
+    images: refers to the uri given by the user to pull in the format
+            specified above
+    file_name: the user's requested name for the file. It can
+               optionally be None if the user wants a default.
+    save: if True, you should save the container to the database
+          using self.add()
+
+    Returns
+    =======
+    finished: a single container path, or list of paths
 
     """
     force = False

@@ -29,16 +29,16 @@ import tempfile
 
 def download_task(url, headers, destination, download_type="layer"):
     """download an image layer (.tar.gz) to a specified download folder.
-       This task is done by using local versions of the same download functions
-       that are used for the client.
-       core stream/download functions of the parent client.
+    This task is done by using local versions of the same download functions
+    that are used for the client.
+    core stream/download functions of the parent client.
 
-       Parameters
-       ==========
-       image_id: the shasum id of the layer, already determined to not exist
-       repo_name: the image name (library/ubuntu) to retrieve
-       download_folder: download to this folder. If not set, uses temp.
- 
+    Parameters
+    ==========
+    image_id: the shasum id of the layer, already determined to not exist
+    repo_name: the image name (library/ubuntu) to retrieve
+    download_folder: download to this folder. If not set, uses temp.
+
 
     """
     # Update the user what we are doing
@@ -71,8 +71,7 @@ def download_task(url, headers, destination, download_type="layer"):
 
 
 def post(url, headers=None, data=None, return_json=True):
-    """post will use requests to get a particular url
-    """
+    """post will use requests to get a particular url"""
     bot.debug("POST %s" % url)
     return call(
         url, headers=headers, func=requests.post, data=data, return_json=return_json
@@ -80,8 +79,7 @@ def post(url, headers=None, data=None, return_json=True):
 
 
 def get(url, headers=None, token=None, data=None, return_json=True):
-    """get will use requests to get a particular url
-    """
+    """get will use requests to get a particular url"""
     bot.debug("GET %s" % url)
     return call(
         url, headers=headers, func=requests.get, data=data, return_json=return_json
@@ -91,11 +89,11 @@ def get(url, headers=None, token=None, data=None, return_json=True):
 def download(url, file_name, headers=None, show_progress=True):
     """stream to a temporary file, rename on successful completion
 
-        Parameters
-        ==========
-        file_name: the file name to stream to
-        url: the url to stream from
-        headers: additional headers to add
+    Parameters
+    ==========
+    file_name: the file name to stream to
+    url: the url to stream from
+    headers: additional headers to add
     """
 
     fd, tmp_file = tempfile.mkstemp(prefix=("%s.tmp." % file_name))
@@ -121,8 +119,8 @@ def download(url, file_name, headers=None, show_progress=True):
 
 def stream(url, headers, stream_to=None, retry=True):
     """stream is a get that will stream to file_name. Since this is a worker
-       task, it differs from the client provided version in that it requires
-       headers.
+    task, it differs from the client provided version in that it requires
+    headers.
     """
 
     bot.debug("GET %s" % url)
@@ -242,13 +240,13 @@ def call(
 
 def update_token(response, headers):
     """update_token uses HTTP basic authentication to attempt to authenticate
-    given a 401 response. We take as input previous headers, and update 
+    given a 401 response. We take as input previous headers, and update
     them.
 
     Parameters
     ==========
     response: the http request response to parse for the challenge.
-    
+
     """
 
     not_asking_auth = "Www-Authenticate" not in response.headers

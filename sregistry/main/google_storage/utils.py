@@ -15,7 +15,7 @@ import os
 
 def prepare_metadata(metadata):
     """prepare a key/value list of metadata for the request. The metadata
-       object that comes in is only parsed one level.
+    object that comes in is only parsed one level.
     """
     pairs = {"metadata": {"items": [{"key": "client", "value": "sregistry"}]}}
     for key, val in metadata.items():
@@ -31,12 +31,12 @@ def prepare_metadata(metadata):
 
 def get_build_template(name=None, manager="apt"):
     """get a particular build template, by default we return templates
-       that are based on package managers.
+    that are based on package managers.
 
-       Parameters
-       ==========
-       name: the full path of the template file to use.
-       manager: the package manager to use in the template (yum or apt)
+    Parameters
+    ==========
+    name: the full path of the template file to use.
+    manager: the package manager to use in the template (yum or apt)
 
     """
     base = get_installdir()

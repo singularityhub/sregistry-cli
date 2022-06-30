@@ -13,7 +13,7 @@ from sregistry.logger import bot
 
 def main(args, parser, extra):
     """sharing an image means sending a remote share from an image you
-       control to a contact, usually an email.
+    control to a contact, usually an email.
     """
     from sregistry.main import get_client
 
