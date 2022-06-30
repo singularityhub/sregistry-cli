@@ -131,7 +131,7 @@ jobs:
   test-python-3:
     <<: *defaults
     docker:
-      - image: circleci/python:3.6.4
+      - image: cimg/python:3.8.4
     steps:
       - checkout
       - setup_remote_docker     
