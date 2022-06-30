@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3
+FROM quay.io/singularity/singularity:v3.10.0-slim
 
 #########################################
 # Singularity Registry Global Client
@@ -7,35 +7,14 @@ FROM continuumio/miniconda3
 # docker run quay.io/vanessa/sregistry-cli
 #########################################
 
-LABEL maintainer vsochat@stanford.edu
-
-RUN apt-get update && apt-get install -y git build-essential \
-                   libtool \
-                   squashfs-tools \
-                   libarchive-dev \
-                   autotools-dev \
-                   automake \
-                   autoconf \
-                   uuid-dev \
-                   libssl-dev
-
-RUN /opt/conda/bin/pip install dateutils
-
-# Install Singularity
-WORKDIR /opt
-RUN git clone -b vault/release-2.6 https://www.github.com/sylabs/singularity.git
-WORKDIR singularity
-RUN ./autogen.sh && ./configure --prefix=/usr/local && make && make install
+RUN apk update && apk add python3-dev python3 py3-pip g++
+RUN pip3 install dateutils
 
 RUN mkdir /code
 ADD . /code
-RUN /opt/conda/bin/pip install setuptools
-RUN /opt/conda/bin/pip install scif
-
+RUN pip3 install setuptools && pip3 install scif
 RUN scif install /code/sregistry-cli.scif
 ENTRYPOINT ["sregistry"]
 
 WORKDIR /code
-RUN test -f /usr/bin/python || ln -s /opt/conda/bin/python /usr/bin/python
-
-RUN /opt/conda/bin/pip install -e .[all]
+RUN pip3 install -e .[all]

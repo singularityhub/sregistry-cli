@@ -1,6 +1,6 @@
 """
 
-Copyright (C) 2017-2021 Vanessa Sochat.
+Copyright (C) 2017-2022 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -8,7 +8,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
 
-from globus_sdk.exc import TransferAPIError
 from sregistry.logger import bot
 import sys
 
@@ -101,7 +100,7 @@ def list_endpoint(self, endpoint, query=None):
     # Get a list of files at endpoint, under specific path
     try:
         result = self.transfer_client.operation_ls(endpoint, path=path)
-    except TransferAPIError as err:
+    except Exception as err:
 
         # Tell the user what went wrong!
         bot.custom(prefix="ERROR", message=err, color="RED")

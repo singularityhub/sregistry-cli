@@ -103,21 +103,6 @@ dockerbuild: &dockerbuild
     command: |
       source ${BASH_ENV}
       docker build -f ${DOCKERFILE} -t ${CONTAINER_NAME} .
-
-
-install_python: &install_python
-  name: Install pytest
-  command: |
-      which python
-      python --version
-      sudo pip3 install --upgrade pytest
-
-test_sregistry: &test_sregistry
-  name: Test Singularity Registry Client
-  command: |
-        cd /tmp/src
-        sudo python setup.py install
-        pytest sregistry
         
 
 ################################################################################
@@ -127,17 +112,6 @@ test_sregistry: &test_sregistry
 
 version: 2
 jobs:
-
-  test-python-3:
-    <<: *defaults
-    docker:
-      - image: cimg/python:3.8.4
-    steps:
-      - checkout
-      - setup_remote_docker     
-      - run: *install_python
-      - run: *test_sregistry
-
   build:
     <<: *defaults
     docker:
@@ -198,16 +172,7 @@ workflows:
   version: 2
   build_deploy:
     jobs:
-
-      - test-python-3:
-          filters:
-            branches:
-              ignore: 
-                - master
-
       - build:
-          requires:
-            - test-python-3
           filters:
             branches:
               ignore: 
