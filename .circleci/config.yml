@@ -110,7 +110,7 @@ install_python: &install_python
   command: |
       which python
       python --version
-      sudo pip3 install --upgrade pytest
+      sudo pip install --upgrade pytest
 
 test_sregistry: &test_sregistry
   name: Test Singularity Registry Client
