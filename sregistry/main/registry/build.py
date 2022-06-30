@@ -21,7 +21,7 @@ import os
 
 def build(self, recipe, name, extra=None):
     """push a recipe file to Singularity Registry server for a Google
-       Cloud (or similar) build
+    Cloud (or similar) build
     """
     path = os.path.abspath(recipe)
     bot.debug("BUILD %s" % path)

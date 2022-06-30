@@ -48,9 +48,9 @@ def main(args, parser, extra):
 
 def run_google_build(cli, args):
     """a helper function to control build for the Google Build Client.
-       the user can request a local recipe build, or a build from
-       a GitHub repo. In both cases, if no recipe is provided, we default
-       to Singularity at the root of the PWD or GitHub repository.
+    the user can request a local recipe build, or a build from
+    a GitHub repo. In both cases, if no recipe is provided, we default
+    to Singularity at the root of the PWD or GitHub repository.
     """
     if args.name is None:
         bot.exit("Please provide a container identifier with --name")
@@ -78,8 +78,8 @@ def run_google_build(cli, args):
 
 def run_compute_build(cli, args):
     """a compute based build is the oldest versions of build - here we bring
-       up our own instance, and then provide control to it. The helper
-       functions below (kill, instances, templates) support this version.
+    up our own instance, and then provide control to it. The helper
+    functions below (kill, instances, templates) support this version.
     """
     # Does the user want to save the image?
     command = args.commands.pop(0)
@@ -122,10 +122,10 @@ def run_compute_build(cli, args):
 
 def run_registry_build(cli, args, extra):
     """a registry build pushes a recipe file to Singularity Registry Server,
-       or given that a GitHub Url is provided, we build from there. For more
-       regular building, the user is suggested to directly connect the 
-       repository to Singularity Registry server. This can serve as a one time
-       build.
+    or given that a GitHub Url is provided, we build from there. For more
+    regular building, the user is suggested to directly connect the
+    repository to Singularity Registry server. This can serve as a one time
+    build.
     """
     # The uri can also contain github, which indicates a Github build
     if args.name is None:
@@ -142,12 +142,12 @@ def run_registry_build(cli, args, extra):
 
 def print_output(response, output_file=None):
     """print the output to the console for the user. If the user wants the content
-       also printed to an output file, do that.
+    also printed to an output file, do that.
 
-       Parameters
-       ==========
-       response: the response from the builder, with metadata added
-       output_file: if defined, write output also to file
+    Parameters
+    ==========
+    response: the response from the builder, with metadata added
+    output_file: if defined, write output also to file
 
     """
     # If successful built, show container uri
@@ -182,7 +182,7 @@ def print_output(response, output_file=None):
 
 def kill(args):
     """kill is a helper function to call the "kill" function of the client,
-       meaning we bring down an instance.
+    meaning we bring down an instance.
     """
     from sregistry.main import get_client
 
@@ -195,7 +195,7 @@ def kill(args):
 
 def instances(args):
     """list running instances for a user, including all builders and report
-       instance names and statuses.
+    instance names and statuses.
     """
     from sregistry.main import get_client
 
@@ -206,12 +206,12 @@ def instances(args):
 
 def templates(args, template_name=None):
     """list a specific template (if a name is provided) or all templates
-       available.
+    available.
 
-       Parameters
-       ==========
-       args: the argparse object to look for a template name
-       template_name: if not set, show all
+    Parameters
+    ==========
+    args: the argparse object to look for a template name
+    template_name: if not set, show all
 
     """
     from sregistry.main import get_client
@@ -228,10 +228,10 @@ def templates(args, template_name=None):
 def list_logs(args, container_name=None):
     """list a specific log for a builder, or the latest log if none provided
 
-       Parameters
-       ==========
-       args: the argparse object to look for a container name
-       container_name: a default container name set to be None (show latest log)
+    Parameters
+    ==========
+    args: the argparse object to look for a container name
+    container_name: a default container name set to be None (show latest log)
 
     """
     from sregistry.main import get_client

@@ -13,8 +13,8 @@ from sregistry.logger import bot
 
 def main(args, parser, extra):
     """the images entrypoint is intended to list images locally in the user
-       database, optionally taking one or more query string to subset the 
-       search
+    database, optionally taking one or more query string to subset the
+    search
     """
     from sregistry.main import get_client
 

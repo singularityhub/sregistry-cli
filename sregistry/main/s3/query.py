@@ -20,7 +20,7 @@ def search(self, query=None, args=None):
 
     [empty]             list all container collections
     vsoch/dinosaur      look for containers with name vsoch/dinosaur
-    
+
     """
 
     if query is not None:
@@ -37,11 +37,11 @@ def search(self, query=None, args=None):
 
 def search_all(self, quiet=False):
     """a "show all" search that doesn't require a query
-       
-       Parameters
-       ==========
-       quiet: if quiet is True, we only are using the function to return
-              rows of results.
+
+    Parameters
+    ==========
+    quiet: if quiet is True, we only are using the function to return
+           rows of results.
     """
 
     results = []

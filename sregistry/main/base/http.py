@@ -22,8 +22,7 @@ import sys
 
 def delete(self, url, headers=None, return_json=True, default_headers=True):
 
-    """delete request, use with caution
-    """
+    """delete request, use with caution"""
     bot.debug("DELETE %s" % url)
     return self._call(
         url,
@@ -35,19 +34,18 @@ def delete(self, url, headers=None, return_json=True, default_headers=True):
 
 
 def head(self, url):
-    """head request, typically used for status code retrieval, etc.
-    """
+    """head request, typically used for status code retrieval, etc."""
     bot.debug("HEAD %s" % url)
     return self._call(url, func=requests.head)
 
 
 def healthy(self, url):
     """determine if a resource is healthy based on an accepted response (200)
-       or redirect (301)
+    or redirect (301)
 
-       Parameters
-       ==========
-       url: the URL to check status for, based on the status_code of HEAD
+    Parameters
+    ==========
+    url: the URL to check status for, based on the status_code of HEAD
 
     """
     response = requests.get(url)
@@ -60,8 +58,7 @@ def healthy(self, url):
 
 def put(self, url, headers=None, data=None, return_json=True, default_headers=True):
 
-    """put request
-    """
+    """put request"""
     bot.debug("PUT %s" % url)
     return self._call(
         url,
@@ -75,8 +72,7 @@ def put(self, url, headers=None, data=None, return_json=True, default_headers=Tr
 
 def post(self, url, headers=None, data=None, return_json=True, default_headers=True):
 
-    """post will use requests to get a particular url
-    """
+    """post will use requests to get a particular url"""
 
     bot.debug("POST %s" % url)
     return self._call(
@@ -100,8 +96,7 @@ def get(
     quiet=False,
 ):
 
-    """get will use requests to get a particular url
-    """
+    """get will use requests to get a particular url"""
     bot.debug("GET %s" % url)
     return self._call(
         url,
@@ -115,8 +110,7 @@ def get(
 
 
 def paginate_get(self, url, headers=None, return_json=True, start_page=None):
-    """paginate_call is a wrapper for get to paginate results
-    """
+    """paginate_call is a wrapper for get to paginate results"""
 
     geturl = "%s&page=1" % (url)
     if start_page is not None:
@@ -138,9 +132,9 @@ def paginate_get(self, url, headers=None, return_json=True, start_page=None):
 
 def verify(self):
     """
-       verify will return a True or False to determine to verify the
-       requests call or not. If False, we should the user a warning message,
-       as this should not be done in production!
+    verify will return a True or False to determine to verify the
+    requests call or not. If False, we should the user a warning message,
+    as this should not be done in production!
 
     """
     from sregistry.defaults import DISABLE_SSL_CHECK
@@ -155,13 +149,13 @@ def download(self, url, file_name, headers=None, show_progress=True):
 
     """stream to a temporary file, rename on successful completion
 
-        Parameters
-        ==========
-        file_name: the file name to stream to
-        url: the url to stream from
-        headers: additional headers to add
-        force: If the final image exists, don't overwrite
-        show_progress: boolean to show progress bar
+    Parameters
+    ==========
+    file_name: the file name to stream to
+    url: the url to stream from
+    headers: additional headers to add
+    force: If the final image exists, don't overwrite
+    show_progress: boolean to show progress bar
     """
 
     tmp_file = get_tmpfile(prefix="%s.tmp." % file_name)
@@ -194,18 +188,18 @@ def stream(
     show_progress=True,
 ):
     """
-        stream is a get that will stream to file_name. This stream is intended
-        to take a url and (optionally) a set of headers and file to stream to,
-        and will generate a response with requests.get.
+    stream is a get that will stream to file_name. This stream is intended
+    to take a url and (optionally) a set of headers and file to stream to,
+    and will generate a response with requests.get.
 
-        Parameters
-        ==========
-        url: the url to do a requests.get to
-        headers: any updated headers to use for the requets
-        stream_to: the file to stream to
-        show_progress: boolean to show progress bar
-        retry: should the client retry? (intended for use after token refresh)
-               by default we retry once after token refresh, then fail.
+    Parameters
+    ==========
+    url: the url to do a requests.get to
+    headers: any updated headers to use for the requets
+    stream_to: the file to stream to
+    show_progress: boolean to show progress bar
+    retry: should the client retry? (intended for use after token refresh)
+           by default we retry once after token refresh, then fail.
     """
     bot.debug("GET %s" % url)
 
@@ -233,17 +227,17 @@ def stream(
 
 def stream_response(self, response, stream_to=None, show_progress=True):
     """
-       stream response is one level higher up than stream, starting with a 
-       response object and then performing the stream without making the
-       requests.get. The expectation is that the request was successful 
-       (status code 20*).
-       show_progress: boolean to show progress bar
+    stream response is one level higher up than stream, starting with a
+    response object and then performing the stream without making the
+    requests.get. The expectation is that the request was successful
+    (status code 20*).
+    show_progress: boolean to show progress bar
 
-       Parameters
-       ==========
-       response: a response that is ready to be iterated over to download in
-                 streamed chunks
-       stream_to: the file to stream to
+    Parameters
+    ==========
+    response: a response that is ready to be iterated over to download in
+              streamed chunks
+    stream_to: the file to stream to
 
 
     """
@@ -294,16 +288,16 @@ def call(
 ):
 
     """call will issue the call, and issue a refresh token
-       given a 401 response, and if the client has a _update_token function
+    given a 401 response, and if the client has a _update_token function
 
-       Parameters
-       ==========
-       func: the function (eg, post, get) to call
-       url: the url to send file to
-       headers: if not None, update the client self.headers with dictionary
-       data: additional data to add to the request
-       return_json: return json if successful
-       default_headers: use the client's self.headers (default True)
+    Parameters
+    ==========
+    func: the function (eg, post, get) to call
+    url: the url to send file to
+    headers: if not None, update the client self.headers with dictionary
+    data: additional data to add to the request
+    return_json: return json if successful
+    default_headers: use the client's self.headers (default True)
 
     """
 

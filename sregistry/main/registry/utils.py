@@ -16,8 +16,7 @@ import sys
 
 
 def _encode(item):
-    """make sure an item is bytes for the digest
-    """
+    """make sure an item is bytes for the digest"""
     if not isinstance(item, bytes):
         item = item.encode("utf-8")
     return item
@@ -50,8 +49,8 @@ def generate_credential(s):
 
 def generate_header_signature(secret, payload, request_type):
     """Authorize a client based on encrypting the payload with the client
-       secret, timestamp, and other metadata
-     """
+    secret, timestamp, and other metadata
+    """
 
     # Use the payload to generate a digest   push|collection|name|tag|user
     timestamp = generate_timestamp()

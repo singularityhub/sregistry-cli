@@ -16,14 +16,14 @@ import sys
 
 def require_secrets(self, params=None):
     """require secrets ensures that the client has the secrets file, and
-       specifically has one or more parameters defined. If params is None,
-       only a check is done for the file.
+    specifically has one or more parameters defined. If params is None,
+    only a check is done for the file.
 
-       Parameters
-       ==========
-       params: a list of keys to lookup in the client secrets, eg:
- 
-         secrets[client_name][params1] should not be in [None,''] or not set
+    Parameters
+    ==========
+    params: a list of keys to lookup in the client secrets, eg:
+
+      secrets[client_name][params1] should not be in [None,''] or not set
 
     """
     name = self.client_name
@@ -71,13 +71,13 @@ def require_secrets(self, params=None):
 
 def auth_flow(self, url):
     """auth flow is a function to present the user with a url to retrieve
-       some token/code, and then copy paste it back in the terminal.
+    some token/code, and then copy paste it back in the terminal.
 
-        Parameters
-        ==========
-        url should be a url that is generated for the user to go to and accept
-        getting a credential in the browser.
-    
+     Parameters
+     ==========
+     url should be a url that is generated for the user to go to and accept
+     getting a credential in the browser.
+
     """
     print("Please go to this URL and login: {0}".format(url))
     get_input = getattr(__builtins__, "raw_input", input)

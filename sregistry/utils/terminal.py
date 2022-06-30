@@ -20,14 +20,14 @@ import os
 
 def get_singularity_version(singularity_version=None):
     """get_singularity_version will determine the singularity version for a
-       build first, an environmental variable is looked at, followed by 
-       using the system version.
+    build first, an environmental variable is looked at, followed by
+    using the system version.
 
-       Parameters
-       ==========
-       singularity_version: if not defined, look for in environment. If still
-       not find, try finding via executing --version to Singularity. Only return
-       None if not set in environment or installed.
+    Parameters
+    ==========
+    singularity_version: if not defined, look for in environment. If still
+    not find, try finding via executing --version to Singularity. Only return
+    None if not set in environment or installed.
     """
 
     if singularity_version is None:
@@ -52,7 +52,7 @@ def get_singularity_version(singularity_version=None):
 
 def which(software=None, strip_newline=True):
     """get_install will return the path to where Singularity (or another
-       executable) is installed.
+    executable) is installed.
     """
     if software is None:
         software = "singularity"
@@ -69,13 +69,13 @@ def which(software=None, strip_newline=True):
 
 def check_install(software=None, quiet=True):
     """check_install will attempt to run the singularity command, and
-       return True if installed. The command line utils will not run 
-       without this check.
+    return True if installed. The command line utils will not run
+    without this check.
 
-       Parameters
-       ==========
-       software: the software to check if installed
-       quiet: should we be quiet? (default True)
+    Parameters
+    ==========
+    software: the software to check if installed
+    quiet: should we be quiet? (default True)
     """
     if software is None:
         software = "singularity"
@@ -93,14 +93,13 @@ def check_install(software=None, quiet=True):
 
 
 def get_installdir():
-    """get_installdir returns the installation directory of the application
-    """
+    """get_installdir returns the installation directory of the application"""
     return os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
 def get_thumbnail():
     """return the robot.png thumbnail from the database folder.
-       if the user has exported a different image, use that instead.
+    if the user has exported a different image, use that instead.
     """
     from sregistry.defaults import SREGISTRY_THUMBNAIL
 
@@ -142,10 +141,10 @@ def run_command(cmd, sudo=False):
 def confirm_action(question, force=False):
     """confirm if the user wants to perform a certain action
 
-       Parameters
-       ==========
-       question: the question that will be asked
-       force: if the user wants to skip the prompt
+    Parameters
+    ==========
+    question: the question that will be asked
+    force: if the user wants to skip the prompt
     """
     if force is True:
         return True
@@ -163,9 +162,9 @@ def confirm_action(question, force=False):
 def confirm_delete(filename, force=False):
     """confirm if the user wants to delete a file
 
-       Parameters
-       ==========
-       filename: the file that will be removed
-       force: if the user wants to skip the prompt
+    Parameters
+    ==========
+    filename: the file that will be removed
+    force: if the user wants to skip the prompt
     """
     return confirm_action("Are you sure you want to remove {}?".format(filename), force)

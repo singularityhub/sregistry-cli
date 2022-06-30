@@ -16,10 +16,10 @@ import os
 
 def get_credential_cache():
     """if the user has specified settings to provide a cache for credentials
-       files, initialize it. The root for the folder is created if it doesn't
-       exist. The path for the specific client is returned, and it's
-       not assumed to be either a folder or a file (this is up to the
-       developer of the client).
+    files, initialize it. The root for the folder is created if it doesn't
+    exist. The path for the specific client is returned, and it's
+    not assumed to be either a folder or a file (this is up to the
+    developer of the client).
     """
     from sregistry.defaults import CREDENTIAL_CACHE, SREGISTRY_CLIENT
 
@@ -43,16 +43,15 @@ def get_credential_cache():
 
 
 def _default_client_secrets():
-    """return default client secrets, including singularity hub base
-    """
+    """return default client secrets, including singularity hub base"""
     client_secrets = {"hub": {"base": "https://singularity-hub.org/api"}}
     return client_secrets
 
 
 def update_client_secrets(backend, updates, secrets=None, save=True):
     """update client secrets will update the data structure for a particular
-       authentication. This should only be used for a (quasi permanent) token
-       or similar. The secrets file, if found, is updated and saved by default.
+    authentication. This should only be used for a (quasi permanent) token
+    or similar. The secrets file, if found, is updated and saved by default.
     """
     if secrets is None:
         secrets = read_client_secrets()
@@ -71,8 +70,8 @@ def update_client_secrets(backend, updates, secrets=None, save=True):
 
 def read_client_secrets():
     """for private or protected registries, a client secrets file is required
-       to be located at .sregistry. If no secrets are found, we use default
-       of Singularity Hub, and return a dummy secrets.
+    to be located at .sregistry. If no secrets are found, we use default
+    of Singularity Hub, and return a dummy secrets.
     """
     client_secrets = _default_client_secrets()
 
@@ -94,7 +93,7 @@ def read_client_secrets():
 
 def get_secrets_file():
     """Sniff the environment and standard location for client
-       secrets file. Otherwise, return None
+    secrets file. Otherwise, return None
     """
     from sregistry.defaults import SREGISTRY_CLIENT_SECRETS
 

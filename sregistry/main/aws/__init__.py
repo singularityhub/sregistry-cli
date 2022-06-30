@@ -33,10 +33,10 @@ from .pull import pull, _pull
 class Client(ApiConnection):
     def __init__(self, secrets=None, **kwargs):
         """to work with nvidia container registry. If you need help with
-           their API, the best reference is:
+        their API, the best reference is:
 
-           https://docs.aws.amazon.com/AmazonECR/latest/APIReference/ecr-api.pdf
- 
+        https://docs.aws.amazon.com/AmazonECR/latest/APIReference/ecr-api.pdf
+
         """
         self.reverseLayers = False
         self._reset_headers()
@@ -47,7 +47,7 @@ class Client(ApiConnection):
 
     def _reset_headers(self):
         """reset headers is called from update_headers, and will update the
-           headers based on what is found with the client secrets
+        headers based on what is found with the client secrets
         """
 
         # specify wanting version 2 schema
@@ -65,8 +65,8 @@ class Client(ApiConnection):
 
     def _set_base(self, zone=None):
         """set the API base or default to use Docker Hub. The user is able
-           to set the base, api version, and protocol via a settings file
-           of environment variables:
+        to set the base, api version, and protocol via a settings file
+        of environment variables:
         """
         if hasattr(self.aws._client_config, "region_name"):
             zone = self.aws._client_config.region_name
@@ -90,11 +90,11 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         """update secrets will take a secrets credential file
-           either located at .sregistry or the environment variable
-           SREGISTRY_CLIENT_SECRETS and update the current client 
-           secrets as well as the associated API base. For the case of
-           using Docker Hub, if we find a .docker secrets file, we update
-           from there.
+        either located at .sregistry or the environment variable
+        SREGISTRY_CLIENT_SECRETS and update the current client
+        secrets as well as the associated API base. For the case of
+        using Docker Hub, if we find a .docker secrets file, we update
+        from there.
         """
         bot.debug("Creating aws client...")
         try:

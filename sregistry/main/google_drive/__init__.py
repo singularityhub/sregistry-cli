@@ -36,14 +36,13 @@ class Client(ApiConnection):
         super(Client, self).__init__(**kwargs)
 
     def _speak(self):
-        """add the bucket name to be printed to the user at appropriate times
-        """
+        """add the bucket name to be printed to the user at appropriate times"""
         bot.info("[folder][%s]" % self._base)
 
     def _update_secrets(self):
         """The user is required to have an application secrets file in his
-           or her environment. The client exists with error 
-           if the variable isn't found.
+        or her environment. The client exists with error
+        if the variable isn't found.
         """
         env = "SREGISTRY_GOOGLE_DRIVE_CREDENTIALS"
         self._secrets = self._get_and_update_setting(env)
@@ -60,8 +59,8 @@ class Client(ApiConnection):
 
     def _init_client(self):
         """init client will check if the user has defined a bucket that
-           differs from the default, use the application credentials to 
-           get the bucket, and then instantiate the client.
+        differs from the default, use the application credentials to
+        get the bucket, and then instantiate the client.
         """
         self._scope = "https://www.googleapis.com/auth/drive"
         self._service = self._get_service()

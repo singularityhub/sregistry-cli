@@ -16,20 +16,17 @@ from sregistry.logger import bot
 
 
 def get_headers(self):
-    """simply return the headers
-    """
+    """simply return the headers"""
     return self.headers
 
 
 def reset_headers(self):
-    """reset headers to a reasonable default to specify content type of json
-    """
+    """reset headers to a reasonable default to specify content type of json"""
     self.headers = {"Content-Type": "application/json"}
 
 
 def update_headers(self, fields=None):
-    """update headers with a token & other fields
-    """
+    """update headers with a token & other fields"""
     do_reset = True
     if hasattr(self, "headers"):
         if self.headers is not None:

@@ -14,7 +14,7 @@ from sregistry.logger import bot
 
 def share(self, query, share_to=None):
     """share will use the client to get a shareable link for an image of choice.
-       the functions returns a url of choice to send to a recipient.
+    the functions returns a url of choice to send to a recipient.
     """
 
     names = parse_image_name(remove_uri(query))

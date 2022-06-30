@@ -19,11 +19,11 @@ import os
 
 def get_settings(self, client_name=None):
     """get all settings, either for a particular client if a name is provided,
-       or across clients.
+    or across clients.
 
-       Parameters
-       ==========
-       client_name: the client name to return settings for (optional)
+    Parameters
+    ==========
+    client_name: the client name to return settings for (optional)
 
     """
     settings = read_client_secrets()
@@ -34,12 +34,12 @@ def get_settings(self, client_name=None):
 
 def get_setting(self, name, default=None):
     """return a setting from the environment (first priority) and then
-       secrets (second priority) if one can be found. If not, return None.
+    secrets (second priority) if one can be found. If not, return None.
 
-       Parameters
-       ==========
-       name: they key (index) of the setting to look up
-       default: (optional) if not found, return default instead.
+    Parameters
+    ==========
+    name: they key (index) of the setting to look up
+    default: (optional) if not found, return default instead.
     """
 
     # First priority is the environment
@@ -60,18 +60,18 @@ def get_setting(self, name, default=None):
 
 def get_and_update_setting(self, name, default=None):
     """Look for a setting in the environment (first priority) and then
-       the settings file (second). If something is found, the settings
-       file is updated. The order of operations works as follows:
+    the settings file (second). If something is found, the settings
+    file is updated. The order of operations works as follows:
 
-       1. The .sregistry settings file is used as a cache for the variable
-       2. the environment variable always takes priority to cache, and if
-          found, will update the cache.
-       3. If the variable is not found and the cache is set, we are good
-       5. If the variable is not found and the cache isn't set, return
-          default (default is None)
+    1. The .sregistry settings file is used as a cache for the variable
+    2. the environment variable always takes priority to cache, and if
+       found, will update the cache.
+    3. If the variable is not found and the cache is set, we are good
+    5. If the variable is not found and the cache isn't set, return
+       default (default is None)
 
-       So the user of the function can assume a return of None equates to
-       not set anywhere, and take the appropriate action.
+    So the user of the function can assume a return of None equates to
+    not set anywhere, and take the appropriate action.
     """
 
     setting = self._get_setting(name)
@@ -89,7 +89,7 @@ def get_and_update_setting(self, name, default=None):
 
 def required_get_and_update(self, name, default=None):
     """a wrapper to get_and_update, but if not successful, will print an
-       error and exit.
+    error and exit.
     """
     setting = self._get_and_update_setting(name, default=None)
     if setting in [None, ""]:
@@ -98,8 +98,7 @@ def required_get_and_update(self, name, default=None):
 
 
 def update_setting(self, name, value):
-    """Just update a setting, doesn't need to be returned.
-    """
+    """Just update a setting, doesn't need to be returned."""
 
     if value is not None:
         updates = {name: value}
@@ -108,11 +107,11 @@ def update_setting(self, name, value):
 
 def get_storage_name(self, names, remove_dir=False):
     """use a parsed names dictionary from get_image_name (above) to return
-       the path in storage based on the user's preferences
+    the path in storage based on the user's preferences
 
-       Parameters
-       ==========
-       names: the output from parse_image_name
+    Parameters
+    ==========
+    names: the output from parse_image_name
     """
     storage_folder = os.path.join(names["collection"], names["image"])
     storage_filename = names["storage"].replace(storage_folder, "", 1).strip(":")

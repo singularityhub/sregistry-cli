@@ -36,7 +36,7 @@ class Client(ApiConnection):
                 self.base = "%s/api" % self.base
 
     def _read_response(self, response, field="detail"):
-        """attempt to read the detail provided by the response. If none, 
+        """attempt to read the detail provided by the response. If none,
         default to using the reason"""
 
         try:
@@ -47,12 +47,12 @@ class Client(ApiConnection):
 
     def _add_https(self, q):
         """for push, pull, and other api interactions, the user can optionally
-           define a custom registry. If the registry name doesn't include http
-           or https, add it.
- 
-           Parameters
-           ==========
-           q: the parsed image query (names), including the original
+        define a custom registry. If the registry name doesn't include http
+        or https, add it.
+
+        Parameters
+        ==========
+        q: the parsed image query (names), including the original
         """
 
         # If image uses http or https, add back
@@ -79,9 +79,9 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         """update secrets will use the SREGISTRY_REGISTRY_BASE to determine which API base url
-           to use for the registry. If not present, the .sregistry secrets credential file
-           either located at $HOME/.sregistry or the environment variable
-           SREGISTRY_CLIENT_SECRETS will be used instead.
+        to use for the registry. If not present, the .sregistry secrets credential file
+        either located at $HOME/.sregistry or the environment variable
+        SREGISTRY_CLIENT_SECRETS will be used instead.
         """
         self.base = self._get_and_update_setting("SREGISTRY_REGISTRY_BASE")
 

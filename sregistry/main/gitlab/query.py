@@ -19,8 +19,8 @@ except:
 
 
 def search(self, query=None, args=None):
-    """query a GitLab artifacts folder for a list of images. 
-     If query is None, collections are listed. 
+    """query a GitLab artifacts folder for a list of images.
+    If query is None, collections are listed.
     """
     if query is None:
         bot.exit("You must include a collection query, <collection>/<repo>")
@@ -31,7 +31,7 @@ def search(self, query=None, args=None):
 
 def search_all(self, collection, job_id=None):
     """a "show all" search that doesn't require a query
-       the user is shown URLs to 
+    the user is shown URLs to
     """
 
     results = [["job_id", "browser"]]

@@ -63,12 +63,12 @@ class ApiConnection(object):
 
     def _client_tagged(self, tags):
         """ensure that the client name is included in a list of tags. This is
-           important for matching builders to the correct client. We exit
-           on fail.
-            
-           Parameters
-           ==========
-           tags: a list of tags to look for client name in
+        important for matching builders to the correct client. We exit
+        on fail.
+
+        Parameters
+        ==========
+        tags: a list of tags to look for client name in
 
         """
 
@@ -81,10 +81,10 @@ class ApiConnection(object):
 
     def speak(self):
         """
-           a function for the client to announce him or herself, depending
-           on the level specified. If you want your client to have additional
-           announced things here, then implement the class `_speak` for your
-           client.
+        a function for the client to announce him or herself, depending
+        on the level specified. If you want your client to have additional
+        announced things here, then implement the class `_speak` for your
+        client.
 
         """
         if self.quiet is False:
@@ -95,16 +95,16 @@ class ApiConnection(object):
 
     def _speak(self):
         """this function should be subclassed if the client has additional
-           information to give the user, beyond it's name and the database
-           location. Be careful about adding extra prints to various functions
-           because with a command like "get" the expectation is to print a
-           download url (and nothing else)
+        information to give the user, beyond it's name and the database
+        location. Be careful about adding extra prints to various functions
+        because with a command like "get" the expectation is to print a
+        download url (and nothing else)
         """
         pass  # pylint: disable=unnecessary-pass
 
     def announce(self, command=None):
         """the client will announce itself given that a command is not in a
-           particular predefined list.
+        particular predefined list.
         """
         if command is not None:
             if command not in ["get"] and self.quiet is False:

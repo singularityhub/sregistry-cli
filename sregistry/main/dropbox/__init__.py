@@ -28,22 +28,22 @@ class Client(ApiConnection):
 
     def _speak(self):
         """if you want to add an extra print (of a parameter, for example)
-           for the user when the client initalizes, write it here, eg:
-           bot.info('[setting] value')
+        for the user when the client initalizes, write it here, eg:
+        bot.info('[setting] value')
         """
         if hasattr(self, "account"):
             bot.info("connected to %s" % self.account.name.display_name)
 
     def _get_metadata(self, image_file=None, dbx_metadata=None):
         """this is a wrapper around the main client.get_metadata to first parse
-           a Dropbox FileMetadata into a dicionary, then pass it on to the 
-           primary get_metadata function.
+        a Dropbox FileMetadata into a dicionary, then pass it on to the
+        primary get_metadata function.
 
-           Parameters
-           ==========
-           image_file: the full path to the image file that had metadata
-                       extracted
-           metadata: the Dropbox FileMetadata to parse.
+        Parameters
+        ==========
+        image_file: the full path to the image file that had metadata
+                    extracted
+        metadata: the Dropbox FileMetadata to parse.
 
         """
         metadata = dict()
@@ -58,8 +58,8 @@ class Client(ApiConnection):
 
     def _update_secrets(self):
         """update secrets will look for a dropbox token in the environment at
-           SREGISTRY_DROPBOX_TOKEN and if found, create a client. If not,
-           an error message is returned and the client exits.
+        SREGISTRY_DROPBOX_TOKEN and if found, create a client. If not,
+        an error message is returned and the client exits.
         """
 
         # Retrieve the user token. Exit if not found

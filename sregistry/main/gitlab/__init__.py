@@ -25,8 +25,7 @@ class Client(ApiConnection):
         self._update_base()
 
     def _update_base(self):
-        """update the base, including the URL for GitLab and the API endpoint.
-        """
+        """update the base, including the URL for GitLab and the API endpoint."""
         self.base = self._get_and_update_setting(
             "SREGISTRY_GITLAB_BASE", "https://gitlab.com/"
         )
@@ -42,8 +41,7 @@ class Client(ApiConnection):
         bot.debug("      Job: %s" % self.job)
 
     def _update_secrets(self):
-        """update secrets will update metadata needed for pull and search
-        """
+        """update secrets will update metadata needed for pull and search"""
         self.token = self._required_get_and_update("SREGISTRY_GITLAB_TOKEN")
         if self.headers is None:
             self.headers = {}
@@ -54,7 +52,7 @@ class Client(ApiConnection):
 
     def _get_metadata(self):
         """since the user needs a job id and other parameters, save this
-           for them.
+        for them.
         """
         metadata = {
             "SREGISTRY_GITLAB_FOLDER": self.artifacts,
@@ -65,14 +63,14 @@ class Client(ApiConnection):
         return metadata
 
     def artifact_to_tag(self, filename):
-        """since the artifacts represent tags in GitLab (e.g., Singularity 
-           converts to latest, others in format Singularity.<tag>.simg
-           convert to <tag> this function provides a consistent means to do
-           that conversion across the library. 
+        """since the artifacts represent tags in GitLab (e.g., Singularity
+        converts to latest, others in format Singularity.<tag>.simg
+        convert to <tag> this function provides a consistent means to do
+        that conversion across the library.
 
-           Parameters
-           ==========
-           filename: the filename in storage to return
+        Parameters
+        ==========
+        filename: the filename in storage to return
         """
         if filename == "Singularity.simg":
             return "latest"
@@ -80,18 +78,18 @@ class Client(ApiConnection):
 
     def _parse_image_name(self, image, retry=True):
         """starting with an image string in either of the following formats:
-           job_id|collection
-           job_id|collection|job_name
- 
-           Parse the job_name, job_id, and collection uri from it. If the user
-           provides the first option, we use the job_name set by the client
-           (default is build).
- 
-           Parameters
-           ==========
-           image: the string to parse, with values separated by |
-           retry: the client can call itself recursively once, providing the
-                  default job_name if the user doesn't.
+        job_id|collection
+        job_id|collection|job_name
+
+        Parse the job_name, job_id, and collection uri from it. If the user
+        provides the first option, we use the job_name set by the client
+        (default is build).
+
+        Parameters
+        ==========
+        image: the string to parse, with values separated by |
+        retry: the client can call itself recursively once, providing the
+               default job_name if the user doesn't.
         """
         try:
             job_id, collection, job_name = image.split(",")

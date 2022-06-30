@@ -1,6 +1,6 @@
 """
 
-Copyright (C) 2017-2021 Vanessa Sochat.
+Copyright (C) 2017-2022 Vanessa Sochat.
 
 This Source Code Form is subject to the terms of the
 Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -51,15 +51,14 @@ class Client(ApiConnection):
 
     def _init_clients(self):
         """init_ cliends will obtain the tranfer and access tokens, and then
-           use them to create a transfer client.
+        use them to create a transfer client.
         """
 
         self._client = globus_sdk.NativeAppAuthClient(self._client_id)
         self._load_secrets()
 
     def _load_secrets(self):
-        """load the secrets credentials file with the Globus OAuthTokenResponse
-        """
+        """load the secrets credentials file with the Globus OAuthTokenResponse"""
 
         # Second priority: load from cache
 
@@ -70,7 +69,7 @@ class Client(ApiConnection):
 
     def _tokens_need_update(self):
         """return boolean True or False if the client tokens (self._auth and
-           self._transfer) need updating.
+        self._transfer) need updating.
         """
 
         # Assumes that auth and transfer have same refresh time
@@ -83,10 +82,10 @@ class Client(ApiConnection):
 
     def _update_tokens(self):
         """Present the client with authentication flow to get tokens from code.
-           This simply updates the client _response to be used to get tokens
-           for auth and transfer (both use access_token as index). We call
-           this not on client initialization, but when the client is actually
-           needed.
+        This simply updates the client _response to be used to get tokens
+        for auth and transfer (both use access_token as index). We call
+        this not on client initialization, but when the client is actually
+        needed.
         """
 
         self._client.oauth2_start_flow(refresh_tokens=True)

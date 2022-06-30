@@ -19,15 +19,15 @@ import os
 
 def push(self, path, name, tag=None):
     """push an image to your Dropbox
-   
-       Parameters
-       ==========
-       path: should correspond to an absolute image path (or derive it)
-       name: should be the complete uri that the user has requested to push.
-       tag: should correspond with an image tag. This is provided to mirror Docker
 
-       if the image is less than 150MB, the standard file_upload is used. If
-       larger, the image is uploaded in chunks with a progress bar.
+    Parameters
+    ==========
+    path: should correspond to an absolute image path (or derive it)
+    name: should be the complete uri that the user has requested to push.
+    tag: should correspond with an image tag. This is provided to mirror Docker
+
+    if the image is less than 150MB, the standard file_upload is used. If
+    larger, the image is uploaded in chunks with a progress bar.
 
     """
     path = os.path.abspath(path)

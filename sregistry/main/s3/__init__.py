@@ -40,7 +40,7 @@ class Client(ApiConnection):
         return type(self)
 
     def _read_response(self, response, field="detail"):
-        """attempt to read the detail provided by the response. If none, 
+        """attempt to read the detail provided by the response. If none,
         default to using the reason"""
 
         try:
@@ -51,14 +51,14 @@ class Client(ApiConnection):
 
     def get_bucket_name(self):
         """get or return the s3 bucket name. If not yet defined via an environment
-           variable or setting, we create a name with the pattern.
-                    sregistry-<robotnamer>-<1234>
+        variable or setting, we create a name with the pattern.
+                 sregistry-<robotnamer>-<1234>
 
-           You can use the following environment variables to determine
-           interaction with the bucket:
-           
-           SREGISTRY_S3_BUCKET: the bucket name (all lowercase, no underscore)
-           
+        You can use the following environment variables to determine
+        interaction with the bucket:
+
+        SREGISTRY_S3_BUCKET: the bucket name (all lowercase, no underscore)
+
         """
         # Get bucket name
         bucket_name = "sregistry-%s" % RobotNamer().generate()
@@ -68,7 +68,7 @@ class Client(ApiConnection):
 
     def get_bucket(self):
         """given a bucket name and a client that is initialized, get or
-           create the bucket.
+        create the bucket.
         """
         for attr in ["bucket_name", "s3"]:
             if not hasattr(self, attr):
@@ -121,13 +121,13 @@ class Client(ApiConnection):
 
     def get_resource(self):
         """use the user provided endpoint and keys (from environment) to
-           connect to the resource. We can share the aws environment
-           variables:
+        connect to the resource. We can share the aws environment
+        variables:
 
-           AWS_ACCESS_KEY_ID
-           AWS_SECRET_ACCESS_KEY
+        AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY
 
-           https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
+        https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
         """
 
         # s3.ServiceResource()
@@ -145,7 +145,7 @@ class Client(ApiConnection):
 
     def _update_secrets(self, base=None):
         """update secrets will update/get the base for the server, along
-           with the bucket name, defaulting to sregistry.
+        with the bucket name, defaulting to sregistry.
         """
         # We are required to have a base, either from environment or terminal
         self.base = self._get_and_update_setting("SREGISTRY_S3_BASE", self.base)

@@ -19,11 +19,11 @@ import tarfile
 
 def get_template(name):
     """return a default template for some function in sregistry
-       If there is no template, None is returned.
+    If there is no template, None is returned.
 
-       Parameters
-       ==========
-       name: the name of the template to retrieve
+    Parameters
+    ==========
+    name: the name of the template to retrieve
 
     """
     name = name.lower()
@@ -46,10 +46,10 @@ def get_template(name):
 
 def create_tar(files, output_folder=None):
     """create_memory_tar will take a list of files (each a dictionary
-        with name, permission, and content) and write the tarfile
-        (a sha256 sum name is used) to the output_folder.
-        If there is no output folde specified, the
-        tar is written to a temporary folder.
+    with name, permission, and content) and write the tarfile
+    (a sha256 sum name is used) to the output_folder.
+    If there is no output folde specified, the
+    tar is written to a temporary folder.
     """
     if output_folder is None:
         output_folder = tempfile.mkdtemp()
@@ -108,8 +108,7 @@ def create_tar(files, output_folder=None):
 
 
 def get_content_hash(contents):
-    """get_content_hash will return a hash for a list of content (bytes/other)
-    """
+    """get_content_hash will return a hash for a list of content (bytes/other)"""
     hasher = hashlib.sha256()
     for content in contents:
         if isinstance(content, io.BytesIO):

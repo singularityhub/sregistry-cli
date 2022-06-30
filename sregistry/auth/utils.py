@@ -21,7 +21,7 @@ def basic_auth_header(username, password):
     ==========
     username: the username
     password: the password
-   
+
     """
     s = "%s:%s" % (username, password)
     if sys.version_info[0] >= 3:

@@ -13,11 +13,11 @@ import os
 
 def get_or_create_folder(self, folder):
     """create a folder at the drive root. If the folder already exists,
-       it is simply returned.
+    it is simply returned.
 
-           folder = self._get_or_create_folder(self._base)
-           $ folder
-             {'id': '1pXR5S8wufELh9Q-jDkhCoYu-BL1NqN9y'}
+        folder = self._get_or_create_folder(self._base)
+        $ folder
+          {'id': '1pXR5S8wufELh9Q-jDkhCoYu-BL1NqN9y'}
 
     """
     q = "mimeType='application/vnd.google-apps.folder' and name='%s'" % folder
@@ -34,9 +34,9 @@ def get_or_create_folder(self, folder):
 
 
 def create_folder(self, folder):
-    """create a folder with a particular name. Be careful, if the folder 
-       already exists you can still create one (a different one) with
-       the equivalent name!
+    """create a folder with a particular name. Be careful, if the folder
+    already exists you can still create one (a different one) with
+    the equivalent name!
     """
     folder_metadata = {
         "name": os.path.basename(folder),

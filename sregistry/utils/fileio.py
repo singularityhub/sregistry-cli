@@ -39,15 +39,15 @@ def mkdir_p(path):
 
 def get_tmpfile(requested_tmpdir=None, prefix=""):
     """get a temporary file with an optional prefix. By default will be
-       created in /tmp unless SREGISTRY_TMPDIR is set. By default, the file
-       is closed (and just a name returned).
+    created in /tmp unless SREGISTRY_TMPDIR is set. By default, the file
+    is closed (and just a name returned).
 
-       Parameters
-       ==========
-       requested_tmpdir: an optional requested temporary directory, first
-       priority as is coming from calling function.
-       prefix: Given a need for a sandbox (or similar), prefix the file
-       with this string.
+    Parameters
+    ==========
+    requested_tmpdir: an optional requested temporary directory, first
+    priority as is coming from calling function.
+    prefix: Given a need for a sandbox (or similar), prefix the file
+    with this string.
     """
 
     # First priority for the base goes to the user requested.
@@ -65,15 +65,15 @@ def get_tmpfile(requested_tmpdir=None, prefix=""):
 
 def get_tmpdir(requested_tmpdir=None, prefix="", create=True):
     """get a temporary directory for an operation. If SREGISTRY_TMPDIR
-       is set, return that. Otherwise, return the output of tempfile.mkdtemp
+    is set, return that. Otherwise, return the output of tempfile.mkdtemp
 
-       Parameters
-       ==========
-       requested_tmpdir: an optional requested temporary directory, first
-       priority as is coming from calling function.
-       prefix: Given a need for a sandbox (or similar), we will need to 
-       create a subfolder *within* the SREGISTRY_TMPDIR.
-       create: boolean to determine if we should create folder (True)
+    Parameters
+    ==========
+    requested_tmpdir: an optional requested temporary directory, first
+    priority as is coming from calling function.
+    prefix: Given a need for a sandbox (or similar), we will need to
+    create a subfolder *within* the SREGISTRY_TMPDIR.
+    create: boolean to determine if we should create folder (True)
     """
     from sregistry.defaults import SREGISTRY_TMPDIR
 
@@ -91,8 +91,7 @@ def get_tmpdir(requested_tmpdir=None, prefix="", create=True):
 
 
 def get_userhome():
-    """get the user home based on the effective uid
-    """
+    """get the user home based on the effective uid"""
     return pwd.getpwuid(os.getuid())[5]
 
 
@@ -104,11 +103,11 @@ def get_userhome():
 def extract_tar(archive, output_folder, handle_whiteout=False):
     """extract a tar archive to a specified output folder
 
-        Parameters
-        ==========
-        archive: the archive file to extract
-        output_folder: the output folder to extract to
-        handle_whiteout: use docker2oci variation to handle whiteout files
+    Parameters
+    ==========
+    archive: the archive file to extract
+    output_folder: the output folder to extract to
+    handle_whiteout: use docker2oci variation to handle whiteout files
 
     """
     from .terminal import run_command
@@ -132,13 +131,13 @@ def extract_tar(archive, output_folder, handle_whiteout=False):
 
 def _extract_tar(archive, output_folder):
     """use blob2oci to handle whiteout files for extraction. Credit for this
-       script goes to docker2oci by Olivier Freyermouth, and see script
-       folder for license.
+    script goes to docker2oci by Olivier Freyermouth, and see script
+    folder for license.
 
-       Parameters
-       ==========
-       archive: the archive to extract
-       output_folder the output folder (sandbox) to extract to
+    Parameters
+    ==========
+    archive: the archive to extract
+    output_folder the output folder (sandbox) to extract to
 
     """
     from .terminal import run_command, which
@@ -158,11 +157,11 @@ def _extract_tar(archive, output_folder):
 
 def get_file_hash(image_path, algorithm="sha256"):
     """return an md5 hash of the file based on a criteria level. This
-       is intended to give the file a reasonable version.
-    
-       Parameters
-       ==========
-       image_path: full path to the singularity image
+    is intended to give the file a reasonable version.
+
+    Parameters
+    ==========
+    image_path: full path to the singularity image
 
     """
     try:
@@ -183,8 +182,7 @@ def get_file_hash(image_path, algorithm="sha256"):
 
 
 def copyfile(source, destination, force=True):
-    """copy a file from a source to its destination.
-    """
+    """copy a file from a source to its destination."""
     # Case 1: It's already there, we aren't replacing it :)
     if source == destination and force is False:
         return destination
@@ -199,7 +197,7 @@ def copyfile(source, destination, force=True):
 
 def write_file(filename, content, mode="w"):
     """write_file will open a file, "filename" and write content, "content"
-       and properly close the file
+    and properly close the file
     """
     with open(filename, mode) as filey:
         filey.writelines(content)
@@ -209,11 +207,11 @@ def write_file(filename, content, mode="w"):
 def write_json(json_obj, filename, mode="w", print_pretty=True):
     """write_json will (optionally,pretty print) a json object to file
 
-       Parameters
-       ==========
-       json_obj: the dict to print to json
-       filename: the output file to write to
-       pretty_print: if True, will use nicer formatting
+    Parameters
+    ==========
+    json_obj: the dict to print to json
+    filename: the output file to write to
+    pretty_print: if True, will use nicer formatting
     """
     with open(filename, mode) as filey:
         if print_pretty:
@@ -224,14 +222,13 @@ def write_json(json_obj, filename, mode="w", print_pretty=True):
 
 
 def print_json(json_obj):
-    """ just dump the json in a "pretty print" format
-    """
+    """just dump the json in a "pretty print" format"""
     return json.dumps(json_obj, indent=4, separators=(",", ": "))
 
 
 def read_file(filename, mode="r", readlines=True):
     """write_file will open a file, "filename" and write content, "content"
-       and properly close the file
+    and properly close the file
     """
     with open(filename, mode) as filey:
         if readlines is True:
@@ -243,7 +240,7 @@ def read_file(filename, mode="r", readlines=True):
 
 def read_json(filename, mode="r"):
     """read_json reads in a json file and returns
-       the data structure as dict.
+    the data structure as dict.
     """
     with open(filename, mode) as filey:
         data = json.load(filey)

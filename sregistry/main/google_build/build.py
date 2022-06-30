@@ -60,32 +60,32 @@ def build(
     extra_data=None,
 ):
     """trigger a build on Google Cloud (builder then storage) given a name
-       recipe, and Github URI where the recipe can be found. This means
-       creating and uploading a build package to use for the build.
-    
-       Parameters
-       ==========
-       recipe: the local recipe to build.
-       name: should be the complete uri that the user has requested to push.
-       context: the dependency files needed for the build. If not defined, only
-                the recipe is uploaded.
-       preview: if True, preview but don't run the build
-       working_dir: The working directory for the build. Defaults to pwd.
-       timeout: the number of seconds for the build to timeout. The default 
-                is 3 hours, and the maximum is 24 hours. If unset (None)
-                it will be 10 minutes.
-       webhook: if not None, add a curl POST to finish the build. 
-       headless: If true, don't track the build, but submit and provide
-                 an endpoint to send a response to.
-       extra_data: a dictionary of extra_data to send back to the webhook (they
-                   are passed in the environment)
+    recipe, and Github URI where the recipe can be found. This means
+    creating and uploading a build package to use for the build.
 
-       Environment
-       ===========
-       SREGISTRY_GOOGLE_BUILD_SINGULARITY_VERSION: the version of Singularity
-           to use, defaults to v3.2.1-slim
-       SREGISTRY_GOOGLE_BUILD_CLEANUP: after build, delete intermediate 
-           dependencies in cloudbuild bucket.
+    Parameters
+    ==========
+    recipe: the local recipe to build.
+    name: should be the complete uri that the user has requested to push.
+    context: the dependency files needed for the build. If not defined, only
+             the recipe is uploaded.
+    preview: if True, preview but don't run the build
+    working_dir: The working directory for the build. Defaults to pwd.
+    timeout: the number of seconds for the build to timeout. The default
+             is 3 hours, and the maximum is 24 hours. If unset (None)
+             it will be 10 minutes.
+    webhook: if not None, add a curl POST to finish the build.
+    headless: If true, don't track the build, but submit and provide
+              an endpoint to send a response to.
+    extra_data: a dictionary of extra_data to send back to the webhook (they
+                are passed in the environment)
+
+    Environment
+    ===========
+    SREGISTRY_GOOGLE_BUILD_SINGULARITY_VERSION: the version of Singularity
+        to use, defaults to v3.2.1-slim
+    SREGISTRY_GOOGLE_BUILD_CLEANUP: after build, delete intermediate
+        dependencies in cloudbuild bucket.
 
     """
     bot.debug("BUILD %s" % recipe)
@@ -178,23 +178,23 @@ def build_repo(
     extra_data=None,
 ):
     """trigger a build on Google Cloud (builder then storage) given a
-       Github repo where a recipe can be found. We assume that github.com (or
-       some other Git repo) is provided in the name (repo).
-    
-       Parameters
-       ==========
-       repo: the full repository address
-       recipe: the local recipe to build.
-       headless: if True, return the first response (and don't wait to finish)
-       commit: if not None, check out a commit after clone.
-       branch: if defined, checkout a branch.
-       token: if an authentication token is provided, add to GitHub clone url.
-       timeout: the number of seconds for the build to timeout. The default 
-                is 3 hours, and the maximum is 24 hours. If unset (None)
-                it will be 10 minutes.
-       webhook: if not None, add a curl POST to finish the build. 
-       extra_data: a dictionary of extra_data to send back to the webhook (they
-                   are passed in the environment)
+    Github repo where a recipe can be found. We assume that github.com (or
+    some other Git repo) is provided in the name (repo).
+
+    Parameters
+    ==========
+    repo: the full repository address
+    recipe: the local recipe to build.
+    headless: if True, return the first response (and don't wait to finish)
+    commit: if not None, check out a commit after clone.
+    branch: if defined, checkout a branch.
+    token: if an authentication token is provided, add to GitHub clone url.
+    timeout: the number of seconds for the build to timeout. The default
+             is 3 hours, and the maximum is 24 hours. If unset (None)
+             it will be 10 minutes.
+    webhook: if not None, add a curl POST to finish the build.
+    extra_data: a dictionary of extra_data to send back to the webhook (they
+                are passed in the environment)
     """
     bot.debug("BUILD %s" % recipe)
 
@@ -271,14 +271,14 @@ def build_repo(
 
 def create_build_package(package_files, working_dir=None):
     """given a list of files, copy them to a temporary folder,
-       compress into a .tar.gz, and rename based on the file hash.
-       Return the full path to the .tar.gz in the temporary folder.
+    compress into a .tar.gz, and rename based on the file hash.
+    Return the full path to the .tar.gz in the temporary folder.
 
-       Parameters
-       ==========
-       package_files: a list of files to include in the tar.gz
-       working_dir: If set, the path derived for the recipe and
-                    files is relative to this.
+    Parameters
+    ==========
+    package_files: a list of files to include in the tar.gz
+    working_dir: If set, the path derived for the recipe and
+                 files is relative to this.
 
     """
     # Ensure package files all exist
@@ -308,13 +308,13 @@ def create_build_package(package_files, working_dir=None):
 
 def get_relative_path(filename, working_dir=None):
     """given a filename and a working directory, return
-       a relative path for the builder to use. This means
-       removing the working directory from the filename
+    a relative path for the builder to use. This means
+    removing the working directory from the filename
 
-       Parameters
-       ==========
-       filename: the name of the file to get a path for
-       working_dir: if not None, remove from paths.
+    Parameters
+    ==========
+    filename: the name of the file to get a path for
+    working_dir: if not None, remove from paths.
     """
     relative_path = filename
 
@@ -329,9 +329,9 @@ def get_relative_path(filename, working_dir=None):
 
 
 def add_webhook(config, webhook, extra_data=None):
-    """add a webhook to a config. We assume that the sha256 is calculated in 
-       the present working directory. Optionally, the user can provide
-       extra_data to post back with the build_id.
+    """add a webhook to a config. We assume that the sha256 is calculated in
+    the present working directory. Optionally, the user can provide
+    extra_data to post back with the build_id.
     """
     data = {"id": "$BUILD_ID"}
     substitutions = {}
@@ -364,23 +364,23 @@ def load_build_config(
     prefix="",
 ):
     """load a google compute config, meaning that we start with a template,
-       and mimic the following example cloudbuild.yaml:
+    and mimic the following example cloudbuild.yaml:
 
-        steps:
-        - name: "singularityware/singularity:${_SINGULARITY_VERSION}"
-          args: ['build', 'julia-centos-another.sif', 'julia.def']
-        artifacts:
-          objects:
-            location: 'gs://sregistry-gcloud-build-vanessa'
-            paths: ['julia-centos-another.sif']
+     steps:
+     - name: "singularityware/singularity:${_SINGULARITY_VERSION}"
+       args: ['build', 'julia-centos-another.sif', 'julia.def']
+     artifacts:
+       objects:
+         location: 'gs://sregistry-gcloud-build-vanessa'
+         paths: ['julia-centos-another.sif']
 
 
-        Parameters
-        ==========
-        recipe: the local recipe file for the builder.
-        name: the name of the container, based on the uri
-        template: the template to use, will be populated based on name
-        prefix: a prefix for the storage path, defaults to empty string.
+     Parameters
+     ==========
+     recipe: the local recipe file for the builder.
+     name: the name of the container, based on the uri
+     template: the template to use, will be populated based on name
+     prefix: a prefix for the storage path, defaults to empty string.
     """
     version_envar = "SREGISTRY_GOOGLE_BUILD_SINGULARITY_VERSION"
     version = self._get_and_update_setting(version_envar, version)
@@ -440,8 +440,7 @@ def load_build_config(
 
 
 def run_build(self, config):
-    """run a build, meaning creating a build. Retry if there is failure
-    """
+    """run a build, meaning creating a build. Retry if there is failure"""
 
     response = self._submit_build(config)
     status = response["metadata"]["build"]["status"]
@@ -459,8 +458,7 @@ def run_build(self, config):
 
 
 def submit_build(self, config):
-    """run a build, meaning creating a build. Retry if there is failure
-    """
+    """run a build, meaning creating a build. Retry if there is failure"""
 
     project = self._get_project()
 
@@ -485,7 +483,7 @@ def submit_build(self, config):
 
 def build_status(self, build_id):
     """get a build status based on a build id. We return the entire response
-       object for the client to parse.
+    object for the client to parse.
     """
     project = self._get_project()
     response = (
@@ -505,14 +503,14 @@ def build_status(self, build_id):
 def finish_build(self, build_id, config=None, response=None):
 
     """finish a build, meaning if the build was successful, we check the
-       user preference to make it private. If it's set, we leave it 
-       private. Otherwise, we make it public (default).
+    user preference to make it private. If it's set, we leave it
+    private. Otherwise, we make it public (default).
 
-       Parameters
-       ==========
-       build_id: the build id returned from submission to track the build.
-       config: optionally provide a config to get metadata from for the blob
-       response: if we've already gotten a response status, include here
+    Parameters
+    ==========
+    build_id: the build id returned from submission to track the build.
+    config: optionally provide a config to get metadata from for the blob
+    response: if we've already gotten a response status, include here
     """
     # Get the build status, we will only complete on SUCCESS
     if not response:
@@ -541,12 +539,12 @@ def finish_build(self, build_id, config=None, response=None):
 
 def get_blob_location(response, bucket):
     """return a relative path for a blob based on finding the build step,
-       and the container built from it.
+    and the container built from it.
 
-       Parameters
-       ==========
-       response: the response from client._build_status(build_id)
-       bucket: the name of the build bucket.
+    Parameters
+    ==========
+    response: the response from client._build_status(build_id)
+    bucket: the name of the build bucket.
 
     """
     # Find the build step, it uses singularityware as a builder
@@ -565,8 +563,8 @@ def get_blob_location(response, bucket):
 
 def update_blob_metadata(blob, response, bucket, config=None):
     """a specific function to take a blob, along with a SUCCESS response
-       from Google build, the original config, and update the blob 
-       metadata with the artifact file name, dependencies, and image hash.
+    from Google build, the original config, and update the blob
+    metadata with the artifact file name, dependencies, and image hash.
     """
     metadata = blob.metadata or {}
 

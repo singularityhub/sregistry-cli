@@ -45,7 +45,7 @@ _default_uri = re.compile(
 
 def set_default(item, default, use_default):
     """if an item provided is None and boolean use_default is set to True,
-       return the default. Otherwise, return the item.
+    return the default. Otherwise, return the item.
     """
     if item is None and use_default:
         return default
@@ -66,7 +66,7 @@ def parse_image_name(
 
     """return a collection and repo name and tag
     for an image file.
-    
+
     Parameters
     =========
     image_name: a user provided string indicating a collection,
@@ -74,7 +74,7 @@ def parse_image_name(
     tag: optionally specify tag as its own argument
          over-rides parsed image tag
     defaults: use defaults "latest" for tag and "library"
-              for collection. 
+              for collection.
     base: if defined, remove from image_name, appropriate if the
           user gave a registry url base that isn't part of namespace.
     lowercase: turn entire URI to lowercase (default is True)
@@ -163,11 +163,11 @@ def parse_image_name(
 
 def get_uri(image, validate=True):
     """get the uri for an image, if within acceptable
- 
-       Parameters
-       ==========
-       image: the image uri, in the format <uri>://<registry>/<namespace>:<tag>
-       validate: if True, check if uri is in list of supported (default True)
+
+    Parameters
+    ==========
+    image: the image uri, in the format <uri>://<registry>/<namespace>:<tag>
+    validate: if True, check if uri is in list of supported (default True)
 
     """
     # Ensure we have a string
@@ -211,10 +211,10 @@ def get_uri(image, validate=True):
 
 def remove_uri(image):
     """remove_uri will remove the uri from the image path, if provided.
- 
-       Parameters
-       ==========
-       image: the image uri, in the format <uri>://<registry>/<namespace>:<tag>
+
+    Parameters
+    ==========
+    image: the image uri, in the format <uri>://<registry>/<namespace>:<tag>
 
     """
     return re.sub("^.+://", "", image)
@@ -222,11 +222,11 @@ def remove_uri(image):
 
 def get_recipe_tag(path):
     """get a recipe tag (the extension of a Singularity file). The extension
-       determines the tag. If no extension is found, latest is used.
+    determines the tag. If no extension is found, latest is used.
 
-       Parameters
-       ==========
-       path: the path to the recipe file (e.g. /opt/Singularity.tag)
+    Parameters
+    ==========
+    path: the path to the recipe file (e.g. /opt/Singularity.tag)
 
     """
     tag = None

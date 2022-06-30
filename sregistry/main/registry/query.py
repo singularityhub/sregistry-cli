@@ -17,8 +17,8 @@ import sys
 
 
 def search(self, query=None, args=None):
-    """query a Singularity registry for a list of images. 
-     If query is None, collections are listed. 
+    """query a Singularity registry for a list of images.
+     If query is None, collections are listed.
 
     EXAMPLE QUERIES:
 
@@ -29,7 +29,7 @@ def search(self, query=None, args=None):
     vsoch/dinosaur      list details of container vsoch/dinosaur
                           tag "latest" is used by default, and then the most recent
     vsoch/dinosaur:tag  list details for specific container
-    
+
     """
 
     if query is not None:

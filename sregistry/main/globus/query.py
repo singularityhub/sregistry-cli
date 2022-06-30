@@ -15,26 +15,26 @@ import sys
 
 def search(self, query=None, args=None):
     """query will show images determined by the extension of img
-       or simg.
+    or simg.
 
-       Parameters
-       ==========
-       query: the container name (path) or uri to search for
-       args.endpoint: can be an endpoint id and optional path, e.g.:
+    Parameters
+    ==========
+    query: the container name (path) or uri to search for
+    args.endpoint: can be an endpoint id and optional path, e.g.:
 
-             --endpoint  6881ae2e-db26-11e5-9772-22000b9da45e:.singularity'
-             --endpoint  6881ae2e-db26-11e5-9772-22000b9da45e'
+          --endpoint  6881ae2e-db26-11e5-9772-22000b9da45e:.singularity'
+          --endpoint  6881ae2e-db26-11e5-9772-22000b9da45e'
 
-       if not defined, we show the user endpoints to choose from
+    if not defined, we show the user endpoints to choose from
 
-       Usage
-       =====
-       If endpoint is defined with a query, then we search the given endpoint
-       for a container of interested (designated by ending in .img or .simg
+    Usage
+    =====
+    If endpoint is defined with a query, then we search the given endpoint
+    for a container of interested (designated by ending in .img or .simg
 
-       If no endpoint is provided but instead just a query, we use the query
-       to search endpoints.
-    
+    If no endpoint is provided but instead just a query, we use the query
+    to search endpoints.
+
     """
 
     # No query is defined
@@ -60,8 +60,8 @@ def search(self, query=None, args=None):
 
 def list_endpoints(self, query=None):
     """list all endpoints, providing a list of endpoints to the user to
-       better filter the search. This function takes no arguments,
-       as the user has not provided an endpoint id or query.
+    better filter the search. This function takes no arguments,
+    as the user has not provided an endpoint id or query.
     """
     bot.info("Please select an endpoint id to query from")
 
@@ -81,14 +81,14 @@ def list_endpoints(self, query=None):
 
 def list_endpoint(self, endpoint, query=None):
     """An endpoint is required here to list files within. Optionally, we can
-       take a path relative to the endpoint root.
+    take a path relative to the endpoint root.
 
-       Parameters
-       ==========
-       endpoint: a single endpoint ID or an endpoint id and relative path.
-                 If no path is provided, we use '', which defaults to scratch.
+    Parameters
+    ==========
+    endpoint: a single endpoint ID or an endpoint id and relative path.
+              If no path is provided, we use '', which defaults to scratch.
 
-       query: if defined, limit files to those that have query match
+    query: if defined, limit files to those that have query match
 
     """
     if not hasattr(self, "transfer_client"):
