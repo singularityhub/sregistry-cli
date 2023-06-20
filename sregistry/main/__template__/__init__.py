@@ -21,7 +21,6 @@ from sregistry.main import ApiConnection
 
 class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
-
         # You probably want to think about where  your base is coming from!
         self.base = base
         self._update_secrets()

@@ -83,7 +83,6 @@ def search_all(self):
 
     rows = []
     for i in results:
-
         # Fallback to the image name without the extension
         uri = i["name"].replace(".simg", "")
 
@@ -115,7 +114,6 @@ def container_query(self, query, quiet=False):
 
     matches = []
     for result in results:
-
         is_match = False
         if query in result["id"]:
             is_match = True
@@ -135,7 +133,6 @@ def container_query(self, query, quiet=False):
     if not quiet:
         bot.info("[drive://%s] Found %s containers" % (self._base, len(matches)))
         for image in matches:
-
             # If the image has properties, show to the user
             if "properties" in image:
                 image.update(image["properties"])

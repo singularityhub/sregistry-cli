@@ -181,7 +181,6 @@ class SRegistryMessage:
         length: character length of bar (Int)
         """
         if not self.level == QUIET:
-
             percent = 100 * (iteration / float(total))
             progress = int(length * iteration // total)
 

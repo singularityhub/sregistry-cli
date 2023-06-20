@@ -47,7 +47,6 @@ def get_collection(self, name):
 
 
 def get_container(self, name, collection_id, tag="latest", version=None):
-
     """get a container, otherwise return None."""
     from sregistry.database.models import Container
 
@@ -89,7 +88,6 @@ def get(self, name, quiet=False):
         )
 
         if container and not quiet:
-
             # The container image file exists [local]
             if container.image:
                 print(container.image)
@@ -167,7 +165,6 @@ def rename(self, image_name, path):
 
     if container:
         if container.image:
-
             # Derive a new filename and url in storage
             names = parse_image_name(remove_uri(path), version=container.version)
             storage = self._get_storage_name(names)
@@ -181,7 +178,6 @@ def rename(self, image_name, path):
 
             # On successful rename of file, update the uri
             if container is not None:
-
                 # Create the collection if doesn't exist
                 collection = self.get_or_create_collection(names["collection"])
                 self.session.commit()
@@ -225,12 +221,10 @@ def mv(self, image_name, path):
     container = self.get(image_name, quiet=True)
 
     if container is not None:
-
         image = container.image or ""
 
         # Only continue if image file exists
         if os.path.exists(image):
-
             # Default assume directory, use image name and path fully
             filename = os.path.basename(image)
             filedir = os.path.abspath(path)
@@ -271,7 +265,6 @@ def cp(self, move_to, image_name=None, container=None, command="copy"):
     image = container.image or ""
 
     if os.path.exists(image):
-
         filedir = os.path.dirname(move_to)
 
         # If the two are the same, doesn't make sense
@@ -334,7 +327,6 @@ def add(
     save=True,
     copy=False,
 ):
-
     """get or create a container, including the collection to add it to.
     This function can be used from a file on the local system, or via a URL
     that has been downloaded. Either way, if one of url, version, or image_file
@@ -395,7 +387,6 @@ def add(
 
     # If save, move to registry storage first
     if save and image_path:
-
         # If the user hasn't defined a custom name
         if image_name is None:
             image_name = self._get_storage_name(names)

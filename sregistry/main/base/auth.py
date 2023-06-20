@@ -53,13 +53,11 @@ def require_secrets(self, params=None):
 
     # Check 2: we have secrets and lookup, do we have all needed params?
     if params is not None:
-
         # Assume list so we can always parse through
         if not isinstance(params, list):
             params = [params]
 
         for param in params:
-
             # The parameter is not a key for the client
             if param not in self.secrets[name]:
                 bot.exit("Missing %s in client secrets." % param)

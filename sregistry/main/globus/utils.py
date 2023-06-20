@@ -34,7 +34,6 @@ def parse_endpoint_name(self, endpoint):
 
 
 def create_endpoint_cache(self, endpoint_id, cache=".singularity/shub"):
-
     """create a directory for sregistry in the user's
     base folder to share images.
 

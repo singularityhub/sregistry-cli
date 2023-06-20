@@ -26,7 +26,6 @@ from .delete import delete
 
 class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
-
         self.base = base
         self._update_secrets()
         self._update_headers()

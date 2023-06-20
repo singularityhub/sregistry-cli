@@ -58,7 +58,6 @@ def push(self, path, name, tag=None):
 
         # otherwise upload in chunks
         else:
-
             start = self.dbx.files_upload_session_start(F.read(chunk_size))
             cursor = dropbox.files.UploadSessionCursor(
                 session_id=start.session_id, offset=F.tell()
@@ -66,7 +65,6 @@ def push(self, path, name, tag=None):
             commit = dropbox.files.CommitInfo(path=storage_path)
 
             while F.tell() < file_size:
-
                 progress += chunk_size
 
                 # Finishing up the file, less than chunk_size to go

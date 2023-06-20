@@ -36,11 +36,9 @@ if sys.version_info[0] == 3:
 
 
 class Client(ApiConnection):
-
     # Initialization Calls
 
     def __init__(self, secrets=None, base=None, **kwargs):
-
         # These are unlikely to change
 
         self._client_id = "ae32247c-2c17-4c43-92b5-ba7fe9957dbb"

@@ -112,7 +112,6 @@ except ImportError:
 
 # If the user didn't disable caching or the database
 if not DISABLE_CACHE and DISABLE_DATABASE is False:
-
     # First priority goes to database path set in environment,
     # and if it's not set, default to home folder
     SREGISTRY_BASE = getenv("SREGISTRY_DATABASE", _database)

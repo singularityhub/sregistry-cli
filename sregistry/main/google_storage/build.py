@@ -30,7 +30,6 @@ def build(
     recipe="Singularity",
     preview=False,
 ):
-
     """trigger a build on Google Cloud (storage then compute) given a name
     recipe, and Github URI where the recipe can be found.
 
@@ -201,17 +200,14 @@ def get_ipaddress(self, name, retries=3, delay=3):
 
     """
     for _ in range(retries):
-
         # Retrieve list of instances
         instances = self._get_instances()
 
         for instance in instances["items"]:
             if instance["name"] == name:
-
                 # Iterate through network interfaces
                 for network in instance["networkInterfaces"]:
                     if network["name"] == "nic0":
-
                         # Access configurations
                         for subnet in network["accessConfigs"]:
                             if subnet["name"] == "External NAT":
@@ -271,7 +267,6 @@ def setup_build(
     recipe="Singularity",
     startup_script=None,
 ):
-
     """setup the build based on the selected configuration file, meaning
     producing the configuration file filled in based on the user's input
 
@@ -419,7 +414,6 @@ def setup_build(
     seen = ["SREGISTRY_BUILDER_STORAGE_BUCKET", "startup-script"]
 
     for key, value in defaults.items():
-
         # This also appends empty values, they are meaningful
         if value not in seen:
             entry = {"key": key, "value": value}

@@ -63,7 +63,6 @@ def parse_image_name(
     base=None,
     lowercase=True,
 ):
-
     """return a collection and repo name and tag
     for an image file.
 

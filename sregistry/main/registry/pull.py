@@ -42,7 +42,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
     finished = []
     for image in images:
-
         q = parse_image_name(remove_uri(image))
 
         # If a custom registry is not set, use default base
@@ -77,10 +76,8 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # Private container collection
         if isinstance(manifest, Response):
-
             # Requires token
             if manifest.status_code in [403, 401]:
-
                 SREGISTRY_EVENT = self.authorize(request_type="pull", names=q)
                 headers = {"Authorization": SREGISTRY_EVENT}
                 self._update_headers(headers)
@@ -101,7 +98,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # Successful pull
         if "image" in manifest:
-
             # Add self link to manifest
             manifest["selfLink"] = url
 

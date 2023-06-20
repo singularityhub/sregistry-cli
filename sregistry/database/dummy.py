@@ -23,7 +23,6 @@ def add(
     save=True,
     copy=False,
 ):
-
     """dummy add simple returns an object that mimics a database entry, so the
     calling function (in push or pull) can interact with it equally. Most
     variables (other than image_path) are not used."""

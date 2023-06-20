@@ -44,7 +44,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     # If used internally we want to return a list to the user.
     finished = []
     for image in images:
-
         names = parse_image_name(remove_uri(image))
 
         # Dropbox path is the path in storage with a slash
@@ -60,7 +59,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # First ensure that exists
         if self.exists(dropbox_path) is True:
-
             # _stream is a function to stream using the response to start
             metadata, response = self.dbx.files_download(dropbox_path)
             image_file = self._stream(response, stream_to=file_name)

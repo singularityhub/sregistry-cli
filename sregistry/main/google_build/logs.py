@@ -29,7 +29,6 @@ def logs(self, name=None):
     # If we are searching for a name
     if name is not None:
         for result in results:
-
             matches = False
 
             # Case 1: the name is in the storage path
@@ -46,7 +45,6 @@ def logs(self, name=None):
 
     # Otherwise return the last
     else:
-
         if len(results) > 0:
             latest = results[0]
 

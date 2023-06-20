@@ -16,7 +16,6 @@ import os
 
 
 def pull(self, images, file_name=None, save=True, force=False, base=None, **kwargs):
-
     """pull an image from a docker hub. This is a (less than ideal) workaround
        that actually does the following:
 
@@ -51,7 +50,6 @@ def pull(self, images, file_name=None, save=True, force=False, base=None, **kwar
     # If used internally we want to return a list to the user.
     finished = []
     for image in images:
-
         # 0. Update the base in case we aren't working with default
         base = self._update_base(image)
         q = parse_image_name(remove_uri(image), base=base)
@@ -68,7 +66,6 @@ def pull(self, images, file_name=None, save=True, force=False, base=None, **kwar
 
 
 def _pull(self, file_name, names, save=True, force=False, uri="docker://", **kwargs):
-
     """pull an image from a docker hub. This is a (less than ideal) workaround
        that actually does the following:
 
@@ -136,7 +133,6 @@ def _pull(self, file_name, names, save=True, force=False, uri="docker://", **kwa
 
     # Save to local storage
     if save is True:
-
         # Did we get the manifests?
         manifests = {}
         if hasattr(self, "manifests"):

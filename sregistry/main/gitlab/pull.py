@@ -48,7 +48,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     # If used internally we want to return a list to the user.
     finished = []
     for image in images:
-
         # Format job_id|collection|job_name
         # 122056733,singularityhub/gitlab-ci'
         # 122056733,singularityhub/gitlab-ci,build

@@ -87,7 +87,6 @@ def get_client(image=None, quiet=False, **kwargs):
 
     # Add the database, if wanted
     if SREGISTRY_DATABASE is not None:
-
         # These are global functions used across modules
         from sregistry.database import (
             init_db,

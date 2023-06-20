@@ -41,7 +41,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
     finished = []
     for image in images:
-
         image = remove_uri(image)
         names = parse_image_name(image)
 
@@ -58,7 +57,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
         # If we can't find the file, help the user
         except botocore.exceptions.ClientError as e:
             if e.response["Error"]["Code"] == "404":
-
                 # Case 1, image not found, but not error with API
                 bot.error("Cannot find %s!" % file_name)
 

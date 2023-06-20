@@ -104,7 +104,6 @@ def run_compute_build(cli, args):
     recipe = "Singularity"
 
     if "github" in command:
-
         # One argument indicates a recipe
         if len(args.commands) == 1:
             recipe = args.commands.pop(0)

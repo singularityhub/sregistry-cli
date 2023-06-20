@@ -88,7 +88,6 @@ def upload(self, source, destination, chunk_size=2 * 1024 * 1024, metadata=None)
     # When we finish upload, get as blob
     blob = self._bucket.blob(destination)
     if blob.exists():
-
         if not keep_private:
             blob.make_public()
 

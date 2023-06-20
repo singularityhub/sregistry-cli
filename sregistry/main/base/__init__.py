@@ -46,11 +46,9 @@ import os
 
 
 class ApiConnection(object):
-
     # Setup
 
     def __init__(self):
-
         self.headers = None
         self.base = None
         self._reset_headers()

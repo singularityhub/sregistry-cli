@@ -139,7 +139,6 @@ def stream(url, headers, stream_to=None, retry=True):
         return stream(url, headers, stream_to, retry=False)
 
     if response.status_code == 200:
-
         # Keep user updated with Progress Bar
         content_size = None
         if "Content-Length" in response.headers:
@@ -171,7 +170,6 @@ def stream(url, headers, stream_to=None, retry=True):
 def call(
     url, func, data=None, headers=None, return_json=True, stream=False, retry=True
 ):
-
     """call will issue the call, and issue a refresh token
     given a 401 response, and if the client has a _update_token function
 
@@ -205,10 +203,8 @@ def call(
 
     # Errored response, try again with refresh
     if response.status_code == 401:
-
         # If client has method to update token, try it once
         if retry is True:
-
             # A result of None indicates no update to the call
             headers = update_token(response, headers)
             return call(
@@ -227,9 +223,7 @@ def call(
         )
 
     elif response.status_code == 200:
-
         if return_json:
-
             try:
                 response = response.json()
             except ValueError:

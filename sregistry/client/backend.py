@@ -15,7 +15,6 @@ import json
 
 
 def main(args, parser, extra):
-
     # No commands provided, print help, show clients
 
     if len(args.commands) == 0:

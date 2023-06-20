@@ -24,7 +24,6 @@ def share(self, query, share_to=None):
 
     # First ensure that exists
     if self.exists(dropbox_path) is True:
-
         # Create new shared link
         try:
             share = self.dbx.sharing_create_shared_link_with_settings(dropbox_path)

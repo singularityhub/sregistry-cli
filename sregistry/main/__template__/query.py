@@ -26,7 +26,6 @@ def search(self, query=None, args=None):
     # names = parse_image_name(remove_uri(query))
 
     if query is not None:
-
         # Here you might do a function that is a general list
         # Note that this means adding the function Client in __init__
         return self._container_query(query)

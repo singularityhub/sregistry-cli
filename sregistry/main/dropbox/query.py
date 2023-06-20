@@ -20,7 +20,6 @@ def search(self, query=None, args=None):
     """
 
     if query is not None:
-
         # Here you might do a function that is a general list
         # Note that this means adding the function Client in __init__
         return self._container_query(query)
@@ -36,7 +35,6 @@ def search_all(self):
 
     # Parse through folders (collections):
     for entry in self.dbx.files_list_folder("").entries:
-
         # Parse through containers
         for item in self.dbx.files_list_folder(entry.path_lower).entries:
             name = item.name.replace(".simg", "")
@@ -63,7 +61,6 @@ def container_query(self, query):
 
     # Parse through folders (collections):
     for entry in self.dbx.files_list_folder("").entries:
-
         # Parse through containers
         for item in self.dbx.files_list_folder(entry.path_lower).entries:
             name = item.name.replace(".simg", "")

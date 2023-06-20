@@ -13,7 +13,6 @@ import os
 
 
 def main(args, parser, extra):
-
     from sregistry.main import get_client
 
     # Does the user have a valid image?

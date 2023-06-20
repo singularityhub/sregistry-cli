@@ -21,7 +21,6 @@ import sys
 
 
 def delete(self, url, headers=None, return_json=True, default_headers=True):
-
     """delete request, use with caution"""
     bot.debug("DELETE %s" % url)
     return self._call(
@@ -57,7 +56,6 @@ def healthy(self, url):
 
 
 def put(self, url, headers=None, data=None, return_json=True, default_headers=True):
-
     """put request"""
     bot.debug("PUT %s" % url)
     return self._call(
@@ -71,7 +69,6 @@ def put(self, url, headers=None, data=None, return_json=True, default_headers=Tr
 
 
 def post(self, url, headers=None, data=None, return_json=True, default_headers=True):
-
     """post will use requests to get a particular url"""
 
     bot.debug("POST %s" % url)
@@ -95,7 +92,6 @@ def get(
     default_headers=True,
     quiet=False,
 ):
-
     """get will use requests to get a particular url"""
     bot.debug("GET %s" % url)
     return self._call(
@@ -146,7 +142,6 @@ def verify(self):
 
 
 def download(self, url, file_name, headers=None, show_progress=True):
-
     """stream to a temporary file, rename on successful completion
 
     Parameters
@@ -242,7 +237,6 @@ def stream_response(self, response, stream_to=None, show_progress=True):
 
     """
     if response.status_code == 200:
-
         if show_progress is False:
             bot.quiet = True
 
@@ -286,7 +280,6 @@ def call(
     default_headers=True,
     quiet=False,
 ):
-
     """call will issue the call, and issue a refresh token
     given a 401 response, and if the client has a _update_token function
 
@@ -323,17 +316,14 @@ def call(
 
     # Errored response, try again with refresh
     if response.status_code == 404:
-
         # Not found, we might want to continue on
         if quiet is False:
             bot.exit("Beep boop! %s: %s" % (response.reason, response.status_code))
 
     # Errored response, try again with refresh
     if response.status_code == 401:
-
         # If client has method to update token, try it once
         if retry is True and hasattr(self, "_update_token"):
-
             # A result of None indicates no update to the call
             self._update_token(response)
             return self._call(
@@ -352,9 +342,7 @@ def call(
         )
 
     elif response.status_code == 200:
-
         if return_json:
-
             try:
                 response = response.json()
             except ValueError:

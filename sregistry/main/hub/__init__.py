@@ -16,7 +16,6 @@ from .query import search, list_all, search_collection
 
 class Client(ApiConnection):
     def __init__(self, secrets=None, **kwargs):
-
         self._update_headers()
         super(Client, self).__init__(**kwargs)
         self.base = "https://www.singularity-hub.org/api"

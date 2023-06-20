@@ -85,7 +85,6 @@ def get_manifests(self, repo_name, digest=None):
     for schemaVersion in schemaVersions:
         manifest = self._get_manifest(repo_name, digest, schemaVersion)
         if manifest is not None:
-
             # If we don't have a config yet, try to get from version 2 manifest
             if schemaVersion == "v2" and "config" in manifest:
                 bot.debug("Attempting to get config as blob in verison 2 manifest")
@@ -177,7 +176,6 @@ def download_layers(self, repo_name, digest=None, destination=None):
     tasks = []
     layers = []
     for digest in digests:
-
         targz = "%s/%s.tar.gz" % (destination, digest)
 
         # Only download if not in cache already
@@ -244,7 +242,6 @@ def get_digests(self):
 
     # Select the manifest to use
     for schemaVersion in schemaVersions:
-
         manifest = self.manifests[schemaVersion]
 
         if manifest["schemaVersion"] == 1:
@@ -391,7 +388,6 @@ def get_config(self, key="Entrypoint", delim=None):
 
     # If we didn't find the config value in version 2
     if cmd is None and "config" in self.manifests:
-
         # First try, version 2.0 manifest config has upper level config
         manifest = self.manifests["config"]
         if "config" in manifest:

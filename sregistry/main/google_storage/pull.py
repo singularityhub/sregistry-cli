@@ -39,7 +39,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     # If used internally we want to return a list to the user.
     finished = []
     for image in images:
-
         q = parse_image_name(remove_uri(image))
 
         # Use container search to find the container based on uri

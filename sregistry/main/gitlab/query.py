@@ -46,14 +46,12 @@ def search_all(self, collection, job_id=None):
         # https://gitlab.com/gitlab-org/gitlab-ce/issues/51515
         # Parse through jobs (each can have different tags for a collection):
         for job in jobs:
-
             # Only show jobs that are successful
             if job["status"] == "success":
                 name = job["name"]
 
                 for artifact in job["artifacts"]:
                     if artifact["filename"].endswith("zip"):
-
                         # The user must browse to see the names
                         artifact_url = "%s/%s/-/jobs/%s/artifacts/browse/%s" % (
                             self.base,
