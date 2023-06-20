@@ -8,7 +8,7 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
 
-__version__ = "0.2.38"
+__version__ = "0.2.39"
 AUTHOR = "Vanessa Sochat"
 AUTHOR_EMAIL = "vsochat@stanford.edu"
 NAME = "sregistry"
@@ -104,29 +104,29 @@ INSTALL_BASIC_ALL = (
 INSTALL_REQUIRES_REGISTRY = (
     ("requests-toolbelt", {"min_version": "0.8.0"}),
     ("python-dateutil", {"min_verison": "2.5.3"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
 )
 
 INSTALL_REQUIRES_AWS = (
     ("awscli", {"min_version": "1.16.19"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
 )
 
 INSTALL_REQUIRES_SWIFT = (
     ("python-swiftclient", {"min_version": "3.6.0"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
     ("oauth2client", {"min_version": "3.0"}),
 )
 
 INSTALL_REQUIRES_DROPBOX = (
     ("dropbox", {"min_version": "8.5.1"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
 )
 
 INSTALL_REQUIRES_GLOBUS = (
     ("oauth2client", {"min_version": "3.0"}),
     ("globus_sdk[jwt]", {"min_version": "1.5.0"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_STORAGE = (
@@ -134,7 +134,7 @@ INSTALL_REQUIRES_GOOGLE_STORAGE = (
     ("google-cloud-storage", {"min_version": "1.4.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"exact_version": "1.3.3"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
     ("httplib2", {"min_version": "0.18.0"}),
 )
 
@@ -143,27 +143,27 @@ INSTALL_REQUIRES_GOOGLE_BUILD = (
     ("google-cloud-storage", {"min_version": "1.4.0"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("retrying", {"exact_version": "1.3.3"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
     ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_DRIVE = (
     ("oauth2client", {"min_version": "3.0"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_REQUIRES_GOOGLE_COMPUTE = (
     ("oauth2client", {"min_version": "3.0"}),
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
     ("google-api-python-client", {"min_version": "1.6.4"}),
     ("google-cloud-storage", {"min_version": "1.4.0"}),
     ("httplib2", {"min_version": "0.18.0"}),
 )
 
 INSTALL_REQUIRES_S3 = (
-    ("sqlalchemy", {"min_version": None}),
+    ("sqlalchemy", {"max_version": "1.4.48"}),
     ("boto3", {"min_version": "1.7.83"}),
 )
 

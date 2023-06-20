@@ -33,7 +33,6 @@ def search(self, query=None, args=None):
     """
 
     if query is not None:
-
         # List all containers in collection query/
         if query.endswith("/"):  # collection search
             return self._collection_search(query)
@@ -195,7 +194,6 @@ def container_search(self, query, across_collections=False):
 
     rows = []
     for c in result:
-
         rows.append(["%s/%s" % (c["collection"], c["name"]), c["tag"]])
 
     bot.table(rows)

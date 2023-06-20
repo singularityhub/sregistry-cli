@@ -110,7 +110,6 @@ def stream(url, headers, stream_to=None, retry=True):
 
     # Successful Response
     elif response.status_code == 200:
-
         # Keep user updated with Progress Bar
         content_size = None
         if "Content-Length" in response.headers:

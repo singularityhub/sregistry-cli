@@ -29,7 +29,6 @@ from .query import container_query, list_containers, search, search_all
 
 class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
-
         self._update_secrets()
         self._update_headers()
         self._init_client()

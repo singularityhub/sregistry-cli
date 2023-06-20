@@ -49,7 +49,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
     finished = []
     for image in images:
-
         q = parse_image_name(remove_uri(image), default_collection="aws")
 
         image_file = self._pull(
@@ -64,7 +63,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
 
 def _pull(self, file_name, names, save=True, force=False, **kwargs):
-
     """pull an image from aws. This is a (less than ideal) workaround
        that actually does the following:
 
@@ -127,7 +125,6 @@ def _pull(self, file_name, names, save=True, force=False, **kwargs):
 
     # Save to local storage
     if save is True:
-
         # Did we get the manifests?
         if hasattr(self, "manifest"):
             manifest = self.manifest

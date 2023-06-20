@@ -45,7 +45,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
     finished = []
     for image in images:
-
         # Split the name into endpoint and rest
 
         endpoint, remote = self._parse_endpoint_name(image)

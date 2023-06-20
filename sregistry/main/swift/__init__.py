@@ -20,7 +20,6 @@ from .query import search, search_all, container_query
 
 class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
-
         self.config = dict()
         self._update_secrets()
         self.name = self.config.get("SREGISTRY_SWIFT_URL", "Swift Client Storage")
@@ -77,7 +76,6 @@ class Client(ApiConnection):
 
         # Check what auth version is requested and setup the connection
         if self.config["SREGISTRY_SWIFT_AUTHTYPE"] == "preauth":
-
             # Pre-Authenticated Token/URL - Use OS_AUTH_TOKEN/OS_STORAGE_URL
             # Retrieve the user token, user, and base. Exit if not found
             for envar in [
@@ -91,7 +89,6 @@ class Client(ApiConnection):
                 preauthtoken=self.config["SREGISTRY_SWIFT_OS_AUTH_TOKEN"],
             )
         elif self.config["SREGISTRY_SWIFT_AUTHTYPE"] == "keystonev3":
-
             # Keystone v3 Authentication
             # Retrieve the user token, user, and base. Exit if not found
             for envar in [
@@ -120,7 +117,6 @@ class Client(ApiConnection):
             )
 
         elif self.config["SREGISTRY_SWIFT_AUTHTYPE"] == "keystonev2":
-
             # Keystone v2 Authentication
             # Retrieve the user token, user, and base. Exit if not found
             for envar in [
@@ -149,7 +145,6 @@ class Client(ApiConnection):
                 auth_version="2",
             )
         else:
-
             # Legacy Authentication
             # Retrieve the user token, user, and base. Exit if not found
             for envar in [

@@ -38,7 +38,6 @@ def search(self, query=None, args=None):
 
     # No query is defined
     if query is None:
-
         # Option 1: No query or endpoints lists all shared and personal
         if args.endpoint is None:
             bot.info("Listing shared endpoints. Add query to expand search.")
@@ -101,7 +100,6 @@ def list_endpoint(self, endpoint, query=None):
     try:
         result = self.transfer_client.operation_ls(endpoint, path=path)
     except Exception as err:
-
         # Tell the user what went wrong!
         bot.custom(prefix="ERROR", message=err, color="RED")
         sys.exit(1)
@@ -109,7 +107,6 @@ def list_endpoint(self, endpoint, query=None):
     rows = []
 
     for filey in result:
-
         # Highlight container contenders with purple
         name = filey["name"]
         if query is None or query in name:

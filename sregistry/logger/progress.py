@@ -45,7 +45,6 @@ class ProgressBar(object):
         expected_size=None,
         every=1,
     ):
-
         self.label = label
         self.width = width
         self.hide = hide
@@ -138,7 +137,6 @@ def bar(
     expected_size=None,
     every=1,
 ):
-
     """Progress iterator. Wrap your iterables with it."""
 
     count = len(it) if expected_size is None else expected_size
@@ -152,7 +150,6 @@ def bar(
         expected_size=count,
         every=every,
     ) as pbar:
-
         for i, item in enumerate(it):
             yield item
             pbar.show(i + 1)

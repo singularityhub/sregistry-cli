@@ -10,7 +10,6 @@ with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
 def main(args, parser, extra):
-
     lookup = {"ipython": ipython, "python": python, "bpython": bpython}
 
     shells = ["ipython", "python", "bpython"]

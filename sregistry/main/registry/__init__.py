@@ -23,7 +23,6 @@ from .query import search, search_all, collection_search, label_search, containe
 
 class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
-
         self.base = base
         super(Client, self).__init__(**kwargs)
         self._update_secrets()
@@ -57,7 +56,6 @@ class Client(ApiConnection):
 
         # If image uses http or https, add back
         if not q["registry"].startswith("http"):
-
             if q["original"].startswith("http:"):
                 q["registry"] = "http://%s" % q["registry"]
 
@@ -66,7 +64,6 @@ class Client(ApiConnection):
 
             # Otherwise, guess from the user's environment
             else:
-
                 prefix = "https://"
 
                 # The user can set an environment variable to specify nohttps

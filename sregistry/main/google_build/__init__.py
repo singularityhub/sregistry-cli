@@ -37,12 +37,10 @@ from .query import container_query, list_containers, search, search_all
 
 
 class Client(ApiConnection):
-
     # Custom variables that can be provided with client.get_client
     envars = {}
 
     def __init__(self, secrets=None, base=None, init=True, **kwargs):
-
         self._update_secrets()
         self._update_headers()
 

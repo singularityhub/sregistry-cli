@@ -21,7 +21,6 @@ def search(self, query=None, args=None):
     """
 
     if query is not None:
-
         # Here you might do a function that is a general list
         # Note that this means adding the function Client in __init__
         return self._container_query(query)
@@ -37,7 +36,6 @@ def search_all(self):
 
     # Here we get names of collections, and then look up containers
     for container in self.conn.get_account()[1]:
-
         # The result here is just the name
         for result in self.conn.get_container(container["name"])[1]:
             results.add("%s/%s" % (container["name"], result["name"]))
@@ -63,7 +61,6 @@ def container_query(self, query):
 
     # Here we get names of collections, and then look up containers
     for container in self.conn.get_account()[1]:
-
         # The result here is just the name
         for result in self.conn.get_container(container["name"])[1]:
             if query in result["name"]:

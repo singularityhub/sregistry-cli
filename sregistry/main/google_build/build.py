@@ -93,7 +93,6 @@ def build(
     build_package = [recipe]
 
     if context:
-
         # If the user gives a ., include recursive $PWD
         if "." in context:
             context = glob(os.getcwd() + "/**/*", recursive=True)
@@ -293,7 +292,6 @@ def create_build_package(package_files, working_dir=None):
 
     # Create the tar.gz, making sure relative to working_dir
     for package_file in package_files:
-
         # Get a relative path
         relative_path = get_relative_path(package_file, working_dir)
         tar.add(package_file, arcname=relative_path)
@@ -337,7 +335,6 @@ def add_webhook(config, webhook, extra_data=None):
     substitutions = {}
 
     if extra_data is not None:
-
         # Keep a list of envars to add
         for key, val in extra_data.items():
             sub = "_SREGISTRY_%s" % key.upper()
@@ -501,7 +498,6 @@ def build_status(self, build_id):
 
 
 def finish_build(self, build_id, config=None, response=None):
-
     """finish a build, meaning if the build was successful, we check the
     user preference to make it private. If it's set, we leave it
     private. Otherwise, we make it public (default).
@@ -518,7 +514,6 @@ def finish_build(self, build_id, config=None, response=None):
 
     # If successful, update blob metadata and visibility
     if response["status"] == "SUCCESS":
-
         # Does the user want to keep the container private?
         env = "SREGISTRY_GOOGLE_STORAGE_PRIVATE"
         blob_location = get_blob_location(response, self._bucket_name)

@@ -91,7 +91,6 @@ def container_search(self, query, across_collections=False):
     results = self._search_all(quiet=True)
     matches = []
     for result in results:
-
         # This is the container name
         if query in result[0]:
             matches.append(result)

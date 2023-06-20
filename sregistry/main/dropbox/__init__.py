@@ -21,7 +21,6 @@ from .share import share
 
 class Client(ApiConnection):
     def __init__(self, secrets=None, base=None, **kwargs):
-
         # update token from the environment
         self._update_secrets()
         super(Client, self).__init__(**kwargs)

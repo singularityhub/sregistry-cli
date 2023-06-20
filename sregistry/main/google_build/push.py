@@ -56,7 +56,6 @@ def upload(
     metadata=None,
     keep_private=True,
 ):
-
     """upload a file from a source to a destination. The client is expected
     to have a bucket (self._bucket) that is created when instantiated.
 
@@ -95,7 +94,6 @@ def upload(
     # When we finish upload, get as blob
     blob = bucket.blob(destination)
     if blob.exists():
-
         if not keep_private:
             blob.make_public()
 

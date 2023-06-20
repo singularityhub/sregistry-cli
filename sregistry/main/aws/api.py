@@ -68,7 +68,6 @@ def download_layers(self, repo_name, digest=None, destination=None):
     self._update_token()
 
     for digest in digests:
-
         targz = "%s/%s.tar.gz" % (destination, digest["digest"])
         url = "%s/%s/blobs/%s" % (self.base, repo_name, digest["digest"])
 

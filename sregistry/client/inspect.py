@@ -12,7 +12,6 @@ from sregistry.logger import bot
 
 
 def main(args, parser, extra):
-
     from sregistry.main import get_client
 
     image = args.query

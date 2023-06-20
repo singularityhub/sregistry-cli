@@ -46,7 +46,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
     # If used internally we want to return a list to the user.
     finished = []
     for image in images:
-
         names = parse_image_name(remove_uri(image))
 
         # First try to get the collection
@@ -86,7 +85,6 @@ def pull(self, images, file_name=None, save=True, **kwargs):
 
         # If we save to storage, the uri is the dropbox_path
         if save is True:
-
             names.update(obj_tuple[0])
             container = self.add(
                 image_path=file_name, image_uri=names["uri"], metadata=names

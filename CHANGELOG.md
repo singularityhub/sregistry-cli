@@ -14,6 +14,7 @@ and **Merged pull requests**. Critical items to know are:
 The versions coincide with releases on pip. Only major versions will be released as tags on Github.
 
 ## [0.2.x](https://github.com/singularityhub/sregistry-cli/tree/master) (0.2.x)
+ - Fix #264. Adds max_version to sqlalchemy (0.2.39) 
  - removing deprecated globus import (0.0.27-0.2.38)
  - unpinning httplib2 version (0.2.36)
  - bugfix for gitlab base url overwrite (0.2.35)

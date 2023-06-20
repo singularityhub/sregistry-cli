@@ -38,7 +38,6 @@ def pull(self, images, file_name=None, save=True, force=False, **kwargs):
 
     finished = []
     for image in images:
-
         q = parse_image_name(remove_uri(image), lowercase=False)
 
         # Verify image existence, and obtain id

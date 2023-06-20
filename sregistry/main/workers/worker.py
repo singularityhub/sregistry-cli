@@ -19,7 +19,6 @@ import sys
 
 class Workers(object):
     def __init__(self, workers=None):
-
         if workers is None:
             workers = SREGISTRY_WORKERS
         self.workers = workers

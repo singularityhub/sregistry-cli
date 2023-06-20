@@ -13,7 +13,6 @@ from sregistry.utils import remove_uri
 
 
 def main(args, parser, extra):
-
     from sregistry.main import get_client
 
     for query in args.query:
